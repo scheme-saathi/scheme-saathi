@@ -14,3 +14,8 @@ A welfare-scheme navigator for citizens and CSC operators. It identifies eligibl
 ## Setup
 
 Requires Python 3.11+. Copy `.env.example` to `.env` and add your OpenRouter key. Never commit `.env`.
+
+
+# Database
+
+Use ChromaDB as the vector database for retrieval-augmented generation (RAG).
