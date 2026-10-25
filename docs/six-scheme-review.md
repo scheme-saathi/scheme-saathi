@@ -6,12 +6,12 @@ We are loading more schemes before changing chunking or embedding inputs. This k
 
 | ID | Scheme | JSON | Review | Availability |
 |---|---|---|---|---|
-| C07 | Rashtriya Krishi Vigyan Puraskar | [rkvp.draft.json](../data/schemes/rkvp.draft.json) | approved | open |
-| C08 | Market Development Assistance | [mda-fert.draft.json](../data/schemes/mda-fert.draft.json) | approved | open |
-| C09 | PRISM Category 2 | [prism-c2-fwmpkhttptt.draft.json](../data/schemes/prism-c2-fwmpkhttptt.draft.json) | approved | open |
-| C10 | Khadi Vikas Yojana | [kvyoj.draft.json](../data/schemes/kvyoj.draft.json) | draft | open |
-| C11 | Stand-Up India | [sui.draft.json](../data/schemes/sui.draft.json) | approved | closed |
-| C12 | Handloom Marketing Incentive | [mi-hma-nhdp.draft.json](../data/schemes/mi-hma-nhdp.draft.json) | draft | open |
+| C07 | Rashtriya Krishi Vigyan Puraskar | [rkvp.json](../data/schemes/rkvp.json) | approved | open |
+| C08 | Market Development Assistance | [mda-fert.json](../data/schemes/mda-fert.json) | approved | open |
+| C09 | PRISM Category 2 | [prism-c2-fwmpkhttptt.json](../data/schemes/prism-c2-fwmpkhttptt.json) | approved | open |
+| C10 | Khadi Vikas Yojana | [kvyoj.json](../data/schemes/kvyoj.json) | approved | open |
+| C11 | Stand-Up India | [sui.json](../data/schemes/sui.json) | approved | closed |
+| C12 | Handloom Marketing Incentive | [mi-hma-nhdp.json](../data/schemes/mi-hma-nhdp.json) | approved | open |
 
 The five new records were converted from our earlier official-source captures dated 24 October 2026, not freshly fetched during conversion. Subsequent owner approvals are recorded below. All six sections and available resource links are retained. Full normalized snapshots are stored alongside this document using each slug plus `-source-snapshot.json`; FAQs and source dates outside the current schema remain there. Linked PDFs have not been downloaded or indexed by this step. Captured sections do not establish complete eligibility rules or current availability.
 
@@ -67,4 +67,8 @@ The project owner approved C11's source-information record and confirmed it clos
 
 Keep document checklists and application instructions in source order, retaining headings, conditions, channels and distinct routes. Display the full lists; do not treat conditional documents as mandatory for everyone or automatically execute application steps. Linked-resource verification remains separate from scheme-record approval.
 
-The abbreviated C11 teaching sample and its loader have been removed; only the full scheme record remains. Importers still skip any sample_only records and reject duplicate non-sample IDs. Filenames ending .draft.json are retained for existing references; the review_status field is authoritative.
+The abbreviated C11 teaching sample and its loader have been removed; only the full scheme record remains. Importers still skip any sample_only records and reject duplicate non-sample IDs. Scheme filenames no longer contain .draft; the review_status field remains authoritative.
+
+## Finalization
+
+On 25 October 2026, the project owner approved the remaining C10 and C12 records and requested removing .draft from all six filenames. All six source-information records now have review_status: approved. C07, C08, C09, C10 and C12 are open; C11 is closed. Earlier draft notes above describe the review history. This does not implement or certify executable eligibility rules or independently verify resource links.

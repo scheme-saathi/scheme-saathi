@@ -3,7 +3,7 @@
 This document describes the current Python models, so team members can review the data structure before we add storage and retrieval.
 
 - Model definitions: [models.py](../servers/schemes_kb/models.py)
-- Full C11 record: [sui.draft.json](../data/schemes/sui.draft.json)
+- Full C11 record: [sui.json](../data/schemes/sui.json)
 
 ## Relationship overview
 
@@ -84,7 +84,7 @@ from pathlib import Path
 from servers.schemes_kb.models import Scheme
 
 scheme = Scheme.model_validate_json(
-    Path("data/schemes/sui.draft.json").read_text(encoding="utf-8")
+    Path("data/schemes/sui.json").read_text(encoding="utf-8")
 )
 ```
 
