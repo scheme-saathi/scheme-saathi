@@ -1,0 +1,2222 @@
+{
+  "id": "C12",
+  "slug": "mi-hma-nhdp",
+  "name": "\"Marketing Incentive\" under the \"Handloom Marketing Assistance\" Component of the National Handloom Development Programme",
+  "level": "Central",
+  "source_level": "Central",
+  "area": "India",
+  "categories": "Business & Entrepreneurship",
+  "applicant_type": "Individual",
+  "beneficiaries": "Individual; Self Help Groups (SHGS); Joint Liability Groups (JLGS); Business Entity; Government Organisation; NGO",
+  "ministry": "Ministry Of Textiles",
+  "department": "",
+  "tags": "Marketing; Incentive; Handloom; Weaver; Textile",
+  "brief": "The scheme aims to develop and promote marketing channels for handloom products to bring greater visibility to the sector and ensure commensurate remuneration to weavers. It provides Marketing Incentive to eligible handloom agencies for creating conducive conditions for marketing handloom products.",
+  "url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+  "source_id": "6889e14c5674185b680dafac",
+  "snapshot_date": "2026-10-24",
+  "hash": "16b8e713258eabadf9672c91a7a25cb45ac8a13ab7fbb75ce7a8d03c3c0eecb4",
+  "open_date": null,
+  "close_date": null,
+  "sections": [
+    {
+      "section": "Details",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.detailedDescription[0]",
+          "text": "The scheme \"Marketing Incentive\" under the \"Handloom Marketing Assistance\" Component of the National Handloom Development Programme by the Ministry of Textiles, Government of India, aims to develop and promote marketing channels in domestic and export markets in a holistic and integrated manner to bring greater visibility to the sector and ensure commensurate remuneration to weavers. The scheme provides Marketing Incentive calculated at 10% on average sales of handloom products of the last 3 years with maximum caps of ₹1,00,00,000/- for state level organizations and ₹15,00,000/- lakh for primary societies, equally shared between State Government and Central Government except for National Level Handloom Organizations where entire assistance is borne by Government of India. The scheme is implemented by the Office of Development Commissioner (Handlooms) under Ministry of Textiles with applications accepted through prescribed proformas and State Government recommendations.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "Benefits",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.benefits[0].children[0]",
+          "text": "Financial Assistance Structure",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[1].children[0]",
+          "text": "Marketing Incentive Rate: 10% on average sales of handloom products of the last 3 years.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[1].children[1]",
+          "text": "State Level Organizations: Maximum ₹100.00 lakh (Central Government share).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[1].children[2]",
+          "text": "Primary Level Organizations: Maximum ₹15.00 lakh (Central Government share).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[2].children[0]",
+          "text": "Category-wise Maximum Caps",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[0]",
+          "text": "State Level Organizations (Handloom Corporations, Apex Cooperative Societies, National Level Handloom Organizations): ₹1,00,00,000/- Central Government share.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[1]",
+          "text": "Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations and Other Eligible Handloom Entities: ₹15,00,000/- Central Government share.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[4].children[0]",
+          "text": "Financial Assistance Sharing",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[5].children[0]",
+          "text": "General Cases: 50:50 sharing between Government of India and State Government.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[5].children[1]",
+          "text": "National Level Handloom Organizations/Societies: Entire assistance borne by Government of India.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[5].children[2]",
+          "text": "Benefit Distribution: 10% benefits shared equally between Organizations and Member Weavers through Direct Benefit Transfer.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[7].children[0]",
+          "text": "Mode and Frequency of Disbursement",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[8].children[0]",
+          "text": "Marketing Incentive will be given maximum for 3 years during the scheme period of 5 years.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[8].children[1]",
+          "text": "Release through Direct Benefit Transfer mechanism.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[8].children[2]",
+          "text": "Nodal Agency must release amount to eligible handloom agencies and their member weavers within 7 days of receipt.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[9].children[0]",
+          "text": "Conditions for Availment/Continuation",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[10].children[0]",
+          "text": "Amount to be used towards activities that attract consumers to gear up overall sales of handloom goods.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[10].children[1]",
+          "text": "Enable handloom agencies to adjust prices towards increasing cost competitiveness, improve designs, and invest in infrastructure.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[10].children[2]",
+          "text": "State Government recommendation subject to matching contribution by concerned State Government.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[10].children[3]",
+          "text": "Claims must be Goods and Services Tax compliant.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[10].children[4]",
+          "text": "No similar incentive/rebate received under any other Central Government scheme.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "Eligibility",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "text": "The applicant must be one of the following:",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "text": "Handloom agencies including State level organizations such as Handloom Corporations, Apex Cooperative Societies and National Level Handloom Organizations, Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations and Other eligible Handloom entities.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[1]",
+          "text": "The applicant must have made the final transaction of product sale to the consumer.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[2]",
+          "text": "The applicant must use Handloom Mark or India Handloom Brand for their handloom products.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[3]",
+          "text": "The applicant must have average sales turnover of handloom products for the last 3 years for incentive calculation.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "Exclusions",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.exclusions[0].children[0]",
+          "text": "Sales by one handloom agency to another handloom agency are not eligible.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.exclusions[0].children[1]",
+          "text": "Sales of handloom products by Primary Handloom Weavers Cooperative Societies or any other Handloom Agency to Apex Societies, Federations, Producer Companies, Corporations are excluded.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.exclusions[0].children[2]",
+          "text": "Sales by handloom agencies to Government departments/agencies are excluded.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.exclusions[0].children[3]",
+          "text": "Sales made under barter system by handloom agencies are excluded.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.exclusions[0].children[4]",
+          "text": "Agencies that have received similar kind of incentive/rebate under any other Central Government scheme are not preferred.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "Applicant documents",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "documents.en.documents_required[0]",
+          "text": "At Application Stage",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "At Application Stage"
+        },
+        {
+          "path": "documents.en.documents_required[1].children[0]",
+          "text": "Sales Bills/invoices for Handloom Products (Goods and Services Tax Compliant),",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "At Application Stage"
+        },
+        {
+          "path": "documents.en.documents_required[1].children[1]",
+          "text": "Yarn Purchase Bills (Goods and Services Tax Compliant).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "At Application Stage"
+        },
+        {
+          "path": "documents.en.documents_required[1].children[2]",
+          "text": "Average Sales Turnover Details of Handloom Products for the Last 3 Years.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "At Application Stage"
+        },
+        {
+          "path": "documents.en.documents_required[1].children[3]",
+          "text": "Handloom Mark or India Handloom Brand Usage Documentation.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "At Application Stage"
+        },
+        {
+          "path": "documents.en.documents_required[1].children[4]",
+          "text": "Final Transaction Proof of Product Sale to Consumer.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "At Application Stage"
+        },
+        {
+          "path": "documents.en.documents_required[3]",
+          "text": "For State Government Processing",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "For State Government Processing"
+        },
+        {
+          "path": "documents.en.documents_required[4].children[0]",
+          "text": "Certificate as Per Prescribed Proforma (Annexure - B9) for Each Individual Claim.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For State Government Processing"
+        },
+        {
+          "path": "documents.en.documents_required[4].children[1]",
+          "text": "Consolidated Statement of All Claims.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For State Government Processing"
+        },
+        {
+          "path": "documents.en.documents_required[4].children[2]",
+          "text": "Recommendations of State Level Project Committee.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For State Government Processing"
+        },
+        {
+          "path": "documents.en.documents_required[4].children[3]",
+          "text": "Sanction Order for Release of State Share.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For State Government Processing"
+        },
+        {
+          "path": "documents.en.documents_required[4].children[4]",
+          "text": "Documentary Proof of Amount Transferred to Beneficiaries.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For State Government Processing"
+        },
+        {
+          "path": "documents.en.documents_required[4].children[5]",
+          "text": "Certificate as Per Prescribed Proforma (Annexure - B10).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For State Government Processing"
+        },
+        {
+          "path": "documents.en.documents_required[4].children[6]",
+          "text": "Identification of Suitable Nodal Agency for Fund Aggregation and Release.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For State Government Processing"
+        },
+        {
+          "path": "documents.en.documents_required[6]",
+          "text": "At Verification Stage",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "At Verification Stage"
+        },
+        {
+          "path": "documents.en.documents_required[7].children[0]",
+          "text": "Utilization Certificate From Nodal Agency.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "At Verification Stage"
+        },
+        {
+          "path": "documents.en.documents_required[7].children[1]",
+          "text": "Certificate Of Direct Benefit Transfer Release Within 7 Days.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "At Verification Stage"
+        },
+        {
+          "path": "documents.en.documents_required[7].children[2]",
+          "text": "Details Of Beneficiaries (State Share And Government Of India Share) Uploaded In Public Domain.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "At Verification Stage"
+        },
+        {
+          "path": "documents.en.documents_required[8]",
+          "text": "NOTE: All sales bills/invoices and yarn purchase bills must be Goods and Services Tax compliant for claiming Marketing Incentive.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "At Verification Stage"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "Application process",
+      "channel": "Offline",
+      "blocks": [
+        {
+          "path": "en.applicationProcess[0].process[0].children[0]",
+          "text": "For State Level and Primary Level Organizations",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.applicationProcess[0].process[1]",
+          "text": "Step 1: Prepare Claim Documentation",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 1: Prepare Claim Documentation"
+        },
+        {
+          "path": "en.applicationProcess[0].process[2]",
+          "text": "Compile sales bills/invoices, yarn purchase bills, and average sales turnover details for the last 3 years ensuring Goods and Services Tax compliance.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 1: Prepare Claim Documentation"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3]",
+          "text": "Step 2: Complete Application Form",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 2: Complete Application Form"
+        },
+        {
+          "path": "en.applicationProcess[0].process[4]",
+          "text": "Fill the prescribed proforma (Annexure - B8) with all required details including sales data and beneficiary information.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 2: Complete Application Form"
+        },
+        {
+          "path": "en.applicationProcess[0].process[5]",
+          "text": "Step 3: Submit to State Government",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 3: Submit to State Government"
+        },
+        {
+          "path": "en.applicationProcess[0].process[6]",
+          "text": "Submit the completed Marketing Incentive claim to the concerned State Government with all supporting documents.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 3: Submit to State Government"
+        },
+        {
+          "path": "en.applicationProcess[0].process[7]",
+          "text": "Step 4: State Government Verification",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 4: State Government Verification"
+        },
+        {
+          "path": "en.applicationProcess[0].process[8]",
+          "text": "State Government will verify claims, ensure matching contribution availability, and complete prescribed certificates (Annexure - B9).",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 4: State Government Verification"
+        },
+        {
+          "path": "en.applicationProcess[0].process[9]",
+          "text": "Step 5: State Level Project Committee Recommendation",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 5: State Level Project Committee Recommendation"
+        },
+        {
+          "path": "en.applicationProcess[0].process[10]",
+          "text": "Obtain recommendations from State Level Project Committee for the Marketing Incentive claims.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 5: State Level Project Committee Recommendation"
+        },
+        {
+          "path": "en.applicationProcess[0].process[11]",
+          "text": "Step 6: State Government Consolidation",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 6: State Government Consolidation"
+        },
+        {
+          "path": "en.applicationProcess[0].process[12]",
+          "text": "State Government prepares consolidated statement, sanction order for state share release, and certificate as per Annexure - B10.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 6: State Government Consolidation"
+        },
+        {
+          "path": "en.applicationProcess[0].process[13]",
+          "text": "Step 7: Nodal Agency Identification",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 7: Nodal Agency Identification"
+        },
+        {
+          "path": "en.applicationProcess[0].process[14]",
+          "text": "State Government identifies suitable nodal agency for fund aggregation and onward release to eligible agencies.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 7: Nodal Agency Identification"
+        },
+        {
+          "path": "en.applicationProcess[0].process[15]",
+          "text": "Step 8: Forward to Development Commissioner (Handlooms)",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 7: Nodal Agency Identification"
+        },
+        {
+          "path": "en.applicationProcess[0].process[16]",
+          "text": "State Government forwards verified claims to Office of Development Commissioner (Handlooms) with all required documentation.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 7: Nodal Agency Identification"
+        },
+        {
+          "path": "en.applicationProcess[0].process[17]",
+          "text": "Step 9: Central Government Processing",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 9: Central Government Processing"
+        },
+        {
+          "path": "en.applicationProcess[0].process[18]",
+          "text": "Office of Development Commissioner (Handlooms) processes claims and releases Central Government share to identified Nodal Agency.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 9: Central Government Processing"
+        },
+        {
+          "path": "en.applicationProcess[0].process[19]",
+          "text": "Step 10: Fund Distribution",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 10: Fund Distribution"
+        },
+        {
+          "path": "en.applicationProcess[0].process[20]",
+          "text": "Nodal Agency releases amount to eligible handloom agencies and their member weavers through Direct Benefit Transfer within 7 days of receipt.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 10: Fund Distribution"
+        },
+        {
+          "path": "en.applicationProcess[0].process[22].children[0]",
+          "text": "For National Level Handloom Organizations",
+          "heading": false,
+          "node_type": "text",
+          "context": "Step 10: Fund Distribution"
+        },
+        {
+          "path": "en.applicationProcess[0].process[23]",
+          "text": "Step 1: Direct Application Preparation",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 1: Direct Application Preparation"
+        },
+        {
+          "path": "en.applicationProcess[0].process[24]",
+          "text": "Prepare Marketing Incentive claim with all supporting documents and prescribed proforma (Annexure - B8).",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 1: Direct Application Preparation"
+        },
+        {
+          "path": "en.applicationProcess[0].process[25]",
+          "text": "Step 2: Submit to Development Commissioner (Handlooms)",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 2: Submit to Development Commissioner (Handlooms)"
+        },
+        {
+          "path": "en.applicationProcess[0].process[26]",
+          "text": "Submit claims directly to Office of Development Commissioner (Handlooms) with complete documentation.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 2: Submit to Development Commissioner (Handlooms)"
+        },
+        {
+          "path": "en.applicationProcess[0].process[27]",
+          "text": "Step 3: Central Government Processing",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 3: Central Government Processing"
+        },
+        {
+          "path": "en.applicationProcess[0].process[28]",
+          "text": "Office of Development Commissioner (Handlooms) processes and approves claims for National Level Organizations.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 3: Central Government Processing"
+        },
+        {
+          "path": "en.applicationProcess[0].process[29]",
+          "text": "Step 4: Direct Release",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 4: Direct Release"
+        },
+        {
+          "path": "en.applicationProcess[0].process[30]",
+          "text": "Marketing Incentive assistance released directly to National Level Handloom Organizations by Government of India.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 4: Direct Release"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[0]",
+          "text": "What specific types of handloom organizations are eligible to apply for marketing incentive assistance under this national development programme?\nYou can apply if you are a state level organization like Handloom Corporations, Apex Cooperative Societies, or National Level Handloom Organizations, or primary level entities such as Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations, and other eligible handloom entities.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[1]",
+          "text": "What is the calculation method and rate for determining the marketing incentive amount I can receive under this assistance scheme?\nThe marketing incentive is calculated at 10% of your average sales of handloom products over the last 3 years. This percentage forms the basis for determining your eligible incentive amount.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[2]",
+          "text": "What are the maximum financial caps for marketing incentive assistance based on different categories of handloom organizations under this programme?\nState level organizations can receive a maximum of ₹1,00,00,000/- as Central Government share, while primary level organizations are capped at ₹15,00,000/- as Central Government share.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[3]",
+          "text": "How is the financial assistance shared between Central Government and State Government for different categories of handloom organizations?\nFor general cases, there is 50:50 sharing between Government of India and State Government, while for National Level Handloom Organizations, the entire assistance is borne by Government of India without state contribution.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[4]",
+          "text": "What is the maximum duration for which I can receive marketing incentive assistance and how many times can I apply?\nMarketing Incentive will be provided for a maximum of 3 years during the overall scheme period of 5 years, allowing limited-time support for eligible organizations.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[5]",
+          "text": "What essential product marking requirement must I fulfill to be eligible for marketing incentive assistance under this handloom development programme?\nYou must use either the Handloom Mark or India Handloom Brand for your handloom products to demonstrate authenticity and compliance with national handloom standards.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[6]",
+          "text": "What type of sales transactions are specifically excluded from consideration when calculating my eligible marketing incentive under this scheme?\nSales between handloom agencies, sales to government departments, sales under barter system, and sales by primary societies to apex societies or corporations are excluded from incentive calculation.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[7]",
+          "text": "What documentation must I provide regarding my sales turnover to support my marketing incentive claim application?\nYou must provide average sales turnover details of handloom products for the last 3 years along with Goods and Services Tax compliant sales bills and invoices.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[8]",
+          "text": "How is the marketing incentive amount distributed between the handloom organization and individual member weavers under this assistance programme?\nThe 10% marketing incentive benefits are shared equally between the handloom organizations and their member weavers through Direct Benefit Transfer mechanism for equitable distribution.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[9]",
+          "text": "What is the mandatory timeline for fund release that nodal agencies must follow after receiving marketing incentive assistance from the government?\nThe Nodal Agency must release the marketing incentive amount to eligible handloom agencies and their member weavers within 7 days of receiving funds from the government.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[10]",
+          "text": "What specific compliance requirement regarding taxation must all my sales documentation meet to qualify for marketing incentive assistance?\nAll your sales bills, invoices, and yarn purchase bills must be Goods and Services Tax compliant to ensure your marketing incentive claim meets the scheme requirements.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[11]",
+          "text": "What restriction applies regarding receiving similar financial benefits from other government schemes while applying for this marketing incentive assistance?\nYou cannot receive similar incentive or rebate under any other Central Government scheme, and State Government will prefer claims from agencies who have not received such duplicate benefits.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[12]",
+          "text": "How should National Level Handloom Organizations approach the application process differently compared to state and primary level handloom organizations?\nNational Level Handloom Organizations can submit their marketing incentive claims directly to the Office of Development Commissioner (Handlooms) without requiring State Government recommendations or matching contributions.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[13]",
+          "text": "What evidence must I provide to demonstrate that my sales represent final transactions with actual consumers rather than intermediary handloom agencies?\nYou must provide final transaction proof of product sale to consumers, ensuring that your sales represent genuine end-consumer purchases rather than inter-agency transactions that are excluded from incentive eligibility.RetryClaude can make mistakes. Please double-check responses.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp"
+    }
+  ],
+  "links": [
+    {
+      "url": "https://handlooms.nic.in/assets/img/Final%20Revised%20%20Guidelines%20NHDP%2012.04.2023.pdf",
+      "title": "National Handloom Development Programme (NHDP)",
+      "path": ".scheme.schemeContent.references[0]"
+    }
+  ],
+  "flags": [
+    "Complex component/stage/subject semantics. Human rule modelling required."
+  ],
+  "schema_hints": [
+    "Person age / date of birth",
+    "Organisation turnover history",
+    "Project attributes",
+    "Jurisdiction",
+    "Transactions / eligible sales",
+    "Time period / history",
+    "Negative condition",
+    "Temporal condition",
+    "Component / category-specific branch"
+  ],
+  "original": null,
+  "raw": {
+    "slug": "mi-hma-nhdp",
+    "old_id": null,
+    "user_example": true,
+    "scheme": {
+      "_id": "6889e14c5674185b680dafac",
+      "en": {
+        "applicationProcess": [
+          {
+            "mode": "Offline",
+            "process": [
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "For State Level and Primary Level Organizations",
+                    "underline": true
+                  }
+                ],
+                "type": "block_quote"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 1:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Prepare Claim Documentation"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Compile sales bills/invoices, yarn purchase bills, and average sales turnover details for the last 3 years ensuring Goods and Services Tax compliance."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 2:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Complete Application Form"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Fill the prescribed proforma (Annexure - B8) with all required details including sales data and beneficiary information."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 3:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Submit to State Government"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Submit the completed Marketing Incentive claim to the concerned State Government with all supporting documents."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 4:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " State Government Verification"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "State Government will verify claims, ensure matching contribution availability, and complete prescribed certificates (Annexure - B9)."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 5:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " State Level Project Committee Recommendation"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Obtain recommendations from State Level Project Committee for the Marketing Incentive claims."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 6:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " State Government Consolidation"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "State Government prepares consolidated statement, sanction order for state share release, and certificate as per Annexure - B10."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 7:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Nodal Agency Identification"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "State Government identifies suitable nodal agency for fund aggregation and onward release to eligible agencies."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Step 8: Forward to Development Commissioner (Handlooms)"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "State Government forwards verified claims to Office of Development Commissioner (Handlooms) with all required documentation."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 9:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Central Government Processing"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Office of Development Commissioner (Handlooms) processes claims and releases Central Government share to identified Nodal Agency."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 10:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Fund Distribution"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Nodal Agency releases amount to eligible handloom agencies and their member weavers through Direct Benefit Transfer within 7 days of receipt."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "For National Level Handloom Organizations",
+                    "underline": true
+                  }
+                ],
+                "type": "block_quote"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 1:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Direct Application Preparation"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Prepare Marketing Incentive claim with all supporting documents and prescribed proforma (Annexure - B8)."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 2:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Submit to Development Commissioner (Handlooms)"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Submit claims directly to Office of Development Commissioner (Handlooms) with complete documentation."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 3:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Central Government Processing"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Office of Development Commissioner (Handlooms) processes and approves claims for National Level Organizations."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 4:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Direct Release"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Marketing Incentive assistance released directly to National Level Handloom Organizations by Government of India."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "process_md": "> **For State Level and Primary Level Organizations**\n\n**Step 1:** **Prepare Claim Documentation**\nCompile sales bills/invoices, yarn purchase bills, and average sales turnover details for the last 3 years ensuring Goods and Services Tax compliance.\n**Step 2:** **Complete Application Form**\nFill the prescribed proforma (Annexure - B8) with all required details including sales data and beneficiary information.\n**Step 3:** **Submit to State Government**\nSubmit the completed Marketing Incentive claim to the concerned State Government with all supporting documents.\n**Step 4:** **State Government Verification**\nState Government will verify claims, ensure matching contribution availability, and complete prescribed certificates (Annexure - B9).\n**Step 5:** **State Level Project Committee Recommendation**\nObtain recommendations from State Level Project Committee for the Marketing Incentive claims.\n**Step 6:** **State Government Consolidation**\nState Government prepares consolidated statement, sanction order for state share release, and certificate as per Annexure - B10.\n**Step 7:** **Nodal Agency Identification**\nState Government identifies suitable nodal agency for fund aggregation and onward release to eligible agencies.\nStep 8: Forward to Development Commissioner (Handlooms)\nState Government forwards verified claims to Office of Development Commissioner (Handlooms) with all required documentation.\n**Step 9:** **Central Government Processing**\nOffice of Development Commissioner (Handlooms) processes claims and releases Central Government share to identified Nodal Agency.\n**Step 10:** **Fund Distribution**\nNodal Agency releases amount to eligible handloom agencies and their member weavers through Direct Benefit Transfer within 7 days of receipt.\n<br>\n\n> **For National Level Handloom Organizations**\n\n**Step 1:** **Direct Application Preparation**\nPrepare Marketing Incentive claim with all supporting documents and prescribed proforma (Annexure - B8).\n**Step 2:** **Submit to Development Commissioner (Handlooms)**\nSubmit claims directly to Office of Development Commissioner (Handlooms) with complete documentation.\n**Step 3:** **Central Government Processing**\nOffice of Development Commissioner (Handlooms) processes and approves claims for National Level Organizations.\n**Step 4:** **Direct Release**\nMarketing Incentive assistance released directly to National Level Handloom Organizations by Government of India.\n<br>\n\n"
+          }
+        ],
+        "basicDetails": {
+          "dbtScheme": false,
+          "level": {
+            "label": "Central",
+            "value": "central"
+          },
+          "nodalDepartmentName": null,
+          "nodalMinistryName": {
+            "label": "Ministry Of Textiles",
+            "value": 504
+          },
+          "otherDepartmentNames": null,
+          "otherMinistryName": null,
+          "schemeCategory": [
+            {
+              "label": "Business & Entrepreneurship",
+              "value": "628ce733d6d1a3bde4685278"
+            }
+          ],
+          "schemeFor": "Individual",
+          "schemeName": "\"Marketing Incentive\" under the \"Handloom Marketing Assistance\" Component of the National Handloom Development Programme",
+          "schemeOpenDate": null,
+          "schemeShortTitle": "MI-HMA-NHDP",
+          "schemeSubCategory": [
+            {
+              "label": "Exhibitions/Trade fairs/Buyer-seller meet, market development",
+              "value": "Exhibitions/Trade fairs/Buyer-seller meet, market development"
+            },
+            {
+              "label": "Setting up / start-up / entrepreneurship",
+              "value": "Setting up / start-up / entrepreneurship"
+            }
+          ],
+          "schemeType": {
+            "label": "Centrally Sponsored Scheme",
+            "value": "centrally-sponsored-scheme"
+          },
+          "state": null,
+          "tags": [
+            "Marketing",
+            "Incentive",
+            "Handloom",
+            "Weaver",
+            "Textile"
+          ],
+          "targetBeneficiaries": [
+            {
+              "label": "Individual",
+              "value": "individual"
+            },
+            {
+              "label": "Self Help Groups (SHGS)",
+              "value": "self-help-groups"
+            },
+            {
+              "label": "Joint Liability Groups (JLGS)",
+              "value": "joint-liability-groups"
+            },
+            {
+              "label": "Business Entity",
+              "value": "business-entity"
+            },
+            {
+              "label": "Government Organisation",
+              "value": "government-organisation"
+            },
+            {
+              "label": "NGO",
+              "value": "ngo"
+            }
+          ]
+        },
+        "eligibilityCriteria": {
+          "eligibilityDescription": [
+            {
+              "children": [
+                {
+                  "text": "The applicant must be one of the following:"
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Handloom agencies including State level organizations such as Handloom Corporations, Apex Cooperative Societies and National Level Handloom Organizations, Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations and Other eligible Handloom entities."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must have made the final transaction of product sale to the consumer."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must use Handloom Mark or India Handloom Brand for their handloom products."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must have average sales turnover of handloom products for the last 3 years for incentive calculation."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "eligibilityDescription_md": "The applicant must be one of the following:\n\n- Handloom agencies including State level organizations such as Handloom Corporations, Apex Cooperative Societies and National Level Handloom Organizations, Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations and Other eligible Handloom entities.\n- The applicant must have made the final transaction of product sale to the consumer.\n- The applicant must use Handloom Mark or India Handloom Brand for their handloom products.\n- The applicant must have average sales turnover of handloom products for the last 3 years for incentive calculation.\n\n<br>\n\n"
+        },
+        "schemeContent": {
+          "benefitTypes": {
+            "id": 1,
+            "label": "Cash",
+            "value": "cash"
+          },
+          "benefits": [
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "Financial Assistance Structure",
+                  "underline": true
+                }
+              ],
+              "type": "block_quote"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Marketing Incentive Rate: 10% on average sales of handloom products of the last 3 years."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "State Level Organizations: Maximum ₹100.00 lakh (Central Government share)."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Primary Level Organizations: Maximum ₹15.00 lakh (Central Government share)."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "Category-wise Maximum Caps",
+                  "underline": true
+                }
+              ],
+              "type": "block_quote"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "State Level Organizations (Handloom Corporations, Apex Cooperative Societies, National Level Handloom Organizations): ₹1,00,00,000/- Central Government share."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations and Other Eligible Handloom Entities: ₹15,00,000/- Central Government share."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "Financial Assistance Sharing",
+                  "underline": true
+                }
+              ],
+              "type": "block_quote"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "General Cases: 50:50 sharing between Government of India and State Government."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "National Level Handloom Organizations/Societies: Entire assistance borne by Government of India."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Benefit Distribution: 10% benefits shared equally between Organizations and Member Weavers through Direct Benefit Transfer."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "Mode and Frequency of Disbursement",
+                  "underline": true
+                }
+              ],
+              "type": "block_quote"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Marketing Incentive will be given maximum for 3 years during the scheme period of 5 years."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Release through Direct Benefit Transfer mechanism."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Nodal Agency must release amount to eligible handloom agencies and their member weavers within 7 days of receipt."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "Conditions for Availment/Continuation",
+                  "underline": true
+                }
+              ],
+              "type": "block_quote"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Amount to be used towards activities that attract consumers to gear up overall sales of handloom goods."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Enable handloom agencies to adjust prices towards increasing cost competitiveness, improve designs, and invest in infrastructure."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "State Government recommendation subject to matching contribution by concerned State Government."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Claims must be Goods and Services Tax compliant."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "No similar incentive/rebate received under any other Central Government scheme."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "benefits_md": "> **Financial Assistance Structure**\n\n\n- Marketing Incentive Rate: 10% on average sales of handloom products of the last 3 years.\n- State Level Organizations: Maximum ₹100.00 lakh (Central Government share).\n- Primary Level Organizations: Maximum ₹15.00 lakh (Central Government share).\n\n> **Category-wise Maximum Caps**\n\n\n- State Level Organizations (Handloom Corporations, Apex Cooperative Societies, National Level Handloom Organizations): ₹1,00,00,000/- Central Government share.\n- Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations and Other Eligible Handloom Entities: ₹15,00,000/- Central Government share.\n\n> **Financial Assistance Sharing**\n\n\n- General Cases: 50:50 sharing between Government of India and State Government.\n- National Level Handloom Organizations/Societies: Entire assistance borne by Government of India.\n- Benefit Distribution: 10% benefits shared equally between Organizations and Member Weavers through Direct Benefit Transfer.\n\n<br>\n\n> **Mode and Frequency of Disbursement**\n\n\n- Marketing Incentive will be given maximum for 3 years during the scheme period of 5 years.\n- Release through Direct Benefit Transfer mechanism.\n- Nodal Agency must release amount to eligible handloom agencies and their member weavers within 7 days of receipt.\n\n> **Conditions for Availment/Continuation**\n\n\n- Amount to be used towards activities that attract consumers to gear up overall sales of handloom goods.\n- Enable handloom agencies to adjust prices towards increasing cost competitiveness, improve designs, and invest in infrastructure.\n- State Government recommendation subject to matching contribution by concerned State Government.\n- Claims must be Goods and Services Tax compliant.\n- No similar incentive/rebate received under any other Central Government scheme.\n\n<br>\n\n",
+          "briefDescription": "The scheme aims to develop and promote marketing channels for handloom products to bring greater visibility to the sector and ensure commensurate remuneration to weavers. It provides Marketing Incentive to eligible handloom agencies for creating conducive conditions for marketing handloom products.",
+          "detailedDescription": [
+            {
+              "children": [
+                {
+                  "text": "The scheme \"Marketing Incentive\" under the \"Handloom Marketing Assistance\" Component of the National Handloom Development Programme by the Ministry of Textiles, Government of India, aims to develop and promote marketing channels in domestic and export markets in a holistic and integrated manner to bring greater visibility to the sector and ensure commensurate remuneration to weavers. The scheme provides Marketing Incentive calculated at 10% on average sales of handloom products of the last 3 years with maximum caps of ₹1,00,00,000/- for state level organizations and ₹15,00,000/- lakh for primary societies, equally shared between State Government and Central Government except for National Level Handloom Organizations where entire assistance is borne by Government of India. The scheme is implemented by the Office of Development Commissioner (Handlooms) under Ministry of Textiles with applications accepted through prescribed proformas and State Government recommendations."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "detailedDescription_md": "The scheme &quot;Marketing Incentive&quot; under the &quot;Handloom Marketing Assistance&quot; Component of the National Handloom Development Programme by the Ministry of Textiles, Government of India, aims to develop and promote marketing channels in domestic and export markets in a holistic and integrated manner to bring greater visibility to the sector and ensure commensurate remuneration to weavers. The scheme provides Marketing Incentive calculated at 10% on average sales of handloom products of the last 3 years with maximum caps of ₹1,00,00,000/- for state level organizations and ₹15,00,000/- lakh for primary societies, equally shared between State Government and Central Government except for National Level Handloom Organizations where entire assistance is borne by Government of India. The scheme is implemented by the Office of Development Commissioner (Handlooms) under Ministry of Textiles with applications accepted through prescribed proformas and State Government recommendations.\n<br>\n\n",
+          "exclusions": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Sales by one handloom agency to another handloom agency are not eligible."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Sales of handloom products by Primary Handloom Weavers Cooperative Societies or any other Handloom Agency to Apex Societies, Federations, Producer Companies, Corporations are excluded."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Sales by handloom agencies to Government departments/agencies are excluded."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Sales made under barter system by handloom agencies are excluded."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Agencies that have received similar kind of incentive/rebate under any other Central Government scheme are not preferred."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "exclusions_md": "\n- Sales by one handloom agency to another handloom agency are not eligible.\n- Sales of handloom products by Primary Handloom Weavers Cooperative Societies or any other Handloom Agency to Apex Societies, Federations, Producer Companies, Corporations are excluded.\n- Sales by handloom agencies to Government departments/agencies are excluded.\n- Sales made under barter system by handloom agencies are excluded.\n- Agencies that have received similar kind of incentive/rebate under any other Central Government scheme are not preferred.\n\n<br>\n\n",
+          "references": [
+            {
+              "title": "National Handloom Development Programme (NHDP)",
+              "url": "https://handlooms.nic.in/assets/img/Final%20Revised%20%20Guidelines%20NHDP%2012.04.2023.pdf"
+            }
+          ],
+          "schemeImageUrl": ""
+        },
+        "schemeDefinitions": []
+      },
+      "slug": "mi-hma-nhdp"
+    },
+    "documents": {
+      "_id": "6889e1c4618155c39a740e6d",
+      "en": {
+        "documentsRequired_md": "**At Application Stage**\n\n- Sales Bills/invoices for Handloom Products (Goods and Services Tax Compliant),\n- Yarn Purchase Bills (Goods and Services Tax Compliant).\n- Average Sales Turnover Details of Handloom Products for the Last 3 Years.\n- Handloom Mark or India Handloom Brand Usage Documentation.\n- Final Transaction Proof of Product Sale to Consumer.\n\n \n**For State Government Processing**\n\n- Certificate as Per Prescribed Proforma ([Annexure - B9](https://handlooms.nic.in/assets/img/Final%20Revised%20%20Guidelines%20NHDP%2012.04.2023.pdf)) for Each Individual Claim.- Consolidated Statement of All Claims.\n- Recommendations of State Level Project Committee.\n- Sanction Order for Release of State Share.\n- Documentary Proof of Amount Transferred to Beneficiaries.\n- Certificate as Per Prescribed Proforma ([Annexure - B10](https://handlooms.nic.in/assets/img/Final%20Revised%20%20Guidelines%20NHDP%2012.04.2023.pdf)).- Identification of Suitable Nodal Agency for Fund Aggregation and Release.\n\n \n**At Verification Stage**\n\n- Utilization Certificate From Nodal Agency.\n- Certificate Of Direct Benefit Transfer Release Within 7 Days.\n- Details Of Beneficiaries (State Share And Government Of India Share) Uploaded In Public Domain.\n\n**NOTE:** All sales bills/invoices and yarn purchase bills must be Goods and Services Tax compliant for claiming Marketing Incentive.\n<br>\n\n",
+        "documents_required": [
+          {
+            "children": [
+              {
+                "bold": true,
+                "text": "At Application Stage",
+                "underline": true
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Sales Bills/invoices for Handloom Products (Goods and Services Tax Compliant),"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Yarn Purchase Bills (Goods and Services Tax Compliant)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Average Sales Turnover Details of Handloom Products for the Last 3 Years."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Handloom Mark or India Handloom Brand Usage Documentation."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Final Transaction Proof of Product Sale to Consumer."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ul_list"
+          },
+          {
+            "children": [
+              {
+                "text": " "
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "bold": true,
+                "text": "For State Government Processing",
+                "underline": true
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Certificate as Per Prescribed Proforma ("
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Annexure - B9"
+                      }
+                    ],
+                    "link": "https://handlooms.nic.in/assets/img/Final%20Revised%20%20Guidelines%20NHDP%2012.04.2023.pdf",
+                    "type": "link"
+                  },
+                  {
+                    "text": ") for Each Individual Claim."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Consolidated Statement of All Claims."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Recommendations of State Level Project Committee."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Sanction Order for Release of State Share."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Documentary Proof of Amount Transferred to Beneficiaries."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Certificate as Per Prescribed Proforma ("
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Annexure - B10"
+                      }
+                    ],
+                    "link": "https://handlooms.nic.in/assets/img/Final%20Revised%20%20Guidelines%20NHDP%2012.04.2023.pdf",
+                    "type": "link"
+                  },
+                  {
+                    "text": ")."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Identification of Suitable Nodal Agency for Fund Aggregation and Release."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ul_list"
+          },
+          {
+            "children": [
+              {
+                "text": " "
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "bold": true,
+                "text": "At Verification Stage",
+                "underline": true
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Utilization Certificate From Nodal Agency."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Certificate Of Direct Benefit Transfer Release Within 7 Days."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Details Of Beneficiaries (State Share And Government Of India Share) Uploaded In Public Domain."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ul_list"
+          },
+          {
+            "children": [
+              {
+                "bold": true,
+                "text": "NOTE:",
+                "underline": true
+              },
+              {
+                "text": " All sales bills/invoices and yarn purchase bills must be Goods and Services Tax compliant for claiming Marketing Incentive."
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "text": ""
+              }
+            ],
+            "type": "paragraph"
+          }
+        ]
+      },
+      "schemeId": "6889e14c5674185b680dafac"
+    },
+    "faqs": {
+      "_id": "6889e36c5674185b680dbc01",
+      "en": {
+        "faqs": [
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "You can apply if you are a state level organization like Handloom Corporations, Apex Cooperative Societies, or National Level Handloom Organizations, or primary level entities such as Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations, and other eligible handloom entities."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "You can apply if you are a state level organization like Handloom Corporations, Apex Cooperative Societies, or National Level Handloom Organizations, or primary level entities such as Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations, and other eligible handloom entities.\n<br>\n\n",
+            "question": "What specific types of handloom organizations are eligible to apply for marketing incentive assistance under this national development programme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The marketing incentive is calculated at 10% of your average sales of handloom products over the last 3 years. This percentage forms the basis for determining your eligible incentive amount."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The marketing incentive is calculated at 10% of your average sales of handloom products over the last 3 years. This percentage forms the basis for determining your eligible incentive amount.\n<br>\n\n",
+            "question": "What is the calculation method and rate for determining the marketing incentive amount I can receive under this assistance scheme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "State level organizations can receive a maximum of ₹1,00,00,000/- as Central Government share, while primary level organizations are capped at ₹15,00,000/- as Central Government share."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "State level organizations can receive a maximum of ₹1,00,00,000/- as Central Government share, while primary level organizations are capped at ₹15,00,000/- as Central Government share.\n<br>\n\n",
+            "question": "What are the maximum financial caps for marketing incentive assistance based on different categories of handloom organizations under this programme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "For general cases, there is 50:50 sharing between Government of India and State Government, while for National Level Handloom Organizations, the entire assistance is borne by Government of India without state contribution."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "For general cases, there is 50:50 sharing between Government of India and State Government, while for National Level Handloom Organizations, the entire assistance is borne by Government of India without state contribution.\n<br>\n\n",
+            "question": "How is the financial assistance shared between Central Government and State Government for different categories of handloom organizations?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Marketing Incentive will be provided for a maximum of 3 years during the overall scheme period of 5 years, allowing limited-time support for eligible organizations."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Marketing Incentive will be provided for a maximum of 3 years during the overall scheme period of 5 years, allowing limited-time support for eligible organizations.\n<br>\n\n",
+            "question": "What is the maximum duration for which I can receive marketing incentive assistance and how many times can I apply?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "You must use either the Handloom Mark or India Handloom Brand for your handloom products to demonstrate authenticity and compliance with national handloom standards."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "You must use either the Handloom Mark or India Handloom Brand for your handloom products to demonstrate authenticity and compliance with national handloom standards.\n<br>\n\n",
+            "question": "What essential product marking requirement must I fulfill to be eligible for marketing incentive assistance under this handloom development programme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Sales between handloom agencies, sales to government departments, sales under barter system, and sales by primary societies to apex societies or corporations are excluded from incentive calculation."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Sales between handloom agencies, sales to government departments, sales under barter system, and sales by primary societies to apex societies or corporations are excluded from incentive calculation.\n<br>\n\n",
+            "question": "What type of sales transactions are specifically excluded from consideration when calculating my eligible marketing incentive under this scheme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "You must provide average sales turnover details of handloom products for the last 3 years along with Goods and Services Tax compliant sales bills and invoices."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "You must provide average sales turnover details of handloom products for the last 3 years along with Goods and Services Tax compliant sales bills and invoices.\n<br>\n\n",
+            "question": "What documentation must I provide regarding my sales turnover to support my marketing incentive claim application?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The 10% marketing incentive benefits are shared equally between the handloom organizations and their member weavers through Direct Benefit Transfer mechanism for equitable distribution."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The 10% marketing incentive benefits are shared equally between the handloom organizations and their member weavers through Direct Benefit Transfer mechanism for equitable distribution.\n<br>\n\n",
+            "question": "How is the marketing incentive amount distributed between the handloom organization and individual member weavers under this assistance programme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The Nodal Agency must release the marketing incentive amount to eligible handloom agencies and their member weavers within 7 days of receiving funds from the government."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The Nodal Agency must release the marketing incentive amount to eligible handloom agencies and their member weavers within 7 days of receiving funds from the government.\n<br>\n\n",
+            "question": "What is the mandatory timeline for fund release that nodal agencies must follow after receiving marketing incentive assistance from the government?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "All your sales bills, invoices, and yarn purchase bills must be Goods and Services Tax compliant to ensure your marketing incentive claim meets the scheme requirements."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "All your sales bills, invoices, and yarn purchase bills must be Goods and Services Tax compliant to ensure your marketing incentive claim meets the scheme requirements.\n<br>\n\n",
+            "question": "What specific compliance requirement regarding taxation must all my sales documentation meet to qualify for marketing incentive assistance?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "You cannot receive similar incentive or rebate under any other Central Government scheme, and State Government will prefer claims from agencies who have not received such duplicate benefits."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "You cannot receive similar incentive or rebate under any other Central Government scheme, and State Government will prefer claims from agencies who have not received such duplicate benefits.\n<br>\n\n",
+            "question": "What restriction applies regarding receiving similar financial benefits from other government schemes while applying for this marketing incentive assistance?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "National Level Handloom Organizations can submit their marketing incentive claims directly to the Office of Development Commissioner (Handlooms) without requiring State Government recommendations or matching contributions."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "National Level Handloom Organizations can submit their marketing incentive claims directly to the Office of Development Commissioner (Handlooms) without requiring State Government recommendations or matching contributions.\n<br>\n\n",
+            "question": "How should National Level Handloom Organizations approach the application process differently compared to state and primary level handloom organizations?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "You must provide final transaction proof of product sale to consumers, ensuring that your sales represent genuine end-consumer purchases rather than inter-agency transactions that are excluded from incentive eligibility.RetryClaude can make mistakes. Please double-check responses."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "You must provide final transaction proof of product sale to consumers, ensuring that your sales represent genuine end-consumer purchases rather than inter-agency transactions that are excluded from incentive eligibility.RetryClaude can make mistakes. Please double-check responses.\n<br>\n\n",
+            "question": "What evidence must I provide to demonstrate that my sales represent final transactions with actual consumers rather than intermediary handloom agencies?"
+          }
+        ]
+      },
+      "schemeId": "6889e14c5674185b680dafac"
+    }
+  }
+}

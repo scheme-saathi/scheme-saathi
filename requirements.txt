@@ -1,0 +1,2 @@
+# Install this project with its RAG and development dependencies from pyproject.toml.
+-e .[rag,dev]

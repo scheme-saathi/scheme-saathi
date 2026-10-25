@@ -1,0 +1,344 @@
+{
+  "scheme_id": "C10",
+  "slug": "kvyoj",
+  "name": "Khadi Gramodyog Vikas Yojana: Khadi Vikas Yojana",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+  "collected_on": "2026-10-24",
+  "review_status": "draft",
+  "availability_status": "open",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Khadi Vikas Yojana\" is an umbrella scheme under \"Khadi Gramodyog Vikas Yojana\" and has been implemented by the Khadi and Village Industries Commission (KVIC), Ministry of Micro, Small and Medium Enterprises (MSME), Governemnt of India. It aims to support Khadi institutions and artisans by providing financial assistance, infrastructure development, interest subsidy, and marketing support. The scheme offers subsidies on Khadi production, reduces the interest burden on bank loans, facilitates the construction of worksheds for artisans, strengthens existing weak Khadi institutions, and enhances marketing infrastructure, including the renovation and modernization of sales outlets. Additionally, the scheme supports quality assurance initiatives, exhibitions, science and technology interventions, and the establishment of Centres of Excellence for Khadi",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.detailedDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Assistance provided under different components of Scheme:",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": "Assistance provided under different components of Scheme:"
+        },
+        {
+          "text": "Modified Market Development Assistance (MMDA):",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": "Modified Market Development Assistance (MMDA):"
+        },
+        {
+          "text": "Subsidy @ 35% on Prime Cost for Cotton/Muslin, Wool and Polyvastra and @ 20% on Prime Cost for Silk Khadi",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[2].children[0].children[0]",
+          "channel": null,
+          "heading": "Modified Market Development Assistance (MMDA):"
+        },
+        {
+          "text": "Interest Subsidy Eligibility Certificate Scheme (ISEC):",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[2].children[1]",
+          "channel": null,
+          "heading": "Interest Subsidy Eligibility Certificate Scheme (ISEC):"
+        },
+        {
+          "text": "Khadi Institution is required to pay only 4% interest rate. The difference between the actual Interest charged by the Bank and 4% is borne by the KVIC as “Interest Subsidy”.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[2].children[2].children[0]",
+          "channel": null,
+          "heading": "Interest Subsidy Eligibility Certificate Scheme (ISEC):"
+        },
+        {
+          "text": "Work-shed Scheme for Khadi Artisans:",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": "Work-shed Scheme for Khadi Artisans:"
+        },
+        {
+          "text": "Individual workshed (20 Sq. mtrs): ₹1,20,000/- or 75% of the cost of workshed including toilet (90% for NER), whichever is less.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[4].children[0].children[0]",
+          "channel": null,
+          "heading": "Work-shed Scheme for Khadi Artisans:"
+        },
+        {
+          "text": "Group workshed (10 Sq. mtrs per artisans): ₹80,000 or 75% of the cost of the workshed including toilet (90% for NER), whichever is less.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[4].children[0].children[1]",
+          "channel": null,
+          "heading": "Work-shed Scheme for Khadi Artisans:"
+        },
+        {
+          "text": "Strengthening Infrastructure of Existing Weak Khadi Institutions and Assistance for Marketing Infrastructure:",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": "Strengthening Infrastructure of Existing Weak Khadi Institutions and Assistance for Marketing Infrastructure:"
+        },
+        {
+          "text": "Financial assistance for revival of khadi institution with ceiling limit of ₹15.00 lakh(Capital Expenditure +working fund).",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[6].children[0].children[0]",
+          "channel": null,
+          "heading": "Strengthening Infrastructure of Existing Weak Khadi Institutions and Assistance for Marketing Infrastructure:"
+        },
+        {
+          "text": "Financial assistance under Marketing Infrastructure for renovation of departmental sales outlets of KVIC /KVIB and institutional sales with the ceiling limit of ₹25.00 lakh.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[6].children[0].children[1]",
+          "channel": null,
+          "heading": "Strengthening Infrastructure of Existing Weak Khadi Institutions and Assistance for Marketing Infrastructure:"
+        },
+        {
+          "text": "Other Components:",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[6].children[1]",
+          "channel": null,
+          "heading": "Other Components:"
+        },
+        {
+          "text": "Centre of Excellence for Khadi",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[6].children[2].children[0]",
+          "channel": null,
+          "heading": "Other Components:"
+        },
+        {
+          "text": "Khadi Quality Assurance",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[6].children[2].children[1]",
+          "channel": null,
+          "heading": "Other Components:"
+        },
+        {
+          "text": "Marketing(Exhibition)",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[6].children[2].children[2]",
+          "channel": null,
+          "heading": "Other Components:"
+        },
+        {
+          "text": "Science & Technology (S&T)",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.schemeContent.benefits[6].children[2].children[3]",
+          "channel": null,
+          "heading": "Other Components:"
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must be a Khadi artisan or Khadi Institution registered with KVIC or KVIB.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be between 18 to 55 years of age.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must have a valid Aadhaar card or government-issued ID.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "One person per family is eligible under the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should not have availed benefits from any other government scheme for the same purpose.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Preference is given to SC/ST, women, unemployed youth, and BPL category applicants.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The beneficiaries may be identified by KVIC, KVIBs, NGOs, DICs, FPOs, or Khadi Institutions.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: Visit official website to apply under the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 2: On the KVIC online portal and click on “Online Registration of Khadi Institutions.”",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.applicationProcess[0].process[0].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Fill in all required details of the institution, including name, address, type of registration, authorised person, number of artisans, and infrastructure information, then save the form.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.applicationProcess[0].process[0].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 4: After submission, receive a Username, Password, and Unique ID on your registered email and mobile, and download the acknowledgement for reference.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.applicationProcess[0].process[0].children[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 5: Login using your credentials and upload all required documents such as registration certificate, list of artisans, workshed details, and bylaws.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.applicationProcess[0].process[0].children[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 6: The KVIC office verifies the application and documents, and once approved, the Certificate of Registration (CoR) is issued online for download.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "en.applicationProcess[0].process[0].children[5]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Aadhaar Card or other government-issued identity proof",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Age proof document",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Khadi artisan card or Khadi Institution registration certificate",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Bank account details",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Caste certificate (if applicable)",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "BPL certificate (if applicable)",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Project proposal or work-shed details (if required)",
+          "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "title": "official website",
+      "type": "other",
+      "url": "https://www.kviconline.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+      "format": "webpage",
+      "verification_status": "pending"
+    },
+    {
+      "title": "KVIC online portal",
+      "type": "other",
+      "url": "https://kviconline.gov.in/mdaclaims/certKhadi/index.jsp",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+      "format": "webpage",
+      "verification_status": "pending"
+    },
+    {
+      "title": "Online Registration of Khadi Institutions",
+      "type": "other",
+      "url": "https://kviconline.gov.in/mdaclaims/certKhadi/khadiCertificateRenew.jsp?app=1",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+      "format": "webpage",
+      "verification_status": "pending"
+    },
+    {
+      "title": "Login",
+      "type": "other",
+      "url": "https://kviconline.gov.in/mdaclaims/certKhadi/certApplicantLogin.jsp",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+      "format": "webpage",
+      "verification_status": "pending"
+    },
+    {
+      "title": "Guidelines Page No. 28",
+      "type": "guidelines",
+      "url": "https://www.dcmsme.gov.in/ebook/MSMESchemebooklet2025-26.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+      "format": "pdf",
+      "verification_status": "pending"
+    }
+  ]
+}

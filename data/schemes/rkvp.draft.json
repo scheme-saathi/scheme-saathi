@@ -1,0 +1,393 @@
+{
+  "scheme_id": "C07",
+  "slug": "rkvp",
+  "name": "Rashtriya Krishi Vigyan Puraskar",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+  "collected_on": "2026-10-24",
+  "review_status": "approved",
+  "availability_status": "open",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The Rashtriya Krishi Vigyan Puraskar under Indian Council of Agricultural Research (ICAR),Ministry of Agriculture & Farmers Welfare, Government of India, recognizes and honors scientists and technical personnel who have made outstanding contributions in agriculture, agricultural education, extension, and allied sciences. This includes the development of new processes, products, tools, technologies, and innovative practices that enhance agricultural productivity and sustainability in India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Fields Covered:",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[1]",
+          "channel": null,
+          "heading": "Fields Covered:"
+        },
+        {
+          "text": "The awards are categorized under three main streams, each covering the following four fields:",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[2]",
+          "channel": null,
+          "heading": "The awards are categorized under three main streams, each covering the following four fields:"
+        },
+        {
+          "text": "Crops & Horticultural Sciences",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[3].children[0]",
+          "channel": null,
+          "heading": "The awards are categorized under three main streams, each covering the following four fields:"
+        },
+        {
+          "text": "Natural Resources Management & Agricultural Engineering",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[3].children[1]",
+          "channel": null,
+          "heading": "The awards are categorized under three main streams, each covering the following four fields:"
+        },
+        {
+          "text": "Animal & Fisheries Sciences",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[3].children[2]",
+          "channel": null,
+          "heading": "The awards are categorized under three main streams, each covering the following four fields:"
+        },
+        {
+          "text": "Social Sciences",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[3].children[3]",
+          "channel": null,
+          "heading": "The awards are categorized under three main streams, each covering the following four fields:"
+        },
+        {
+          "text": "Award Categories & Number of Awardees:",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[4]",
+          "channel": null,
+          "heading": "Award Categories & Number of Awardees:"
+        },
+        {
+          "text": "Innovation & Technology in Agriculture & Allied Sciences – 4 awardees",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[5].children[0]",
+          "channel": null,
+          "heading": "Award Categories & Number of Awardees:"
+        },
+        {
+          "text": "Research in Agriculture & Allied Sciences – 4 awardees",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[5].children[1]",
+          "channel": null,
+          "heading": "Award Categories & Number of Awardees:"
+        },
+        {
+          "text": "Outstanding Interdisciplinary Team Research in Agriculture, Agricultural Education, Extension & Allied Sciences – 1 awardee",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[5].children[2]",
+          "channel": null,
+          "heading": "Award Categories & Number of Awardees:"
+        },
+        {
+          "text": "Outstanding Woman Scientist in Agriculture, Agricultural Education, Extension & Allied Sciences – 1 awardee",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[5].children[3]",
+          "channel": null,
+          "heading": "Award Categories & Number of Awardees:"
+        },
+        {
+          "text": "Outstanding Young Scientist in Agriculture & Allied Sciences – 4 awardees",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.detailedDescription[5].children[4]",
+          "channel": null,
+          "heading": "Award Categories & Number of Awardees:"
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "i. In the Award Ceremony, the Awardees shall be presented a Sanad (certificate) signed by the Hon'ble Union Minister (Agriculture & Farmers Welfare) & President, ICAR. A commemorative brochure, containing the citation and photograph of the awardees shall also be released on the day of the ceremony.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "ii. The decoration to such persons who are not able to attend the award ceremony due to personal reasons (including indisposition, preoccupation, etc.) shall be deemed to have been conferred. No other person (including the spouse/next of kin) should be allowed to receive the award on behalf of the absentee awardee except in posthumous cases.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "General Conditions:",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": "General Conditions:"
+        },
+        {
+          "text": "The applicant should be an Indian scientist working in agriculture or allied fields in ICAR institutes, public agricultural institutions, or Krishi Vigyan Kendras, and must have made significant contributions in India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "channel": null,
+          "heading": "General Conditions:"
+        },
+        {
+          "text": "The applicant should have work (research, innovation, or extension) that shows clear and proven impact on society, economy, or environment, supported by the Head of the Institution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[1]",
+          "channel": null,
+          "heading": "General Conditions:"
+        },
+        {
+          "text": "The applicant can apply at any stage of their career, as no minimum service period is required.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[2]",
+          "channel": null,
+          "heading": "General Conditions:"
+        },
+        {
+          "text": "The applicant should submit only one application for a particular contribution in a year, and the application will be valid only for that year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[3]",
+          "channel": null,
+          "heading": "General Conditions:"
+        },
+        {
+          "text": "The applicant should have a clean service record, with no pending enquiry or major punishment in the last five years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[4]",
+          "channel": null,
+          "heading": "General Conditions:"
+        },
+        {
+          "text": "The applicant should apply under only one category and cannot be considered for multiple categories.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[5]",
+          "channel": null,
+          "heading": "General Conditions:"
+        },
+        {
+          "text": "Category-wise Conditions:",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2]",
+          "channel": null,
+          "heading": "Category-wise Conditions:"
+        },
+        {
+          "text": "The applicant can apply individually or as part of a team (maximum five members) for innovation and research awards, and must be below 60 years of age.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[0]",
+          "channel": null,
+          "heading": "Category-wise Conditions:"
+        },
+        {
+          "text": "The applicant applying for interdisciplinary research should be part of a team of at least three members from different disciplines, and the team leader must be below 60 years of age.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[1]",
+          "channel": null,
+          "heading": "Category-wise Conditions:"
+        },
+        {
+          "text": "The applicant applying for the women scientist category should be a woman working in agriculture or allied fields, and must be below 60 years of age.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[2]",
+          "channel": null,
+          "heading": "Category-wise Conditions:"
+        },
+        {
+          "text": "The applicant applying for the young scientist category should have a doctoral degree, hold a regular position, and must be below 45 years of age.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[3]",
+          "channel": null,
+          "heading": "Category-wise Conditions:"
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Registration:",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Step 1: Visit the official website and click on the Registration button.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Step 2: Select your category: Individual or Organization.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Step 3: Fill in the required details:",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Individual: Name, Date of Birth, Nominator Type, Mobile, Email, Aadhaar Number.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Organization: Type, Authorized Person Name, Date of Birth, Organization Description, Designation, Mobile, Email, Aadhaar Number.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Step 4: Click Submit to complete registration.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[6]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Apply:",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[7]",
+          "channel": "Online",
+          "heading": "Apply:"
+        },
+        {
+          "text": "Step 1: Log in to the portal using your registered credentials.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Online",
+          "heading": "Apply:"
+        },
+        {
+          "text": "Step 2: Select the scheme from the list of awards and click \"Nominate / Apply Now\".",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[9]",
+          "channel": "Online",
+          "heading": "Apply:"
+        },
+        {
+          "text": "Step 3: Fill in all mandatory fields in the online application form.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Online",
+          "heading": "Apply:"
+        },
+        {
+          "text": "Step 4: Click Submit to complete your application.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "en.applicationProcess[0].process[11]",
+          "channel": "Online",
+          "heading": "Apply:"
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Filled application",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details of your work",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof your work helped people/environment",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Documents (papers, patents, etc.)",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Clean record certificate",
+          "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "title": "fficial website",
+      "type": "other",
+      "url": "https://awards.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+      "format": "webpage",
+      "verification_status": "pending"
+    },
+    {
+      "title": "Registration button.",
+      "type": "other",
+      "url": "https://awards.gov.in/Registration/SignUp",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+      "format": "webpage",
+      "verification_status": "pending"
+    },
+    {
+      "title": "Log in",
+      "type": "other",
+      "url": "https://awards.gov.in/Login",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+      "format": "webpage",
+      "verification_status": "pending"
+    },
+    {
+      "title": "Nominate / Apply Now\".",
+      "type": "other",
+      "url": "https://awards.gov.in/Home/AwardLibrary",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+      "format": "webpage",
+      "verification_status": "pending"
+    },
+    {
+      "title": "Website",
+      "type": "other",
+      "url": "https://icar.org.in/hi/node/22890",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+      "format": "webpage",
+      "verification_status": "pending"
+    }
+  ]
+}

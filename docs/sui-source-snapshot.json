@@ -1,0 +1,1216 @@
+{
+  "id": "C11",
+  "slug": "sui",
+  "name": "Stand-Up India",
+  "level": "Central",
+  "source_level": "Central",
+  "area": "India",
+  "categories": "Business & Entrepreneurship; Banking,Financial Services and Insurance; Social welfare & Empowerment",
+  "applicant_type": "Individual",
+  "beneficiaries": "Individual; Business Entity",
+  "ministry": "Ministry Of Finance",
+  "department": "Department of Financial Service",
+  "tags": "Loan; Entrepreneur; Finance; Business",
+  "brief": "A scheme by Ministry of Finance for financing SC/ST and  Women Entrepreneurs by facilitating bank loans for setting up a greenfield project  Enterprise in manufacturing, services, trading sector and activities allied to agriculture.",
+  "url": "https://www.myscheme.gov.in/schemes/sui",
+  "source_id": "628727c27d5de378dc7acfe9",
+  "snapshot_date": "2026-10-24",
+  "hash": "486473c043b0eee2610f3d77244b54154b2d3f34efdf7fbb579ac56d91f739c1",
+  "open_date": "2016-04-05",
+  "close_date": "2025-03-31",
+  "sections": [
+    {
+      "section": "Details",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.detailedDescription[0].children[0]",
+          "text": "A scheme by Ministry of Finance for financing SC/ST and/or Women Entrepreneurs by facilitating bank loans for setting up a greenfield project  enterprise in manufacturing, services, trading sector and activities allied to agriculture. The objective of this scheme is to facilitate bank loans between Rs. 10 lakh and Rs. 1 Crore to at least one Scheduled Caste (SC) or Scheduled Tribe (ST) borrower and at least one woman borrower per bank branch for setting up a greenfield enterprise. In case of non-individual enterprises, at least 51% of the shareholding and controlling stake should be held by either an SC/ST or Woman entrepreneur.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "Benefits",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.benefits[0].children[0]",
+          "text": "Facilitation of composite loan (inclusive of term loan and working capital) between ₹10 Lakhs and ₹100 Lakhs. Rupay debit card to be issued for convenience of the borrower.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[0].children[1]",
+          "text": "The web portal by SIDBI provides hand-holding support through a network of agencies engaged in training, skill development, mentoring, project report preparation, application filling, work shed / utility support services, subsidy schemes etc.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "Eligibility",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[0].children[0]",
+          "text": "Finance is  provided for Greenfield Enterprises.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[1].children[0]",
+          "text": "If the applicant is a male, he must be from SC / ST category.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[2].children[0]",
+          "text": "The age of the applicant must be at least 18 years.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[3].children[0]",
+          "text": "The applicant must not be in default to any bank/financial institution.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "Exclusions",
+      "channel": "",
+      "blocks": [],
+      "state": "Empty or absent in source",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "Applicant documents",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "documents.en.documents_required[0].children[0]",
+          "text": "Proof of Identity: Voter’s ID Card / Passport / Driving License / PAN Card / Signature identification from present bankers of proprietor, partner of director ( if a company)",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[1]",
+          "text": "Proof of Residence: Recent telephone bills, electricity bill, property tax receipt /Passport / voter’s ID Card of Proprietor, partner of Director (if a company)",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[2]",
+          "text": "Proof of Business Address",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[3]",
+          "text": "Proof that the applicant is not a defaulter in any Bank / Financial Institution",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[4]",
+          "text": "Memorandum and articles of association of the Company / Partnership Deed of partners etc.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[5]",
+          "text": "Assets and liabilities statement of promoters and guarantors along with latest income tax returns.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[6]",
+          "text": "Rent Agreement (if business premises on rent) and clearance from pollution control board if applicable.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[7]",
+          "text": "SSI / MSME registration (if applicable)",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[8]",
+          "text": "Projected balance sheets for the next two years in case of working capital limits and for the period of the loan in case of term loan.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[9]",
+          "text": "Photocopies of lease deeds/ title deeds of all the properties being offered as primary and collateral securities.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[10]",
+          "text": "Documents to establish whether the applicant belongs to SC/ST Category, wherever applicable.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[11]",
+          "text": "Certificate of incorporation from ROC to establish whether majority stake holding in the company is in the hands of a person who belongs to SC/ST/Woman category.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1]",
+          "text": "For cases with exposure above ₹ 25 Lakhs:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "For cases with exposure above ₹ 25 Lakhs:"
+        },
+        {
+          "path": "documents.en.documents_required[2].children[0]",
+          "text": "Profile of the unit (includes names of promoters, other directors in the company, the activity being undertaken addresses of all offices and plants, shareholding pattern etc.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For cases with exposure above ₹ 25 Lakhs:"
+        },
+        {
+          "path": "documents.en.documents_required[2].children[1]",
+          "text": "Last three years balance sheets of the Associate / Group Companies (if any).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For cases with exposure above ₹ 25 Lakhs:"
+        },
+        {
+          "path": "documents.en.documents_required[2].children[2]",
+          "text": "Project report (for the proposed project if term funding is required) containing details of the machinery to be acquired, from whom to be acquired, price, names of suppliers, financial details like capacity of machines, capacity of utilization assumed, production, sales, projected profit and loss and balance sheets for the tenor of the loan, the details of labour, staff to be hired, basis of assumption of such financial details etc.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For cases with exposure above ₹ 25 Lakhs:"
+        },
+        {
+          "path": "documents.en.documents_required[2].children[3]",
+          "text": "Manufacturing process if applicable, major profile of executives in the company, any tie-ups, details about raw material used and their suppliers, details about the buyers, details about major-competitors and the company’s strength and weaknesses as compared to their competitors etc.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "For cases with exposure above ₹ 25 Lakhs:"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "Application process",
+      "channel": "Online",
+      "blocks": [
+        {
+          "path": "en.applicationProcess[0].process[0]",
+          "text": "Either approach your nearest bank branch to apply (locate your nearest bank here - https://www.rbi.org.in/Scripts/query.aspx )Or Through the Lead District Manager (LDM) (find the address and the email of the LDM of your district here - https://www.standupmitra.in/LDMS#NoBack)",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.applicationProcess[0].process[1]",
+          "text": "Or Apply Through Portal: www.standupmitra.in",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.applicationProcess[0].process[2]",
+          "text": "Process:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Process:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3].children[0]",
+          "text": "The first step is to visit the official portal of StandUp India at: https://www.standupmitra.in/Login/Register",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Process:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3].children[1]",
+          "text": "Enter the full details of the business location.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Process:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3].children[2]",
+          "text": "Select the category between SC, ST, Woman, and whether the stake held is 51% or higher.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Process:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3].children[3]",
+          "text": "Select the nature of the proposed business; the loan amount desired description of the business, the details of the premises, etc.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Process:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3].children[4]",
+          "text": "Populate the fields with past business experience, including tenure.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Process:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3].children[5]",
+          "text": "Select the need for hand-holding is required.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Process:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3].children[6]",
+          "text": "Enter all the personal details sought, which include the name of the enterprise and the constitution.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Process:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3].children[7]",
+          "text": "The last step is to select the register button to complete the process.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Process:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[4]",
+          "text": "Once you have completed registration, you are eligible to initiate the StandUp India Loan Application process with the respective financial institution for the officials to contact you for completing the StandUp India Loan Process and requisite formalities.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Process:"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[0]",
+          "text": "What is the nature and size of the loan under the Stand-Up India Scheme?\nComposite loan (inclusive of term loan and working capital) between 10 lakh and up to 100 lakh representing up to 85% of the project cost would be eligible.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[1]",
+          "text": "How much will be the interest rate for the loan?\nThe rate of interest would be lowest applicable rate of the bank for that category (rating category) not to exceed (base rate (MCLR) + 3%+ tenor premium).",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[2]",
+          "text": "By when am I expected to repay the loan?\nThe loan is repayable in 7 years with a maximum moratorium period of 18 months.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[3]",
+          "text": "Who are the eligible lending institutions for extending loans under the Scheme?\nAll branches of Scheduled Commercial Banks located across the country.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[4]",
+          "text": "What is Hand-holding Support?\nAny new entrepreneur requires guidance in his endeavor to set up his or her business enterprise starting from training to filling up loan applications as per bank requirements.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[5]",
+          "text": "How do I get hand-holding support?\nYou may navigate through the portal or seek assistance from the nearest branch of a Scheduled Commercial Bank  to help you identify the nature of hand-holding support required.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[6]",
+          "text": "What are the activities for which Stand-Up India loan is provided ?\nStand-Up India loan may be provided to entrepreneurs for engaging in manufacturing, trading, services sectors including activities allied to agriculture.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[7]",
+          "text": "What are the activities allied to agriculture ?\nUnder the Stand Up India loan, activities allied to agriculture include pisciculture, beekeeping, poultry, livestock, rearing, grading, sorting, aggregation  agro-industries,  dairy, fishery, agri-clinic and agri-business centres, food and agro processing etc.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[8]",
+          "text": "What is the purpose of the loan under “Stand-Up India” Scheme?\nThe scheme is for setting up a new enterprise in manufacturing, trading,  services sector or activities allied to agriculture   by SC/ST and Women entrepreneur.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[9]",
+          "text": " What is the Difference between Stand-Up India Scheme and Start Up India Scheme?\nStand-Up India Scheme is intended to support SC/ST and Women entrepreneurs to set up green field projects through bank branches in India while Start Up India Scheme aims to boost innovative and technology led enterprises for new/existing enterprises.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/sui"
+    }
+  ],
+  "links": [
+    {
+      "url": "https://www.rbi.org.in/Scripts/query.aspx",
+      "title": "https://www.rbi.org.in/Scripts/query.aspx ",
+      "path": ".scheme.applicationProcess[0].process[0].children[1]"
+    },
+    {
+      "url": "https://www.standupmitra.in/LDMS#NoBack",
+      "title": "https://www.standupmitra.in/LDMS#NoBack",
+      "path": ".scheme.applicationProcess[0].process[0].children[3]"
+    },
+    {
+      "url": "https://www.standupmitra.in/",
+      "title": "www.standupmitra.in",
+      "path": ".scheme.applicationProcess[0].process[1].children[1]"
+    },
+    {
+      "url": "https://www.standupmitra.in/Login/Register",
+      "title": "https://www.standupmitra.in/Login/Register",
+      "path": ".scheme.applicationProcess[0].process[3].children[0].children[1]"
+    },
+    {
+      "url": "https://www.udyami.org.in/storage/schemes/file/t4CQkv4D2TsdhI3MK8KqFSnYPw6RTBBsmh7p449D.pdf",
+      "title": "Guidelines",
+      "path": ".scheme.schemeContent.references[0]"
+    }
+  ],
+  "flags": [
+    "Empty/absent source section: Exclusions. Not evidence of no requirement."
+  ],
+  "schema_hints": [
+    "Person age / date of birth",
+    "Income amount, period and subject",
+    "Social category",
+    "Gender / applicant category",
+    "Project attributes",
+    "Ownership and control",
+    "Registration / membership",
+    "Jurisdiction",
+    "Institution type / accreditation",
+    "Credit / repayment",
+    "Transactions / eligible sales",
+    "Time period / history",
+    "Component / category-specific branch"
+  ],
+  "original": null,
+  "raw": {
+    "slug": "sui",
+    "old_id": null,
+    "user_example": true,
+    "scheme": {
+      "_id": "628727c27d5de378dc7acfe9",
+      "en": {
+        "applicationProcess": [
+          {
+            "mode": "Online",
+            "process": [
+              {
+                "children": [
+                  {
+                    "text": "Either approach your nearest bank branch to apply (locate your nearest bank here - "
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "https://www.rbi.org.in/Scripts/query.aspx "
+                      }
+                    ],
+                    "link": "https://www.rbi.org.in/Scripts/query.aspx",
+                    "type": "link"
+                  },
+                  {
+                    "text": ")Or Through the Lead District Manager (LDM) (find the address and the email of the LDM of your district here - "
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "https://www.standupmitra.in/LDMS#NoBack"
+                      }
+                    ],
+                    "link": "https://www.standupmitra.in/LDMS#NoBack",
+                    "type": "link"
+                  },
+                  {
+                    "text": ")"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Or Apply Through Portal: "
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "www.standupmitra.in"
+                      }
+                    ],
+                    "link": "https://www.standupmitra.in/",
+                    "type": "link"
+                  },
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Process:"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "The first step is to visit the official portal of StandUp India at: "
+                      },
+                      {
+                        "children": [
+                          {
+                            "text": "https://www.standupmitra.in/Login/Register"
+                          }
+                        ],
+                        "link": "https://www.standupmitra.in/Login/Register",
+                        "type": "link"
+                      },
+                      {
+                        "text": " "
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Enter the full details of the business location."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Select the category between SC, ST, Woman, and whether the stake held is 51% or higher."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Select the nature of the proposed business; the loan amount desired description of the business, the details of the premises, etc."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Populate the fields with past business experience, including tenure."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Select the need for hand-holding is required."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Enter all the personal details sought, which include the name of the enterprise and the constitution."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "The last step is to select the register button to complete the process."
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ol_list"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Once you have completed registration, you are eligible to initiate the StandUp India Loan Application process with the respective financial institution for the officials to contact you for completing the StandUp India Loan Process and requisite formalities."
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "process_md": "Either approach your nearest bank branch to apply (locate your nearest bank here - [https://www.rbi.org.in/Scripts/query.aspx ](https://www.rbi.org.in/Scripts/query.aspx))Or Through the Lead District Manager (LDM) (find the address and the email of the LDM of your district here - [https://www.standupmitra.in/LDMS#NoBack](https://www.standupmitra.in/LDMS#NoBack))\nOr Apply Through Portal: [www.standupmitra.in](https://www.standupmitra.in/)\n**Process:**\n\n1. The first step is to visit the official portal of StandUp India at: [https://www.standupmitra.in/Login/Register](https://www.standupmitra.in/Login/Register) 1. Enter the full details of the business location.\n1. Select the category between SC, ST, Woman, and whether the stake held is 51% or higher.\n1. Select the nature of the proposed business; the loan amount desired description of the business, the details of the premises, etc.\n1. Populate the fields with past business experience, including tenure.\n1. Select the need for hand-holding is required.\n1. Enter all the personal details sought, which include the name of the enterprise and the constitution.\n1. The last step is to select the register button to complete the process.\n\nOnce you have completed registration, you are eligible to initiate the StandUp India Loan Application process with the respective financial institution for the officials to contact you for completing the StandUp India Loan Process and requisite formalities.\n",
+            "url": "www.standupmitra.in"
+          }
+        ],
+        "basicDetails": {
+          "dbtScheme": false,
+          "implementingAgency": "Banks",
+          "level": {
+            "label": "Central",
+            "value": "central"
+          },
+          "nodalDepartmentName": {
+            "label": "Department of Financial Service",
+            "value": 1174
+          },
+          "nodalMinistryName": {
+            "label": "Ministry Of Finance",
+            "value": 499
+          },
+          "schemeCategory": [
+            {
+              "label": "Business & Entrepreneurship",
+              "value": "628ce733d6d1a3bde4685278"
+            },
+            {
+              "label": "Banking,Financial Services and Insurance",
+              "value": "628ce7f6d6d1a3bde46852d0"
+            },
+            {
+              "label": "Social welfare & Empowerment",
+              "value": "628ce87cd6d1a3bde4685312"
+            }
+          ],
+          "schemeCloseDate": "2025-03-31",
+          "schemeFor": "Individual",
+          "schemeName": "Stand-Up India",
+          "schemeOpenDate": "2016-04-05",
+          "schemeShortTitle": "SUPI",
+          "schemeSubCategory": [
+            {
+              "label": "Banking and money",
+              "value": "Banking and money"
+            },
+            {
+              "label": "Loan",
+              "value": "Loan"
+            }
+          ],
+          "schemeType": {
+            "label": "Central Sector Scheme",
+            "value": "central-sector-scheme"
+          },
+          "tags": [
+            "Loan",
+            "Entrepreneur",
+            "Finance",
+            "Business"
+          ],
+          "targetBeneficiaries": [
+            {
+              "label": "Individual",
+              "value": "individual"
+            },
+            {
+              "label": "Business Entity",
+              "value": "business-entity"
+            }
+          ]
+        },
+        "eligibilityCriteria": {
+          "eligibilityDescription": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Finance is  provided for Greenfield Enterprises."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "align_justify"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "If the applicant is a male, he must be from SC / ST category."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "align_justify"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "The age of the applicant must be at least 18 years."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "align_justify"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "The applicant must not be in default to any bank/financial institution."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "align_justify"
+                }
+              ],
+              "type": "ol_list"
+            }
+          ],
+          "eligibilityDescription_md": "\n- Finance is  provided for Greenfield Enterprises.\n- If the applicant is a male, he must be from SC / ST category.\n- The age of the applicant must be at least 18 years.\n- The applicant must not be in default to any bank/financial institution.\n\n"
+        },
+        "schemeContent": {
+          "benefitTypes": {
+            "id": 1,
+            "label": "Cash",
+            "value": "cash"
+          },
+          "benefits": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Facilitation of composite loan (inclusive of term loan and working capital) between ₹10 Lakhs and ₹100 Lakhs. Rupay debit card to be issued for convenience of the borrower."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The web portal by SIDBI provides hand-holding support through a network of agencies engaged in training, skill development, mentoring, project report preparation, application filling, work shed / utility support services, subsidy schemes etc."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ol_list"
+            }
+          ],
+          "benefits_md": "\n1. Facilitation of composite loan (inclusive of term loan and working capital) between ₹10 Lakhs and ₹100 Lakhs. Rupay debit card to be issued for convenience of the borrower.\n1. The web portal by SIDBI provides hand-holding support through a network of agencies engaged in training, skill development, mentoring, project report preparation, application filling, work shed / utility support services, subsidy schemes etc.\n\n",
+          "briefDescription": "A scheme by Ministry of Finance for financing SC/ST and  Women Entrepreneurs by facilitating bank loans for setting up a greenfield project  Enterprise in manufacturing, services, trading sector and activities allied to agriculture.",
+          "detailedDescription": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "A scheme by Ministry of Finance for financing SC/ST and/or Women Entrepreneurs by facilitating bank loans for setting up a greenfield project  enterprise in manufacturing, services, trading sector and activities allied to agriculture. The objective of this scheme is to facilitate bank loans between Rs. 10 lakh and Rs. 1 Crore to at least one Scheduled Caste (SC) or Scheduled Tribe (ST) borrower and at least one woman borrower per bank branch for setting up a greenfield enterprise. In case of non-individual enterprises, at least 51% of the shareholding and controlling stake should be held by either an SC/ST or Woman entrepreneur."
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "align_justify"
+            }
+          ],
+          "detailedDescription_md": "A scheme by Ministry of Finance for financing SC/ST and/or Women Entrepreneurs by facilitating bank loans for setting up a greenfield project  enterprise in manufacturing, services, trading sector and activities allied to agriculture. The objective of this scheme is to facilitate bank loans between Rs. 10 lakh and Rs. 1 Crore to at least one Scheduled Caste (SC) or Scheduled Tribe (ST) borrower and at least one woman borrower per bank branch for setting up a greenfield enterprise. In case of non-individual enterprises, at least 51% of the shareholding and controlling stake should be held by either an SC/ST or Woman entrepreneur.\n",
+          "exclusions": [
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "exclusions_md": "<br>\n\n",
+          "references": [
+            {
+              "title": "Guidelines",
+              "url": "https://www.udyami.org.in/storage/schemes/file/t4CQkv4D2TsdhI3MK8KqFSnYPw6RTBBsmh7p449D.pdf"
+            }
+          ],
+          "schemeImageUrl": "  https://standupmitra.in/Images/standuplogo.gif    "
+        },
+        "schemeDefinitions": [
+          {
+            "definition": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "Green field project signifies, in this context, the first time venture of the beneficiary in the manufacturing or services or trading sector and  activities allied to agriculture ."
+                      }
+                    ],
+                    "type": "paragraph"
+                  }
+                ],
+                "type": "align_justify"
+              }
+            ],
+            "definitions_md": "Green field project signifies, in this context, the first time venture of the beneficiary in the manufacturing or services or trading sector and  activities allied to agriculture .\n",
+            "name": "greenfield project",
+            "source": "https://www.udyami.org.in/storage/schemes/file/t4CQkv4D2TsdhI3MK8KqFSnYPw6RTBBsmh7p449D.pdf"
+          }
+        ]
+      },
+      "slug": "sui"
+    },
+    "documents": {
+      "_id": "62872a007d5de378dc7ad03e",
+      "en": {
+        "documentsRequired_md": "\n1. Proof of Identity: Voter’s ID Card / Passport / Driving License / PAN Card / Signature identification from present bankers of proprietor, partner of director ( if a company)\n1. Proof of Residence: Recent telephone bills, electricity bill, property tax receipt /Passport / voter’s ID Card of Proprietor, partner of Director (if a company)\n1. Proof of Business Address\n1. Proof that the applicant is not a defaulter in any Bank / Financial Institution\n1. Memorandum and articles of association of the Company / Partnership Deed of partners etc.\n1. Assets and liabilities statement of promoters and guarantors along with latest income tax returns.\n1. Rent Agreement (if business premises on rent) and clearance from pollution control board if applicable.\n1. SSI / MSME registration (if applicable)\n1. Projected balance sheets for the next two years in case of working capital limits and for the period of the loan in case of term loan.\n1. Photocopies of lease deeds/ title deeds of all the properties being offered as primary and collateral securities.\n1. Documents to establish whether the applicant belongs to SC/ST Category, wherever applicable.\n1. Certificate of incorporation from ROC to establish whether majority stake holding in the company is in the hands of a person who belongs to SC/ST/Woman category.\n\n**For cases with exposure above ₹ 25 Lakhs:**\n\n1. Profile of the unit (includes names of promoters, other directors in the company, the activity being undertaken addresses of all offices and plants, shareholding pattern etc.\n1. Last three years balance sheets of the Associate / Group Companies (if any).\n1. Project report (for the proposed project if term funding is required) containing details of the machinery to be acquired, from whom to be acquired, price, names of suppliers, financial details like capacity of machines, capacity of utilization assumed, production, sales, projected profit and loss and balance sheets for the tenor of the loan, the details of labour, staff to be hired, basis of assumption of such financial details etc.\n1. Manufacturing process if applicable, major profile of executives in the company, any tie-ups, details about raw material used and their suppliers, details about the buyers, details about major-competitors and the company’s strength and weaknesses as compared to their competitors etc.\n\n<br>\n\n",
+        "documents_required": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Proof of Identity: Voter’s ID Card / Passport / Driving License / PAN Card / Signature identification from present bankers of proprietor, partner of director ( if a company)"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Proof of Residence: Recent telephone bills, electricity bill, property tax receipt /Passport / voter’s ID Card of Proprietor, partner of Director (if a company)"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Proof of Business Address"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Proof that the applicant is not a defaulter in any Bank / Financial Institution"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Memorandum and articles of association of the Company / Partnership Deed of partners etc."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Assets and liabilities statement of promoters and guarantors along with latest income tax returns."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Rent Agreement (if business premises on rent) and clearance from pollution control board if applicable."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "SSI / MSME registration (if applicable)"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Projected balance sheets for the next two years in case of working capital limits and for the period of the loan in case of term loan."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Photocopies of lease deeds/ title deeds of all the properties being offered as primary and collateral securities."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Documents to establish whether the applicant belongs to SC/ST Category, wherever applicable."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Certificate of incorporation from ROC to establish whether majority stake holding in the company is in the hands of a person who belongs to SC/ST/Woman category."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ol_list"
+          },
+          {
+            "children": [
+              {
+                "bold": true,
+                "text": "For cases with exposure above ₹ 25 Lakhs:",
+                "underline": true
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Profile of the unit (includes names of promoters, other directors in the company, the activity being undertaken addresses of all offices and plants, shareholding pattern etc."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Last three years balance sheets of the Associate / Group Companies (if any)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Project report (for the proposed project if term funding is required) containing details of the machinery to be acquired, from whom to be acquired, price, names of suppliers, financial details like capacity of machines, capacity of utilization assumed, production, sales, projected profit and loss and balance sheets for the tenor of the loan, the details of labour, staff to be hired, basis of assumption of such financial details etc."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Manufacturing process if applicable, major profile of executives in the company, any tie-ups, details about raw material used and their suppliers, details about the buyers, details about major-competitors and the company’s strength and weaknesses as compared to their competitors etc."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ol_list"
+          },
+          {
+            "children": [
+              {
+                "text": ""
+              }
+            ],
+            "type": "paragraph"
+          }
+        ]
+      },
+      "schemeId": "628727c27d5de378dc7acfe9"
+    },
+    "faqs": {
+      "_id": "62872adf7d5de378dc7ad063",
+      "en": {
+        "faqs": [
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": " Composite loan (inclusive of term loan and working capital) between 10 lakh and up to 100 lakh representing up to 85% of the project cost would be eligible."
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": " Composite loan (inclusive of term loan and working capital) between 10 lakh and up to 100 lakh representing up to 85% of the project cost would be eligible.\n",
+            "question": "What is the nature and size of the loan under the Stand-Up India Scheme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The rate of interest would be lowest applicable rate of the bank for that category (rating category) not to exceed (base rate (MCLR) + 3%+ tenor premium)."
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The rate of interest would be lowest applicable rate of the bank for that category (rating category) not to exceed (base rate (MCLR) + 3%+ tenor premium).\n",
+            "question": "How much will be the interest rate for the loan?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The loan is repayable in 7 years with a maximum moratorium period of 18 months."
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The loan is repayable in 7 years with a maximum moratorium period of 18 months.\n",
+            "question": "By when am I expected to repay the loan?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "All branches of Scheduled Commercial Banks located across the country."
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "All branches of Scheduled Commercial Banks located across the country.\n",
+            "question": "Who are the eligible lending institutions for extending loans under the Scheme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Any new entrepreneur requires guidance in his endeavor to set up his or her business enterprise starting from training to filling up loan applications as per bank requirements. "
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Any new entrepreneur requires guidance in his endeavor to set up his or her business enterprise starting from training to filling up loan applications as per bank requirements. \n",
+            "question": "What is Hand-holding Support?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": " You may navigate through the portal or seek assistance from the nearest branch of a Scheduled Commercial Bank  to help you identify the nature of hand-holding support required. "
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": " You may navigate through the portal or seek assistance from the nearest branch of a Scheduled Commercial Bank  to help you identify the nature of hand-holding support required. \n",
+            "question": "How do I get hand-holding support?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Stand-Up India loan may be provided to entrepreneurs for engaging in manufacturing, trading, services sectors including activities allied to agriculture.  "
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Stand-Up India loan may be provided to entrepreneurs for engaging in manufacturing, trading, services sectors including activities allied to agriculture.  \n",
+            "question": "What are the activities for which Stand-Up India loan is provided ?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Under the Stand Up India loan, activities allied to agriculture include pisciculture, beekeeping, poultry, livestock, rearing, grading, sorting, aggregation  agro-industries,  dairy, fishery, agri-clinic and agri-business centres, food and agro processing etc. \n"
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Under the Stand Up India loan, activities allied to agriculture include pisciculture, beekeeping, poultry, livestock, rearing, grading, sorting, aggregation  agro-industries,  dairy, fishery, agri-clinic and agri-business centres, food and agro processing etc. \n\n",
+            "question": "What are the activities allied to agriculture ?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The scheme is for setting up a new enterprise in manufacturing, trading,  services sector or activities allied to agriculture   by SC/ST and Women entrepreneur.\n"
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The scheme is for setting up a new enterprise in manufacturing, trading,  services sector or activities allied to agriculture   by SC/ST and Women entrepreneur.\n\n",
+            "question": "What is the purpose of the loan under “Stand-Up India” Scheme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Stand-Up India Scheme is intended to support SC/ST and Women entrepreneurs to set up green field projects through bank branches in India while Start Up India Scheme aims to boost innovative and technology led enterprises for new/existing enterprises."
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Stand-Up India Scheme is intended to support SC/ST and Women entrepreneurs to set up green field projects through bank branches in India while Start Up India Scheme aims to boost innovative and technology led enterprises for new/existing enterprises.\n",
+            "question": " What is the Difference between Stand-Up India Scheme and Start Up India Scheme?"
+          }
+        ]
+      },
+      "schemeId": "628727c27d5de378dc7acfe9"
+    }
+  }
+}

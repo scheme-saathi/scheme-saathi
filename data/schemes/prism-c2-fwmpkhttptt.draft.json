@@ -1,0 +1,768 @@
+{
+  "scheme_id": "C09",
+  "slug": "prism-c2-fwmpkhttptt",
+  "name": "PRISM (Promoting Innovations in Individuals, Start-ups and MSMEs): Category-2: Fabrication of Working Model/Process Know-how/Testing & Trial/Patenting/Technology Transfer",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+  "collected_on": "2026-10-24",
+  "review_status": "approved",
+  "availability_status": "open",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Promoting Innovations In Individuals, Start-Ups And Micro, Small And Medium Enterprises (PRISM)\" was launched by the Department of Scientific and Industrial Research, Ministry of Science and Technology, Government of India. The scheme aims to promote innovations in individuals, start-ups and micro, small and medium enterprises. The scheme provides support for Individual Innovator Proposals under Phase-I, Category II, focusing on Fabrication of Working Model/Process Know-how/Testing & Trial/Patenting/Technology Transfer. Key features include comparatively more rigorous demonstrability of original idea/invention/know-how in the form of working prototype/processes and its testing and trial/patenting/technology transfer. The scheme is implemented by the Department of Scientific and Industrial Research (DSIR). The applications for this scheme are accepted by submission to the nearest TePP Outreach cum Cluster Innovation Centres (TOCICs) or directly to the Department of Scientific and Industrial Research.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The maximum support under Category II is ₹20,00,000/- or 90% of the approved project cost, whichever is lower. The approved project cost must be more than ₹5,00,000/- and up to ₹35,00,000/-.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Eligible Components for Support",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Research and Development/Design Engineering/Consultancy charges.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rental charges for laboratory/workshop facilities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Essential equipment that cannot be taken on rent (reasons for purchase must be given).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Raw material/spares/consumables cost.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Fabrication/synthesis charges.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Manpower cost of technical assistants, not exceeding 20% of the approved project cost.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Testing and trials.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Travel cost, not exceeding 5% of the approved project cost.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Patent filing (actual fee paid to the patent office).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[8]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Process know-how development.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[9]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proposals involving scientifically characterizing or testing the efficacy and toxicity of herbal formulations.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[3].children[10]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Exclusions from Support",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Innovator’s salary.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[5].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rental expenses for use of own facilities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[5].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Disbursement",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[6].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The first release is based on milestones/deliverables projected in the project proposals and as recommended by the PRISM Advisory and Screening Committee (PASC).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[7].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Subsequent releases are based on the assessment of the progress of the project by the Project Review Committee (PRC).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[7].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Conditions",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[8].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant has to sign \"Terms & Conditions\" prior to the actual release of grants-in-aid.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[9].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The approved projects will be monitored by the TePP Outreach cum Cluster Innovation Centre/other network partners, including technical expert(s).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[9].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The TePP Outreach cum Cluster Innovation Centres will be periodically reporting project status to the Department of Scientific and Industrial Research at an interval of 3 months.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[9].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The Project Review Committees, consisting of external experts, will meet at least once in nine months to review the progress of the project.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[9].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For student innovators, the institution will be responsible for final completion of the project in case the Innovator leaves the Institute/Organization without completion of the project.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.benefits[9].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must be an Indian Citizen.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must have an innovative idea or an invention.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must propose a project where the project cost is more than ₹5,00,000/- and up to ₹35,00,000/-.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must ensure the project duration does not exceed 24 months.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must ensure the proposal involves the fabrication of a working model/process know-how/testing and trial/patenting/technology transfer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must ensure the proposal does not involve only software development.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must ensure the proposal is not for basic scientific research having no immediate commercial implications.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Specific Conditions",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Students: The applicant must provide a `No Objection Certificate’ from the head of their institution on the institution’s letterhead.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Students: The applicant must ensure the commitment from the institution that the project will be taken to its logical conclusion by the student/concerned faculty.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Individuals Working in Organizations: The applicant must furnish a `No Objection Certificate’ from their employer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Desirable Criteria (Preference)",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The proposals should preferably be in the following focus sectors: Green Technology, Clean Energy, Industrially utilizable smart materials, Waste to wealth, Affordable healthcare, Water & sewage management, or any other technology or knowledge-intensive area.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Preference: Student innovators making it to the final of any competition are eligible, but they should take the project as a full-time activity after graduation to ensure their studies are not adversely affected.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should ensure the proposal is submitted through the nearest TePP Outreach cum Cluster Innovation Centre, even if scouted, documented, and mentored by other agencies, and must include evaluation by the assisting agency.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Proposals involving only software development.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.exclusions[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proposals involving only patenting (unless patenting is along with prototype development).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.exclusions[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proposals for basic scientific research having no immediate commercial implication",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.schemeContent.exclusions[0].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Proposals can be submitted to the following -",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The nearest TePP Outreach cum Cluster Innovation Centres (TOCICs).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[1].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The Department of Scientific and Industrial Research (DSIR).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[1].children[1]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 1:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[3].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Consultation and Preparation",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[3].children[2]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The innovator should meet coordinators of TePP Outreach cum Cluster Innovation Centres (TOCICs) and take their advice before submitting the application.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[4].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The applicant must prepare the application form, ensuring all mandatory details like the Title of the proposed project, Name, Address, Date of Birth, Educational qualification, Annual Income, Permanent Account Number (PAN) (mandatory), and Aadhaar Number are included.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[4].children[1]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 2:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[5].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Submission of Proposal",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[5].children[2]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The applicant must submit the application either directly to the nearest TePP Outreach cum Cluster Innovation Centre (TOCIC) or directly to the Department of Scientific and Industrial Research (DSIR).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[6].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Proposals submitted directly to the Department of Scientific and Industrial Research will be forwarded to the relevant TePP Outreach cum Cluster Innovation Centre for counselling and local screening.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[6].children[1]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Post-Application Processes",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[8].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 1:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[9].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Initial Screening for Completeness",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[9].children[2]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The proposals will initially be screened for completeness at the point of receipt by the coordinators of the TePP Outreach cum Cluster Innovation Centres.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 2:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[11].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Evaluation by Domain Knowledge Experts",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[11].children[2]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "After initial Screening, the complete and screened proposals are evaluated by the Domain Knowledge Experts associated with the TePP Outreach cum Cluster Innovation Centre.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[12]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 3:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[13].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Submission to the Department of Scientific and Industrial Research",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[13].children[2]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The TePP Outreach cum Cluster Innovation Centres will send complete and evaluated proposals to the Department of Scientific and Industrial Research for further action.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[14]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 4:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[15].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Committee Recommendation",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[15].children[2]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The proposals will then be considered by the PRISM Advisory and Screening Committee (PASC) for final recommendation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[16]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 5:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[17].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": " Final Approval and Sanction",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[17].children[1]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The sanction will finally be released to those projects that are approved by the Department.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[18]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 6:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[19].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Signing of Terms and Conditions",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[19].children[2]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The applicant has to sign the \"Terms & Conditions\" document prior to the actual release of the grants-in-aid.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[20]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Disbursement",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[22].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 1:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[23].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "First Release",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[23].children[2]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The first release of funds is based on milestones and deliverables projected in the project proposals and as recommended by the PRISM Advisory and Screening Committee (PASC).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[24]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 2:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[25].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Subsequent Fund Release and Monitoring ",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[25].children[2]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Subsequent releases of funds are based on the assessment of the progress of the project by the Project Review Committee (PRC). The approved projects will be monitored by the TePP Outreach cum Cluster Innovation Centre/other network partners, including technical expert(s), and the Project Review Committees will meet at least once in nine months to review the progress of the project.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[26]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Step 3:",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[27].children[0]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "Project Closure",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[27].children[2]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        },
+        {
+          "text": "The project completion report will be accepted by the Competent Authority in the Department of Scientific and Industrial Research, based on the Project Review Committee recommendation, after the successful closure of the project.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "en.applicationProcess[0].process[28]",
+          "channel": "Offline",
+          "heading": "Proposals can be submitted to the following -"
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Required During Application/Submission Stage",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof Of Residence (Issued By Sub-Divisional Magistrate (SDM)/District Magistrate (DM) Or A Copy Of Ration Card Or Any Other Document Regarding Proof Of Residence).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Copy Of Aadhaar Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Documentary Proof Of Prior Work (Video, Photo, Press Coverage, etc.).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "No Objection Certificate (From Head of Institute/Organization, on institution’s letterhead, for Students and Working Innovators).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Commitment Letter From Institution (Committing that the project will be taken to its logical conclusion by the student/concerned faculty, for Students).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Copy Of The Latest Income Tax Returns Filed (If Applicant Is An Income Tax Payer).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "List Of Equipment/Instruments, Etc. With Their Respective Costs In A Separate Annexure (Required if an essential equipment purchase is proposed).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details Of Work Done On Innovation So Far (Including Literature Survey/Patent Search, Development Work Done, etc.).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Brief Write-Up Giving Broad Details Of The Original Idea/Invention/Intellectual Property Rights/Know How Available.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[8]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proposed Costs And Time Frame For The Project (Including Justification For Cost Estimation).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[9]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Activity Details/Work Plan With Monitorable Milestones.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[10]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details Of End Product/Process/Output (Including Targeted Specifications, Performance Requirements/Standards).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[11]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Referees (Two Numbers With Complete Address, Phone Number And E-Mail Identification).",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[1].children[12]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Required Prior To Grants-in-aid Release",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Signed \"Terms & Conditions\" Document.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Required At Project Closure",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[6].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Project Completion Report.",
+          "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+          "source_path": "documents.en.documents_required[7].children[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "title": "application form",
+      "type": "other",
+      "url": "https://www.dsir.gov.in/sites/default/files/2019-09/guide_ph1_cat2.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+      "format": "pdf",
+      "verification_status": "pending"
+    }
+  ]
+}
