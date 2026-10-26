@@ -5,5 +5,13 @@ __pycache__/
 *.db
 *.sqlite3
 data/raw/
+
+.venv312/
+*.egg-info/
+data/chroma/
+.DS_Store
+*.pyc
+docs/chunk-preview.json
+docs/embedding-preview.json
 .coverage
 htmlcov/

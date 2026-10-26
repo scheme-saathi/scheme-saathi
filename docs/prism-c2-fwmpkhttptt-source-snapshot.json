@@ -1,0 +1,2541 @@
+{
+  "id": "C09",
+  "slug": "prism-c2-fwmpkhttptt",
+  "name": "PRISM (Promoting Innovations in Individuals, Start-ups and MSMEs): Category-2: Fabrication of Working Model/Process Know-how/Testing & Trial/Patenting/Technology Transfer",
+  "level": "Central",
+  "source_level": "Central",
+  "area": "India",
+  "categories": "Science, IT & Communications; Business & Entrepreneurship",
+  "applicant_type": "Individual",
+  "beneficiaries": "Individual",
+  "ministry": "Ministry Of Science And Technology",
+  "department": "Department of Scientific and Industrial Research",
+  "tags": "Innovation; Patent; Invention; Prototype; Technology",
+  "brief": "The scheme aims to promote innovations in individuals, start-ups, and Micro, Small and Medium Enterprises (PRISM). It offers financial support (up to ₹20,00,000/-) for Indian Citizens working on innovation projects requiring fabrication of working models, patenting, or technology transfer.",
+  "url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+  "source_id": "68f75bc2cd0b48b25fba8003",
+  "snapshot_date": "2026-10-24",
+  "hash": "1212c37cbbf42a919f65802267d040d923233099a3cf2e4d4c582904ed581a04",
+  "open_date": null,
+  "close_date": null,
+  "sections": [
+    {
+      "section": "Details",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.detailedDescription[0]",
+          "text": "The scheme \"Promoting Innovations In Individuals, Start-Ups And Micro, Small And Medium Enterprises (PRISM)\" was launched by the Department of Scientific and Industrial Research, Ministry of Science and Technology, Government of India. The scheme aims to promote innovations in individuals, start-ups and micro, small and medium enterprises. The scheme provides support for Individual Innovator Proposals under Phase-I, Category II, focusing on Fabrication of Working Model/Process Know-how/Testing & Trial/Patenting/Technology Transfer. Key features include comparatively more rigorous demonstrability of original idea/invention/know-how in the form of working prototype/processes and its testing and trial/patenting/technology transfer. The scheme is implemented by the Department of Scientific and Industrial Research (DSIR). The applications for this scheme are accepted by submission to the nearest TePP Outreach cum Cluster Innovation Centres (TOCICs) or directly to the Department of Scientific and Industrial Research.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "Benefits",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.benefits[0]",
+          "text": "The maximum support under Category II is ₹20,00,000/- or 90% of the approved project cost, whichever is lower. The approved project cost must be more than ₹5,00,000/- and up to ₹35,00,000/-.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[2].children[0]",
+          "text": "Eligible Components for Support",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[0]",
+          "text": "Research and Development/Design Engineering/Consultancy charges.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[1]",
+          "text": "Rental charges for laboratory/workshop facilities.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[2]",
+          "text": "Essential equipment that cannot be taken on rent (reasons for purchase must be given).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[3]",
+          "text": "Raw material/spares/consumables cost.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[4]",
+          "text": "Fabrication/synthesis charges.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[5]",
+          "text": "Manpower cost of technical assistants, not exceeding 20% of the approved project cost.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[6]",
+          "text": "Testing and trials.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[7]",
+          "text": "Travel cost, not exceeding 5% of the approved project cost.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[8]",
+          "text": "Patent filing (actual fee paid to the patent office).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[9]",
+          "text": "Process know-how development.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[10]",
+          "text": "Proposals involving scientifically characterizing or testing the efficacy and toxicity of herbal formulations.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[4].children[0]",
+          "text": "Exclusions from Support",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[5].children[0]",
+          "text": "Innovator’s salary.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[5].children[1]",
+          "text": "Rental expenses for use of own facilities.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[6].children[0]",
+          "text": "Disbursement",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[7].children[0]",
+          "text": "The first release is based on milestones/deliverables projected in the project proposals and as recommended by the PRISM Advisory and Screening Committee (PASC).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[7].children[1]",
+          "text": "Subsequent releases are based on the assessment of the progress of the project by the Project Review Committee (PRC).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[8].children[0]",
+          "text": "Conditions",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[9].children[0]",
+          "text": "The applicant has to sign \"Terms & Conditions\" prior to the actual release of grants-in-aid.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[9].children[1]",
+          "text": "The approved projects will be monitored by the TePP Outreach cum Cluster Innovation Centre/other network partners, including technical expert(s).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[9].children[2]",
+          "text": "The TePP Outreach cum Cluster Innovation Centres will be periodically reporting project status to the Department of Scientific and Industrial Research at an interval of 3 months.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[9].children[3]",
+          "text": "The Project Review Committees, consisting of external experts, will meet at least once in nine months to review the progress of the project.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[9].children[4]",
+          "text": "For student innovators, the institution will be responsible for final completion of the project in case the Innovator leaves the Institute/Organization without completion of the project.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "Eligibility",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "text": "The applicant must be an Indian Citizen.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "text": "The applicant must have an innovative idea or an invention.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "text": "The applicant must propose a project where the project cost is more than ₹5,00,000/- and up to ₹35,00,000/-.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "text": "The applicant must ensure the project duration does not exceed 24 months.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "text": "The applicant must ensure the proposal involves the fabrication of a working model/process know-how/testing and trial/patenting/technology transfer.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "text": "The applicant must ensure the proposal does not involve only software development.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "text": "The applicant must ensure the proposal is not for basic scientific research having no immediate commercial implications.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "text": "Specific Conditions",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[2].children[0]",
+          "text": "Students: The applicant must provide a `No Objection Certificate’ from the head of their institution on the institution’s letterhead.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[2].children[1]",
+          "text": "Students: The applicant must ensure the commitment from the institution that the project will be taken to its logical conclusion by the student/concerned faculty.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[2].children[2]",
+          "text": "Individuals Working in Organizations: The applicant must furnish a `No Objection Certificate’ from their employer.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[3].children[0]",
+          "text": "Desirable Criteria (Preference)",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[4].children[0]",
+          "text": "The proposals should preferably be in the following focus sectors: Green Technology, Clean Energy, Industrially utilizable smart materials, Waste to wealth, Affordable healthcare, Water & sewage management, or any other technology or knowledge-intensive area.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[4].children[1]",
+          "text": "Preference: Student innovators making it to the final of any competition are eligible, but they should take the project as a full-time activity after graduation to ensure their studies are not adversely affected.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[4].children[2]",
+          "text": "The applicant should ensure the proposal is submitted through the nearest TePP Outreach cum Cluster Innovation Centre, even if scouted, documented, and mentored by other agencies, and must include evaluation by the assisting agency.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "Exclusions",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.exclusions[0].children[0]",
+          "text": "Proposals involving only software development.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.exclusions[0].children[1]",
+          "text": "Proposals involving only patenting (unless patenting is along with prototype development).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.exclusions[0].children[2]",
+          "text": "Proposals for basic scientific research having no immediate commercial implication",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "Applicant documents",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "documents.en.documents_required[0].children[0]",
+          "text": "Required During Application/Submission Stage",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[0]",
+          "text": "Proof Of Residence (Issued By Sub-Divisional Magistrate (SDM)/District Magistrate (DM) Or A Copy Of Ration Card Or Any Other Document Regarding Proof Of Residence).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[1]",
+          "text": "Copy Of Aadhaar Card.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[2]",
+          "text": "Documentary Proof Of Prior Work (Video, Photo, Press Coverage, etc.).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[3]",
+          "text": "No Objection Certificate (From Head of Institute/Organization, on institution’s letterhead, for Students and Working Innovators).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[4]",
+          "text": "Commitment Letter From Institution (Committing that the project will be taken to its logical conclusion by the student/concerned faculty, for Students).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[5]",
+          "text": "Copy Of The Latest Income Tax Returns Filed (If Applicant Is An Income Tax Payer).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[6]",
+          "text": "List Of Equipment/Instruments, Etc. With Their Respective Costs In A Separate Annexure (Required if an essential equipment purchase is proposed).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[7]",
+          "text": "Details Of Work Done On Innovation So Far (Including Literature Survey/Patent Search, Development Work Done, etc.).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[8]",
+          "text": "Brief Write-Up Giving Broad Details Of The Original Idea/Invention/Intellectual Property Rights/Know How Available.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[9]",
+          "text": "Proposed Costs And Time Frame For The Project (Including Justification For Cost Estimation).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[10]",
+          "text": "Activity Details/Work Plan With Monitorable Milestones.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[11]",
+          "text": "Details Of End Product/Process/Output (Including Targeted Specifications, Performance Requirements/Standards).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[12]",
+          "text": "Referees (Two Numbers With Complete Address, Phone Number And E-Mail Identification).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[3].children[0]",
+          "text": "Required Prior To Grants-in-aid Release",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[4].children[0]",
+          "text": "Signed \"Terms & Conditions\" Document.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[6].children[0]",
+          "text": "Required At Project Closure",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[7].children[0]",
+          "text": "Project Completion Report.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "Application process",
+      "channel": "Offline",
+      "blocks": [
+        {
+          "path": "en.applicationProcess[0].process[0]",
+          "text": "Proposals can be submitted to the following -",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[1].children[0]",
+          "text": "The nearest TePP Outreach cum Cluster Innovation Centres (TOCICs).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[1].children[1]",
+          "text": "The Department of Scientific and Industrial Research (DSIR).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3].children[0]",
+          "text": "Step 1:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3].children[2]",
+          "text": "Consultation and Preparation",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[4].children[0]",
+          "text": "The innovator should meet coordinators of TePP Outreach cum Cluster Innovation Centres (TOCICs) and take their advice before submitting the application.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[4].children[1]",
+          "text": "The applicant must prepare the application form, ensuring all mandatory details like the Title of the proposed project, Name, Address, Date of Birth, Educational qualification, Annual Income, Permanent Account Number (PAN) (mandatory), and Aadhaar Number are included.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[5].children[0]",
+          "text": "Step 2:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[5].children[2]",
+          "text": "Submission of Proposal",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[6].children[0]",
+          "text": "The applicant must submit the application either directly to the nearest TePP Outreach cum Cluster Innovation Centre (TOCIC) or directly to the Department of Scientific and Industrial Research (DSIR).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[6].children[1]",
+          "text": "Proposals submitted directly to the Department of Scientific and Industrial Research will be forwarded to the relevant TePP Outreach cum Cluster Innovation Centre for counselling and local screening.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[8].children[0]",
+          "text": "Post-Application Processes",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[9].children[0]",
+          "text": "Step 1:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[9].children[2]",
+          "text": "Initial Screening for Completeness",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[10]",
+          "text": "The proposals will initially be screened for completeness at the point of receipt by the coordinators of the TePP Outreach cum Cluster Innovation Centres.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[11].children[0]",
+          "text": "Step 2:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[11].children[2]",
+          "text": "Evaluation by Domain Knowledge Experts",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[12]",
+          "text": "After initial Screening, the complete and screened proposals are evaluated by the Domain Knowledge Experts associated with the TePP Outreach cum Cluster Innovation Centre.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[13].children[0]",
+          "text": "Step 3:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[13].children[2]",
+          "text": "Submission to the Department of Scientific and Industrial Research",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[14]",
+          "text": "The TePP Outreach cum Cluster Innovation Centres will send complete and evaluated proposals to the Department of Scientific and Industrial Research for further action.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[15].children[0]",
+          "text": "Step 4:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[15].children[2]",
+          "text": "Committee Recommendation",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[16]",
+          "text": "The proposals will then be considered by the PRISM Advisory and Screening Committee (PASC) for final recommendation.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[17].children[0]",
+          "text": "Step 5:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[17].children[1]",
+          "text": " Final Approval and Sanction",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[18]",
+          "text": "The sanction will finally be released to those projects that are approved by the Department.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[19].children[0]",
+          "text": "Step 6:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[19].children[2]",
+          "text": "Signing of Terms and Conditions",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[20]",
+          "text": "The applicant has to sign the \"Terms & Conditions\" document prior to the actual release of the grants-in-aid.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[22].children[0]",
+          "text": "Disbursement",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[23].children[0]",
+          "text": "Step 1:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[23].children[2]",
+          "text": "First Release",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[24]",
+          "text": "The first release of funds is based on milestones and deliverables projected in the project proposals and as recommended by the PRISM Advisory and Screening Committee (PASC).",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[25].children[0]",
+          "text": "Step 2:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[25].children[2]",
+          "text": "Subsequent Fund Release and Monitoring ",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[26]",
+          "text": "Subsequent releases of funds are based on the assessment of the progress of the project by the Project Review Committee (PRC). The approved projects will be monitored by the TePP Outreach cum Cluster Innovation Centre/other network partners, including technical expert(s), and the Project Review Committees will meet at least once in nine months to review the progress of the project.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[27].children[0]",
+          "text": "Step 3:",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[27].children[2]",
+          "text": "Project Closure",
+          "heading": false,
+          "node_type": "text",
+          "context": "Proposals can be submitted to the following -"
+        },
+        {
+          "path": "en.applicationProcess[0].process[28]",
+          "text": "The project completion report will be accepted by the Competent Authority in the Department of Scientific and Industrial Research, based on the Project Review Committee recommendation, after the successful closure of the project.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Proposals can be submitted to the following -"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[0]",
+          "text": "If the user wishes to proceed with fundamental scientific investigations that have no immediate commercial value, will such a proposal be accepted for evaluation?\nProposals dedicated entirely to basic scientific research which lack immediate commercial implications are explicitly excluded and will not be accepted for consideration.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[1]",
+          "text": "What is the highest percentage of the total approved project expenditure that the funding authority can provide as financial assistance under this category?\nThe maximum financial assistance provided is ₹20,00,000/- or 90% of the approved project cost, whichever of these two amounts is lower.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[2]",
+          "text": "What types of innovation activities are primarily eligible for support under Category II, focusing on demonstrable outcomes rather than research?\nSupport covers the Fabrication of Working Model, Process Know-how, Testing & Trial, Patenting, or Technology Transfer, which demand rigorous demonstrability of the original idea.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[3]",
+          "text": "When submitting a proposal that has been mentored by external agencies other than the designated TePP Outreach cum Cluster Innovation Centres, what submission route must be followed?\nProposals scouted and documented by other agencies must still be routed through the nearest TePP Outreach cum Cluster Innovation Centre and include an evaluation by the assisting agency.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[4]",
+          "text": "As a student applying for innovation support, what specific documentation is required from the head of my educational institution to be eligible for consideration?\nStudents must provide a 'No Objection Certificate’ signed by the head of their institution, written on the institution’s official letter-head, along with the main application.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[5]",
+          "text": "What are the minimum and maximum financial limits set for the total estimated costs of the proposed invention project to qualify for this particular phase of support?\nThe overall project cost must fall within the range of more than ₹5,00,000/- and up to ₹35,00,000/- to meet the stipulated financial criteria for the proposal.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[6]",
+          "text": "Are there any limitations placed on the cost allocated specifically for hiring technical assistants or other related manpower within the project budget?\nYes, the manpower cost intended for technical assistants is capped and must not exceed 20% of the total approved cost for the innovation project.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[7]",
+          "text": "If I am currently employed by an organization and wish to seek support for my innovative idea, what formal approval must I obtain from my employer?\nIndividuals working in organizations must furnish a mandatory ‘No Objection Certificate’ from their employer when applying for support under the Promoting Innovations In Individuals, Start-Ups and Micro, Small and Medium Enterprises scheme.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[8]",
+          "text": "If the project solely involves developing new software applications without any embedded physical component, will the proposal be considered eligible for funding?\nProposals focused exclusively on software development are not accepted for consideration under the Promoting Innovations In Individuals, Start-Ups and Micro, Small and Medium Enterprises scheme.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[9]",
+          "text": "Is there a spending restriction concerning the costs incurred for travel while executing the project activities and attending necessary meetings or trials?\nYes, the total travel cost must be based on actual expenses incurred but is restricted to an amount not exceeding 5% of the total approved project cost.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[10]",
+          "text": "What is the residency and intellectual property requirement that applicants must fulfill to be considered eligible for this governmental scheme?\nThe applicant must definitively be an Indian Citizen and must possess either a genuine innovative idea or a demonstrable invention.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[11]",
+          "text": "If the primary objective of the proposal is only to register a patent for an existing invention, is this activity alone sufficient to qualify for the scheme's support?\nNo, proposals involving only patenting are generally not accepted; however, patenting is eligible if it is combined with parallel prototype development.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[12]",
+          "text": "Which specific project expenses, related to personnel and facility usage, are explicitly designated as ineligible to receive financial support?\nSupport cannot be granted for the innovator’s personal salary or for covering rental expenses related to the use of facilities already owned by the applicant.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[13]",
+          "text": "What specific sectors or technology intensive areas should I focus my innovation on to gain a preference during the proposal evaluation process?\nProposals are preferably focused on sectors such as Green Technology, Clean Energy, Affordable healthcare, Water & sewage management, or Industrially utilizable smart materials.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt"
+    }
+  ],
+  "links": [
+    {
+      "url": "https://www.dsir.gov.in/sites/default/files/2019-09/guide_ph1_cat2.pdf",
+      "title": "application form",
+      "path": ".scheme.applicationProcess[0].process[4].children[1].children[1]"
+    }
+  ],
+  "flags": [
+    "Complex component/stage/subject semantics. Human rule modelling required."
+  ],
+  "schema_hints": [
+    "Person age / date of birth",
+    "Income amount, period and subject",
+    "Project attributes",
+    "Institution type / accreditation",
+    "Education / enrolment",
+    "Employment / employer",
+    "Conditional document",
+    "Preference, not automatically mandatory",
+    "Benefit cap formula",
+    "Negative condition",
+    "Temporal condition",
+    "Component / category-specific branch"
+  ],
+  "original": null,
+  "raw": {
+    "slug": "prism-c2-fwmpkhttptt",
+    "old_id": null,
+    "user_example": true,
+    "scheme": {
+      "_id": "68f75bc2cd0b48b25fba8003",
+      "en": {
+        "applicationProcess": [
+          {
+            "mode": "Offline",
+            "process": [
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Proposals can be submitted to the following - "
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "The nearest TePP Outreach cum Cluster Innovation Centres (TOCICs)."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "The Department of Scientific and Industrial Research (DSIR)."
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ul_list"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 1:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " "
+                  },
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Consultation and Preparation"
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "The innovator should meet coordinators of TePP Outreach cum Cluster Innovation Centres (TOCICs) and take their advice before submitting the application. "
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "The applicant must prepare the "
+                      },
+                      {
+                        "children": [
+                          {
+                            "text": "application form"
+                          }
+                        ],
+                        "link": "https://www.dsir.gov.in/sites/default/files/2019-09/guide_ph1_cat2.pdf",
+                        "type": "link"
+                      },
+                      {
+                        "text": ", ensuring all mandatory details like the Title of the proposed project, Name, Address, Date of Birth, Educational qualification, Annual Income, Permanent Account Number (PAN) (mandatory), and Aadhaar Number are included."
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ul_list"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 2:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " "
+                  },
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Submission of Proposal"
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "The applicant must submit the application either directly to the nearest TePP Outreach cum Cluster Innovation Centre (TOCIC) or directly to the Department of Scientific and Industrial Research (DSIR). "
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Proposals submitted directly to the Department of Scientific and Industrial Research will be forwarded to the relevant TePP Outreach cum Cluster Innovation Centre for counselling and local screening."
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ul_list"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Post-Application Processes",
+                    "underline": true
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 1:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " "
+                  },
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Initial Screening for Completeness"
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The proposals will initially be screened for completeness at the point of receipt by the coordinators of the TePP Outreach cum Cluster Innovation Centres."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 2:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " "
+                  },
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Evaluation by Domain Knowledge Experts"
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "text": "After initial Screening, the complete and screened proposals are evaluated by the Domain Knowledge Experts associated with the TePP Outreach cum Cluster Innovation Centre."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 3:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " "
+                  },
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Submission to the Department of Scientific and Industrial Research"
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The TePP Outreach cum Cluster Innovation Centres will send complete and evaluated proposals to the Department of Scientific and Industrial Research for further action."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 4:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " "
+                  },
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Committee Recommendation"
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The proposals will then be considered by the PRISM Advisory and Screening Committee (PASC) for final recommendation."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 5:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Final Approval and Sanction"
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The sanction will finally be released to those projects that are approved by the Department."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 6:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " "
+                  },
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Signing of Terms and Conditions"
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The applicant has to sign the \"Terms & Conditions\" document prior to the actual release of the grants-in-aid."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Disbursement",
+                    "underline": true
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 1:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " "
+                  },
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "First Release"
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The first release of funds is based on milestones and deliverables projected in the project proposals and as recommended by the PRISM Advisory and Screening Committee (PASC)."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 2:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " "
+                  },
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Subsequent Fund Release and Monitoring "
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Subsequent releases of funds are based on the assessment of the progress of the project by the Project Review Committee (PRC). The approved projects will be monitored by the TePP Outreach cum Cluster Innovation Centre/other network partners, including technical expert(s), and the Project Review Committees will meet at least once in nine months to review the progress of the project."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 3:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " "
+                  },
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Project Closure"
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The project completion report will be accepted by the Competent Authority in the Department of Scientific and Industrial Research, based on the Project Review Committee recommendation, after the successful closure of the project."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "process_md": "**Proposals can be submitted to the following -** \n\n- The nearest TePP Outreach cum Cluster Innovation Centres (TOCICs).\n- The Department of Scientific and Industrial Research (DSIR).\n\n<br>\n\n##### **Step 1:****** ***Consultation and Preparation***\n\n- The innovator should meet coordinators of TePP Outreach cum Cluster Innovation Centres (TOCICs) and take their advice before submitting the application. \n- The applicant must prepare the [application form](https://www.dsir.gov.in/sites/default/files/2019-09/guide_ph1_cat2.pdf), ensuring all mandatory details like the Title of the proposed project, Name, Address, Date of Birth, Educational qualification, Annual Income, Permanent Account Number (PAN) (mandatory), and Aadhaar Number are included.\n##### **Step 2:****** ***Submission of Proposal***\n\n- The applicant must submit the application either directly to the nearest TePP Outreach cum Cluster Innovation Centre (TOCIC) or directly to the Department of Scientific and Industrial Research (DSIR). \n- Proposals submitted directly to the Department of Scientific and Industrial Research will be forwarded to the relevant TePP Outreach cum Cluster Innovation Centre for counselling and local screening.\n\n<br>\n\n##### **Post-Application Processes**\n##### **Step 1:****** ***Initial Screening for Completeness***\nThe proposals will initially be screened for completeness at the point of receipt by the coordinators of the TePP Outreach cum Cluster Innovation Centres.\n##### **Step 2:****** ***Evaluation by Domain Knowledge Experts***\nAfter initial Screening, the complete and screened proposals are evaluated by the Domain Knowledge Experts associated with the TePP Outreach cum Cluster Innovation Centre.\n##### **Step 3:****** ***Submission to the Department of Scientific and Industrial Research***\nThe TePP Outreach cum Cluster Innovation Centres will send complete and evaluated proposals to the Department of Scientific and Industrial Research for further action.\n##### **Step 4:****** ***Committee Recommendation***\nThe proposals will then be considered by the PRISM Advisory and Screening Committee (PASC) for final recommendation.\n##### **Step 5:** **Final Approval and Sanction**\nThe sanction will finally be released to those projects that are approved by the Department.\n##### **Step 6:****** ***Signing of Terms and Conditions***\nThe applicant has to sign the &quot;Terms &amp; Conditions&quot; document prior to the actual release of the grants-in-aid.\n<br>\n\n##### ***Disbursement***\n##### **Step 1:****** ***First Release***\nThe first release of funds is based on milestones and deliverables projected in the project proposals and as recommended by the PRISM Advisory and Screening Committee (PASC).\n##### **Step 2:****** ***Subsequent Fund Release and Monitoring*** \nSubsequent releases of funds are based on the assessment of the progress of the project by the Project Review Committee (PRC). The approved projects will be monitored by the TePP Outreach cum Cluster Innovation Centre/other network partners, including technical expert(s), and the Project Review Committees will meet at least once in nine months to review the progress of the project.\n##### **Step 3:****** ***Project Closure***\nThe project completion report will be accepted by the Competent Authority in the Department of Scientific and Industrial Research, based on the Project Review Committee recommendation, after the successful closure of the project.\n<br>\n\n"
+          }
+        ],
+        "basicDetails": {
+          "dbtScheme": false,
+          "level": {
+            "label": "Central",
+            "value": "central"
+          },
+          "nodalDepartmentName": {
+            "label": "Department of Scientific and Industrial Research",
+            "value": 1616
+          },
+          "nodalMinistryName": {
+            "label": "Ministry Of Science And Technology",
+            "value": 1579
+          },
+          "otherDepartmentNames": null,
+          "otherMinistryName": null,
+          "schemeCategory": [
+            {
+              "label": "Science, IT & Communications",
+              "value": "628ce9ced6d1a3bde46853a4"
+            },
+            {
+              "label": "Business & Entrepreneurship",
+              "value": "628ce733d6d1a3bde4685278"
+            }
+          ],
+          "schemeFor": "Individual",
+          "schemeName": "PRISM (Promoting Innovations in Individuals, Start-ups and MSMEs): Category-2: Fabrication of Working Model/Process Know-how/Testing & Trial/Patenting/Technology Transfer",
+          "schemeOpenDate": null,
+          "schemeShortTitle": "PRISM-C2-FWMPKHTTPTT",
+          "schemeSubCategory": [
+            {
+              "label": "Intellectual property rights and patents",
+              "value": "Intellectual property rights and patents"
+            },
+            {
+              "label": "Licenses, trademarks and copyright",
+              "value": "Licenses, trademarks and copyright"
+            },
+            {
+              "label": "Technology upgradation",
+              "value": "Technology upgradation"
+            },
+            {
+              "label": "Research & Development",
+              "value": "Research & Development"
+            }
+          ],
+          "schemeType": {
+            "label": "Central Sector Scheme",
+            "value": "central-sector-scheme"
+          },
+          "state": null,
+          "tags": [
+            "Innovation",
+            "Patent",
+            "Invention",
+            "Prototype",
+            "Technology"
+          ],
+          "targetBeneficiaries": [
+            {
+              "label": "Individual",
+              "value": "individual"
+            }
+          ]
+        },
+        "eligibilityCriteria": {
+          "eligibilityDescription": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must be an Indian Citizen."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must have an innovative idea or an invention."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must propose a project where the project cost is more than ₹5,00,000/- and up to ₹35,00,000/-."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must ensure the project duration does not exceed 24 months."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must ensure the proposal involves the fabrication of a working model/process know-how/testing and trial/patenting/technology transfer."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must ensure the proposal does not involve only software development."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must ensure the proposal is not for basic scientific research having no immediate commercial implications."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Specific Conditions",
+                  "underline": true
+                }
+              ],
+              "type": "heading_five"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "bold": true,
+                      "text": "Students:",
+                      "underline": true
+                    },
+                    {
+                      "text": " The applicant must provide a `No Objection Certificate’ from the head of their institution on the institution’s letterhead."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "bold": true,
+                      "text": "Students:",
+                      "underline": true
+                    },
+                    {
+                      "text": " The applicant must ensure the commitment from the institution that the project will be taken to its logical conclusion by the student/concerned faculty."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "bold": true,
+                      "text": "Individuals Working in Organizations:",
+                      "underline": true
+                    },
+                    {
+                      "text": " The applicant must furnish a `No Objection Certificate’ from their employer."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Desirable Criteria (Preference)",
+                  "underline": true
+                }
+              ],
+              "type": "heading_five"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The proposals should preferably be in the following focus sectors: Green Technology, Clean Energy, Industrially utilizable smart materials, Waste to wealth, Affordable healthcare, Water & sewage management, or any other technology or knowledge-intensive area."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Preference: Student innovators making it to the final of any competition are eligible, but they should take the project as a full-time activity after graduation to ensure their studies are not adversely affected."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant should ensure the proposal is submitted through the nearest TePP Outreach cum Cluster Innovation Centre, even if scouted, documented, and mentored by other agencies, and must include evaluation by the assisting agency."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "eligibilityDescription_md": "\n- The applicant must be an Indian Citizen.\n- The applicant must have an innovative idea or an invention.\n- The applicant must propose a project where the project cost is more than ₹5,00,000/- and up to ₹35,00,000/-.\n- The applicant must ensure the project duration does not exceed 24 months.\n- The applicant must ensure the proposal involves the fabrication of a working model/process know-how/testing and trial/patenting/technology transfer.\n- The applicant must ensure the proposal does not involve only software development.\n- The applicant must ensure the proposal is not for basic scientific research having no immediate commercial implications.\n\n##### ***Specific Conditions***\n\n- **Students:** The applicant must provide a `No Objection Certificate’ from the head of their institution on the institution’s letterhead.- **Students:** The applicant must ensure the commitment from the institution that the project will be taken to its logical conclusion by the student/concerned faculty.- **Individuals Working in Organizations:** The applicant must furnish a `No Objection Certificate’ from their employer.\n##### ***Desirable Criteria (Preference)***\n\n- The proposals should preferably be in the following focus sectors: Green Technology, Clean Energy, Industrially utilizable smart materials, Waste to wealth, Affordable healthcare, Water &amp; sewage management, or any other technology or knowledge-intensive area.\n- Preference: Student innovators making it to the final of any competition are eligible, but they should take the project as a full-time activity after graduation to ensure their studies are not adversely affected.\n- The applicant should ensure the proposal is submitted through the nearest TePP Outreach cum Cluster Innovation Centre, even if scouted, documented, and mentored by other agencies, and must include evaluation by the assisting agency.\n\n<br>\n\n"
+        },
+        "schemeContent": {
+          "benefitTypes": {
+            "id": 1,
+            "label": "Cash",
+            "value": "cash"
+          },
+          "benefits": [
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "The maximum support under Category II is ₹20,00,000/- or 90% of the approved project cost, whichever is lower. The approved project cost must be more than ₹5,00,000/- and up to ₹35,00,000/-."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Eligible Components for Support",
+                  "underline": true
+                }
+              ],
+              "type": "heading_five"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Research and Development/Design Engineering/Consultancy charges."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Rental charges for laboratory/workshop facilities."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Essential equipment that cannot be taken on rent (reasons for purchase must be given)."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Raw material/spares/consumables cost."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Fabrication/synthesis charges."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Manpower cost of technical assistants, not exceeding 20% of the approved project cost."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Testing and trials."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Travel cost, not exceeding 5% of the approved project cost."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Patent filing (actual fee paid to the patent office)."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Process know-how development."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Proposals involving scientifically characterizing or testing the efficacy and toxicity of herbal formulations."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Exclusions from Support",
+                  "underline": true
+                }
+              ],
+              "type": "heading_five"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Innovator’s salary."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Rental expenses for use of own facilities."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Disbursement",
+                  "underline": true
+                }
+              ],
+              "type": "heading_five"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The first release is based on milestones/deliverables projected in the project proposals and as recommended by the PRISM Advisory and Screening Committee (PASC)."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Subsequent releases are based on the assessment of the progress of the project by the Project Review Committee (PRC)."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Conditions",
+                  "underline": true
+                }
+              ],
+              "type": "heading_five"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The applicant has to sign \"Terms & Conditions\" prior to the actual release of grants-in-aid."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The approved projects will be monitored by the TePP Outreach cum Cluster Innovation Centre/other network partners, including technical expert(s)."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The TePP Outreach cum Cluster Innovation Centres will be periodically reporting project status to the Department of Scientific and Industrial Research at an interval of 3 months."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The Project Review Committees, consisting of external experts, will meet at least once in nine months to review the progress of the project."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "For student innovators, the institution will be responsible for final completion of the project in case the Innovator leaves the Institute/Organization without completion of the project."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "benefits_md": "***The maximum support under Category II is ₹20,00,000/- or 90% of the approved project cost, whichever is lower. The approved project cost must be more than ₹5,00,000/- and up to ₹35,00,000/-.***\n<br>\n\n##### ***Eligible Components for Support***\n\n- Research and Development/Design Engineering/Consultancy charges.\n- Rental charges for laboratory/workshop facilities.\n- Essential equipment that cannot be taken on rent (reasons for purchase must be given).\n- Raw material/spares/consumables cost.\n- Fabrication/synthesis charges.\n- Manpower cost of technical assistants, not exceeding 20% of the approved project cost.\n- Testing and trials.\n- Travel cost, not exceeding 5% of the approved project cost.\n- Patent filing (actual fee paid to the patent office).\n- Process know-how development.\n- Proposals involving scientifically characterizing or testing the efficacy and toxicity of herbal formulations.\n\n##### ***Exclusions from Support***\n\n- Innovator’s salary.\n- Rental expenses for use of own facilities.\n\n##### ***Disbursement***\n\n- The first release is based on milestones/deliverables projected in the project proposals and as recommended by the PRISM Advisory and Screening Committee (PASC).\n- Subsequent releases are based on the assessment of the progress of the project by the Project Review Committee (PRC).\n\n##### ***Conditions***\n\n- The applicant has to sign &quot;Terms &amp; Conditions&quot; prior to the actual release of grants-in-aid.\n- The approved projects will be monitored by the TePP Outreach cum Cluster Innovation Centre/other network partners, including technical expert(s).\n- The TePP Outreach cum Cluster Innovation Centres will be periodically reporting project status to the Department of Scientific and Industrial Research at an interval of 3 months.\n- The Project Review Committees, consisting of external experts, will meet at least once in nine months to review the progress of the project.\n- For student innovators, the institution will be responsible for final completion of the project in case the Innovator leaves the Institute/Organization without completion of the project.\n\n<br>\n\n",
+          "briefDescription": "The scheme aims to promote innovations in individuals, start-ups, and Micro, Small and Medium Enterprises (PRISM). It offers financial support (up to ₹20,00,000/-) for Indian Citizens working on innovation projects requiring fabrication of working models, patenting, or technology transfer.",
+          "detailedDescription": [
+            {
+              "children": [
+                {
+                  "text": "The scheme \"Promoting Innovations In Individuals, Start-Ups And Micro, Small And Medium Enterprises (PRISM)\" was launched by the Department of Scientific and Industrial Research, Ministry of Science and Technology, Government of India. The scheme aims to promote innovations in individuals, start-ups and micro, small and medium enterprises. The scheme provides support for Individual Innovator Proposals under Phase-I, Category II, focusing on Fabrication of Working Model/Process Know-how/Testing & Trial/Patenting/Technology Transfer. Key features include comparatively more rigorous demonstrability of original idea/invention/know-how in the form of working prototype/processes and its testing and trial/patenting/technology transfer. The scheme is implemented by the Department of Scientific and Industrial Research (DSIR). The applications for this scheme are accepted by submission to the nearest TePP Outreach cum Cluster Innovation Centres (TOCICs) or directly to the Department of Scientific and Industrial Research."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "detailedDescription_md": "The scheme &quot;Promoting Innovations In Individuals, Start-Ups And Micro, Small And Medium Enterprises (PRISM)&quot; was launched by the Department of Scientific and Industrial Research, Ministry of Science and Technology, Government of India. The scheme aims to promote innovations in individuals, start-ups and micro, small and medium enterprises. The scheme provides support for Individual Innovator Proposals under Phase-I, Category II, focusing on Fabrication of Working Model/Process Know-how/Testing &amp; Trial/Patenting/Technology Transfer. Key features include comparatively more rigorous demonstrability of original idea/invention/know-how in the form of working prototype/processes and its testing and trial/patenting/technology transfer. The scheme is implemented by the Department of Scientific and Industrial Research (DSIR). The applications for this scheme are accepted by submission to the nearest TePP Outreach cum Cluster Innovation Centres (TOCICs) or directly to the Department of Scientific and Industrial Research.\n<br>\n\n",
+          "exclusions": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Proposals involving only software development."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Proposals involving only patenting (unless patenting is along with prototype development)."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Proposals for basic scientific research having no immediate commercial implication"
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "exclusions_md": "\n- Proposals involving only software development.\n- Proposals involving only patenting (unless patenting is along with prototype development).\n- Proposals for basic scientific research having no immediate commercial implication\n\n<br>\n\n",
+          "references": [
+            {
+              "title": "Guidelines",
+              "url": "https://www.dsir.gov.in/sites/default/files/2019-09/guide_ph1_cat2.pdf"
+            }
+          ],
+          "schemeImageUrl": ""
+        },
+        "schemeDefinitions": []
+      },
+      "slug": "prism-c2-fwmpkhttptt"
+    },
+    "documents": {
+      "_id": "68f75c1ca4de653fd43a935f",
+      "en": {
+        "documentsRequired_md": "##### ***Required During Application/Submission Stage***\n\n- Proof Of Residence (Issued By Sub-Divisional Magistrate (SDM)/District Magistrate (DM) Or A Copy Of Ration Card Or Any Other Document Regarding Proof Of Residence).\n- Copy Of Aadhaar Card.\n- Documentary Proof Of Prior Work (Video, Photo, Press Coverage, etc.).\n- No Objection Certificate (From Head of Institute/Organization, on institution’s letterhead, for Students and Working Innovators).\n- Commitment Letter From Institution (Committing that the project will be taken to its logical conclusion by the student/concerned faculty, for Students).\n- Copy Of The Latest Income Tax Returns Filed (If Applicant Is An Income Tax Payer).\n- List Of Equipment/Instruments, Etc. With Their Respective Costs In A Separate Annexure (Required if an essential equipment purchase is proposed).\n- Details Of Work Done On Innovation So Far (Including Literature Survey/Patent Search, Development Work Done, etc.).\n- Brief Write-Up Giving Broad Details Of The Original Idea/Invention/Intellectual Property Rights/Know How Available.\n- Proposed Costs And Time Frame For The Project (Including Justification For Cost Estimation).\n- Activity Details/Work Plan With Monitorable Milestones.\n- Details Of End Product/Process/Output (Including Targeted Specifications, Performance Requirements/Standards).\n- Referees (Two Numbers With Complete Address, Phone Number And E-Mail Identification).\n\n \n##### ***Required Prior To Grants-in-aid Release***\n\n- Signed &quot;Terms &amp; Conditions&quot; Document.\n\n \n##### ***Required At Project Closure***\n\n- Project Completion Report.\n\n \n<br>\n\n",
+        "documents_required": [
+          {
+            "children": [
+              {
+                "bold": true,
+                "italic": true,
+                "text": "Required During Application/Submission Stage",
+                "underline": true
+              }
+            ],
+            "type": "heading_five"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Proof Of Residence (Issued By Sub-Divisional Magistrate (SDM)/District Magistrate (DM) Or A Copy Of Ration Card Or Any Other Document Regarding Proof Of Residence)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Copy Of Aadhaar Card."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Documentary Proof Of Prior Work (Video, Photo, Press Coverage, etc.)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "No Objection Certificate (From Head of Institute/Organization, on institution’s letterhead, for Students and Working Innovators)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Commitment Letter From Institution (Committing that the project will be taken to its logical conclusion by the student/concerned faculty, for Students)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Copy Of The Latest Income Tax Returns Filed (If Applicant Is An Income Tax Payer)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "List Of Equipment/Instruments, Etc. With Their Respective Costs In A Separate Annexure (Required if an essential equipment purchase is proposed)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Details Of Work Done On Innovation So Far (Including Literature Survey/Patent Search, Development Work Done, etc.)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Brief Write-Up Giving Broad Details Of The Original Idea/Invention/Intellectual Property Rights/Know How Available."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Proposed Costs And Time Frame For The Project (Including Justification For Cost Estimation)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Activity Details/Work Plan With Monitorable Milestones."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Details Of End Product/Process/Output (Including Targeted Specifications, Performance Requirements/Standards)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Referees (Two Numbers With Complete Address, Phone Number And E-Mail Identification)."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ul_list"
+          },
+          {
+            "children": [
+              {
+                "text": " "
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "bold": true,
+                "italic": true,
+                "text": "Required Prior To Grants-in-aid Release",
+                "underline": true
+              }
+            ],
+            "type": "heading_five"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Signed \"Terms & Conditions\" Document."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ul_list"
+          },
+          {
+            "children": [
+              {
+                "text": " "
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "bold": true,
+                "italic": true,
+                "text": "Required At Project Closure",
+                "underline": true
+              }
+            ],
+            "type": "heading_five"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Project Completion Report."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ul_list"
+          },
+          {
+            "children": [
+              {
+                "text": " "
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "text": ""
+              }
+            ],
+            "type": "paragraph"
+          }
+        ]
+      },
+      "schemeId": "68f75bc2cd0b48b25fba8003"
+    },
+    "faqs": {
+      "_id": "68f75cd4a4de653fd43a9734",
+      "en": {
+        "faqs": [
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Proposals dedicated entirely to basic scientific research which lack immediate commercial implications are explicitly excluded and will not be accepted for consideration."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Proposals dedicated entirely to basic scientific research which lack immediate commercial implications are explicitly excluded and will not be accepted for consideration.\n<br>\n\n",
+            "question": "If the user wishes to proceed with fundamental scientific investigations that have no immediate commercial value, will such a proposal be accepted for evaluation?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The maximum financial assistance provided is ₹20,00,000/- or 90% of the approved project cost, whichever of these two amounts is lower."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The maximum financial assistance provided is ₹20,00,000/- or 90% of the approved project cost, whichever of these two amounts is lower.\n<br>\n\n",
+            "question": "What is the highest percentage of the total approved project expenditure that the funding authority can provide as financial assistance under this category?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Support covers the Fabrication of Working Model, Process Know-how, Testing & Trial, Patenting, or Technology Transfer, which demand rigorous demonstrability of the original idea."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Support covers the Fabrication of Working Model, Process Know-how, Testing &amp; Trial, Patenting, or Technology Transfer, which demand rigorous demonstrability of the original idea.\n<br>\n\n",
+            "question": "What types of innovation activities are primarily eligible for support under Category II, focusing on demonstrable outcomes rather than research?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Proposals scouted and documented by other agencies must still be routed through the nearest TePP Outreach cum Cluster Innovation Centre and include an evaluation by the assisting agency."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Proposals scouted and documented by other agencies must still be routed through the nearest TePP Outreach cum Cluster Innovation Centre and include an evaluation by the assisting agency.\n<br>\n\n",
+            "question": "When submitting a proposal that has been mentored by external agencies other than the designated TePP Outreach cum Cluster Innovation Centres, what submission route must be followed?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Students must provide a 'No Objection Certificate’ signed by the head of their institution, written on the institution’s official letter-head, along with the main application."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Students must provide a &#39;No Objection Certificate’ signed by the head of their institution, written on the institution’s official letter-head, along with the main application.\n<br>\n\n",
+            "question": "As a student applying for innovation support, what specific documentation is required from the head of my educational institution to be eligible for consideration?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The overall project cost must fall within the range of more than ₹5,00,000/- and up to ₹35,00,000/- to meet the stipulated financial criteria for the proposal."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The overall project cost must fall within the range of more than ₹5,00,000/- and up to ₹35,00,000/- to meet the stipulated financial criteria for the proposal.\n<br>\n\n",
+            "question": "What are the minimum and maximum financial limits set for the total estimated costs of the proposed invention project to qualify for this particular phase of support?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Yes, the manpower cost intended for technical assistants is capped and must not exceed 20% of the total approved cost for the innovation project."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Yes, the manpower cost intended for technical assistants is capped and must not exceed 20% of the total approved cost for the innovation project.\n<br>\n\n",
+            "question": "Are there any limitations placed on the cost allocated specifically for hiring technical assistants or other related manpower within the project budget?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Individuals working in organizations must furnish a mandatory ‘No Objection Certificate’ from their employer when applying for support under the Promoting Innovations In Individuals, Start-Ups and Micro, Small and Medium Enterprises scheme."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Individuals working in organizations must furnish a mandatory ‘No Objection Certificate’ from their employer when applying for support under the Promoting Innovations In Individuals, Start-Ups and Micro, Small and Medium Enterprises scheme.\n<br>\n\n",
+            "question": "If I am currently employed by an organization and wish to seek support for my innovative idea, what formal approval must I obtain from my employer?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Proposals focused exclusively on software development are not accepted for consideration under the Promoting Innovations In Individuals, Start-Ups and Micro, Small and Medium Enterprises scheme."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Proposals focused exclusively on software development are not accepted for consideration under the Promoting Innovations In Individuals, Start-Ups and Micro, Small and Medium Enterprises scheme.\n<br>\n\n",
+            "question": "If the project solely involves developing new software applications without any embedded physical component, will the proposal be considered eligible for funding?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Yes, the total travel cost must be based on actual expenses incurred but is restricted to an amount not exceeding 5% of the total approved project cost."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Yes, the total travel cost must be based on actual expenses incurred but is restricted to an amount not exceeding 5% of the total approved project cost.\n<br>\n\n",
+            "question": "Is there a spending restriction concerning the costs incurred for travel while executing the project activities and attending necessary meetings or trials?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The applicant must definitively be an Indian Citizen and must possess either a genuine innovative idea or a demonstrable invention."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The applicant must definitively be an Indian Citizen and must possess either a genuine innovative idea or a demonstrable invention.\n<br>\n\n",
+            "question": "What is the residency and intellectual property requirement that applicants must fulfill to be considered eligible for this governmental scheme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "No, proposals involving only patenting are generally not accepted; however, patenting is eligible if it is combined with parallel prototype development."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "No, proposals involving only patenting are generally not accepted; however, patenting is eligible if it is combined with parallel prototype development.\n<br>\n\n",
+            "question": "If the primary objective of the proposal is only to register a patent for an existing invention, is this activity alone sufficient to qualify for the scheme's support?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Support cannot be granted for the innovator’s personal salary or for covering rental expenses related to the use of facilities already owned by the applicant."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Support cannot be granted for the innovator’s personal salary or for covering rental expenses related to the use of facilities already owned by the applicant.\n<br>\n\n",
+            "question": "Which specific project expenses, related to personnel and facility usage, are explicitly designated as ineligible to receive financial support?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Proposals are preferably focused on sectors such as Green Technology, Clean Energy, Affordable healthcare, Water & sewage management, or Industrially utilizable smart materials."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Proposals are preferably focused on sectors such as Green Technology, Clean Energy, Affordable healthcare, Water &amp; sewage management, or Industrially utilizable smart materials.\n<br>\n\n",
+            "question": "What specific sectors or technology intensive areas should I focus my innovation on to gain a preference during the proposal evaluation process?"
+          }
+        ]
+      },
+      "schemeId": "68f75bc2cd0b48b25fba8003"
+    }
+  }
+}

@@ -1,0 +1,2096 @@
+{
+  "id": "C08",
+  "slug": "mda-fert",
+  "name": "Market Development Assistance",
+  "level": "Central",
+  "source_level": "Central",
+  "area": "India",
+  "categories": "Business & Entrepreneurship; Science, IT & Communications",
+  "applicant_type": "Individual",
+  "beneficiaries": "University / Institution; Business Entity",
+  "ministry": "Ministry Of Chemicals And Fertilizers",
+  "department": "Department Of Fertilizers",
+  "tags": "Manufacturer; Operator; Institute; Subsidy; Fertilizer",
+  "brief": "The scheme aims to promote organic fertilizers produced at Bio-Gas and Compressed Bio-Gas plants under the Galvanizing Organic Bio-Agro Resources Dhan initiative. It provides Market Development Assistance of ₹1,500/- per Metric Tonne to manufacturing and marketing entities of organic fertilizers.",
+  "url": "https://www.myscheme.gov.in/schemes/mda-fert",
+  "source_id": "6a02fb5ef93a81a34ce51eaf",
+  "snapshot_date": "2026-10-24",
+  "hash": "b9d4ff120b461291eb2709073a08c42cbdbd225c469634334f725d9f30d9e155",
+  "open_date": null,
+  "close_date": null,
+  "sections": [
+    {
+      "section": "Details",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.detailedDescription[0]",
+          "text": "The scheme \"Market Development Assistance\" was launched by the Ministry of Chemicals & Fertilizers, Department of Fertilizers, and the scheme aims to promote organic fertilizers produced at plants under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative covering various Bio-Gas and Compressed Bio-Gas support schemes. The scheme provides Market Development Assistance at ₹1,500/- per Metric Tonne for the sale of Fermented Organic Manure, Liquid Fermented Organic Manure, and enriched Phosphate Rich Organic Manure, along with gap funding for research from a corpus of ₹3,60,00,00,000/-. The applicant must register their manufacturing units on the Galvanizing Organic Bio-Agro Resources Dhan portal and market the fertilizers in conformity with the Fertilizer Control Order specifications.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "Benefits",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.benefits[0].children[0]",
+          "text": "Market Development Assistance of ₹1,500/- per Metric Tonne is provided for the sale of Fermented Organic Manure, Liquid Fermented Organic Manure, and enriched Phosphate Rich Organic Manure.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[0].children[1]",
+          "text": "A corpus of ₹3,60,00,00,000/- is available for research gap funding, to be utilized only by Central and State Research Institutes or non-private fertilizer cooperatives.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[0].children[2]",
+          "text": "The total budget outlay for the scheme is ₹14,51,82,00,000/- for three years from Financial Year 2023-24 to Financial Year 2025-26.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[1].children[0]",
+          "text": "Disbursal",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[2].children[0]",
+          "text": "Assistance is provided only for the quantity sold through Point of Sale machines.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[2].children[1]",
+          "text": "Assistance claims must be generated through the Integrated Fertilizer Management System portal using Direct Benefit Transfer.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[2].children[2]",
+          "text": "Claims must be submitted within two months of the sale of the organic fertilizers.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[3].children[0]",
+          "text": "Conditions",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[4].children[0]",
+          "text": "Marketing entities must print the Maximum Retail Price along with applicable Market Development Assistance on the bags clearly.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[4].children[1]",
+          "text": "Any State subsidy provided on the organic fertilizers must be passed on to the farmers in terms of a lower Maximum Retail Price.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[4].children[2]",
+          "text": "Each bag must display its constituents as given in the Fertilizer Control Order, the marketing entities' names, the manufacturer's name, and shelf-life.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[4].children[3]",
+          "text": "Marketing entities must ensure that any sale above the printed net Maximum Retail Price is avoided, as it is punishable under the Essential Commodities Act.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "Eligibility",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "text": "The applicant must be a manufacturing-cum-marketing entity, a Compressed Bio-Gas operator, a Bio-gas operator, a marketer, or a distributor under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "text": "The applicant must be a Fertilizer Marketing Company marketing their organic fertilizers.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "text": "The applicant must produce organic fertilizers at Bio-Gas or Compressed Bio-Gas plants established under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "text": "The applicant must ensure the Bio-Gas or Compressed Bio-Gas plants are supported under initiatives like the Sustainable Alternative Towards Affordable Transportation scheme, the Waste to Energy programme, or the Swachh Bharat Mission.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "text": "The applicant must register the Bio-Gas or Compressed Bio-Gas units with the Galvanizing Organic Bio-Agro Resources Dhan portal of the Department of Drinking Water & Sanitation as a pre-requisite condition.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "text": "The applicant must market Fermented Organic Manure, Liquid Fermented Organic Manure, or enriched Phosphate Rich Organic Manure.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "text": "The applicant must market the organic fertilizers in packed form.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[7]",
+          "text": "The applicant must ensure the organic fertilizers conform to the specifications mentioned in the Fertilizer Control Order, 1985.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[8]",
+          "text": "The applicant must undergo quality testing at Government notified laboratories or National Accreditation Board for Testing and Calibration Laboratories accredited private laboratories.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "text": "Relaxations",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[2].children[0]",
+          "text": "The applicant may market the fertilizers in bulk or loose form on an experimental basis subject to necessary notifications by the Department of Agriculture & Farmers Welfare.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[2].children[1]",
+          "text": "Primary Agricultural Cooperative Societies may be engaged as aggregators by the Fertilizers Marketing Companies or manufacturers, wherever feasible.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[3].children[0]",
+          "text": "Post-Selection Conditions",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[4].children[0]",
+          "text": "The applicant must maintain records of a permanent nature in continuity year after year.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[4].children[1]",
+          "text": "The applicant must make all permanent records available to the Department of Fertilizers or the Fertilizer Flying Squad for audit and verification.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "Exclusions",
+      "channel": "",
+      "blocks": [],
+      "state": "Empty or absent in source",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "Applicant documents",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "documents.en.documents_required[0].children[0]",
+          "text": "Application Stage Documents",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[0]",
+          "text": "Letter Intimating Willingness to Market Organic Fertilizers.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[1]",
+          "text": "Purchasing Agreement for Supply of Fermented Organic Manure, Liquid Fermented Organic Manure, or Phosphate Rich Organic Manure (Required if marketing through Fertilizer Marketing Companies).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[2]",
+          "text": "Details of Fertilizer Marketing Companies Document (Annexure-I).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[3]",
+          "text": "Details of Organic Fertilizer Manufacturer Document (Annexure-II).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[4]",
+          "text": "Tax Identification Number Certificate of the Company.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[5]",
+          "text": "Permanent Account Number Card of the Company.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[6]",
+          "text": "Bank Account Details (Account Number, Indian Financial System Code, Name of Account Holder, Address of the Bank).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[1].children[7]",
+          "text": "Galvanizing Organic Bio-Agro Resources Dhan Portal Registration Certificate.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[2].children[0]",
+          "text": "Benefit Disbursal Documents",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[3].children[0]",
+          "text": "Quantity Certificate for Organic Fertilizers (Proforma 'B1-MDA').",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[3].children[1]",
+          "text": "Quality Certificate for Organic Fertilizers (Proforma 'B2-MDA').",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[3].children[2]",
+          "text": "Quality Test Report from a Government Notified Laboratory or National Accreditation Board for Testing and Calibration Laboratories Accredited Private Laboratory.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[3].children[3]",
+          "text": "Proforma for Claiming Payment of Market Development Assistance (Annexure) with the Digital Signature of the Chartered Accountant or Statutory Auditor and the Authorized Officer.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[4].children[0]",
+          "text": "Verification and Audit Documents",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[0]",
+          "text": "Stock Registers Showing Opening Balance, Production, Quantity Dispatched, and Closing Balance.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[1]",
+          "text": "Daily Report of Production and Stock Authenticated by the Production Manager.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[2]",
+          "text": "Dispatch and Stock Transfer Advice Serially Numbered and Signed by the Sales Manager.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[3]",
+          "text": "Dispatch Instructions Issued from Headquarters.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[4]",
+          "text": "Gate Passes Bearing Printed Serial Numbers.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[5]",
+          "text": "Register of Gate Passes Issued.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[6]",
+          "text": "Register of Dispatches.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[7]",
+          "text": "Sales Invoices Serially Numbered and Supported by Warehouse Delivery Notes.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[8]",
+          "text": "Sales Day Book.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[9]",
+          "text": "Delivery Challan Signed by the Receiver in Confirmation of Receipt.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[5].children[10]",
+          "text": "Stock Register of Raw Materials Purchased and Consumed.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "Application process",
+      "channel": "Online",
+      "blocks": [
+        {
+          "path": "en.applicationProcess[0].process[0].children[0]",
+          "text": "Registration Process",
+          "heading": false,
+          "node_type": "text",
+          "context": ""
+        },
+        {
+          "path": "en.applicationProcess[0].process[1]",
+          "text": "Step 1: Accessing the Portal for Pre-requisite Registration",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 1: Accessing the Portal for Pre-requisite Registration"
+        },
+        {
+          "path": "en.applicationProcess[0].process[2]",
+          "text": "The applicant must access the Unified Galvanizing Organic Bio-Agro Resources Dhan portal of the Department of Drinking Water & Sanitation to register their Bio-Gas or Compressed Bio-Gas manufacturing units.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 1: Accessing the Portal for Pre-requisite Registration"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3]",
+          "text": "Step 2: Submitting Details for Registration",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 2: Submitting Details for Registration"
+        },
+        {
+          "path": "en.applicationProcess[0].process[4]",
+          "text": "The applicant must submit all necessary plant and operational details on the portal to obtain the mandatory registration number required to avail the assistance.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 2: Submitting Details for Registration"
+        },
+        {
+          "path": "en.applicationProcess[0].process[5].children[0]",
+          "text": "Application Process",
+          "heading": false,
+          "node_type": "text",
+          "context": "Step 2: Submitting Details for Registration"
+        },
+        {
+          "path": "en.applicationProcess[0].process[6]",
+          "text": "Step 3: Intimation of Willingness to the Department",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 3: Intimation of Willingness to the Department"
+        },
+        {
+          "path": "en.applicationProcess[0].process[7]",
+          "text": "The applicant must submit a physical letter intimating their willingness to market the organic fertilizers to the Department of Fertilizers.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 3: Intimation of Willingness to the Department"
+        },
+        {
+          "path": "en.applicationProcess[0].process[8]",
+          "text": "Step 4: Submission of Annexures",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 4: Submission of Annexures"
+        },
+        {
+          "path": "en.applicationProcess[0].process[9]",
+          "text": "The applicant must attach the required operational details as per Annexure-I (for Fertilizer Marketing Companies) or Annexure-II (for Manufacturers) along with the intimation letter for formal approval.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 4: Submission of Annexures"
+        },
+        {
+          "path": "en.applicationProcess[0].process[10]",
+          "text": "Step 5: Registration on the Integrated Fertilizer Management System Portal",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 5: Registration on the Integrated Fertilizer Management System Portal"
+        },
+        {
+          "path": "en.applicationProcess[0].process[11]",
+          "text": "The applicant must register on the newly introduced module on the Integrated Fertilizer Management System portal where the Department of Fertilizers will allot a unique identification number to the manufacturing units.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 5: Registration on the Integrated Fertilizer Management System Portal"
+        },
+        {
+          "path": "en.applicationProcess[0].process[12]",
+          "text": "Step 6: Uploading Operational Data",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 6: Uploading Operational Data"
+        },
+        {
+          "path": "en.applicationProcess[0].process[13]",
+          "text": "The applicant must use the allotted identification number to upload the quantity of organic fertilizers produced, data relating to sales, Maximum Retail Price, remaining stock, and quality certificates on the Integrated Fertilizer Management System portal.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 6: Uploading Operational Data"
+        },
+        {
+          "path": "en.applicationProcess[0].process[14].children[0]",
+          "text": "Post-Application Processes",
+          "heading": false,
+          "node_type": "text",
+          "context": "Step 6: Uploading Operational Data"
+        },
+        {
+          "path": "en.applicationProcess[0].process[15]",
+          "text": "Step 7: Quality Testing and Certification",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 7: Quality Testing and Certification"
+        },
+        {
+          "path": "en.applicationProcess[0].process[16]",
+          "text": "The applicant must ensure batch-wise or dispatch-wise quality testing at accredited laboratories and get the test reports validated by the State Agriculture Department or State Energy Development Agency to receive the 'B2-MDA' certificate.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 7: Quality Testing and Certification"
+        },
+        {
+          "path": "en.applicationProcess[0].process[17]",
+          "text": "Step 8: Generating Benefit Claims",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 8: Generating Benefit Claims"
+        },
+        {
+          "path": "en.applicationProcess[0].process[18]",
+          "text": "The applicant must generate Direct Benefit Transfer claims through the Integrated Fertilizer Management System portal using the prescribed Annexure within two months from the month of sale.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 8: Generating Benefit Claims"
+        },
+        {
+          "path": "en.applicationProcess[0].process[19]",
+          "text": "Step 9: Submission of Claim Documentation",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Step 9: Submission of Claim Documentation"
+        },
+        {
+          "path": "en.applicationProcess[0].process[20]",
+          "text": "The applicant must submit a copy of the Quality Certificate along with the claim for Market Development Assistance payment for that particular month to the Department of Fertilizers to receive the financial disbursement.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Step 9: Submission of Claim Documentation"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[0]",
+          "text": "To be eligible to receive the financial assistance for promoting organic fertilizers, what specific online registration must I complete beforehand?\nYou must register your Bio-Gas or Compressed Bio-Gas units on the unified Galvanizing Organic Bio-Agro Resources Dhan portal managed by the Department of Drinking Water and Sanitation.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[1]",
+          "text": "If I want to ensure my organic manure qualifies for the monetary support, where should I get the mandatory quality testing conducted?\nQuality testing must be ensured at laboratories notified by the Government or private laboratories accredited by the National Accreditation Board for Testing and Calibration Laboratories.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[2]",
+          "text": "I represent a private fertilizer cooperative and want to apply for the research and development financial support; am I eligible to access this specific funding?\nNo, the ₹3,60,00,00,000/- corpus for research and gap funding can only be utilized by Central or State Research Institutes and non-private fertilizer cooperatives.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[3]",
+          "text": "Which exact types of organic fertilizers must my manufacturing plant produce to be considered eligible for the financial support of ₹1,500/- per Metric Tonne?\nYou must produce Fermented Organic Manure, Liquid Fermented Organic Manure, or enriched Phosphate Rich Organic Manure as by-products of your registered plants.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[4]",
+          "text": "After getting my fertilizer products tested at an accredited laboratory, who must validate the resulting quality test report before I can proceed?\nThe quality test report must be validated by the State Agriculture Department or the State Energy Development Agency before they can issue the required certification.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[5]",
+          "text": "What are my ongoing obligations regarding the documentation and maintenance of operational records once I am selected to receive the promotional funding?\nYou are required to maintain permanent records in continuity year after year and make them available for audit or verification when requested by authorized agencies.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[6]",
+          "text": "How must I execute the sales of my eligible organic manure products to ensure I can successfully claim the financial disbursement later?\nThe financial support is permitted only for the precise quantity of fertilizers that are successfully sold to farmers through official Point of Sale machines.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[7]",
+          "text": "Once I have successfully sold my approved organic manure products, within what precise timeframe must I submit my claim to receive the monetary benefit?\nYou are required to generate and submit your direct benefit transfer claims within exactly two months from the month the product was sold.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[8]",
+          "text": "When packaging my approved organic manure for retail sale, what specific pricing and promotional details am I legally required to print on the bags?\nYou must clearly print the Maximum Retail Price along with the applicable promotional assistance amount on each package to ensure complete transparency for the buyers.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[9]",
+          "text": "If my manufacturing entity chooses to market the organic manure exclusively in packed form, how frequently must the quality testing be conducted?\nWhen marketing your products in a packed format, you must ensure that a quality test is meticulously carried out for every single batch produced.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[10]",
+          "text": "Apart from the pricing details, what other mandatory manufacturing and product information must be visibly displayed on every bag of the eligible manure?\nEach bag must prominently display its constituents, the names of the marketing entities, the manufacturer's name, and the product's exact shelf-life.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[11]",
+          "text": "Under which specific national initiatives or programs must my biogas plant be supported to ensure I meet the core manufacturing eligibility criteria?\nYour plant must be supported under initiatives like the Sustainable Alternative Towards Affordable Transportation, the Waste to Energy programme, or the Swachh Bharat Mission.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[12]",
+          "text": "What specific national regulatory standards must my manufactured organic manure products adhere to in order to qualify for the promotional funding?\nYour products must be in strict conformity with the quality specifications mentioned in the Fertilizer Control Order of 1985, along with any subsequent amendments.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[13]",
+          "text": "What specific types of business operations or corporate entities are formally permitted to apply for the promotional funding for organic fertilizers?\nManufacturing-cum-marketing entities, Compressed Bio-Gas operators, Bio-gas operators, marketers, distributors, and established Fertilizer Marketing Companies are formally eligible to participate.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert"
+    }
+  ],
+  "links": [
+    {
+      "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+      "title": "Annexure-I",
+      "path": ".scheme.applicationProcess[0].process[9].children[1]"
+    }
+  ],
+  "flags": [
+    "Empty/absent source section: Exclusions. Not evidence of no requirement.",
+    "Complex component/stage/subject semantics. Human rule modelling required."
+  ],
+  "schema_hints": [
+    "Person age / date of birth",
+    "Registration / membership",
+    "Jurisdiction",
+    "Transactions / eligible sales",
+    "Conditional exception",
+    "Time period / history",
+    "Temporal condition"
+  ],
+  "original": null,
+  "raw": {
+    "slug": "mda-fert",
+    "old_id": null,
+    "user_example": true,
+    "scheme": {
+      "_id": "6a02fb5ef93a81a34ce51eaf",
+      "en": {
+        "applicationProcess": [
+          {
+            "mode": "Online",
+            "process": [
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Registration Process",
+                    "underline": true
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 1:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Accessing the Portal for Pre-requisite Registration"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The applicant must access the Unified Galvanizing Organic Bio-Agro Resources Dhan portal of the Department of Drinking Water & Sanitation to register their Bio-Gas or Compressed Bio-Gas manufacturing units."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 2:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Submitting Details for Registration"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The applicant must submit all necessary plant and operational details on the portal to obtain the mandatory registration number required to avail the assistance."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Application Process",
+                    "underline": true
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 3:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Intimation of Willingness to the Department"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The applicant must submit a physical letter intimating their willingness to market the organic fertilizers to the Department of Fertilizers."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 4:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Submission of Annexures"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The applicant must attach the required operational details as per "
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Annexure-I"
+                      }
+                    ],
+                    "link": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+                    "type": "link"
+                  },
+                  {
+                    "text": " (for Fertilizer Marketing Companies) or "
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Annexure-II"
+                      }
+                    ],
+                    "link": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+                    "type": "link"
+                  },
+                  {
+                    "text": " (for Manufacturers) along with the intimation letter for formal approval."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 5:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Registration on the Integrated Fertilizer Management System Portal"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The applicant must register on the newly introduced module on the Integrated Fertilizer Management System portal where the Department of Fertilizers will allot a unique identification number to the manufacturing units."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 6:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Uploading Operational Data"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The applicant must use the allotted identification number to upload the quantity of organic fertilizers produced, data relating to sales, Maximum Retail Price, remaining stock, and quality certificates on the Integrated Fertilizer Management System portal."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "italic": true,
+                    "text": "Post-Application Processes",
+                    "underline": true
+                  }
+                ],
+                "type": "heading_five"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 7:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Quality Testing and Certification"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The applicant must ensure batch-wise or dispatch-wise quality testing at accredited laboratories and get the test reports validated by the State Agriculture Department or State Energy Development Agency to receive the 'B2-MDA' certificate."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 8:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Generating Benefit Claims"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The applicant must generate Direct Benefit Transfer claims through the Integrated Fertilizer Management System portal using the prescribed Annexure within two months from the month of sale."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 9:",
+                    "underline": true
+                  },
+                  {
+                    "bold": true,
+                    "text": " Submission of Claim Documentation"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The applicant must submit a copy of the Quality Certificate along with the claim for Market Development Assistance payment for that particular month to the Department of Fertilizers to receive the financial disbursement."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "process_md": "##### ***Registration Process***\n**Step 1:** **Accessing the Portal for Pre-requisite Registration**\nThe applicant must access the Unified Galvanizing Organic Bio-Agro Resources Dhan portal of the Department of Drinking Water &amp; Sanitation to register their Bio-Gas or Compressed Bio-Gas manufacturing units.\n**Step 2:** **Submitting Details for Registration**\nThe applicant must submit all necessary plant and operational details on the portal to obtain the mandatory registration number required to avail the assistance.\n##### ***Application Process***\n**Step 3:** **Intimation of Willingness to the Department**\nThe applicant must submit a physical letter intimating their willingness to market the organic fertilizers to the Department of Fertilizers.\n**Step 4:** **Submission of Annexures**\nThe applicant must attach the required operational details as per [Annexure-I](https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf) (for Fertilizer Marketing Companies) or [Annexure-II](https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf) (for Manufacturers) along with the intimation letter for formal approval.\n**Step 5:** **Registration on the Integrated Fertilizer Management System Portal**\nThe applicant must register on the newly introduced module on the Integrated Fertilizer Management System portal where the Department of Fertilizers will allot a unique identification number to the manufacturing units.\n**Step 6:** **Uploading Operational Data**\nThe applicant must use the allotted identification number to upload the quantity of organic fertilizers produced, data relating to sales, Maximum Retail Price, remaining stock, and quality certificates on the Integrated Fertilizer Management System portal.\n##### ***Post-Application Processes***\n**Step 7:** **Quality Testing and Certification**\nThe applicant must ensure batch-wise or dispatch-wise quality testing at accredited laboratories and get the test reports validated by the State Agriculture Department or State Energy Development Agency to receive the &#39;B2-MDA&#39; certificate.\n**Step 8:** **Generating Benefit Claims**\nThe applicant must generate Direct Benefit Transfer claims through the Integrated Fertilizer Management System portal using the prescribed Annexure within two months from the month of sale.\n**Step 9:** **Submission of Claim Documentation**\nThe applicant must submit a copy of the Quality Certificate along with the claim for Market Development Assistance payment for that particular month to the Department of Fertilizers to receive the financial disbursement.\n<br>\n\n"
+          }
+        ],
+        "basicDetails": {
+          "dbtScheme": false,
+          "level": {
+            "label": "Central",
+            "value": "central"
+          },
+          "nodalDepartmentName": {
+            "label": "Department Of Fertilizers",
+            "value": 1585
+          },
+          "nodalMinistryName": {
+            "label": "Ministry Of Chemicals And Fertilizers",
+            "value": 1562
+          },
+          "otherDepartmentNames": null,
+          "otherMinistryName": null,
+          "schemeCategory": [
+            {
+              "label": "Business & Entrepreneurship",
+              "value": "628ce733d6d1a3bde4685278"
+            },
+            {
+              "label": "Science, IT & Communications",
+              "value": "628ce9ced6d1a3bde46853a4"
+            }
+          ],
+          "schemeFor": "Individual",
+          "schemeName": "Market Development Assistance",
+          "schemeOpenDate": null,
+          "schemeShortTitle": "MDA-FERT",
+          "schemeSubCategory": [
+            {
+              "label": "Research & Development",
+              "value": "Research & Development"
+            },
+            {
+              "label": "Setting up / start-up / entrepreneurship",
+              "value": "Setting up / start-up / entrepreneurship"
+            },
+            {
+              "label": "Sales of goods, services & data protection",
+              "value": "Sales of goods, services & data protection"
+            },
+            {
+              "label": "Exhibitions/Trade fairs/Buyer-seller meet, market development",
+              "value": "Exhibitions/Trade fairs/Buyer-seller meet, market development"
+            }
+          ],
+          "schemeType": {
+            "label": "Central Sector Scheme",
+            "value": "central-sector-scheme"
+          },
+          "state": null,
+          "tags": [
+            "Manufacturer",
+            "Operator",
+            "Institute",
+            "Subsidy",
+            "Fertilizer"
+          ],
+          "targetBeneficiaries": [
+            {
+              "label": "University / Institution",
+              "value": "institution"
+            },
+            {
+              "label": "Business Entity",
+              "value": "business-entity"
+            }
+          ]
+        },
+        "eligibilityCriteria": {
+          "eligibilityDescription": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must be a manufacturing-cum-marketing entity, a Compressed Bio-Gas operator, a Bio-gas operator, a marketer, or a distributor under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must be a Fertilizer Marketing Company marketing their organic fertilizers."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must produce organic fertilizers at Bio-Gas or Compressed Bio-Gas plants established under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must ensure the Bio-Gas or Compressed Bio-Gas plants are supported under initiatives like the Sustainable Alternative Towards Affordable Transportation scheme, the Waste to Energy programme, or the Swachh Bharat Mission."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must register the Bio-Gas or Compressed Bio-Gas units with the Galvanizing Organic Bio-Agro Resources Dhan portal of the Department of Drinking Water & Sanitation as a pre-requisite condition."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must market Fermented Organic Manure, Liquid Fermented Organic Manure, or enriched Phosphate Rich Organic Manure."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must market the organic fertilizers in packed form."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must ensure the organic fertilizers conform to the specifications mentioned in the Fertilizer Control Order, 1985."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must undergo quality testing at Government notified laboratories or National Accreditation Board for Testing and Calibration Laboratories accredited private laboratories."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Relaxations",
+                  "underline": true
+                }
+              ],
+              "type": "heading_five"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The applicant may market the fertilizers in bulk or loose form on an experimental basis subject to necessary notifications by the Department of Agriculture & Farmers Welfare."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Primary Agricultural Cooperative Societies may be engaged as aggregators by the Fertilizers Marketing Companies or manufacturers, wherever feasible."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Post-Selection Conditions",
+                  "underline": true
+                }
+              ],
+              "type": "heading_five"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must maintain records of a permanent nature in continuity year after year."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must make all permanent records available to the Department of Fertilizers or the Fertilizer Flying Squad for audit and verification."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "eligibilityDescription_md": "\n- The applicant must be a manufacturing-cum-marketing entity, a Compressed Bio-Gas operator, a Bio-gas operator, a marketer, or a distributor under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative.\n- The applicant must be a Fertilizer Marketing Company marketing their organic fertilizers.\n- The applicant must produce organic fertilizers at Bio-Gas or Compressed Bio-Gas plants established under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative.\n- The applicant must ensure the Bio-Gas or Compressed Bio-Gas plants are supported under initiatives like the Sustainable Alternative Towards Affordable Transportation scheme, the Waste to Energy programme, or the Swachh Bharat Mission.\n- The applicant must register the Bio-Gas or Compressed Bio-Gas units with the Galvanizing Organic Bio-Agro Resources Dhan portal of the Department of Drinking Water &amp; Sanitation as a pre-requisite condition.\n- The applicant must market Fermented Organic Manure, Liquid Fermented Organic Manure, or enriched Phosphate Rich Organic Manure.\n- The applicant must market the organic fertilizers in packed form.\n- The applicant must ensure the organic fertilizers conform to the specifications mentioned in the Fertilizer Control Order, 1985.\n- The applicant must undergo quality testing at Government notified laboratories or National Accreditation Board for Testing and Calibration Laboratories accredited private laboratories.\n\n##### ***Relaxations***\n\n- The applicant may market the fertilizers in bulk or loose form on an experimental basis subject to necessary notifications by the Department of Agriculture &amp; Farmers Welfare.\n- Primary Agricultural Cooperative Societies may be engaged as aggregators by the Fertilizers Marketing Companies or manufacturers, wherever feasible.\n\n##### ***Post-Selection Conditions***\n\n- The applicant must maintain records of a permanent nature in continuity year after year.\n- The applicant must make all permanent records available to the Department of Fertilizers or the Fertilizer Flying Squad for audit and verification.\n\n<br>\n\n"
+        },
+        "schemeContent": {
+          "benefitTypes": {
+            "id": 3,
+            "label": "Composite",
+            "value": "composite"
+          },
+          "benefits": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Market Development Assistance of ₹1,500/- per Metric Tonne is provided for the sale of Fermented Organic Manure, Liquid Fermented Organic Manure, and enriched Phosphate Rich Organic Manure."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "A corpus of ₹3,60,00,00,000/- is available for research gap funding, to be utilized only by Central and State Research Institutes or non-private fertilizer cooperatives."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The total budget outlay for the scheme is ₹14,51,82,00,000/- for three years from Financial Year 2023-24 to Financial Year 2025-26."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Disbursal",
+                  "underline": true
+                }
+              ],
+              "type": "heading_five"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Assistance is provided only for the quantity sold through Point of Sale machines."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Assistance claims must be generated through the Integrated Fertilizer Management System portal using Direct Benefit Transfer."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Claims must be submitted within two months of the sale of the organic fertilizers."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Conditions",
+                  "underline": true
+                }
+              ],
+              "type": "heading_five"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Marketing entities must print the Maximum Retail Price along with applicable Market Development Assistance on the bags clearly."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Any State subsidy provided on the organic fertilizers must be passed on to the farmers in terms of a lower Maximum Retail Price."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Each bag must display its constituents as given in the Fertilizer Control Order, the marketing entities' names, the manufacturer's name, and shelf-life."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Marketing entities must ensure that any sale above the printed net Maximum Retail Price is avoided, as it is punishable under the Essential Commodities Act."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "benefits_md": "\n- Market Development Assistance of ₹1,500/- per Metric Tonne is provided for the sale of Fermented Organic Manure, Liquid Fermented Organic Manure, and enriched Phosphate Rich Organic Manure.\n- A corpus of ₹3,60,00,00,000/- is available for research gap funding, to be utilized only by Central and State Research Institutes or non-private fertilizer cooperatives.\n- The total budget outlay for the scheme is ₹14,51,82,00,000/- for three years from Financial Year 2023-24 to Financial Year 2025-26.\n\n##### ***Disbursal***\n\n- Assistance is provided only for the quantity sold through Point of Sale machines.\n- Assistance claims must be generated through the Integrated Fertilizer Management System portal using Direct Benefit Transfer.\n- Claims must be submitted within two months of the sale of the organic fertilizers.\n\n##### ***Conditions***\n\n- Marketing entities must print the Maximum Retail Price along with applicable Market Development Assistance on the bags clearly.\n- Any State subsidy provided on the organic fertilizers must be passed on to the farmers in terms of a lower Maximum Retail Price.\n- Each bag must display its constituents as given in the Fertilizer Control Order, the marketing entities&#39; names, the manufacturer&#39;s name, and shelf-life.\n- Marketing entities must ensure that any sale above the printed net Maximum Retail Price is avoided, as it is punishable under the Essential Commodities Act.\n\n<br>\n\n",
+          "briefDescription": "The scheme aims to promote organic fertilizers produced at Bio-Gas and Compressed Bio-Gas plants under the Galvanizing Organic Bio-Agro Resources Dhan initiative. It provides Market Development Assistance of ₹1,500/- per Metric Tonne to manufacturing and marketing entities of organic fertilizers.",
+          "detailedDescription": [
+            {
+              "children": [
+                {
+                  "text": "The scheme \"Market Development Assistance\" was launched by the Ministry of Chemicals & Fertilizers, Department of Fertilizers, and the scheme aims to promote organic fertilizers produced at plants under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative covering various Bio-Gas and Compressed Bio-Gas support schemes. The scheme provides Market Development Assistance at ₹1,500/- per Metric Tonne for the sale of Fermented Organic Manure, Liquid Fermented Organic Manure, and enriched Phosphate Rich Organic Manure, along with gap funding for research from a corpus of ₹3,60,00,00,000/-. The applicant must register their manufacturing units on the Galvanizing Organic Bio-Agro Resources Dhan portal and market the fertilizers in conformity with the Fertilizer Control Order specifications."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "detailedDescription_md": "The scheme &quot;Market Development Assistance&quot; was launched by the Ministry of Chemicals &amp; Fertilizers, Department of Fertilizers, and the scheme aims to promote organic fertilizers produced at plants under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative covering various Bio-Gas and Compressed Bio-Gas support schemes. The scheme provides Market Development Assistance at ₹1,500/- per Metric Tonne for the sale of Fermented Organic Manure, Liquid Fermented Organic Manure, and enriched Phosphate Rich Organic Manure, along with gap funding for research from a corpus of ₹3,60,00,00,000/-. The applicant must register their manufacturing units on the Galvanizing Organic Bio-Agro Resources Dhan portal and market the fertilizers in conformity with the Fertilizer Control Order specifications.\n<br>\n\n",
+          "exclusions": [
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "exclusions_md": "<br>\n\n",
+          "references": [
+            {
+              "title": "Guidelines",
+              "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf"
+            }
+          ],
+          "schemeImageUrl": ""
+        },
+        "schemeDefinitions": []
+      },
+      "slug": "mda-fert"
+    },
+    "documents": {
+      "_id": "6a02fbb261df9948ff35ef3b",
+      "en": {
+        "documentsRequired_md": "##### ***Application Stage Documents***\n\n- Letter Intimating Willingness to Market Organic Fertilizers.\n- Purchasing Agreement for Supply of Fermented Organic Manure, Liquid Fermented Organic Manure, or Phosphate Rich Organic Manure (Required if marketing through Fertilizer Marketing Companies).\n- Details of Fertilizer Marketing Companies Document ([Annexure-I](https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf)).- Details of Organic Fertilizer Manufacturer Document ([Annexure-II](https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf)).- Tax Identification Number Certificate of the Company.\n- Permanent Account Number Card of the Company.\n- Bank Account Details (Account Number, Indian Financial System Code, Name of Account Holder, Address of the Bank).\n- Galvanizing Organic Bio-Agro Resources Dhan Portal Registration Certificate.\n\n##### ***Benefit Disbursal Documents***\n\n- Quantity Certificate for Organic Fertilizers (Proforma &#39;B1-MDA&#39;).\n- Quality Certificate for Organic Fertilizers (Proforma &#39;B2-MDA&#39;).\n- Quality Test Report from a Government Notified Laboratory or National Accreditation Board for Testing and Calibration Laboratories Accredited Private Laboratory.\n- Proforma for Claiming Payment of Market Development Assistance (Annexure) with the Digital Signature of the Chartered Accountant or Statutory Auditor and the Authorized Officer.\n\n##### ***Verification and Audit Documents***\n\n- Stock Registers Showing Opening Balance, Production, Quantity Dispatched, and Closing Balance.\n- Daily Report of Production and Stock Authenticated by the Production Manager.\n- Dispatch and Stock Transfer Advice Serially Numbered and Signed by the Sales Manager.\n- Dispatch Instructions Issued from Headquarters.\n- Gate Passes Bearing Printed Serial Numbers.\n- Register of Gate Passes Issued.\n- Register of Dispatches.\n- Sales Invoices Serially Numbered and Supported by Warehouse Delivery Notes.\n- Sales Day Book.\n- Delivery Challan Signed by the Receiver in Confirmation of Receipt.\n- Stock Register of Raw Materials Purchased and Consumed.\n\n<br>\n\n",
+        "documents_required": [
+          {
+            "children": [
+              {
+                "bold": true,
+                "italic": true,
+                "text": "Application Stage Documents",
+                "underline": true
+              }
+            ],
+            "type": "heading_five"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Letter Intimating Willingness to Market Organic Fertilizers."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Purchasing Agreement for Supply of Fermented Organic Manure, Liquid Fermented Organic Manure, or Phosphate Rich Organic Manure (Required if marketing through Fertilizer Marketing Companies)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Details of Fertilizer Marketing Companies Document ("
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Annexure-I"
+                      }
+                    ],
+                    "link": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+                    "type": "link"
+                  },
+                  {
+                    "text": ")."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Details of Organic Fertilizer Manufacturer Document ("
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Annexure-II"
+                      }
+                    ],
+                    "link": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+                    "type": "link"
+                  },
+                  {
+                    "text": ")."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Tax Identification Number Certificate of the Company."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Permanent Account Number Card of the Company."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Bank Account Details (Account Number, Indian Financial System Code, Name of Account Holder, Address of the Bank)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Galvanizing Organic Bio-Agro Resources Dhan Portal Registration Certificate."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ul_list"
+          },
+          {
+            "children": [
+              {
+                "bold": true,
+                "italic": true,
+                "text": "Benefit Disbursal Documents",
+                "underline": true
+              }
+            ],
+            "type": "heading_five"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Quantity Certificate for Organic Fertilizers (Proforma 'B1-MDA')."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Quality Certificate for Organic Fertilizers (Proforma 'B2-MDA')."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Quality Test Report from a Government Notified Laboratory or National Accreditation Board for Testing and Calibration Laboratories Accredited Private Laboratory."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Proforma for Claiming Payment of Market Development Assistance (Annexure) with the Digital Signature of the Chartered Accountant or Statutory Auditor and the Authorized Officer."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ul_list"
+          },
+          {
+            "children": [
+              {
+                "bold": true,
+                "italic": true,
+                "text": "Verification and Audit Documents",
+                "underline": true
+              }
+            ],
+            "type": "heading_five"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Stock Registers Showing Opening Balance, Production, Quantity Dispatched, and Closing Balance."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Daily Report of Production and Stock Authenticated by the Production Manager."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Dispatch and Stock Transfer Advice Serially Numbered and Signed by the Sales Manager."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Dispatch Instructions Issued from Headquarters."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Gate Passes Bearing Printed Serial Numbers."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Register of Gate Passes Issued."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Register of Dispatches."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Sales Invoices Serially Numbered and Supported by Warehouse Delivery Notes."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Sales Day Book."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Delivery Challan Signed by the Receiver in Confirmation of Receipt."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Stock Register of Raw Materials Purchased and Consumed."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ul_list"
+          },
+          {
+            "children": [
+              {
+                "text": ""
+              }
+            ],
+            "type": "paragraph"
+          }
+        ]
+      },
+      "schemeId": "6a02fb5ef93a81a34ce51eaf"
+    },
+    "faqs": {
+      "_id": "6a02fc4761df9948ff35f28e",
+      "en": {
+        "faqs": [
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "You must register your Bio-Gas or Compressed Bio-Gas units on the unified Galvanizing Organic Bio-Agro Resources Dhan portal managed by the Department of Drinking Water and Sanitation."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "You must register your Bio-Gas or Compressed Bio-Gas units on the unified Galvanizing Organic Bio-Agro Resources Dhan portal managed by the Department of Drinking Water and Sanitation.\n<br>\n\n",
+            "question": "To be eligible to receive the financial assistance for promoting organic fertilizers, what specific online registration must I complete beforehand?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Quality testing must be ensured at laboratories notified by the Government or private laboratories accredited by the National Accreditation Board for Testing and Calibration Laboratories."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Quality testing must be ensured at laboratories notified by the Government or private laboratories accredited by the National Accreditation Board for Testing and Calibration Laboratories.\n<br>\n\n",
+            "question": "If I want to ensure my organic manure qualifies for the monetary support, where should I get the mandatory quality testing conducted?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "No, the ₹3,60,00,00,000/- corpus for research and gap funding can only be utilized by Central or State Research Institutes and non-private fertilizer cooperatives."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "No, the ₹3,60,00,00,000/- corpus for research and gap funding can only be utilized by Central or State Research Institutes and non-private fertilizer cooperatives.\n<br>\n\n",
+            "question": "I represent a private fertilizer cooperative and want to apply for the research and development financial support; am I eligible to access this specific funding?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "You must produce Fermented Organic Manure, Liquid Fermented Organic Manure, or enriched Phosphate Rich Organic Manure as by-products of your registered plants."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "You must produce Fermented Organic Manure, Liquid Fermented Organic Manure, or enriched Phosphate Rich Organic Manure as by-products of your registered plants.\n<br>\n\n",
+            "question": "Which exact types of organic fertilizers must my manufacturing plant produce to be considered eligible for the financial support of ₹1,500/- per Metric Tonne?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The quality test report must be validated by the State Agriculture Department or the State Energy Development Agency before they can issue the required certification."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The quality test report must be validated by the State Agriculture Department or the State Energy Development Agency before they can issue the required certification.\n<br>\n\n",
+            "question": "After getting my fertilizer products tested at an accredited laboratory, who must validate the resulting quality test report before I can proceed?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "You are required to maintain permanent records in continuity year after year and make them available for audit or verification when requested by authorized agencies."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "You are required to maintain permanent records in continuity year after year and make them available for audit or verification when requested by authorized agencies.\n<br>\n\n",
+            "question": "What are my ongoing obligations regarding the documentation and maintenance of operational records once I am selected to receive the promotional funding?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The financial support is permitted only for the precise quantity of fertilizers that are successfully sold to farmers through official Point of Sale machines."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The financial support is permitted only for the precise quantity of fertilizers that are successfully sold to farmers through official Point of Sale machines.\n<br>\n\n",
+            "question": "How must I execute the sales of my eligible organic manure products to ensure I can successfully claim the financial disbursement later?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "You are required to generate and submit your direct benefit transfer claims within exactly two months from the month the product was sold."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "You are required to generate and submit your direct benefit transfer claims within exactly two months from the month the product was sold.\n<br>\n\n",
+            "question": "Once I have successfully sold my approved organic manure products, within what precise timeframe must I submit my claim to receive the monetary benefit?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "You must clearly print the Maximum Retail Price along with the applicable promotional assistance amount on each package to ensure complete transparency for the buyers."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "You must clearly print the Maximum Retail Price along with the applicable promotional assistance amount on each package to ensure complete transparency for the buyers.\n<br>\n\n",
+            "question": "When packaging my approved organic manure for retail sale, what specific pricing and promotional details am I legally required to print on the bags?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "When marketing your products in a packed format, you must ensure that a quality test is meticulously carried out for every single batch produced."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "When marketing your products in a packed format, you must ensure that a quality test is meticulously carried out for every single batch produced.\n<br>\n\n",
+            "question": "If my manufacturing entity chooses to market the organic manure exclusively in packed form, how frequently must the quality testing be conducted?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Each bag must prominently display its constituents, the names of the marketing entities, the manufacturer's name, and the product's exact shelf-life."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Each bag must prominently display its constituents, the names of the marketing entities, the manufacturer&#39;s name, and the product&#39;s exact shelf-life.\n<br>\n\n",
+            "question": "Apart from the pricing details, what other mandatory manufacturing and product information must be visibly displayed on every bag of the eligible manure?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Your plant must be supported under initiatives like the Sustainable Alternative Towards Affordable Transportation, the Waste to Energy programme, or the Swachh Bharat Mission."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Your plant must be supported under initiatives like the Sustainable Alternative Towards Affordable Transportation, the Waste to Energy programme, or the Swachh Bharat Mission.\n<br>\n\n",
+            "question": "Under which specific national initiatives or programs must my biogas plant be supported to ensure I meet the core manufacturing eligibility criteria?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Your products must be in strict conformity with the quality specifications mentioned in the Fertilizer Control Order of 1985, along with any subsequent amendments."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Your products must be in strict conformity with the quality specifications mentioned in the Fertilizer Control Order of 1985, along with any subsequent amendments.\n<br>\n\n",
+            "question": "What specific national regulatory standards must my manufactured organic manure products adhere to in order to qualify for the promotional funding?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Manufacturing-cum-marketing entities, Compressed Bio-Gas operators, Bio-gas operators, marketers, distributors, and established Fertilizer Marketing Companies are formally eligible to participate."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Manufacturing-cum-marketing entities, Compressed Bio-Gas operators, Bio-gas operators, marketers, distributors, and established Fertilizer Marketing Companies are formally eligible to participate.\n<br>\n\n",
+            "question": "What specific types of business operations or corporate entities are formally permitted to apply for the promotional funding for organic fertilizers?"
+          }
+        ]
+      },
+      "schemeId": "6a02fb5ef93a81a34ce51eaf"
+    }
+  }
+}
