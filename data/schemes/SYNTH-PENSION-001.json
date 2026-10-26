@@ -1,0 +1,17 @@
+{
+  "scheme_id": "SYNTH-PENSION-001",
+  "name": "Synthetic Widow Pension (test data)",
+  "level": "central",
+  "state": null,
+  "source": {"url": "synthetic://test-data", "collected_on": "2026-10-23"},
+  "clauses": [
+    {"clause_id": "cl-1", "text": "Widow aged 60 or above", "page": 1},
+    {"clause_id": "cl-2", "text": "Annual income not above Rs 300000", "page": 1}
+  ],
+  "documents_required": ["Aadhaar card", "Death certificate of spouse", "Income certificate"],
+  "rules": [
+    {"field": "age", "op": "gte", "value": 60, "clause_id": "cl-1", "status": "reviewed"},
+    {"field": "is_widow", "op": "eq", "value": true, "clause_id": "cl-1", "status": "reviewed"},
+    {"field": "income", "op": "lte", "value": 300000, "clause_id": "cl-2", "status": "reviewed"}
+  ]
+}

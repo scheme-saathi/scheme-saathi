@@ -1,0 +1,752 @@
+[
+  {
+    "persona_id": "SS001",
+    "government_level": "Central",
+    "persona_title": "Rural farmer seeking income support",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Nalgonda district",
+    "age": 46,
+    "occupation": "Small farmer",
+    "annual_household_income_inr": 120000,
+    "situation": "Cultivates a small landholding and wants to understand available farmer support.",
+    "documents_available": [
+      "Aadhaar",
+      "bank account",
+      "land records"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I am a small farmer in Nalgonda. What central schemes might I qualify for?",
+    "candidate_schemes_to_verify": [
+      "PM-KISAN",
+      "PM Fasal Bima Yojana"
+    ],
+    "evaluation_challenge": "Check landholding and scheme-specific exclusions; do not promise eligibility.",
+    "expected_agent_behaviour": "Ask about land records, cultivation, and existing enrolment; explain official verification.",
+    "expected_outcome": "A shortlist with eligibility caveats and official application/verification route.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS002",
+    "government_level": "Central",
+    "persona_title": "Low-income household seeking cooking fuel support",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Mahabubnagar district",
+    "age": 34,
+    "occupation": "Daily-wage worker",
+    "annual_household_income_inr": 90000,
+    "situation": "Household uses traditional cooking fuel and asks about support for an LPG connection.",
+    "documents_available": [
+      "Aadhaar",
+      "ration card",
+      "bank account"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "Can my family get help for an LPG connection under a central scheme?",
+    "candidate_schemes_to_verify": [
+      "Pradhan Mantri Ujjwala Yojana"
+    ],
+    "evaluation_challenge": "Explain household eligibility and current application requirements without assuming category eligibility.",
+    "expected_agent_behaviour": "Identify missing details and point to the official Ujjwala channel.",
+    "expected_outcome": "Clear next steps and a list of details/documents to verify.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS003",
+    "government_level": "Central",
+    "persona_title": "Uninsured informal worker",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Hyderabad",
+    "age": 39,
+    "occupation": "Construction worker",
+    "annual_household_income_inr": 150000,
+    "situation": "Needs information about health coverage and whether a government health scheme applies.",
+    "documents_available": [
+      "Aadhaar",
+      "ration card"
+    ],
+    "preferred_language": "Hindi",
+    "simulated_user_query": "I work in construction and have no private health insurance. What government health coverage should I check?",
+    "candidate_schemes_to_verify": [
+      "Ayushman Bharat PM-JAY"
+    ],
+    "evaluation_challenge": "Do not infer PM-JAY eligibility from income alone; verify beneficiary database/state implementation.",
+    "expected_agent_behaviour": "Explain that eligibility is list/database-based and provide verification steps.",
+    "expected_outcome": "A cautious eligibility check path, not an automatic approval claim.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS004",
+    "government_level": "Central",
+    "persona_title": "Student from a low-income family",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Warangal",
+    "age": 18,
+    "occupation": "College student",
+    "annual_household_income_inr": 100000,
+    "situation": "Wants scholarship options and is unsure which category applies.",
+    "documents_available": [
+      "Aadhaar",
+      "income certificate",
+      "school marksheet"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I am a first-year college student from a low-income family. Which central scholarships should I check?",
+    "candidate_schemes_to_verify": [
+      "National Scholarship Portal schemes"
+    ],
+    "evaluation_challenge": "Ask course, category, marks, institution, and application year before matching a scholarship.",
+    "expected_agent_behaviour": "Collect relevant details and refer to the National Scholarship Portal and current scheme notices.",
+    "expected_outcome": "A shortlist conditional on missing academic and category information.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS005",
+    "government_level": "Central",
+    "persona_title": "Pregnant woman seeking maternal support information",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Karimnagar district",
+    "age": 25,
+    "occupation": "Homemaker",
+    "annual_household_income_inr": 110000,
+    "situation": "Pregnant and wants to know what financial or health support may be available.",
+    "documents_available": [
+      "Aadhaar",
+      "bank account",
+      "maternal health records"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I am pregnant. Are there central schemes for maternal care or financial assistance?",
+    "candidate_schemes_to_verify": [
+      "Pradhan Mantri Matru Vandana Yojana",
+      "Janani Suraksha Yojana"
+    ],
+    "evaluation_challenge": "Explain that scheme rules, pregnancy/childbirth conditions, and state delivery arrangements must be checked.",
+    "expected_agent_behaviour": "Offer scheme information and advise contacting the local health worker/health facility for current eligibility.",
+    "expected_outcome": "Relevant options with non-alarmist, practical next steps.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS006",
+    "government_level": "Central",
+    "persona_title": "Senior citizen seeking pension information",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Adilabad district",
+    "age": 67,
+    "occupation": "Retired agricultural labourer",
+    "annual_household_income_inr": 85000,
+    "situation": "Wants to know whether an old-age pension is available.",
+    "documents_available": [
+      "Aadhaar",
+      "age proof",
+      "bank account"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I am 67 and have very little income. What pension support should I check?",
+    "candidate_schemes_to_verify": [
+      "National Social Assistance Programme (NSAP)"
+    ],
+    "evaluation_challenge": "Check age, income, existing pension, and state-specific delivery rules.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS007",
+    "government_level": "Central",
+    "persona_title": "Widow seeking assistance",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Khammam district",
+    "age": 42,
+    "occupation": "Home-based worker",
+    "annual_household_income_inr": 70000,
+    "situation": "Recently widowed and asks about assistance.",
+    "documents_available": [
+      "Aadhaar",
+      "death certificate",
+      "bank account"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I am a widow with limited income. What support schemes may apply?",
+    "candidate_schemes_to_verify": [
+      "NSAP widow pension components",
+      "relevant state support"
+    ],
+    "evaluation_challenge": "Confirm age, household circumstances, and current scheme rules.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS008",
+    "government_level": "Central",
+    "persona_title": "Person with disability seeking benefits",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Hyderabad",
+    "age": 29,
+    "occupation": "Private employee",
+    "annual_household_income_inr": 180000,
+    "situation": "Has a disability certificate and asks about support.",
+    "documents_available": [
+      "Aadhaar",
+      "disability certificate"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I have a disability certificate. Which government benefits should I investigate?",
+    "candidate_schemes_to_verify": [
+      "UDID-related services",
+      "relevant disability schemes"
+    ],
+    "evaluation_challenge": "Ask disability percentage/certificate status and distinguish services from cash benefits.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS009",
+    "government_level": "Central",
+    "persona_title": "Street vendor seeking credit",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Nizamabad",
+    "age": 36,
+    "occupation": "Street vendor",
+    "annual_household_income_inr": 140000,
+    "situation": "Needs working capital for a small vending business.",
+    "documents_available": [
+      "Aadhaar",
+      "vendor ID (uncertain)",
+      "bank account"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I sell vegetables on the street. Is there a government loan scheme I can check?",
+    "candidate_schemes_to_verify": [
+      "PM SVANidhi (subject to current coverage and rules)"
+    ],
+    "evaluation_challenge": "Verify vendor eligibility, local-body documentation, and current scheme status.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS010",
+    "government_level": "Central",
+    "persona_title": "Micro-entrepreneur starting a tailoring shop",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Siddipet",
+    "age": 31,
+    "occupation": "Tailor/self-employed",
+    "annual_household_income_inr": 220000,
+    "situation": "Wants a small business loan.",
+    "documents_available": [
+      "Aadhaar",
+      "bank account",
+      "basic business plan"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I want to open a tailoring shop. Which government-backed loan options should I compare?",
+    "candidate_schemes_to_verify": [
+      "PM Mudra Yojana"
+    ],
+    "evaluation_challenge": "Explain lender appraisal and that a loan is not guaranteed.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS011",
+    "government_level": "Central",
+    "persona_title": "Rural household without a toilet",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Jagtial district",
+    "age": 40,
+    "occupation": "Agricultural labourer",
+    "annual_household_income_inr": 95000,
+    "situation": "Asks about sanitation assistance.",
+    "documents_available": [
+      "Aadhaar",
+      "household details"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "Our house does not have a toilet. What assistance can we ask about?",
+    "candidate_schemes_to_verify": [
+      "Swachh Bharat Mission-Grameen"
+    ],
+    "evaluation_challenge": "Check local implementation and household eligibility with the Gram Panchayat.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS012",
+    "government_level": "Central",
+    "persona_title": "Household seeking tap-water connection",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Suryapet district",
+    "age": 33,
+    "occupation": "Farm labourer",
+    "annual_household_income_inr": 105000,
+    "situation": "Wants to know whether a household tap connection is available.",
+    "documents_available": [
+      "Address proof",
+      "household details"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "How can I check whether my village household can get a tap-water connection?",
+    "candidate_schemes_to_verify": [
+      "Jal Jeevan Mission"
+    ],
+    "evaluation_challenge": "Clarify that implementation is village-level and direct the user to local officials.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS013",
+    "government_level": "Central",
+    "persona_title": "Family interested in affordable housing",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Hyderabad",
+    "age": 38,
+    "occupation": "Security guard",
+    "annual_household_income_inr": 160000,
+    "situation": "Lives in rented accommodation and asks about housing help.",
+    "documents_available": [
+      "Aadhaar",
+      "income details",
+      "residence proof"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "My family rents a small room. What affordable housing schemes should I check?",
+    "candidate_schemes_to_verify": [
+      "PMAY-Urban (current phase/rules to verify)"
+    ],
+    "evaluation_challenge": "Check current scheme phase, income category, location, and ownership conditions.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS014",
+    "government_level": "Central",
+    "persona_title": "Rural family interested in housing support",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Mancherial district",
+    "age": 44,
+    "occupation": "Agricultural labourer",
+    "annual_household_income_inr": 80000,
+    "situation": "Lives in a kutcha house.",
+    "documents_available": [
+      "Aadhaar",
+      "household details",
+      "housing status"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "We live in a kutcha house in a village. How do I check housing assistance?",
+    "candidate_schemes_to_verify": [
+      "PMAY-Gramin"
+    ],
+    "evaluation_challenge": "Explain household selection/verification and avoid guaranteeing a house.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS015",
+    "government_level": "Central",
+    "persona_title": "Worker wants pension savings",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Hyderabad",
+    "age": 28,
+    "occupation": "Gig worker",
+    "annual_household_income_inr": 240000,
+    "situation": "Has irregular income and asks about long-term pension options.",
+    "documents_available": [
+      "Aadhaar",
+      "bank account"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "My income changes every month. Is there a government pension savings option?",
+    "candidate_schemes_to_verify": [
+      "Atal Pension Yojana",
+      "other eligible pension products"
+    ],
+    "evaluation_challenge": "Explain age, bank account, contribution, and current enrolment rules.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS016",
+    "government_level": "Central",
+    "persona_title": "Unorganised worker seeking registration",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Karimnagar",
+    "age": 33,
+    "occupation": "Domestic worker",
+    "annual_household_income_inr": 90000,
+    "situation": "Wants to know about worker registration and linked benefits.",
+    "documents_available": [
+      "Aadhaar",
+      "mobile number"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I work in homes. Should I register on e-Shram, and what does it provide?",
+    "candidate_schemes_to_verify": [
+      "e-Shram registration and linked services"
+    ],
+    "evaluation_challenge": "Distinguish registration from a guaranteed cash benefit.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS017",
+    "government_level": "Central",
+    "persona_title": "Artisan seeking livelihood support",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Pochampally area",
+    "age": 48,
+    "occupation": "Handloom artisan",
+    "annual_household_income_inr": 130000,
+    "situation": "Runs a small traditional craft activity.",
+    "documents_available": [
+      "Aadhaar",
+      "bank account",
+      "work details"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I am a traditional artisan. What central support or training schemes can I check?",
+    "candidate_schemes_to_verify": [
+      "PM Vishwakarma (occupation eligibility to verify)"
+    ],
+    "evaluation_challenge": "Verify listed trade, training, toolkit and credit components.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS018",
+    "government_level": "Central",
+    "persona_title": "Self-help group member seeking enterprise credit",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Medak district",
+    "age": 37,
+    "occupation": "SHG member",
+    "annual_household_income_inr": 115000,
+    "situation": "Wants to expand a small food business.",
+    "documents_available": [
+      "SHG records",
+      "bank account",
+      "Aadhaar"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "Our self-help group wants to expand a small business. What support should we explore?",
+    "candidate_schemes_to_verify": [
+      "DAY-NRLM-related support"
+    ],
+    "evaluation_challenge": "Check SHG status, local mission channels, and available components.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS019",
+    "government_level": "Central",
+    "persona_title": "Farmer seeking crop insurance",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Nirmal district",
+    "age": 52,
+    "occupation": "Farmer",
+    "annual_household_income_inr": 170000,
+    "situation": "Had crop damage and asks about insurance.",
+    "documents_available": [
+      "Land records",
+      "bank details",
+      "crop details"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "My crop was damaged. Can a central crop insurance scheme help?",
+    "candidate_schemes_to_verify": [
+      "PM Fasal Bima Yojana (notified crops/areas and deadlines to verify)"
+    ],
+    "evaluation_challenge": "Ask crop, season, location, and enrolment status; do not promise a claim.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS020",
+    "government_level": "Central",
+    "persona_title": "Farmer seeking soil advice",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Sangareddy district",
+    "age": 41,
+    "occupation": "Farmer",
+    "annual_household_income_inr": 210000,
+    "situation": "Wants soil testing and fertilizer guidance.",
+    "documents_available": [
+      "Land details",
+      "farm details"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "How can I get a soil health card or soil test for my farm?",
+    "candidate_schemes_to_verify": [
+      "Soil Health Card Scheme"
+    ],
+    "evaluation_challenge": "Give local agriculture-department steps and explain test availability.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS021",
+    "government_level": "Central",
+    "persona_title": "Household asking about food security",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Bhadradri Kothagudem",
+    "age": 56,
+    "occupation": "Daily-wage worker",
+    "annual_household_income_inr": 78000,
+    "situation": "Wants to understand ration-card-linked food support.",
+    "documents_available": [
+      "Ration card",
+      "Aadhaar"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "How do I check what food-grain support my family is eligible for?",
+    "candidate_schemes_to_verify": [
+      "National Food Security Act/PDS entitlements"
+    ],
+    "evaluation_challenge": "Direct to state ration system and verify card category and current rules.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS022",
+    "government_level": "Central",
+    "persona_title": "Girl student seeking education support",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Yadadri Bhuvanagiri",
+    "age": 16,
+    "occupation": "School student",
+    "annual_household_income_inr": 60000,
+    "situation": "Wants scholarship support to continue education.",
+    "documents_available": [
+      "School records",
+      "income certificate (if required)"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I am a school student. Are there scholarships I can apply for?",
+    "candidate_schemes_to_verify": [
+      "National Scholarship Portal schemes",
+      "other eligible scholarships"
+    ],
+    "evaluation_challenge": "Ask class, category, marks, and school type; check current deadlines.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS023",
+    "government_level": "Central",
+    "persona_title": "Research student seeking fellowship",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Hyderabad",
+    "age": 23,
+    "occupation": "Postgraduate student",
+    "annual_household_income_inr": 150000,
+    "situation": "Wants to find fellowships relevant to their studies.",
+    "documents_available": [
+      "Admission proof",
+      "marksheets",
+      "category documents if relevant"
+    ],
+    "preferred_language": "English",
+    "simulated_user_query": "I am doing postgraduate study. How do I find central fellowships I may qualify for?",
+    "candidate_schemes_to_verify": [
+      "UGC/NSP fellowship listings (scheme-specific)"
+    ],
+    "evaluation_challenge": "Do not imply a general fellowship exists for every student.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS024",
+    "government_level": "Central",
+    "persona_title": "Household seeking electricity bill relief",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Warangal",
+    "age": 45,
+    "occupation": "Small shop owner",
+    "annual_household_income_inr": 175000,
+    "situation": "Asks about electricity relief, assuming it is central.",
+    "documents_available": [
+      "Electricity bill",
+      "consumer number"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "Can a central government scheme reduce my electricity bill?",
+    "candidate_schemes_to_verify": [
+      "PM Surya Ghar: Muft Bijli Yojana (rooftop solar",
+      " not general bill waiver)"
+    ],
+    "evaluation_challenge": "Correct misconception and explain rooftop-solar-specific eligibility.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS025",
+    "government_level": "Central",
+    "persona_title": "Household interested in rooftop solar",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Hyderabad",
+    "age": 50,
+    "occupation": "Teacher",
+    "annual_household_income_inr": 360000,
+    "situation": "Owns a house and asks about rooftop solar support.",
+    "documents_available": [
+      "Electricity bill",
+      "consumer details",
+      "ownership details"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I own a house. How can I check subsidy support for rooftop solar?",
+    "candidate_schemes_to_verify": [
+      "PM Surya Ghar: Muft Bijli Yojana"
+    ],
+    "evaluation_challenge": "Explain vendor/portal process and current technical conditions.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS026",
+    "government_level": "Central",
+    "persona_title": "New parent seeking child nutrition support",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Nagarkurnool district",
+    "age": 27,
+    "occupation": "Homemaker",
+    "annual_household_income_inr": 95000,
+    "situation": "Wants nutrition services for an infant.",
+    "documents_available": [
+      "Child health records",
+      "Aadhaar if required"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "Where can I access government nutrition support for my baby?",
+    "candidate_schemes_to_verify": [
+      "Anganwadi/Poshan services"
+    ],
+    "evaluation_challenge": "Prioritize local Anganwadi and distinguish service access from cash assistance.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS027",
+    "government_level": "Central",
+    "persona_title": "Migrant worker seeking portability",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Hyderabad",
+    "age": 32,
+    "occupation": "Migrant construction worker",
+    "annual_household_income_inr": 105000,
+    "situation": "Recently moved from another state and wants ration access.",
+    "documents_available": [
+      "Ration card",
+      "Aadhaar"
+    ],
+    "preferred_language": "Hindi",
+    "simulated_user_query": "I moved to Telangana for work. Can I use my ration card here?",
+    "candidate_schemes_to_verify": [
+      "One Nation One Ration Card/PDS portability"
+    ],
+    "evaluation_challenge": "Verify ration-card status and portability conditions.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS028",
+    "government_level": "Central",
+    "persona_title": "Small business seeking formal registration",
+    "state": "Telangana",
+    "location_type": "Urban",
+    "location": "Khammam",
+    "age": 35,
+    "occupation": "Repair-shop owner",
+    "annual_household_income_inr": 260000,
+    "situation": "Wants to formalize a microbusiness and learn about support.",
+    "documents_available": [
+      "Aadhaar",
+      "business details",
+      "bank account"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "I run a small repair shop. What registrations or schemes should I look into?",
+    "candidate_schemes_to_verify": [
+      "Udyam registration",
+      "PM Mudra (separate processes)"
+    ],
+    "evaluation_challenge": "Separate free registration information from loan eligibility.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  },
+  {
+    "persona_id": "SS029",
+    "government_level": "Central",
+    "persona_title": "Farmer's family seeking pension for elder",
+    "state": "Telangana",
+    "location_type": "Rural",
+    "location": "Peddapalli district",
+    "age": 38,
+    "occupation": "Farmer",
+    "annual_household_income_inr": 145000,
+    "situation": "Supports an elderly parent and asks about pension eligibility.",
+    "documents_available": [
+      "Age proof",
+      "income details",
+      "bank account"
+    ],
+    "preferred_language": "Telugu",
+    "simulated_user_query": "My father is elderly and has no pension. How do we check his eligibility?",
+    "candidate_schemes_to_verify": [
+      "NSAP and Telangana pension options to compare"
+    ],
+    "evaluation_challenge": "Ask the elder's age and existing benefits; do not conflate central and state pensions.",
+    "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
+    "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
+    "is_synthetic": true
+  }
+]
