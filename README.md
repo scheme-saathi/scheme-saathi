@@ -30,6 +30,7 @@ Install the project and all currently declared dependencies:
 ```bash
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+python -m pip install -r pyproject.toml
 ```
 
 `requirements.txt` installs the project in editable mode with its `dev` extra. Dependency declarations stay in `pyproject.toml`, so there is one list to maintain:
@@ -70,6 +71,24 @@ python -m servers.schemes_kb.test_retrieval --review
 The database is stored in `data/chroma/` and is ignored by Git. Each teammate builds it from the shared JSON records and reruns importing after pulling data updates. Closed schemes are retained for reference; use `--availability open` for open-only retrieval tests.
 
 For later OpenRouter-backed agents, copy `.env.example` to `.env` and add your key. Never commit `.env`. A FastAPI application entry point and Docker setup have not been implemented yet.
+
+## Eligibility rule engine (prototype)
+
+Run the workflow demo from the project root:
+
+```bash
+python -m graph.run
+```
+
+The demo evaluates the synthetic pension scheme against a sample profile and prints the verdict, condition results, and supporting clauses. It then displays the application approval checkpoint and automatically resumes with approval to demonstrate a mock submission; this is not a real citizen approval or portal submission.
+
+Run the rule-engine unit and integration tests:
+
+```bash
+python -m pytest -q tests/test_scheme.py tests/test_rule_engine.py
+```
+
+The current evaluator supports reviewed scalar comparisons and membership checks. A scheme's flat rules are combined with either `all` or `any`; nested mixed expressions are not supported. The synthetic pension fixture is the current executable example. Other scheme records contain source material and have not yet been converted into reviewed machine-readable eligibility rules, so the evaluator does not provide verified eligibility decisions for them.
 
 ## Guides
 
