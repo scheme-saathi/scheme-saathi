@@ -15,3 +15,4 @@ docs/chunk-preview.json
 docs/embedding-preview.json
 .coverage
 htmlcov/
+.vscode/
