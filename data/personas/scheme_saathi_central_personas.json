@@ -3,9 +3,9 @@
     "persona_id": "SS001",
     "government_level": "Central",
     "persona_title": "Rural farmer seeking income support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Nalgonda district",
+    "location": "Nashik district",
     "age": 46,
     "occupation": "Small farmer",
     "annual_household_income_inr": 120000,
@@ -15,8 +15,8 @@
       "bank account",
       "land records"
     ],
-    "preferred_language": "Telugu",
-    "simulated_user_query": "I am a small farmer in Nalgonda. What central schemes might I qualify for?",
+    "preferred_language": "Marathi",
+    "simulated_user_query": "I am a small farmer in Nashik. What central schemes might I qualify for?",
     "candidate_schemes_to_verify": [
       "PM-KISAN",
       "PM Fasal Bima Yojana"
@@ -30,9 +30,9 @@
     "persona_id": "SS002",
     "government_level": "Central",
     "persona_title": "Low-income household seeking cooking fuel support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Mahabubnagar district",
+    "location": "Nanded district",
     "age": 34,
     "occupation": "Daily-wage worker",
     "annual_household_income_inr": 90000,
@@ -42,7 +42,7 @@
       "ration card",
       "bank account"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "Can my family get help for an LPG connection under a central scheme?",
     "candidate_schemes_to_verify": [
       "Pradhan Mantri Ujjwala Yojana"
@@ -56,9 +56,9 @@
     "persona_id": "SS003",
     "government_level": "Central",
     "persona_title": "Uninsured informal worker",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
+    "location": "Mumbai",
     "age": 39,
     "occupation": "Construction worker",
     "annual_household_income_inr": 150000,
@@ -81,9 +81,9 @@
     "persona_id": "SS004",
     "government_level": "Central",
     "persona_title": "Student from a low-income family",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Warangal",
+    "location": "Nagpur",
     "age": 18,
     "occupation": "College student",
     "annual_household_income_inr": 100000,
@@ -93,7 +93,7 @@
       "income certificate",
       "school marksheet"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I am a first-year college student from a low-income family. Which central scholarships should I check?",
     "candidate_schemes_to_verify": [
       "National Scholarship Portal schemes"
@@ -107,9 +107,9 @@
     "persona_id": "SS005",
     "government_level": "Central",
     "persona_title": "Pregnant woman seeking maternal support information",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Karimnagar district",
+    "location": "Pune district",
     "age": 25,
     "occupation": "Homemaker",
     "annual_household_income_inr": 110000,
@@ -119,7 +119,7 @@
       "bank account",
       "maternal health records"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I am pregnant. Are there central schemes for maternal care or financial assistance?",
     "candidate_schemes_to_verify": [
       "Pradhan Mantri Matru Vandana Yojana",
@@ -134,9 +134,9 @@
     "persona_id": "SS006",
     "government_level": "Central",
     "persona_title": "Senior citizen seeking pension information",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Adilabad district",
+    "location": "Amravati district",
     "age": 67,
     "occupation": "Retired agricultural labourer",
     "annual_household_income_inr": 85000,
@@ -146,7 +146,7 @@
       "age proof",
       "bank account"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I am 67 and have very little income. What pension support should I check?",
     "candidate_schemes_to_verify": [
       "National Social Assistance Programme (NSAP)"
@@ -160,9 +160,9 @@
     "persona_id": "SS007",
     "government_level": "Central",
     "persona_title": "Widow seeking assistance",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Khammam district",
+    "location": "Kolhapur district",
     "age": 42,
     "occupation": "Home-based worker",
     "annual_household_income_inr": 70000,
@@ -172,7 +172,7 @@
       "death certificate",
       "bank account"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I am a widow with limited income. What support schemes may apply?",
     "candidate_schemes_to_verify": [
       "NSAP widow pension components",
@@ -187,9 +187,9 @@
     "persona_id": "SS008",
     "government_level": "Central",
     "persona_title": "Person with disability seeking benefits",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
+    "location": "Mumbai",
     "age": 29,
     "occupation": "Private employee",
     "annual_household_income_inr": 180000,
@@ -198,7 +198,7 @@
       "Aadhaar",
       "disability certificate"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I have a disability certificate. Which government benefits should I investigate?",
     "candidate_schemes_to_verify": [
       "UDID-related services",
@@ -213,9 +213,9 @@
     "persona_id": "SS009",
     "government_level": "Central",
     "persona_title": "Street vendor seeking credit",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Nizamabad",
+    "location": "Chhatrapati Sambhajinagar",
     "age": 36,
     "occupation": "Street vendor",
     "annual_household_income_inr": 140000,
@@ -225,7 +225,7 @@
       "vendor ID (uncertain)",
       "bank account"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I sell vegetables on the street. Is there a government loan scheme I can check?",
     "candidate_schemes_to_verify": [
       "PM SVANidhi (subject to current coverage and rules)"
@@ -239,9 +239,9 @@
     "persona_id": "SS010",
     "government_level": "Central",
     "persona_title": "Micro-entrepreneur starting a tailoring shop",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Siddipet",
+    "location": "Satara",
     "age": 31,
     "occupation": "Tailor/self-employed",
     "annual_household_income_inr": 220000,
@@ -251,7 +251,7 @@
       "bank account",
       "basic business plan"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I want to open a tailoring shop. Which government-backed loan options should I compare?",
     "candidate_schemes_to_verify": [
       "PM Mudra Yojana"
@@ -265,9 +265,9 @@
     "persona_id": "SS011",
     "government_level": "Central",
     "persona_title": "Rural household without a toilet",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Jagtial district",
+    "location": "Jalgaon district",
     "age": 40,
     "occupation": "Agricultural labourer",
     "annual_household_income_inr": 95000,
@@ -276,7 +276,7 @@
       "Aadhaar",
       "household details"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "Our house does not have a toilet. What assistance can we ask about?",
     "candidate_schemes_to_verify": [
       "Swachh Bharat Mission-Grameen"
@@ -290,9 +290,9 @@
     "persona_id": "SS012",
     "government_level": "Central",
     "persona_title": "Household seeking tap-water connection",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Suryapet district",
+    "location": "Solapur district",
     "age": 33,
     "occupation": "Farm labourer",
     "annual_household_income_inr": 105000,
@@ -301,7 +301,7 @@
       "Address proof",
       "household details"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "How can I check whether my village household can get a tap-water connection?",
     "candidate_schemes_to_verify": [
       "Jal Jeevan Mission"
@@ -315,9 +315,9 @@
     "persona_id": "SS013",
     "government_level": "Central",
     "persona_title": "Family interested in affordable housing",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
+    "location": "Mumbai",
     "age": 38,
     "occupation": "Security guard",
     "annual_household_income_inr": 160000,
@@ -327,7 +327,7 @@
       "income details",
       "residence proof"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "My family rents a small room. What affordable housing schemes should I check?",
     "candidate_schemes_to_verify": [
       "PMAY-Urban (current phase/rules to verify)"
@@ -341,9 +341,9 @@
     "persona_id": "SS014",
     "government_level": "Central",
     "persona_title": "Rural family interested in housing support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Mancherial district",
+    "location": "Gadchiroli district",
     "age": 44,
     "occupation": "Agricultural labourer",
     "annual_household_income_inr": 80000,
@@ -353,7 +353,7 @@
       "household details",
       "housing status"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "We live in a kutcha house in a village. How do I check housing assistance?",
     "candidate_schemes_to_verify": [
       "PMAY-Gramin"
@@ -367,9 +367,9 @@
     "persona_id": "SS015",
     "government_level": "Central",
     "persona_title": "Worker wants pension savings",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
+    "location": "Mumbai",
     "age": 28,
     "occupation": "Gig worker",
     "annual_household_income_inr": 240000,
@@ -378,7 +378,7 @@
       "Aadhaar",
       "bank account"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "My income changes every month. Is there a government pension savings option?",
     "candidate_schemes_to_verify": [
       "Atal Pension Yojana",
@@ -393,9 +393,9 @@
     "persona_id": "SS016",
     "government_level": "Central",
     "persona_title": "Unorganised worker seeking registration",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Karimnagar",
+    "location": "Pune",
     "age": 33,
     "occupation": "Domestic worker",
     "annual_household_income_inr": 90000,
@@ -404,7 +404,7 @@
       "Aadhaar",
       "mobile number"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I work in homes. Should I register on e-Shram, and what does it provide?",
     "candidate_schemes_to_verify": [
       "e-Shram registration and linked services"
@@ -418,9 +418,9 @@
     "persona_id": "SS017",
     "government_level": "Central",
     "persona_title": "Artisan seeking livelihood support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Pochampally area",
+    "location": "Paithan area",
     "age": 48,
     "occupation": "Handloom artisan",
     "annual_household_income_inr": 130000,
@@ -430,7 +430,7 @@
       "bank account",
       "work details"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I am a traditional artisan. What central support or training schemes can I check?",
     "candidate_schemes_to_verify": [
       "PM Vishwakarma (occupation eligibility to verify)"
@@ -444,9 +444,9 @@
     "persona_id": "SS018",
     "government_level": "Central",
     "persona_title": "Self-help group member seeking enterprise credit",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Medak district",
+    "location": "Latur district",
     "age": 37,
     "occupation": "SHG member",
     "annual_household_income_inr": 115000,
@@ -456,7 +456,7 @@
       "bank account",
       "Aadhaar"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "Our self-help group wants to expand a small business. What support should we explore?",
     "candidate_schemes_to_verify": [
       "DAY-NRLM-related support"
@@ -470,9 +470,9 @@
     "persona_id": "SS019",
     "government_level": "Central",
     "persona_title": "Farmer seeking crop insurance",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Nirmal district",
+    "location": "Bhandara district",
     "age": 52,
     "occupation": "Farmer",
     "annual_household_income_inr": 170000,
@@ -482,7 +482,7 @@
       "bank details",
       "crop details"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "My crop was damaged. Can a central crop insurance scheme help?",
     "candidate_schemes_to_verify": [
       "PM Fasal Bima Yojana (notified crops/areas and deadlines to verify)"
@@ -496,7 +496,7 @@
     "persona_id": "SS020",
     "government_level": "Central",
     "persona_title": "Farmer seeking soil advice",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
     "location": "Sangareddy district",
     "age": 41,
@@ -507,7 +507,7 @@
       "Land details",
       "farm details"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "How can I get a soil health card or soil test for my farm?",
     "candidate_schemes_to_verify": [
       "Soil Health Card Scheme"
@@ -521,7 +521,7 @@
     "persona_id": "SS021",
     "government_level": "Central",
     "persona_title": "Household asking about food security",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
     "location": "Bhadradri Kothagudem",
     "age": 56,
@@ -532,7 +532,7 @@
       "Ration card",
       "Aadhaar"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "How do I check what food-grain support my family is eligible for?",
     "candidate_schemes_to_verify": [
       "National Food Security Act/PDS entitlements"
@@ -546,7 +546,7 @@
     "persona_id": "SS022",
     "government_level": "Central",
     "persona_title": "Girl student seeking education support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
     "location": "Yadadri Bhuvanagiri",
     "age": 16,
@@ -557,7 +557,7 @@
       "School records",
       "income certificate (if required)"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I am a school student. Are there scholarships I can apply for?",
     "candidate_schemes_to_verify": [
       "National Scholarship Portal schemes",
@@ -572,9 +572,9 @@
     "persona_id": "SS023",
     "government_level": "Central",
     "persona_title": "Research student seeking fellowship",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
+    "location": "Mumbai",
     "age": 23,
     "occupation": "Postgraduate student",
     "annual_household_income_inr": 150000,
@@ -598,9 +598,9 @@
     "persona_id": "SS024",
     "government_level": "Central",
     "persona_title": "Household seeking electricity bill relief",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Warangal",
+    "location": "Nagpur",
     "age": 45,
     "occupation": "Small shop owner",
     "annual_household_income_inr": 175000,
@@ -609,7 +609,7 @@
       "Electricity bill",
       "consumer number"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "Can a central government scheme reduce my electricity bill?",
     "candidate_schemes_to_verify": [
       "PM Surya Ghar: Muft Bijli Yojana (rooftop solar",
@@ -624,9 +624,9 @@
     "persona_id": "SS025",
     "government_level": "Central",
     "persona_title": "Household interested in rooftop solar",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
+    "location": "Mumbai",
     "age": 50,
     "occupation": "Teacher",
     "annual_household_income_inr": 360000,
@@ -636,7 +636,7 @@
       "consumer details",
       "ownership details"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I own a house. How can I check subsidy support for rooftop solar?",
     "candidate_schemes_to_verify": [
       "PM Surya Ghar: Muft Bijli Yojana"
@@ -650,7 +650,7 @@
     "persona_id": "SS026",
     "government_level": "Central",
     "persona_title": "New parent seeking child nutrition support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
     "location": "Nagarkurnool district",
     "age": 27,
@@ -661,7 +661,7 @@
       "Child health records",
       "Aadhaar if required"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "Where can I access government nutrition support for my baby?",
     "candidate_schemes_to_verify": [
       "Anganwadi/Poshan services"
@@ -675,9 +675,9 @@
     "persona_id": "SS027",
     "government_level": "Central",
     "persona_title": "Migrant worker seeking portability",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
+    "location": "Mumbai",
     "age": 32,
     "occupation": "Migrant construction worker",
     "annual_household_income_inr": 105000,
@@ -687,7 +687,7 @@
       "Aadhaar"
     ],
     "preferred_language": "Hindi",
-    "simulated_user_query": "I moved to Telangana for work. Can I use my ration card here?",
+    "simulated_user_query": "I moved to Maharashtra for work. Can I use my ration card here?",
     "candidate_schemes_to_verify": [
       "One Nation One Ration Card/PDS portability"
     ],
@@ -700,9 +700,9 @@
     "persona_id": "SS028",
     "government_level": "Central",
     "persona_title": "Small business seeking formal registration",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Khammam",
+    "location": "Kolhapur",
     "age": 35,
     "occupation": "Repair-shop owner",
     "annual_household_income_inr": 260000,
@@ -712,7 +712,7 @@
       "business details",
       "bank account"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "I run a small repair shop. What registrations or schemes should I look into?",
     "candidate_schemes_to_verify": [
       "Udyam registration",
@@ -727,7 +727,7 @@
     "persona_id": "SS029",
     "government_level": "Central",
     "persona_title": "Farmer's family seeking pension for elder",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
     "location": "Peddapalli district",
     "age": 38,
@@ -739,10 +739,10 @@
       "income details",
       "bank account"
     ],
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_query": "My father is elderly and has no pension. How do we check his eligibility?",
     "candidate_schemes_to_verify": [
-      "NSAP and Telangana pension options to compare"
+      "NSAP and Maharashtra pension options to compare"
     ],
     "evaluation_challenge": "Ask the elder's age and existing benefits; do not conflate central and state pensions.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
