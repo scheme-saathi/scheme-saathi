@@ -30,7 +30,6 @@ Install the project and all currently declared dependencies:
 ```bash
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python -m pip install -r pyproject.toml
 ```
 
 `requirements.txt` installs the project in editable mode with its `rag` and `dev` extras. Dependency declarations stay in `pyproject.toml`, so there is one list to maintain:
@@ -115,4 +114,43 @@ The approved collection is `schemes_bge_m3_body_v1`; `--review` selects `schemes
 
 Reimporting updates matching IDs and removes obsolete chunks from that importer's collection, including withdrawn or deleted records. Keep one importer running at a time. Multi-batch importing is not atomic; rerun successfully after a failure before serving results. Use a separate collection if the model or embedding strategy changes.
 
-Retrieval prints matching passages and citations; it does not generate answers or determine eligibility. Similarity scores are not probabilities, and nearest matches may still be irrelevant. BM25, reranking, contextual-prefix improvements and labelled retrieval evaluation are pending.
+Retrieval prints matching passages and citations; it does not generate answers or determine eligibility. Similarity scores are not probabilities, and nearest matches may still be irrelevant. BM25 and RRF hybrid retrieval are available. Reranking and contextual-prefix improvements remain pending.
+
+## PDF and hybrid retrieval
+
+Install updated dependencies with `python -m pip install -r requirements.txt`.
+
+```bash
+python -m servers.schemes_kb.extract_documents --scheme-id C09 --file "/path/to/guidelines.pdf" --source-url "https://official-source.example/guidelines.pdf"
+```
+
+Replace the example file path and source URL with the actual official document. This command accepts a local PDF and does not download its URL. It saves the original under ignored data/raw/ and draft page/table extraction under ignored data/extracted/. Ruled tables preserve merged cells, bounding boxes and HTML; scanned/borderless content still needs review. Repeat with --reextract to back up and replace an extraction. No extraction is automatically approved or published to the scheme index.
+
+```bash
+python -m servers.schemes_kb.test_pdf_retrieval --document "data/extracted/C09/<file-hash>.json"
+python -m servers.schemes_kb.search --method hybrid --scheme-id C09 --question "What is the manpower cost limit?" --include-review-pdfs
+```
+
+Replace <file-hash> with the extraction filename. The PDF test indexes the selected extraction into scheme_pdf_review_v1. Combined search reuses stored records without reingestion, supports vector/bm25/hybrid methods, and returns source references. Draft PDF evidence is excluded unless --include-review-pdfs is explicit. --availability open filters out closed schemes in every method. Scores are ranking signals, not eligibility verdicts.
+
+BM25 uses local frequency/length scoring (k1=1.2, b=0.75) over the same filtered passages, with Unicode-aware tokenization and HTML tags excluded. It does not call an LLM. Hindi keywords may not match English sources. Hybrid fuses up to 20 candidates per method using reciprocal rank fusion with constant 60. The original scheme-page and PDF collections remain separate. Overlap deduplication and reranking are not implemented.
+
+RAG scripts recognize synthetic:// rule fixtures and skip them without altering the rule-engine files. Malformed real scheme records still fail validation.
+
+## Retrieval evaluation
+
+The comparison runner supports vector, BM25 and hybrid using the same source-labelled dataset. The gold dataset is intentionally not included in this commit; supply your local reviewed dataset:
+
+```bash
+python -m servers.schemes_kb.evaluate_retrieval --dataset "/path/to/retrieval_gold_v1.json" --method hybrid --split development --allow-pending
+```
+
+--allow-pending explicitly permits provisional labels; omit it for approved labels. Keep held-out cases untouched until final evaluation. Reports are saved under ignored data/evaluation-runs/ and include evidence coverage, scheme hits, language breakdowns, filter checks, latency and corpus fingerprints. Abstention cases are marked unsupported; retrieval alone does not generate an answer. Evidence scoring requires source references plus normalized source text, not a matching citation alone. Tests use small synthetic examples and do not include the gold dataset.
+
+Run the RAG checks independently:
+
+```bash
+python -m unittest discover -s tests -p test_keyword_search.py
+python -m unittest discover -s tests -p test_retrieval_evaluation.py
+python -m unittest discover -s tests -p test_scheme_loading.py
+```

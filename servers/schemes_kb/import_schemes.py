@@ -5,7 +5,7 @@ import json
 import chromadb
 from sentence_transformers import SentenceTransformer
 
-from servers.schemes_kb.models import Scheme
+from servers.schemes_kb.scheme_loading import load_schemes
 from servers.schemes_kb.preview_chunks import PROJECT_ROOT, make_chunks
 
 DB_PATH = PROJECT_ROOT / "data" / "chroma"
@@ -21,8 +21,7 @@ def main():
     collection_name = REVIEW_COLLECTION_NAME if args.review else COLLECTION_NAME
     schemes = []
     seen = set()
-    for path in sorted((PROJECT_ROOT / "data" / "schemes").glob("*.json")):
-        scheme = Scheme.model_validate_json(path.read_text(encoding="utf-8"))
+    for scheme in load_schemes(PROJECT_ROOT / "data" / "schemes"):
         if scheme.sample_only:
             continue
         if scheme.scheme_id in seen:

@@ -16,3 +16,6 @@ docs/embedding-preview.json
 .coverage
 htmlcov/
 .vscode/
+
+data/extracted/
+data/evaluation-runs/
