@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-#from servers.rule_engine.rules import evaluate
-#from servers.rule_engine.scheme import SchemeRecord, live_conditions
+from servers.rule_engine.rules import evaluate
+from servers.rule_engine.scheme import SchemeRecord, live_conditions
 
 SCHEME_DIR = Path(__file__).resolve().parents[1] / "data" / "schemes"
 
