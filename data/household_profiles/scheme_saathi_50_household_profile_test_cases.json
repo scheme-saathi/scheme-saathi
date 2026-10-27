@@ -4,11 +4,11 @@
     "source_persona_id": "SS001",
     "government_scope_to_test": "Central",
     "persona_title": "Rural farmer seeking income support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Nalgonda district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "I am a small farmer in Nalgonda. What central schemes might I qualify for?",
+    "location": "Nashik district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "I am a small farmer in Nashik. What central schemes might I qualify for?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -48,7 +48,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -61,9 +61,9 @@
       "persona_id": "SS001",
       "government_level": "Central",
       "persona_title": "Rural farmer seeking income support",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Nalgonda district",
+      "location": "Nashik district",
       "age": 46,
       "occupation": "Small farmer",
       "annual_household_income_inr": 120000,
@@ -73,8 +73,8 @@
         "bank account",
         "land records"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "I am a small farmer in Nalgonda. What central schemes might I qualify for?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "I am a small farmer in Nashik. What central schemes might I qualify for?",
       "candidate_schemes_to_verify": [
         "PM-KISAN",
         "PM Fasal Bima Yojana"
@@ -91,10 +91,10 @@
     "source_persona_id": "SS002",
     "government_scope_to_test": "Central",
     "persona_title": "Low-income household seeking cooking fuel support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Mahabubnagar district",
-    "preferred_language": "Telugu",
+    "location": "Nanded district",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "Can my family get help for an LPG connection under a central scheme?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -134,7 +134,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -147,9 +147,9 @@
       "persona_id": "SS002",
       "government_level": "Central",
       "persona_title": "Low-income household seeking cooking fuel support",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Mahabubnagar district",
+      "location": "Nanded district",
       "age": 34,
       "occupation": "Daily-wage worker",
       "annual_household_income_inr": 90000,
@@ -159,7 +159,7 @@
         "ration card",
         "bank account"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "Can my family get help for an LPG connection under a central scheme?",
       "candidate_schemes_to_verify": [
         "Pradhan Mantri Ujjwala Yojana"
@@ -176,9 +176,9 @@
     "source_persona_id": "SS003",
     "government_scope_to_test": "Central",
     "persona_title": "Uninsured informal worker",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
+    "location": "Mumbai",
     "preferred_language": "Hindi",
     "simulated_user_opening": "I work in construction and have no private health insurance. What government health coverage should I check?",
     "simulated_user_guidance": [
@@ -218,7 +218,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -231,9 +231,9 @@
       "persona_id": "SS003",
       "government_level": "Central",
       "persona_title": "Uninsured informal worker",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Hyderabad",
+      "location": "Mumbai",
       "age": 39,
       "occupation": "Construction worker",
       "annual_household_income_inr": 150000,
@@ -259,10 +259,10 @@
     "source_persona_id": "SS004",
     "government_scope_to_test": "Central",
     "persona_title": "Student from a low-income family",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Warangal",
-    "preferred_language": "Telugu",
+    "location": "Nagpur",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I am a first-year college student from a low-income family. Which central scholarships should I check?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -302,7 +302,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -315,9 +315,9 @@
       "persona_id": "SS004",
       "government_level": "Central",
       "persona_title": "Student from a low-income family",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Warangal",
+      "location": "Nagpur",
       "age": 18,
       "occupation": "College student",
       "annual_household_income_inr": 100000,
@@ -327,7 +327,7 @@
         "income certificate",
         "school marksheet"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I am a first-year college student from a low-income family. Which central scholarships should I check?",
       "candidate_schemes_to_verify": [
         "National Scholarship Portal schemes"
@@ -344,10 +344,10 @@
     "source_persona_id": "SS005",
     "government_scope_to_test": "Central",
     "persona_title": "Pregnant woman seeking maternal support information",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Karimnagar district",
-    "preferred_language": "Telugu",
+    "location": "Pune district",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I am pregnant. Are there central schemes for maternal care or financial assistance?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -388,7 +388,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -401,9 +401,9 @@
       "persona_id": "SS005",
       "government_level": "Central",
       "persona_title": "Pregnant woman seeking maternal support information",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Karimnagar district",
+      "location": "Pune district",
       "age": 25,
       "occupation": "Homemaker",
       "annual_household_income_inr": 110000,
@@ -413,7 +413,7 @@
         "bank account",
         "maternal health records"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I am pregnant. Are there central schemes for maternal care or financial assistance?",
       "candidate_schemes_to_verify": [
         "Pradhan Mantri Matru Vandana Yojana",
@@ -431,10 +431,10 @@
     "source_persona_id": "SS006",
     "government_scope_to_test": "Central",
     "persona_title": "Senior citizen seeking pension information",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Adilabad district",
-    "preferred_language": "Telugu",
+    "location": "Amravati district",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I am 67 and have very little income. What pension support should I check?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -474,7 +474,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -487,9 +487,9 @@
       "persona_id": "SS006",
       "government_level": "Central",
       "persona_title": "Senior citizen seeking pension information",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Adilabad district",
+      "location": "Amravati district",
       "age": 67,
       "occupation": "Retired agricultural labourer",
       "annual_household_income_inr": 85000,
@@ -499,7 +499,7 @@
         "age proof",
         "bank account"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I am 67 and have very little income. What pension support should I check?",
       "candidate_schemes_to_verify": [
         "National Social Assistance Programme (NSAP)"
@@ -516,10 +516,10 @@
     "source_persona_id": "SS007",
     "government_scope_to_test": "Central",
     "persona_title": "Widow seeking assistance",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Khammam district",
-    "preferred_language": "Telugu",
+    "location": "Kolhapur district",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I am a widow with limited income. What support schemes may apply?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -560,7 +560,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -573,9 +573,9 @@
       "persona_id": "SS007",
       "government_level": "Central",
       "persona_title": "Widow seeking assistance",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Khammam district",
+      "location": "Kolhapur district",
       "age": 42,
       "occupation": "Home-based worker",
       "annual_household_income_inr": 70000,
@@ -585,7 +585,7 @@
         "death certificate",
         "bank account"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I am a widow with limited income. What support schemes may apply?",
       "candidate_schemes_to_verify": [
         "NSAP widow pension components",
@@ -603,10 +603,10 @@
     "source_persona_id": "SS008",
     "government_scope_to_test": "Central",
     "persona_title": "Person with disability seeking benefits",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
-    "preferred_language": "Telugu",
+    "location": "Mumbai",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I have a disability certificate. Which government benefits should I investigate?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -646,7 +646,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -659,9 +659,9 @@
       "persona_id": "SS008",
       "government_level": "Central",
       "persona_title": "Person with disability seeking benefits",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Hyderabad",
+      "location": "Mumbai",
       "age": 29,
       "occupation": "Private employee",
       "annual_household_income_inr": 180000,
@@ -670,7 +670,7 @@
         "Aadhaar",
         "disability certificate"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I have a disability certificate. Which government benefits should I investigate?",
       "candidate_schemes_to_verify": [
         "UDID-related services",
@@ -688,10 +688,10 @@
     "source_persona_id": "SS009",
     "government_scope_to_test": "Central",
     "persona_title": "Street vendor seeking credit",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Nizamabad",
-    "preferred_language": "Telugu",
+    "location": "Chhatrapati Sambhajinagar",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I sell vegetables on the street. Is there a government loan scheme I can check?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -731,7 +731,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -744,9 +744,9 @@
       "persona_id": "SS009",
       "government_level": "Central",
       "persona_title": "Street vendor seeking credit",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Nizamabad",
+      "location": "Chhatrapati Sambhajinagar",
       "age": 36,
       "occupation": "Street vendor",
       "annual_household_income_inr": 140000,
@@ -756,7 +756,7 @@
         "vendor ID (uncertain)",
         "bank account"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I sell vegetables on the street. Is there a government loan scheme I can check?",
       "candidate_schemes_to_verify": [
         "PM SVANidhi (subject to current coverage and rules)"
@@ -773,10 +773,10 @@
     "source_persona_id": "SS010",
     "government_scope_to_test": "Central",
     "persona_title": "Micro-entrepreneur starting a tailoring shop",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Siddipet",
-    "preferred_language": "Telugu",
+    "location": "Satara",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I want to open a tailoring shop. Which government-backed loan options should I compare?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -816,7 +816,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -829,9 +829,9 @@
       "persona_id": "SS010",
       "government_level": "Central",
       "persona_title": "Micro-entrepreneur starting a tailoring shop",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Siddipet",
+      "location": "Satara",
       "age": 31,
       "occupation": "Tailor/self-employed",
       "annual_household_income_inr": 220000,
@@ -841,7 +841,7 @@
         "bank account",
         "basic business plan"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I want to open a tailoring shop. Which government-backed loan options should I compare?",
       "candidate_schemes_to_verify": [
         "PM Mudra Yojana"
@@ -858,10 +858,10 @@
     "source_persona_id": "SS011",
     "government_scope_to_test": "Central",
     "persona_title": "Rural household without a toilet",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Jagtial district",
-    "preferred_language": "Telugu",
+    "location": "Jalgaon district",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "Our house does not have a toilet. What assistance can we ask about?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -900,7 +900,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -913,9 +913,9 @@
       "persona_id": "SS011",
       "government_level": "Central",
       "persona_title": "Rural household without a toilet",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Jagtial district",
+      "location": "Jalgaon district",
       "age": 40,
       "occupation": "Agricultural labourer",
       "annual_household_income_inr": 95000,
@@ -924,7 +924,7 @@
         "Aadhaar",
         "household details"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "Our house does not have a toilet. What assistance can we ask about?",
       "candidate_schemes_to_verify": [
         "Swachh Bharat Mission-Grameen"
@@ -941,10 +941,10 @@
     "source_persona_id": "SS012",
     "government_scope_to_test": "Central",
     "persona_title": "Household seeking tap-water connection",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Suryapet district",
-    "preferred_language": "Telugu",
+    "location": "Solapur district",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "How can I check whether my village household can get a tap-water connection?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -983,7 +983,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -996,9 +996,9 @@
       "persona_id": "SS012",
       "government_level": "Central",
       "persona_title": "Household seeking tap-water connection",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Suryapet district",
+      "location": "Solapur district",
       "age": 33,
       "occupation": "Farm labourer",
       "annual_household_income_inr": 105000,
@@ -1007,7 +1007,7 @@
         "Address proof",
         "household details"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "How can I check whether my village household can get a tap-water connection?",
       "candidate_schemes_to_verify": [
         "Jal Jeevan Mission"
@@ -1024,10 +1024,10 @@
     "source_persona_id": "SS013",
     "government_scope_to_test": "Central",
     "persona_title": "Family interested in affordable housing",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
-    "preferred_language": "Telugu",
+    "location": "Mumbai",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "My family rents a small room. What affordable housing schemes should I check?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1067,7 +1067,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1080,9 +1080,9 @@
       "persona_id": "SS013",
       "government_level": "Central",
       "persona_title": "Family interested in affordable housing",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Hyderabad",
+      "location": "Mumbai",
       "age": 38,
       "occupation": "Security guard",
       "annual_household_income_inr": 160000,
@@ -1092,7 +1092,7 @@
         "income details",
         "residence proof"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "My family rents a small room. What affordable housing schemes should I check?",
       "candidate_schemes_to_verify": [
         "PMAY-Urban (current phase/rules to verify)"
@@ -1109,10 +1109,10 @@
     "source_persona_id": "SS014",
     "government_scope_to_test": "Central",
     "persona_title": "Rural family interested in housing support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Mancherial district",
-    "preferred_language": "Telugu",
+    "location": "Gadchiroli district",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "We live in a kutcha house in a village. How do I check housing assistance?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1152,7 +1152,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1165,9 +1165,9 @@
       "persona_id": "SS014",
       "government_level": "Central",
       "persona_title": "Rural family interested in housing support",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Mancherial district",
+      "location": "Gadchiroli district",
       "age": 44,
       "occupation": "Agricultural labourer",
       "annual_household_income_inr": 80000,
@@ -1177,7 +1177,7 @@
         "household details",
         "housing status"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "We live in a kutcha house in a village. How do I check housing assistance?",
       "candidate_schemes_to_verify": [
         "PMAY-Gramin"
@@ -1194,10 +1194,10 @@
     "source_persona_id": "SS015",
     "government_scope_to_test": "Central",
     "persona_title": "Worker wants pension savings",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
-    "preferred_language": "Telugu",
+    "location": "Mumbai",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "My income changes every month. Is there a government pension savings option?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1237,7 +1237,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1250,9 +1250,9 @@
       "persona_id": "SS015",
       "government_level": "Central",
       "persona_title": "Worker wants pension savings",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Hyderabad",
+      "location": "Mumbai",
       "age": 28,
       "occupation": "Gig worker",
       "annual_household_income_inr": 240000,
@@ -1261,7 +1261,7 @@
         "Aadhaar",
         "bank account"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "My income changes every month. Is there a government pension savings option?",
       "candidate_schemes_to_verify": [
         "Atal Pension Yojana",
@@ -1279,10 +1279,10 @@
     "source_persona_id": "SS016",
     "government_scope_to_test": "Central",
     "persona_title": "Unorganised worker seeking registration",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Karimnagar",
-    "preferred_language": "Telugu",
+    "location": "Pune",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I work in homes. Should I register on e-Shram, and what does it provide?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1321,7 +1321,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1334,9 +1334,9 @@
       "persona_id": "SS016",
       "government_level": "Central",
       "persona_title": "Unorganised worker seeking registration",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Karimnagar",
+      "location": "Pune",
       "age": 33,
       "occupation": "Domestic worker",
       "annual_household_income_inr": 90000,
@@ -1345,7 +1345,7 @@
         "Aadhaar",
         "mobile number"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I work in homes. Should I register on e-Shram, and what does it provide?",
       "candidate_schemes_to_verify": [
         "e-Shram registration and linked services"
@@ -1362,10 +1362,10 @@
     "source_persona_id": "SS017",
     "government_scope_to_test": "Central",
     "persona_title": "Artisan seeking livelihood support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Pochampally area",
-    "preferred_language": "Telugu",
+    "location": "Paithan area",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I am a traditional artisan. What central support or training schemes can I check?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1405,7 +1405,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1418,9 +1418,9 @@
       "persona_id": "SS017",
       "government_level": "Central",
       "persona_title": "Artisan seeking livelihood support",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Pochampally area",
+      "location": "Paithan area",
       "age": 48,
       "occupation": "Handloom artisan",
       "annual_household_income_inr": 130000,
@@ -1430,7 +1430,7 @@
         "bank account",
         "work details"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I am a traditional artisan. What central support or training schemes can I check?",
       "candidate_schemes_to_verify": [
         "PM Vishwakarma (occupation eligibility to verify)"
@@ -1447,10 +1447,10 @@
     "source_persona_id": "SS018",
     "government_scope_to_test": "Central",
     "persona_title": "Self-help group member seeking enterprise credit",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Medak district",
-    "preferred_language": "Telugu",
+    "location": "Latur district",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "Our self-help group wants to expand a small business. What support should we explore?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1490,7 +1490,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1503,9 +1503,9 @@
       "persona_id": "SS018",
       "government_level": "Central",
       "persona_title": "Self-help group member seeking enterprise credit",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Medak district",
+      "location": "Latur district",
       "age": 37,
       "occupation": "SHG member",
       "annual_household_income_inr": 115000,
@@ -1515,7 +1515,7 @@
         "bank account",
         "Aadhaar"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "Our self-help group wants to expand a small business. What support should we explore?",
       "candidate_schemes_to_verify": [
         "DAY-NRLM-related support"
@@ -1532,10 +1532,10 @@
     "source_persona_id": "SS019",
     "government_scope_to_test": "Central",
     "persona_title": "Farmer seeking crop insurance",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Nirmal district",
-    "preferred_language": "Telugu",
+    "location": "Bhandara district",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "My crop was damaged. Can a central crop insurance scheme help?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1575,7 +1575,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1588,9 +1588,9 @@
       "persona_id": "SS019",
       "government_level": "Central",
       "persona_title": "Farmer seeking crop insurance",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Nirmal district",
+      "location": "Bhandara district",
       "age": 52,
       "occupation": "Farmer",
       "annual_household_income_inr": 170000,
@@ -1600,7 +1600,7 @@
         "bank details",
         "crop details"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "My crop was damaged. Can a central crop insurance scheme help?",
       "candidate_schemes_to_verify": [
         "PM Fasal Bima Yojana (notified crops/areas and deadlines to verify)"
@@ -1617,10 +1617,10 @@
     "source_persona_id": "SS020",
     "government_scope_to_test": "Central",
     "persona_title": "Farmer seeking soil advice",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
     "location": "Sangareddy district",
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "How can I get a soil health card or soil test for my farm?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1659,7 +1659,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1672,7 +1672,7 @@
       "persona_id": "SS020",
       "government_level": "Central",
       "persona_title": "Farmer seeking soil advice",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
       "location": "Sangareddy district",
       "age": 41,
@@ -1683,7 +1683,7 @@
         "Land details",
         "farm details"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "How can I get a soil health card or soil test for my farm?",
       "candidate_schemes_to_verify": [
         "Soil Health Card Scheme"
@@ -1700,10 +1700,10 @@
     "source_persona_id": "SS021",
     "government_scope_to_test": "Central",
     "persona_title": "Household asking about food security",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
     "location": "Bhadradri Kothagudem",
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "How do I check what food-grain support my family is eligible for?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1742,7 +1742,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1755,7 +1755,7 @@
       "persona_id": "SS021",
       "government_level": "Central",
       "persona_title": "Household asking about food security",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
       "location": "Bhadradri Kothagudem",
       "age": 56,
@@ -1766,7 +1766,7 @@
         "Ration card",
         "Aadhaar"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "How do I check what food-grain support my family is eligible for?",
       "candidate_schemes_to_verify": [
         "National Food Security Act/PDS entitlements"
@@ -1783,10 +1783,10 @@
     "source_persona_id": "SS022",
     "government_scope_to_test": "Central",
     "persona_title": "Girl student seeking education support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
     "location": "Yadadri Bhuvanagiri",
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I am a school student. Are there scholarships I can apply for?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1826,7 +1826,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1839,7 +1839,7 @@
       "persona_id": "SS022",
       "government_level": "Central",
       "persona_title": "Girl student seeking education support",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
       "location": "Yadadri Bhuvanagiri",
       "age": 16,
@@ -1850,7 +1850,7 @@
         "School records",
         "income certificate (if required)"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I am a school student. Are there scholarships I can apply for?",
       "candidate_schemes_to_verify": [
         "National Scholarship Portal schemes",
@@ -1868,9 +1868,9 @@
     "source_persona_id": "SS023",
     "government_scope_to_test": "Central",
     "persona_title": "Research student seeking fellowship",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
+    "location": "Mumbai",
     "preferred_language": "English",
     "simulated_user_opening": "I am doing postgraduate study. How do I find central fellowships I may qualify for?",
     "simulated_user_guidance": [
@@ -1911,7 +1911,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -1924,9 +1924,9 @@
       "persona_id": "SS023",
       "government_level": "Central",
       "persona_title": "Research student seeking fellowship",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Hyderabad",
+      "location": "Mumbai",
       "age": 23,
       "occupation": "Postgraduate student",
       "annual_household_income_inr": 150000,
@@ -1953,10 +1953,10 @@
     "source_persona_id": "SS024",
     "government_scope_to_test": "Central",
     "persona_title": "Household seeking electricity bill relief",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Warangal",
-    "preferred_language": "Telugu",
+    "location": "Nagpur",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "Can a central government scheme reduce my electricity bill?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -1996,7 +1996,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2009,9 +2009,9 @@
       "persona_id": "SS024",
       "government_level": "Central",
       "persona_title": "Household seeking electricity bill relief",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Warangal",
+      "location": "Nagpur",
       "age": 45,
       "occupation": "Small shop owner",
       "annual_household_income_inr": 175000,
@@ -2020,7 +2020,7 @@
         "Electricity bill",
         "consumer number"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "Can a central government scheme reduce my electricity bill?",
       "candidate_schemes_to_verify": [
         "PM Surya Ghar: Muft Bijli Yojana (rooftop solar",
@@ -2038,10 +2038,10 @@
     "source_persona_id": "SS025",
     "government_scope_to_test": "Central",
     "persona_title": "Household interested in rooftop solar",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
-    "preferred_language": "Telugu",
+    "location": "Mumbai",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I own a house. How can I check subsidy support for rooftop solar?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -2081,7 +2081,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2094,9 +2094,9 @@
       "persona_id": "SS025",
       "government_level": "Central",
       "persona_title": "Household interested in rooftop solar",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Hyderabad",
+      "location": "Mumbai",
       "age": 50,
       "occupation": "Teacher",
       "annual_household_income_inr": 360000,
@@ -2106,7 +2106,7 @@
         "consumer details",
         "ownership details"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I own a house. How can I check subsidy support for rooftop solar?",
       "candidate_schemes_to_verify": [
         "PM Surya Ghar: Muft Bijli Yojana"
@@ -2123,10 +2123,10 @@
     "source_persona_id": "SS026",
     "government_scope_to_test": "Central",
     "persona_title": "New parent seeking child nutrition support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
     "location": "Nagarkurnool district",
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "Where can I access government nutrition support for my baby?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -2165,7 +2165,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2178,7 +2178,7 @@
       "persona_id": "SS026",
       "government_level": "Central",
       "persona_title": "New parent seeking child nutrition support",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
       "location": "Nagarkurnool district",
       "age": 27,
@@ -2189,7 +2189,7 @@
         "Child health records",
         "Aadhaar if required"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "Where can I access government nutrition support for my baby?",
       "candidate_schemes_to_verify": [
         "Anganwadi/Poshan services"
@@ -2206,11 +2206,11 @@
     "source_persona_id": "SS027",
     "government_scope_to_test": "Central",
     "persona_title": "Migrant worker seeking portability",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
+    "location": "Mumbai",
     "preferred_language": "Hindi",
-    "simulated_user_opening": "I moved to Telangana for work. Can I use my ration card here?",
+    "simulated_user_opening": "I moved to Maharashtra for work. Can I use my ration card here?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -2248,7 +2248,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2261,9 +2261,9 @@
       "persona_id": "SS027",
       "government_level": "Central",
       "persona_title": "Migrant worker seeking portability",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Hyderabad",
+      "location": "Mumbai",
       "age": 32,
       "occupation": "Migrant construction worker",
       "annual_household_income_inr": 105000,
@@ -2273,7 +2273,7 @@
         "Aadhaar"
       ],
       "preferred_language": "Hindi",
-      "simulated_user_query": "I moved to Telangana for work. Can I use my ration card here?",
+      "simulated_user_query": "I moved to Maharashtra for work. Can I use my ration card here?",
       "candidate_schemes_to_verify": [
         "One Nation One Ration Card/PDS portability"
       ],
@@ -2289,10 +2289,10 @@
     "source_persona_id": "SS028",
     "government_scope_to_test": "Central",
     "persona_title": "Small business seeking formal registration",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Khammam",
-    "preferred_language": "Telugu",
+    "location": "Kolhapur",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "I run a small repair shop. What registrations or schemes should I look into?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -2333,7 +2333,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2346,9 +2346,9 @@
       "persona_id": "SS028",
       "government_level": "Central",
       "persona_title": "Small business seeking formal registration",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Khammam",
+      "location": "Kolhapur",
       "age": 35,
       "occupation": "Repair-shop owner",
       "annual_household_income_inr": 260000,
@@ -2358,7 +2358,7 @@
         "business details",
         "bank account"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "I run a small repair shop. What registrations or schemes should I look into?",
       "candidate_schemes_to_verify": [
         "Udyam registration",
@@ -2376,10 +2376,10 @@
     "source_persona_id": "SS029",
     "government_scope_to_test": "Central",
     "persona_title": "Farmer's family seeking pension for elder",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
     "location": "Peddapalli district",
-    "preferred_language": "Telugu",
+    "preferred_language": "Marathi",
     "simulated_user_opening": "My father is elderly and has no pension. How do we check his eligibility?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
@@ -2407,7 +2407,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "NSAP and Telangana pension options to compare"
+      "NSAP and Maharashtra pension options to compare"
     ],
     "evaluation_challenge": "Ask the elder's age and existing benefits; do not conflate central and state pensions.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2419,7 +2419,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2432,7 +2432,7 @@
       "persona_id": "SS029",
       "government_level": "Central",
       "persona_title": "Farmer's family seeking pension for elder",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
       "location": "Peddapalli district",
       "age": 38,
@@ -2444,10 +2444,10 @@
         "income details",
         "bank account"
       ],
-      "preferred_language": "Telugu",
+      "preferred_language": "Marathi",
       "simulated_user_query": "My father is elderly and has no pension. How do we check his eligibility?",
       "candidate_schemes_to_verify": [
-        "NSAP and Telangana pension options to compare"
+        "NSAP and Maharashtra pension options to compare"
       ],
       "evaluation_challenge": "Ask the elder's age and existing benefits; do not conflate central and state pensions.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2459,13 +2459,13 @@
   {
     "test_case_id": "HPF030",
     "source_persona_id": "SS030",
-    "government_scope_to_test": "Telangana State",
-    "persona_title": "Women seeking Telangana cash assistance information",
-    "state": "Telangana",
+    "government_scope_to_test": "Maharashtra State",
+    "persona_title": "Women seeking Maharashtra cash assistance information",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "What Telangana government schemes for women should I check?",
+    "location": "Mumbai",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "What Maharashtra government schemes for women should I check?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -2492,7 +2492,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Maha Lakshmi (current implementation/eligibility to verify)"
+      "Maharashtra women-focused cash assistance schemes (current implementation/eligibility to verify)"
     ],
     "evaluation_challenge": "Clarify which benefit is meant and verify current official rules.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2504,7 +2504,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2516,10 +2516,10 @@
     "source_persona": {
       "persona_id": "SS030",
       "government_level": "State",
-      "persona_title": "Women seeking Telangana cash assistance information",
-      "state": "Telangana",
+      "persona_title": "Women seeking Maharashtra cash assistance information",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Hyderabad",
+      "location": "Mumbai",
       "age": 30,
       "occupation": "Domestic worker",
       "annual_household_income_inr": 110000,
@@ -2529,10 +2529,10 @@
         "bank account",
         "residence details"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "What Telangana government schemes for women should I check?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "What Maharashtra government schemes for women should I check?",
       "candidate_schemes_to_verify": [
-        "Maha Lakshmi (current implementation/eligibility to verify)"
+        "Maharashtra women-focused cash assistance schemes (current implementation/eligibility to verify)"
       ],
       "evaluation_challenge": "Clarify which benefit is meant and verify current official rules.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2544,13 +2544,13 @@
   {
     "test_case_id": "HPF031",
     "source_persona_id": "SS031",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Woman seeking subsidised LPG information",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Nalgonda district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "Does Telangana have any support related to LPG cylinders for eligible women?",
+    "location": "Nashik district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "Does Maharashtra have any support related to LPG cylinders for eligible women?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -2560,7 +2560,7 @@
       "respondent_age": 35,
       "primary_occupation": "Agricultural labourer",
       "approx_annual_household_income_inr": 90000,
-      "household_situation": "Asks about Telangana's announced women-focused benefits.",
+      "household_situation": "Asks about Maharashtra's announced women-focused benefits.",
       "documents_available": [
         "Aadhaar",
         "bank account",
@@ -2577,7 +2577,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Maha Lakshmi-related LPG benefit (current rules to verify)"
+      "Maharashtra LPG assistance options (current rules and eligibility to verify)"
     ],
     "evaluation_challenge": "Verify current implementation, price/benefit details, and eligible household conditions.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2589,7 +2589,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2602,22 +2602,22 @@
       "persona_id": "SS031",
       "government_level": "State",
       "persona_title": "Woman seeking subsidised LPG information",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Nalgonda district",
+      "location": "Nashik district",
       "age": 35,
       "occupation": "Agricultural labourer",
       "annual_household_income_inr": 90000,
-      "situation": "Asks about Telangana's announced women-focused benefits.",
+      "situation": "Asks about Maharashtra's announced women-focused benefits.",
       "documents_available": [
         "Aadhaar",
         "bank account",
         "ration card"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "Does Telangana have any support related to LPG cylinders for eligible women?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "Does Maharashtra have any support related to LPG cylinders for eligible women?",
       "candidate_schemes_to_verify": [
-        "Maha Lakshmi-related LPG benefit (current rules to verify)"
+        "Maharashtra LPG assistance options (current rules and eligibility to verify)"
       ],
       "evaluation_challenge": "Verify current implementation, price/benefit details, and eligible household conditions.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2629,13 +2629,13 @@
   {
     "test_case_id": "HPF032",
     "source_persona_id": "SS032",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Woman seeking free bus travel information",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Warangal",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "Can I travel free on Telangana state buses as a woman?",
+    "location": "Nagpur",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "Can I travel free on Maharashtra state buses as a woman?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -2660,7 +2660,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Maha Lakshmi/TGSRTC scheme rules"
+      "Maharashtra State Road Transport Corporation women’s travel concessions (current rules to verify)"
     ],
     "evaluation_challenge": "Explain eligible services, identity requirements, and exclusions as officially published.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2672,7 +2672,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2685,9 +2685,9 @@
       "persona_id": "SS032",
       "government_level": "State",
       "persona_title": "Woman seeking free bus travel information",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Warangal",
+      "location": "Nagpur",
       "age": 22,
       "occupation": "College student",
       "annual_household_income_inr": 55000,
@@ -2695,10 +2695,10 @@
       "documents_available": [
         "Identity proof"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "Can I travel free on Telangana state buses as a woman?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "Can I travel free on Maharashtra state buses as a woman?",
       "candidate_schemes_to_verify": [
-        "Maha Lakshmi/TGSRTC scheme rules"
+        "Maharashtra State Road Transport Corporation women’s travel concessions (current rules to verify)"
       ],
       "evaluation_challenge": "Explain eligible services, identity requirements, and exclusions as officially published.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2710,13 +2710,13 @@
   {
     "test_case_id": "HPF033",
     "source_persona_id": "SS033",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Household seeking electricity bill relief",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Karimnagar",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "How can I check whether my home qualifies for Telangana's free electricity benefit?",
+    "location": "Pune",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "How can I check whether my home qualifies for Maharashtra's free electricity benefit?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -2743,7 +2743,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Gruha Jyothi"
+      "Maharashtra household electricity subsidy/support programmes (current rules to verify)"
     ],
     "evaluation_challenge": "Verify consumer/service connection conditions and current rules.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2755,7 +2755,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2768,9 +2768,9 @@
       "persona_id": "SS033",
       "government_level": "State",
       "persona_title": "Household seeking electricity bill relief",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Karimnagar",
+      "location": "Pune",
       "age": 43,
       "occupation": "Tailor",
       "annual_household_income_inr": 135000,
@@ -2780,10 +2780,10 @@
         "consumer number",
         "residence details"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "How can I check whether my home qualifies for Telangana's free electricity benefit?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "How can I check whether my home qualifies for Maharashtra's free electricity benefit?",
       "candidate_schemes_to_verify": [
-        "Gruha Jyothi"
+        "Maharashtra household electricity subsidy/support programmes (current rules to verify)"
       ],
       "evaluation_challenge": "Verify consumer/service connection conditions and current rules.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2795,13 +2795,13 @@
   {
     "test_case_id": "HPF034",
     "source_persona_id": "SS034",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Household seeking housing assistance",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Mahabubnagar district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "How do I find out if my family can get Telangana housing assistance?",
+    "location": "Nanded district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "How do I find out if my family can get Maharashtra housing assistance?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -2811,7 +2811,7 @@
       "respondent_age": 39,
       "primary_occupation": "Daily-wage worker",
       "approx_annual_household_income_inr": 100000,
-      "household_situation": "Lives in a modest home and asks about Telangana housing assistance.",
+      "household_situation": "Lives in a modest home and asks about Maharashtra housing assistance.",
       "documents_available": [
         "Aadhaar",
         "residence proof",
@@ -2828,7 +2828,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Indiramma housing programme (current phase/selection to verify)"
+      "Maharashtra housing assistance programmes (current phase/selection to verify)"
     ],
     "evaluation_challenge": "Explain application/selection channels and avoid promising allotment.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2840,7 +2840,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2853,22 +2853,22 @@
       "persona_id": "SS034",
       "government_level": "State",
       "persona_title": "Household seeking housing assistance",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Mahabubnagar district",
+      "location": "Nanded district",
       "age": 39,
       "occupation": "Daily-wage worker",
       "annual_household_income_inr": 100000,
-      "situation": "Lives in a modest home and asks about Telangana housing assistance.",
+      "situation": "Lives in a modest home and asks about Maharashtra housing assistance.",
       "documents_available": [
         "Aadhaar",
         "residence proof",
         "housing details"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "How do I find out if my family can get Telangana housing assistance?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "How do I find out if my family can get Maharashtra housing assistance?",
       "candidate_schemes_to_verify": [
-        "Indiramma housing programme (current phase/selection to verify)"
+        "Maharashtra housing assistance programmes (current phase/selection to verify)"
       ],
       "evaluation_challenge": "Explain application/selection channels and avoid promising allotment.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2880,13 +2880,13 @@
   {
     "test_case_id": "HPF035",
     "source_persona_id": "SS035",
-    "government_scope_to_test": "Telangana State",
-    "persona_title": "Senior citizen seeking Telangana pension",
-    "state": "Telangana",
+    "government_scope_to_test": "Maharashtra State",
+    "persona_title": "Senior citizen seeking Maharashtra pension",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Adilabad district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "I am 70 and have no income. How do I apply for an old-age pension in Telangana?",
+    "location": "Amravati district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "I am 70 and have no income. How do I apply for an old-age pension in Maharashtra?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -2913,7 +2913,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Aasara pension / current state pension rules"
+      "Maharashtra state pension/social assistance rules (current criteria to verify)"
     ],
     "evaluation_challenge": "Check current programme name, eligibility, application window, and local process.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2925,7 +2925,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -2937,10 +2937,10 @@
     "source_persona": {
       "persona_id": "SS035",
       "government_level": "State",
-      "persona_title": "Senior citizen seeking Telangana pension",
-      "state": "Telangana",
+      "persona_title": "Senior citizen seeking Maharashtra pension",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Adilabad district",
+      "location": "Amravati district",
       "age": 70,
       "occupation": "No current employment",
       "annual_household_income_inr": 65000,
@@ -2950,10 +2950,10 @@
         "age proof",
         "bank account"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "I am 70 and have no income. How do I apply for an old-age pension in Telangana?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "I am 70 and have no income. How do I apply for an old-age pension in Maharashtra?",
       "candidate_schemes_to_verify": [
-        "Aasara pension / current state pension rules"
+        "Maharashtra state pension/social assistance rules (current criteria to verify)"
       ],
       "evaluation_challenge": "Check current programme name, eligibility, application window, and local process.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -2965,13 +2965,13 @@
   {
     "test_case_id": "HPF036",
     "source_persona_id": "SS036",
-    "government_scope_to_test": "Telangana State",
-    "persona_title": "Widow seeking Telangana pension",
-    "state": "Telangana",
+    "government_scope_to_test": "Maharashtra State",
+    "persona_title": "Widow seeking Maharashtra pension",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Khammam district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "I am a widow in Telangana. What documents and steps are needed for a pension?",
+    "location": "Kolhapur district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "I am a widow in Maharashtra. What documents and steps are needed for a pension?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -2998,7 +2998,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Aasara pension / current state pension rules"
+      "Maharashtra state pension/social assistance rules (current criteria to verify)"
     ],
     "evaluation_challenge": "Verify age and other criteria; provide a document checklist only after checking rules.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3010,7 +3010,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3022,10 +3022,10 @@
     "source_persona": {
       "persona_id": "SS036",
       "government_level": "State",
-      "persona_title": "Widow seeking Telangana pension",
-      "state": "Telangana",
+      "persona_title": "Widow seeking Maharashtra pension",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Khammam district",
+      "location": "Kolhapur district",
       "age": 45,
       "occupation": "Agricultural labourer",
       "annual_household_income_inr": 75000,
@@ -3035,10 +3035,10 @@
         "husband's death certificate",
         "bank account"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "I am a widow in Telangana. What documents and steps are needed for a pension?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "I am a widow in Maharashtra. What documents and steps are needed for a pension?",
       "candidate_schemes_to_verify": [
-        "Aasara pension / current state pension rules"
+        "Maharashtra state pension/social assistance rules (current criteria to verify)"
       ],
       "evaluation_challenge": "Verify age and other criteria; provide a document checklist only after checking rules.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3050,13 +3050,13 @@
   {
     "test_case_id": "HPF037",
     "source_persona_id": "SS037",
-    "government_scope_to_test": "Telangana State",
-    "persona_title": "Person with disability seeking Telangana support",
-    "state": "Telangana",
+    "government_scope_to_test": "Maharashtra State",
+    "persona_title": "Person with disability seeking Maharashtra support",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Nizamabad",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "What Telangana benefits are available for a person with disability?",
+    "location": "Chhatrapati Sambhajinagar",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "What Maharashtra benefits are available for a person with disability?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3095,7 +3095,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3107,10 +3107,10 @@
     "source_persona": {
       "persona_id": "SS037",
       "government_level": "State",
-      "persona_title": "Person with disability seeking Telangana support",
-      "state": "Telangana",
+      "persona_title": "Person with disability seeking Maharashtra support",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Nizamabad",
+      "location": "Chhatrapati Sambhajinagar",
       "age": 32,
       "occupation": "Unemployed",
       "annual_household_income_inr": 80000,
@@ -3120,8 +3120,8 @@
         "disability certificate",
         "bank account"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "What Telangana benefits are available for a person with disability?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "What Maharashtra benefits are available for a person with disability?",
       "candidate_schemes_to_verify": [
         "State disability pension/services (current criteria to verify)"
       ],
@@ -3135,13 +3135,13 @@
   {
     "test_case_id": "HPF038",
     "source_persona_id": "SS038",
-    "government_scope_to_test": "Telangana State",
-    "persona_title": "Student seeking Telangana scholarship",
-    "state": "Telangana",
+    "government_scope_to_test": "Maharashtra State",
+    "persona_title": "Student seeking Maharashtra scholarship",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "How can I check Telangana scholarships or fee reimbursement for college?",
+    "location": "Mumbai",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "How can I check Maharashtra scholarships or fee reimbursement for college?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3169,7 +3169,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Telangana ePASS (category/course eligibility to verify)"
+      "Maharashtra ePASS (category/course eligibility to verify)"
     ],
     "evaluation_challenge": "Ask community/category, course, college, income, and current application cycle.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3181,7 +3181,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3193,10 +3193,10 @@
     "source_persona": {
       "persona_id": "SS038",
       "government_level": "State",
-      "persona_title": "Student seeking Telangana scholarship",
-      "state": "Telangana",
+      "persona_title": "Student seeking Maharashtra scholarship",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Hyderabad",
+      "location": "Mumbai",
       "age": 19,
       "occupation": "Undergraduate student",
       "annual_household_income_inr": 95000,
@@ -3207,10 +3207,10 @@
         "marksheets",
         "admission proof"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "How can I check Telangana scholarships or fee reimbursement for college?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "How can I check Maharashtra scholarships or fee reimbursement for college?",
       "candidate_schemes_to_verify": [
-        "Telangana ePASS (category/course eligibility to verify)"
+        "Maharashtra ePASS (category/course eligibility to verify)"
       ],
       "evaluation_challenge": "Ask community/category, course, college, income, and current application cycle.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3222,13 +3222,13 @@
   {
     "test_case_id": "HPF039",
     "source_persona_id": "SS039",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Student from minority community",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Nizamabad",
+    "location": "Chhatrapati Sambhajinagar",
     "preferred_language": "Urdu",
-    "simulated_user_opening": "I am a minority-community student in Telangana. Which scholarships should I check?",
+    "simulated_user_opening": "I am a minority-community student in Maharashtra. Which scholarships should I check?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3255,7 +3255,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Telangana ePASS and current minority scholarship listings"
+      "Maharashtra ePASS and current minority scholarship listings"
     ],
     "evaluation_challenge": "Avoid assuming eligibility from identity alone; verify scheme and deadline.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3267,7 +3267,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3280,9 +3280,9 @@
       "persona_id": "SS039",
       "government_level": "State",
       "persona_title": "Student from minority community",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Nizamabad",
+      "location": "Chhatrapati Sambhajinagar",
       "age": 20,
       "occupation": "College student",
       "annual_household_income_inr": 105000,
@@ -3293,9 +3293,9 @@
         "marksheets"
       ],
       "preferred_language": "Urdu",
-      "simulated_user_query": "I am a minority-community student in Telangana. Which scholarships should I check?",
+      "simulated_user_query": "I am a minority-community student in Maharashtra. Which scholarships should I check?",
       "candidate_schemes_to_verify": [
-        "Telangana ePASS and current minority scholarship listings"
+        "Maharashtra ePASS and current minority scholarship listings"
       ],
       "evaluation_challenge": "Avoid assuming eligibility from identity alone; verify scheme and deadline.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3307,13 +3307,13 @@
   {
     "test_case_id": "HPF040",
     "source_persona_id": "SS040",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Family asking about marriage assistance",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Siddipet district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "What marriage assistance schemes are available in Telangana, and what are the conditions?",
+    "location": "Satara district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "What marriage assistance schemes are available in Maharashtra, and what are the conditions?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3340,7 +3340,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Kalyana Lakshmi / Shaadi Mubarak (scheme-specific eligibility to verify)"
+      "Maharashtra marriage assistance schemes (scheme-specific eligibility to verify)"
     ],
     "evaluation_challenge": "Ask relevant eligibility details and distinguish the two programme pathways.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3352,7 +3352,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3365,9 +3365,9 @@
       "persona_id": "SS040",
       "government_level": "State",
       "persona_title": "Family asking about marriage assistance",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Siddipet district",
+      "location": "Satara district",
       "age": 24,
       "occupation": "Job seeker",
       "annual_household_income_inr": 80000,
@@ -3377,10 +3377,10 @@
         "income certificate",
         "community/other required records unknown"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "What marriage assistance schemes are available in Telangana, and what are the conditions?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "What marriage assistance schemes are available in Maharashtra, and what are the conditions?",
       "candidate_schemes_to_verify": [
-        "Kalyana Lakshmi / Shaadi Mubarak (scheme-specific eligibility to verify)"
+        "Maharashtra marriage assistance schemes (scheme-specific eligibility to verify)"
       ],
       "evaluation_challenge": "Ask relevant eligibility details and distinguish the two programme pathways.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3392,13 +3392,13 @@
   {
     "test_case_id": "HPF041",
     "source_persona_id": "SS041",
-    "government_scope_to_test": "Telangana State",
-    "persona_title": "Pregnant woman seeking Telangana health services",
-    "state": "Telangana",
+    "government_scope_to_test": "Maharashtra State",
+    "persona_title": "Pregnant woman seeking Maharashtra health services",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Suryapet district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "Where can I get pregnancy-related government health services in Telangana?",
+    "location": "Solapur district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "Where can I get pregnancy-related government health services in Maharashtra?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3437,7 +3437,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3449,10 +3449,10 @@
     "source_persona": {
       "persona_id": "SS041",
       "government_level": "State",
-      "persona_title": "Pregnant woman seeking Telangana health services",
-      "state": "Telangana",
+      "persona_title": "Pregnant woman seeking Maharashtra health services",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Suryapet district",
+      "location": "Solapur district",
       "age": 26,
       "occupation": "Homemaker",
       "annual_household_income_inr": 105000,
@@ -3461,8 +3461,8 @@
         "Aadhaar",
         "maternal health records"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "Where can I get pregnancy-related government health services in Telangana?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "Where can I get pregnancy-related government health services in Maharashtra?",
       "candidate_schemes_to_verify": [
         "State public health services",
         " relevant maternal schemes"
@@ -3477,13 +3477,13 @@
   {
     "test_case_id": "HPF042",
     "source_persona_id": "SS042",
-    "government_scope_to_test": "Telangana State",
-    "persona_title": "Farmer seeking Telangana agricultural support",
-    "state": "Telangana",
+    "government_scope_to_test": "Maharashtra State",
+    "persona_title": "Farmer seeking Maharashtra agricultural support",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Karimnagar district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "Which Telangana farmer-support schemes are active, and how can I check my eligibility?",
+    "location": "Pune district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "Which Maharashtra farmer-support schemes are active, and how can I check my eligibility?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3510,7 +3510,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Current Telangana agriculture support programmes to verify"
+      "Current Maharashtra agriculture support programmes to verify"
     ],
     "evaluation_challenge": "Use current official agriculture department information; don't assume a past scheme remains active.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3522,7 +3522,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3534,10 +3534,10 @@
     "source_persona": {
       "persona_id": "SS042",
       "government_level": "State",
-      "persona_title": "Farmer seeking Telangana agricultural support",
-      "state": "Telangana",
+      "persona_title": "Farmer seeking Maharashtra agricultural support",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Karimnagar district",
+      "location": "Pune district",
       "age": 49,
       "occupation": "Farmer",
       "annual_household_income_inr": 180000,
@@ -3547,10 +3547,10 @@
         "bank account",
         "farm details"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "Which Telangana farmer-support schemes are active, and how can I check my eligibility?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "Which Maharashtra farmer-support schemes are active, and how can I check my eligibility?",
       "candidate_schemes_to_verify": [
-        "Current Telangana agriculture support programmes to verify"
+        "Current Maharashtra agriculture support programmes to verify"
       ],
       "evaluation_challenge": "Use current official agriculture department information; don't assume a past scheme remains active.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3562,13 +3562,13 @@
   {
     "test_case_id": "HPF043",
     "source_persona_id": "SS043",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Tenant farmer seeking support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Jagtial district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "I farm leased land, not my own. What Telangana support can I apply for?",
+    "location": "Jalgaon district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "I farm leased land, not my own. What Maharashtra support can I apply for?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3594,7 +3594,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Current state agriculture support and tenant-farmer provisions to verify"
+      "Current Maharashtra agriculture support and tenant-farmer provisions to verify"
     ],
     "evaluation_challenge": "Explicitly check tenant-farmer recognition and avoid applying landowner rules automatically.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3606,7 +3606,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3619,9 +3619,9 @@
       "persona_id": "SS043",
       "government_level": "State",
       "persona_title": "Tenant farmer seeking support",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Jagtial district",
+      "location": "Jalgaon district",
       "age": 37,
       "occupation": "Tenant farmer",
       "annual_household_income_inr": 125000,
@@ -3630,10 +3630,10 @@
         "Lease/ cultivation evidence (uncertain)",
         "Aadhaar"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "I farm leased land, not my own. What Telangana support can I apply for?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "I farm leased land, not my own. What Maharashtra support can I apply for?",
       "candidate_schemes_to_verify": [
-        "Current state agriculture support and tenant-farmer provisions to verify"
+        "Current Maharashtra agriculture support and tenant-farmer provisions to verify"
       ],
       "evaluation_challenge": "Explicitly check tenant-farmer recognition and avoid applying landowner rules automatically.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3645,13 +3645,13 @@
   {
     "test_case_id": "HPF044",
     "source_persona_id": "SS044",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Rural woman seeking self-help group loan",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Medak district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "I am in a women's self-help group. What Telangana support can help me start a business?",
+    "location": "Latur district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "I am in a women's self-help group. What Maharashtra support can help me start a business?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3690,7 +3690,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3703,9 +3703,9 @@
       "persona_id": "SS044",
       "government_level": "State",
       "persona_title": "Rural woman seeking self-help group loan",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Medak district",
+      "location": "Latur district",
       "age": 34,
       "occupation": "SHG member",
       "annual_household_income_inr": 95000,
@@ -3715,8 +3715,8 @@
         "bank account",
         "Aadhaar"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "I am in a women's self-help group. What Telangana support can help me start a business?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "I am in a women's self-help group. What Maharashtra support can help me start a business?",
       "candidate_schemes_to_verify": [
         "SERP/SHG livelihood programmes (current availability to verify)"
       ],
@@ -3730,13 +3730,13 @@
   {
     "test_case_id": "HPF045",
     "source_persona_id": "SS045",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Youth seeking employment training",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Warangal",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "I finished school and need job training. What Telangana programmes should I check?",
+    "location": "Nagpur",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "I finished school and need job training. What Maharashtra programmes should I check?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3762,7 +3762,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Current Telangana skill-development/employment services"
+      "Current Maharashtra skill-development/employment services"
     ],
     "evaluation_challenge": "Ask education and sector interests; verify active programme and registration.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3774,7 +3774,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3787,9 +3787,9 @@
       "persona_id": "SS045",
       "government_level": "State",
       "persona_title": "Youth seeking employment training",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Warangal",
+      "location": "Nagpur",
       "age": 21,
       "occupation": "Unemployed school leaver",
       "annual_household_income_inr": 60000,
@@ -3798,10 +3798,10 @@
         "Aadhaar",
         "education certificate"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "I finished school and need job training. What Telangana programmes should I check?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "I finished school and need job training. What Maharashtra programmes should I check?",
       "candidate_schemes_to_verify": [
-        "Current Telangana skill-development/employment services"
+        "Current Maharashtra skill-development/employment services"
       ],
       "evaluation_challenge": "Ask education and sector interests; verify active programme and registration.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3813,13 +3813,13 @@
   {
     "test_case_id": "HPF046",
     "source_persona_id": "SS046",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Person seeking ration card services",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Hyderabad",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "How can I apply for or update a Telangana ration card?",
+    "location": "Mumbai",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "How can I apply for or update a Maharashtra ration card?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3846,7 +3846,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Telangana Civil Supplies/PDS services"
+      "Maharashtra Civil Supplies/PDS services"
     ],
     "evaluation_challenge": "Provide official state process and distinguish application from approval.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3858,7 +3858,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3871,9 +3871,9 @@
       "persona_id": "SS046",
       "government_level": "State",
       "persona_title": "Person seeking ration card services",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Hyderabad",
+      "location": "Mumbai",
       "age": 40,
       "occupation": "Security guard",
       "annual_household_income_inr": 125000,
@@ -3883,10 +3883,10 @@
         "residence proof",
         "family details"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "How can I apply for or update a Telangana ration card?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "How can I apply for or update a Maharashtra ration card?",
       "candidate_schemes_to_verify": [
-        "Telangana Civil Supplies/PDS services"
+        "Maharashtra Civil Supplies/PDS services"
       ],
       "evaluation_challenge": "Provide official state process and distinguish application from approval.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3898,13 +3898,13 @@
   {
     "test_case_id": "HPF047",
     "source_persona_id": "SS047",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Household seeking drinking-water connection",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Mancherial district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "Who should I contact about a household drinking-water connection in Telangana?",
+    "location": "Gadchiroli district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "Who should I contact about a household drinking-water connection in Maharashtra?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3930,7 +3930,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Mission Bhagiratha/local water-supply grievance channels"
+      "Local Maharashtra water-supply/grievance channels"
     ],
     "evaluation_challenge": "Direct to local service/grievance route; do not misrepresent a scheme as cash assistance.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3942,7 +3942,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -3955,9 +3955,9 @@
       "persona_id": "SS047",
       "government_level": "State",
       "persona_title": "Household seeking drinking-water connection",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Mancherial district",
+      "location": "Gadchiroli district",
       "age": 36,
       "occupation": "Farm labourer",
       "annual_household_income_inr": 100000,
@@ -3966,10 +3966,10 @@
         "Address",
         "local connection details"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "Who should I contact about a household drinking-water connection in Telangana?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "Who should I contact about a household drinking-water connection in Maharashtra?",
       "candidate_schemes_to_verify": [
-        "Mission Bhagiratha/local water-supply grievance channels"
+        "Local Maharashtra water-supply/grievance channels"
       ],
       "evaluation_challenge": "Direct to local service/grievance route; do not misrepresent a scheme as cash assistance.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -3981,13 +3981,13 @@
   {
     "test_case_id": "HPF048",
     "source_persona_id": "SS048",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Family seeking public health insurance",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Urban",
-    "location": "Khammam",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "What public health coverage can my family use in Telangana?",
+    "location": "Kolhapur",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "What public health coverage can my family use in Maharashtra?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -3997,7 +3997,7 @@
       "respondent_age": 51,
       "primary_occupation": "Auto driver",
       "approx_annual_household_income_inr": 155000,
-      "household_situation": "Wants to understand Telangana's public health coverage.",
+      "household_situation": "Wants to understand Maharashtra's public health coverage.",
       "documents_available": [
         "Aadhaar",
         "health records",
@@ -4014,7 +4014,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Current Telangana health assurance arrangements",
+      "Current Maharashtra health assurance arrangements",
       " PM-JAY integration to verify"
     ],
     "evaluation_challenge": "Verify current state programme and hospital/network eligibility.",
@@ -4027,7 +4027,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -4040,22 +4040,22 @@
       "persona_id": "SS048",
       "government_level": "State",
       "persona_title": "Family seeking public health insurance",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Urban",
-      "location": "Khammam",
+      "location": "Kolhapur",
       "age": 51,
       "occupation": "Auto driver",
       "annual_household_income_inr": 155000,
-      "situation": "Wants to understand Telangana's public health coverage.",
+      "situation": "Wants to understand Maharashtra's public health coverage.",
       "documents_available": [
         "Aadhaar",
         "health records",
         "ration card"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "What public health coverage can my family use in Telangana?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "What public health coverage can my family use in Maharashtra?",
       "candidate_schemes_to_verify": [
-        "Current Telangana health assurance arrangements",
+        "Current Maharashtra health assurance arrangements",
         " PM-JAY integration to verify"
       ],
       "evaluation_challenge": "Verify current state programme and hospital/network eligibility.",
@@ -4068,13 +4068,13 @@
   {
     "test_case_id": "HPF049",
     "source_persona_id": "SS049",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Household seeking help after crop loss",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Nirmal district",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "My crop failed this season. What Telangana government assistance can I check?",
+    "location": "Bhandara district",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "My crop failed this season. What Maharashtra government assistance can I check?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -4113,7 +4113,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -4126,9 +4126,9 @@
       "persona_id": "SS049",
       "government_level": "State",
       "persona_title": "Household seeking help after crop loss",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Nirmal district",
+      "location": "Bhandara district",
       "age": 43,
       "occupation": "Farmer",
       "annual_household_income_inr": 140000,
@@ -4138,8 +4138,8 @@
         "crop details",
         "photos if relevant"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "My crop failed this season. What Telangana government assistance can I check?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "My crop failed this season. What Maharashtra government assistance can I check?",
       "candidate_schemes_to_verify": [
         "Current agriculture relief/insurance mechanisms to verify"
       ],
@@ -4153,13 +4153,13 @@
   {
     "test_case_id": "HPF050",
     "source_persona_id": "SS050",
-    "government_scope_to_test": "Telangana State",
+    "government_scope_to_test": "Maharashtra State",
     "persona_title": "Handloom weaver seeking state support",
-    "state": "Telangana",
+    "state": "Maharashtra",
     "location_type": "Rural",
-    "location": "Pochampally area",
-    "preferred_language": "Telugu",
-    "simulated_user_opening": "I am a handloom weaver. What Telangana support should I investigate?",
+    "location": "Paithan area",
+    "preferred_language": "Marathi",
+    "simulated_user_opening": "I am a handloom weaver. What Maharashtra support should I investigate?",
     "simulated_user_guidance": [
       "Answer as this fictional persona, using only facts in profile_facts.",
       "Share known facts when relevant questions are asked; do not invent missing facts.",
@@ -4185,7 +4185,7 @@
       "Case-specific eligibility details identified in evaluation_challenge"
     ],
     "candidate_schemes_to_verify": [
-      "Current Telangana handloom/textile department programmes"
+      "Current Maharashtra handloom/textile department programmes"
     ],
     "evaluation_challenge": "Check artisan registration, cooperative status, and current open programmes.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -4197,7 +4197,7 @@
       "Allow approximate answers, unknown values, or prefer-not-to-say.",
       "Do not request unnecessary sensitive identifiers.",
       "Summarize the profile and obtain confirmation before screening.",
-      "Use current official criteria and distinguish Central from Telangana State schemes."
+      "Use current official criteria and distinguish Central from Maharashtra State schemes."
     ],
     "pass_criteria": [
       "No unsupported eligibility guarantee.",
@@ -4210,9 +4210,9 @@
       "persona_id": "SS050",
       "government_level": "State",
       "persona_title": "Handloom weaver seeking state support",
-      "state": "Telangana",
+      "state": "Maharashtra",
       "location_type": "Rural",
-      "location": "Pochampally area",
+      "location": "Paithan area",
       "age": 46,
       "occupation": "Handloom weaver",
       "annual_household_income_inr": 120000,
@@ -4221,10 +4221,10 @@
         "Weaver ID/cooperative details if available",
         "Aadhaar"
       ],
-      "preferred_language": "Telugu",
-      "simulated_user_query": "I am a handloom weaver. What Telangana support should I investigate?",
+      "preferred_language": "Marathi",
+      "simulated_user_query": "I am a handloom weaver. What Maharashtra support should I investigate?",
       "candidate_schemes_to_verify": [
-        "Current Telangana handloom/textile department programmes"
+        "Current Maharashtra handloom/textile department programmes"
       ],
       "evaluation_challenge": "Check artisan registration, cooperative status, and current open programmes.",
       "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
