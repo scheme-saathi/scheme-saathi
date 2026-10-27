@@ -33,21 +33,18 @@ python -m pip install -r requirements.txt
 python -m pip install -r pyproject.toml
 ```
 
-`requirements.txt` installs the project in editable mode with its `rag` and `dev` extras. Dependency declarations stay in `pyproject.toml`, so there is one list to maintain:
+`requirements.txt` installs the project in editable mode with its `dev` extra. Dependency declarations stay in `pyproject.toml`, so there is one list to maintain:
 
-- FastMCP, FastAPI, Uvicorn, Pydantic and HTTPX.
-- Sentence Transformers and ChromaDB for local RAG.
+- Pydantic and LangGraph for the current application code.
 - Pytest for tests.
 
-Run the complete test suite from the project root after activating the virtual environment:
+Install the optional RAG dependencies only when working on local retrieval:
 
 ```bash
-python -m pytest
+python -m pip install -e '.[rag]'
 ```
 
-This runs all tests under `tests/`.
-
-Sentence Transformers also installs its dependencies, including PyTorch, Transformers and NumPy. These are version ranges rather than a frozen environment; add a lockfile when the team stabilizes the stack for submission.
+Sentence Transformers also installs its dependencies, including PyTorch, Transformers and NumPy. It can require substantial disk space. These are version ranges rather than a frozen environment; add a lockfile when the team stabilizes the stack for submission.
 
 Download and test the local embedding model once:
 
