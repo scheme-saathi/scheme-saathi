@@ -39,6 +39,14 @@ python -m pip install -r pyproject.toml
 - Sentence Transformers and ChromaDB for local RAG.
 - Pytest for tests.
 
+Run the complete test suite from the project root after activating the virtual environment:
+
+```bash
+python -m pytest
+```
+
+This runs all tests under `tests/`.
+
 Sentence Transformers also installs its dependencies, including PyTorch, Transformers and NumPy. These are version ranges rather than a frozen environment; add a lockfile when the team stabilizes the stack for submission.
 
 Download and test the local embedding model once:
