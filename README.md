@@ -81,6 +81,17 @@ python -m graph.run
 
 The demo evaluates the synthetic pension scheme against a sample profile and prints the verdict, condition results, and supporting clauses. It then displays the application approval checkpoint and automatically resumes with approval to demonstrate a mock submission; this is not a real citizen approval or portal submission.
 
+### Persistent checkpoint and resume
+
+The workflow uses a SQLite checkpointer, so a run can be stopped at the approval gate and resumed from a new process:
+
+```bash
+python -m graph.run --phase start --thread-id demo-1
+python -m graph.run --phase resume --thread-id demo-1 --decision approve
+```
+
+`--decision reject` resumes without submitting. State is stored in `data/checkpoints.sqlite3` (git-ignored); use `--db` to choose another file. A thread ID can be started only once, and `resume` only works for a thread waiting at approval. Running `python -m graph.run` without `--phase` keeps the earlier in-memory demo. This checkpoints the mock workflow only; it does not yet tie approval to an exact payload.
+
 Run the rule-engine unit and integration tests:
 
 ```bash

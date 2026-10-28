@@ -1,6 +1,9 @@
+from contextlib import contextmanager
+from pathlib import Path
 from typing import Any, TypedDict
 
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import interrupt
 
@@ -78,7 +81,7 @@ def submit_node(state: GraphState) -> dict[str, Any]:
     return {"submission": mock_tools.submit_application(state["application"])}
 
 
-def build_graph():
+def build_graph(checkpointer=None):
     builder = StateGraph(GraphState)
     builder.add_node("plan", plan_node)
     builder.add_node("intake", intake_node)
@@ -95,4 +98,13 @@ def build_graph():
     builder.add_conditional_edges("draft", route_after_draft, ["approval", END])
     builder.add_conditional_edges("approval", route_after_approval, ["submit", END])
     builder.add_edge("submit", END)
-    return builder.compile(checkpointer=MemorySaver())
+    return builder.compile(checkpointer=checkpointer or MemorySaver())
+
+
+@contextmanager
+def sqlite_checkpointer(path: str | Path):
+    """Open a SQLite-backed checkpointer so runs survive process restarts."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with SqliteSaver.from_conn_string(str(path)) as saver:
+        yield saver
