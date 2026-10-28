@@ -225,7 +225,7 @@
     "preferred_language": "Marathi",
     "simulated_user_query": "How can I check Maharashtra scholarships or fee reimbursement for college?",
     "candidate_schemes_to_verify": [
-      "Maharashtra ePASS (category/course eligibility to verify)"
+      "MahaDBT (category/course eligibility to verify)"
     ],
     "evaluation_challenge": "Ask community/category, course, college, income, and current application cycle.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -251,7 +251,7 @@
     "preferred_language": "Urdu",
     "simulated_user_query": "I am a minority-community student in Maharashtra. Which scholarships should I check?",
     "candidate_schemes_to_verify": [
-      "Maharashtra ePASS and current minority scholarship listings"
+      "MahaDBT and current minority scholarship listings"
     ],
     "evaluation_challenge": "Avoid assuming eligibility from identity alone; verify scheme and deadline.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
@@ -380,9 +380,9 @@
     "preferred_language": "Marathi",
     "simulated_user_query": "I am in a women's self-help group. What Maharashtra support can help me start a business?",
     "candidate_schemes_to_verify": [
-      "SERP/SHG livelihood programmes (current availability to verify)"
+      "UMED / Maharashtra State Rural Livelihoods Mission (MSRLM) SHG livelihood programmes (current availability to verify)"
     ],
-    "evaluation_challenge": "Refer to local SERP/SHG federation and explain credit is subject to appraisal.",
+    "evaluation_challenge": "Refer to the local UMED/MSRLM office or SHG federation and explain credit is subject to appraisal.",
     "expected_agent_behaviour": "Ask for any material missing details, explain current eligibility criteria, and link to an official source or local office.",
     "expected_outcome": "A conditional shortlist with transparent caveats, practical next steps, and no unsupported promise of benefits.",
     "is_synthetic": true
