@@ -81,6 +81,27 @@ python -m graph.run
 
 The demo evaluates the synthetic pension scheme against a sample profile and prints the verdict, condition results, and supporting clauses. It then displays the application approval checkpoint and automatically resumes with approval to demonstrate a mock submission; this is not a real citizen approval or portal submission.
 
+### Persistent checkpoint and resume
+
+The workflow uses a SQLite checkpointer, so a run can be stopped at the approval gate and resumed from a new process:
+
+```bash
+python -m graph.run --phase start --thread-id demo-1
+python -m graph.run --phase resume --thread-id demo-1 --decision approve
+```
+
+`--decision reject` resumes without submitting. State is stored in `data/checkpoints.sqlite3` (git-ignored); use `--db` to choose another file. A thread ID can be started only once, and `resume` only works for a thread waiting at approval. Running `python -m graph.run` without `--phase` keeps the earlier in-memory demo. This checkpoints the mock workflow only; it does not yet tie approval to an exact payload.
+
+### Choosing schemes
+
+By default the workflow evaluates every scheme whose rule set is fully `reviewed`; today that is only the synthetic pension fixture. Use `--scheme-id` (repeatable) to evaluate a specific scheme and `--citizen` to supply a JSON profile with the facts that scheme's rules need:
+
+```bash
+python -m graph.run --scheme-id C10 --citizen '{"age": 40}'
+```
+
+Draft rule files for real schemes live in `data/rules/` (separate from the source records in `data/schemes/`, so the RAG importer ignores them). `C10.json` (Khadi Vikas Yojana) holds six draft rules written from the source eligibility clauses. Because they are `draft`, the engine fails closed and reports "Cant Tell". A human must check each rule against its clause (for example, the "one person per family" rule is an interpretation) and set `"status": "reviewed"` on all of them; the scheme is then picked up automatically and the intake step asks for exactly the facts its rules use.
+
 Run the rule-engine unit and integration tests:
 
 ```bash
