@@ -3,7 +3,7 @@ from pathlib import Path
 
 from transformers import AutoTokenizer
 
-from servers.schemes_kb.models import Scheme
+from servers.schemes_kb.scheme_loading import load_schemes
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -82,10 +82,9 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained("BAAI/bge-m3", local_files_only=True)
     chunks = []
     seen = set()
-    for path in sorted((PROJECT_ROOT / "data" / "schemes").glob("*.json")):
-        scheme = Scheme.model_validate_json(path.read_text(encoding="utf-8"))
+    for scheme in load_schemes(PROJECT_ROOT / "data" / "schemes"):
         if scheme.sample_only or scheme.review_status != "approved":
-            print(f"Skipped {path.name}: sample or not approved")
+            print(f"Skipped {scheme.scheme_id}: sample or not approved")
             continue
         if scheme.scheme_id in seen:
             raise ValueError(f"Duplicate approved scheme: {scheme.scheme_id}")
