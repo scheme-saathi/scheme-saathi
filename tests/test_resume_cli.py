@@ -32,3 +32,14 @@ def test_rejected_resume_submits_nothing_and_duplicate_start_is_refused(tmp_path
     assert "nothing was submitted" in run("--phase", "resume", "--db", db, "--thread-id", "t2",
                                           "--decision", "reject").stdout
     assert run("--phase", "start", "--db", db, "--thread-id", "t2").returncode == 1
+
+
+def test_unknown_scheme_id_is_rejected():
+    result = run("--scheme-id", "NOPE")
+    assert result.returncode == 2 and "NOPE" in result.stderr
+
+
+def test_draft_scheme_reports_cant_tell_without_approval():
+    result = run("--scheme-id", "C10")
+    assert result.returncode == 0, result.stderr
+    assert "Cant Tell" in result.stdout and "No application to approve" in result.stdout

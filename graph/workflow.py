@@ -9,11 +9,10 @@ from langgraph.types import interrupt
 
 from graph import mock_tools
 
-REQUIRED_FIELDS = ["age", "is_widow", "income"]
-
 
 class GraphState(TypedDict, total=False):
     simulated_citizen: dict[str, Any]
+    scheme_ids: list[str]
     profile: dict[str, Any]
     questions_asked: int
     plan: list[str]
@@ -25,7 +24,7 @@ class GraphState(TypedDict, total=False):
 
 
 def unanswered(state: GraphState) -> list[str]:
-    return [f for f in REQUIRED_FIELDS if f not in state["profile"]]
+    return [f for f in mock_tools.required_fields(state.get("scheme_ids")) if f not in state["profile"]]
 
 
 def plan_node(state: GraphState) -> dict[str, Any]:
@@ -37,13 +36,16 @@ def plan_node(state: GraphState) -> dict[str, Any]:
 
 
 def intake_node(state: GraphState) -> dict[str, Any]:
-    field = unanswered(state)[0]
+    pending = unanswered(state)
+    if not pending:
+        return {}
+    field = pending[0]
     profile = {**state["profile"], field: state["simulated_citizen"].get(field)}
     return {"profile": profile, "questions_asked": state["questions_asked"] + 1}
 
 
 def eligibility_node(state: GraphState) -> dict[str, Any]:
-    schemes = mock_tools.search_schemes(state["profile"])
+    schemes = mock_tools.search_schemes(state["profile"], state.get("scheme_ids"))
     return {"verdicts": {s: mock_tools.evaluate_scheme(state["profile"], s) for s in schemes}}
 
 

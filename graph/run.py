@@ -1,4 +1,5 @@
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -47,23 +48,30 @@ def print_submission(final) -> None:
     print(f"  Scheme: {final['submission']['scheme_id']}")
 
 
-def run_demo() -> None:
+def initial_input(citizen: dict, scheme_ids: list[str] | None) -> dict:
+    return {"simulated_citizen": citizen, **({"scheme_ids": scheme_ids} if scheme_ids else {})}
+
+
+def run_demo(citizen: dict, scheme_ids: list[str] | None) -> None:
     graph = build_graph()
     config = {"configurable": {"thread_id": "demo-1"}}
-    state = graph.invoke({"simulated_citizen": CITIZEN}, config)
+    state = graph.invoke(initial_input(citizen, scheme_ids), config)
     print_verdicts(state)
+    if "__interrupt__" not in state:
+        print("\nNo application to approve.")
+        return
     print_approval(state)
     print_submission(graph.invoke(Command(resume={"approved": True}), config))
 
 
-def run_start(db: Path, thread_id: str) -> int:
+def run_start(db: Path, thread_id: str, citizen: dict, scheme_ids: list[str] | None) -> int:
     with sqlite_checkpointer(db) as saver:
         graph = build_graph(saver)
         config = {"configurable": {"thread_id": thread_id}}
         if graph.get_state(config).values:
             print(f"Thread '{thread_id}' already exists in {db}; choose another --thread-id.", file=sys.stderr)
             return 1
-        state = graph.invoke({"simulated_citizen": CITIZEN}, config)
+        state = graph.invoke(initial_input(citizen, scheme_ids), config)
         print_verdicts(state)
         if "__interrupt__" not in state:
             print("\nNo application to approve.")
@@ -95,13 +103,25 @@ def main(argv: list[str] | None = None) -> int:
                         help="Persistent mode: 'start' pauses at approval and exits; 'resume' continues in a new process.")
     parser.add_argument("--db", type=Path, default=DEFAULT_DB)
     parser.add_argument("--thread-id", default="demo-1")
+    parser.add_argument("--scheme-id", action="append", dest="scheme_ids",
+                        help="Evaluate this scheme (repeatable). Default: every scheme with fully reviewed rules.")
+    parser.add_argument("--citizen", help="Simulated citizen profile as a JSON object. Default: a sample widow.")
     parser.add_argument("--decision", choices=["approve", "reject"], default="approve")
     args = parser.parse_args([] if argv is None else argv)
+    try:
+        citizen = json.loads(args.citizen) if args.citizen else CITIZEN
+        if not isinstance(citizen, dict):
+            raise ValueError("--citizen must be a JSON object")
+        if args.phase != "resume" and args.scheme_ids:
+            from graph.mock_tools import search_schemes
+            search_schemes({}, args.scheme_ids)
+    except ValueError as error:
+        parser.error(str(error))
     if args.phase == "start":
-        return run_start(args.db, args.thread_id)
+        return run_start(args.db, args.thread_id, citizen, args.scheme_ids)
     if args.phase == "resume":
         return run_resume(args.db, args.thread_id, args.decision)
-    run_demo()
+    run_demo(citizen, args.scheme_ids)
     return 0
 
 
