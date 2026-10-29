@@ -43,3 +43,17 @@ def test_draft_scheme_reports_cant_tell_without_approval():
     result = run("--scheme-id", "C10")
     assert result.returncode == 0, result.stderr
     assert "Cant Tell" in result.stdout and "No application to approve" in result.stdout
+
+
+def test_persona_id_loads_profile_facts():
+    """Load a saved persona and verify its facts are used by the workflow."""
+    result = run("--persona-id", "SS006")
+    assert result.returncode == 0, result.stderr
+    assert "age gte (clause cl-1): TRUE" in result.stdout
+
+
+def test_persona_id_and_citizen_cannot_be_combined():
+    """Reject CLI input that supplies both supported profile sources."""
+    result = run("--persona-id", "SS001", "--citizen", '{"age": 40}')
+    assert result.returncode == 2
+    assert "not allowed with argument" in result.stderr

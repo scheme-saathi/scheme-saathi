@@ -94,11 +94,14 @@ python -m graph.run --phase resume --thread-id demo-1 --decision approve
 
 ### Choosing schemes
 
-By default the workflow evaluates every scheme whose rule set is fully `reviewed`; today that is only the synthetic pension fixture. Use `--scheme-id` (repeatable) to evaluate a specific scheme and `--citizen` to supply a JSON profile with the facts that scheme's rules need:
+By default the workflow evaluates every scheme whose rule set is fully `reviewed`; today that is only the synthetic pension fixture. Use `--scheme-id` (repeatable) to evaluate a specific scheme and either `--citizen` to supply a JSON profile or `--persona-id` to load a synthetic persona or its household test-case facts:
 
 ```bash
 python -m graph.run --scheme-id C10 --citizen '{"age": 40}'
+python -m graph.run --persona-id SS001
 ```
+
+Household-test-case facts such as `respondent_age` and `approx_annual_household_income_inr` are adapted to the rule profile fields `age` and `income`. Unknown (`null`) facts are omitted so the workflow can still ask about them.
 
 Draft rule files for real schemes live in `data/rules/` (separate from the source records in `data/schemes/`, so the RAG importer ignores them). `C10.json` (Khadi Vikas Yojana) holds six draft rules written from the source eligibility clauses. Because they are `draft`, the engine fails closed and reports "Cant Tell". A human must check each rule against its clause (for example, the "one person per family" rule is an interpretation) and set `"status": "reviewed"` on all of them; the scheme is then picked up automatically and the intake step asks for exactly the facts its rules use.
 
@@ -172,3 +175,30 @@ python -m unittest discover -s tests -p test_keyword_search.py
 python -m unittest discover -s tests -p test_retrieval_evaluation.py
 python -m unittest discover -s tests -p test_scheme_loading.py
 ```
+
+Install the project dependencies into .venv (Windows)
+
+```bash
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+```
+
+To test the persona-loading functionality, run the focused tests from the project root:
+
+```bash
+python -m pytest -q tests/test_persona.py tests/test_resume_cli.py
+```
+These tests check that persona facts are converted to the expected fields, unknown facts are omitted, saved personas load correctly, and the CLI rejects using --persona-id and --citizen together. See test_persona.py and test_resume_cli.py.
+
+You can also try loading a persona through the workflow:
+
+```bash
+python -m graph.run --persona-id SS006
+```
+
+It should exit successfully and show the eligibility result for the loaded profile. To test that conflicting profile options are rejected:
+
+```bash
+python -m graph.run --persona-id SS001 --citizen '{"age": 40}'
+```
+
+That command should display an argument error because you must choose one profile source.
