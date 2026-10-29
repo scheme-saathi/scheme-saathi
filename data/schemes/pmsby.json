@@ -1,0 +1,231 @@
+{
+  "scheme_id": "C02",
+  "slug": "pmsby",
+  "name": "Pradhan Mantri Suraksha Bima Yojana",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "An Accident Insurance Scheme offering accidental death and disability cover for death or disability on account of an accident.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Premium:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.detailedDescription[1]",
+          "channel": null,
+          "heading": "Premium:"
+        },
+        {
+          "text": "Rs.20/- per annum per member. The premium will be deducted from the account holder’s bank / Post office account through ‘auto debit’ facility on or before 1st June of each annual coverage period under the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.detailedDescription[2]",
+          "channel": null,
+          "heading": "Premium:"
+        },
+        {
+          "text": "Coverage Duration:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.detailedDescription[3]",
+          "channel": null,
+          "heading": "Coverage Duration:"
+        },
+        {
+          "text": "Coverage under PMJJBY is valid for one year from 1st June to 31st May on payment of annual premium.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.detailedDescription[4]",
+          "channel": null,
+          "heading": "Coverage Duration:"
+        },
+        {
+          "text": "Accident cover assurance termination:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.detailedDescription[5]",
+          "channel": null,
+          "heading": "Accident cover assurance termination:"
+        },
+        {
+          "text": "The accident cover of the member shall terminate / be restricted accordingly on any of the following events:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.detailedDescription[6]",
+          "channel": null,
+          "heading": "Accident cover assurance termination:"
+        },
+        {
+          "text": "•\tOn attaining age 70 years (age nearer birth day).",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.detailedDescription[7]",
+          "channel": null,
+          "heading": "Accident cover assurance termination:"
+        },
+        {
+          "text": "•\tClosure of account with the Bank or insufficiency of balance to keep the insurance in force.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.detailedDescription[8]",
+          "channel": null,
+          "heading": "Accident cover assurance termination:"
+        },
+        {
+          "text": "In case a member is covered under PMSBY through more than one account and premium is received by insurance company inadvertently, insurance cover will be restricted to Rs. 2 lakh.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.detailedDescription[9]",
+          "channel": null,
+          "heading": "Accident cover assurance termination:"
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "On Death- the Nominee shall get Rs. 2 Lakhs.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Total and irrecoverable loss of both eyes or loss of use of both hands or feet or loss of sight of one eye and loss of use of hand or foot-  Subscriber shall get Rs. 2 Lakhs.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.benefits[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Total and irrecoverable loss of sight of one eye or loss of use of one hand or foot –subscriber shall get Rs. 1 Lakh.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.schemeContent.benefits[0].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Individual bank account holders of participating banks aged between 18 years (completed) and 70 years (age nearer birthday) who give their consent to join / enable auto-debit, will be enrolled into the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 01: In order to enrol in PMSBY offline, one can visit the bank branch where one has a savings account or the candidate can visit the official site: https://jansuraksha.gov.in/Forms-PMSBY.aspx to download the form.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 02: After downloading the application form , candidate can fill in all the details and submit  them to the bank along with the  required documents.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 03: Once it is successfully submitted , subscriber will get an Acknowledgement Slip Cum Certificate of Insurance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Contact:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "State wise tollfree number - https://jansuraksha.gov.in/files/STATEWISETOLLFREE.pdf",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "National Toll Free Number - 1800-180-1111 / 1800-110-001",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "One can also avail cover under PMSBY online using their bank's Net banking facility.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+          "source_path": "en.applicationProcess[1].process[0]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "not_in_source",
+      "items": []
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[0].children[2]",
+      "title": "https://jansuraksha.gov.in/Forms-PMSBY.aspx",
+      "type": "other",
+      "url": "https://jansuraksha.gov.in/Forms-PMSBY.aspx",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[4].children[2]",
+      "title": "https://jansuraksha.gov.in/files/STATEWISETOLLFREE.pdf",
+      "type": "other",
+      "url": "https://jansuraksha.gov.in/files/STATEWISETOLLFREE.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://jansuraksha.gov.in/Forms-PMSBY.aspx",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Scheme Guidelines",
+      "type": "guidelines",
+      "url": "https://jansuraksha.gov.in/Files/PMSBY/English/Rules.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmsby",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "scheme_id": "C01",
+  "slug": "pmjjby",
+  "name": "Pradhan Mantri Jeevan Jyoti Bima Yojana",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Pradhan Mantri Jeevan Jyoti Bima Yojana (PMJJBY) is an insurance scheme offering life insurance cover for death due to any reason. It is a one-year cover, renewable from year to year. The scheme is offered by banks/post offices and administered through life insurance companies. All individuals who are account holders of participating banks/ post office in the age group of 18 to 50 years are entitled to join.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "PMJJBY offers one- year term life cover of ₹ 2.00 Lakh to all the subscribers in the age group of 18-50 years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "It covers death due to any reason.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+          "source_path": "en.schemeContent.benefits[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Premium payable is ₹ 436/- per annum per subscriber, to be auto debited from the subscriber’s bank/post office account.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+          "source_path": "en.schemeContent.benefits[0].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The age of the applicant must be between 18 to 50 Years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must hold an individual bank / post office account.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Offline",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": "Offline"
+        },
+        {
+          "text": "Step 01: Download and take print of the “CONSENT-CUM-DECLARATION FORM” given in the link below: https://www.jansuraksha.gov.in/Files/PMJJBY/English/ApplicationForm.pdf#zoom=250",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+          "source_path": "en.applicationProcess[0].process[1].children[0]",
+          "channel": "Offline",
+          "heading": "Offline"
+        },
+        {
+          "text": "Step 02: Duly fill and sign the application form, attach the self-attested copies of the required documents, and submit the case to the authorised official of Bank / Post Office. The official will return you the “ACKNOWLEDGEMENT SLIP CUM CERTIFICATE OF INSURANCE”.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+          "source_path": "en.applicationProcess[0].process[2].children[0]",
+          "channel": "Offline",
+          "heading": "Offline"
+        },
+        {
+          "text": "One can also avail cover under PMJJBY online using their bank's Net banking facility.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+          "source_path": "en.applicationProcess[1].process[0]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "not_in_source",
+      "items": []
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[1].children[0].children[2]",
+      "title": "https://www.jansuraksha.gov.in/Files/PMJJBY/English/ApplicationForm.pdf#zoom=250",
+      "type": "application_form",
+      "url": "https://www.jansuraksha.gov.in/Files/PMJJBY/English/ApplicationForm.pdf#zoom=250",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://www.jansuraksha.gov.in/Files/PMJJBY/English/ApplicationForm.pdf#zoom=250",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://jansuraksha.gov.in/Files/PMJJBY/English/Rules.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmjjby",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+# Install this project with development dependencies; install RAG dependencies separately when needed.
+-e .[dev]

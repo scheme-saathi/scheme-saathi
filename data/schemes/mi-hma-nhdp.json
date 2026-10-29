@@ -1,0 +1,643 @@
+{
+  "scheme_id": "C12",
+  "slug": "mi-hma-nhdp",
+  "name": "\"Marketing Incentive\" under the \"Handloom Marketing Assistance\" Component of the National Handloom Development Programme",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "open",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Marketing Incentive\" under the \"Handloom Marketing Assistance\" Component of the National Handloom Development Programme by the Ministry of Textiles, Government of India, aims to develop and promote marketing channels in domestic and export markets in a holistic and integrated manner to bring greater visibility to the sector and ensure commensurate remuneration to weavers. The scheme provides Marketing Incentive calculated at 10% on average sales of handloom products of the last 3 years with maximum caps of ₹1,00,00,000/- for state level organizations and ₹15,00,000/- lakh for primary societies, equally shared between State Government and Central Government except for National Level Handloom Organizations where entire assistance is borne by Government of India. The scheme is implemented by the Office of Development Commissioner (Handlooms) under Ministry of Textiles with applications accepted through prescribed proformas and State Government recommendations.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Financial Assistance Structure",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Marketing Incentive Rate: 10% on average sales of handloom products of the last 3 years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "State Level Organizations: Maximum ₹100.00 lakh (Central Government share).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Primary Level Organizations: Maximum ₹15.00 lakh (Central Government share).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Category-wise Maximum Caps",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "State Level Organizations (Handloom Corporations, Apex Cooperative Societies, National Level Handloom Organizations): ₹1,00,00,000/- Central Government share.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations and Other Eligible Handloom Entities: ₹15,00,000/- Central Government share.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Financial Assistance Sharing",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "General Cases: 50:50 sharing between Government of India and State Government.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[5].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "National Level Handloom Organizations/Societies: Entire assistance borne by Government of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[5].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Benefit Distribution: 10% benefits shared equally between Organizations and Member Weavers through Direct Benefit Transfer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[5].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Mode and Frequency of Disbursement",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[7].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Marketing Incentive will be given maximum for 3 years during the scheme period of 5 years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[8].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Release through Direct Benefit Transfer mechanism.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[8].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Nodal Agency must release amount to eligible handloom agencies and their member weavers within 7 days of receipt.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[8].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Conditions for Availment/Continuation",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[9].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Amount to be used towards activities that attract consumers to gear up overall sales of handloom goods.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[10].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Enable handloom agencies to adjust prices towards increasing cost competitiveness, improve designs, and invest in infrastructure.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[10].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "State Government recommendation subject to matching contribution by concerned State Government.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[10].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Claims must be Goods and Services Tax compliant.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[10].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "No similar incentive/rebate received under any other Central Government scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.benefits[10].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must be one of the following:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Handloom agencies including State level organizations such as Handloom Corporations, Apex Cooperative Societies and National Level Handloom Organizations, Primary Handloom Weavers Cooperative Societies, Producer Companies, Self Help Groups, Joint Liability Groups, Federations and Other eligible Handloom entities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must have made the final transaction of product sale to the consumer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must use Handloom Mark or India Handloom Brand for their handloom products.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must have average sales turnover of handloom products for the last 3 years for incentive calculation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[3]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Sales by one handloom agency to another handloom agency are not eligible.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.exclusions[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Sales of handloom products by Primary Handloom Weavers Cooperative Societies or any other Handloom Agency to Apex Societies, Federations, Producer Companies, Corporations are excluded.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.exclusions[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Sales by handloom agencies to Government departments/agencies are excluded.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.exclusions[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Sales made under barter system by handloom agencies are excluded.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.exclusions[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Agencies that have received similar kind of incentive/rebate under any other Central Government scheme are not preferred.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.schemeContent.exclusions[0].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "For State Level and Primary Level Organizations",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 1: Prepare Claim Documentation",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": "Step 1: Prepare Claim Documentation"
+        },
+        {
+          "text": "Compile sales bills/invoices, yarn purchase bills, and average sales turnover details for the last 3 years ensuring Goods and Services Tax compliance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": "Step 1: Prepare Claim Documentation"
+        },
+        {
+          "text": "Step 2: Complete Application Form",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Offline",
+          "heading": "Step 2: Complete Application Form"
+        },
+        {
+          "text": "Fill the prescribed proforma (Annexure - B8) with all required details including sales data and beneficiary information.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Offline",
+          "heading": "Step 2: Complete Application Form"
+        },
+        {
+          "text": "Step 3: Submit to State Government",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Offline",
+          "heading": "Step 3: Submit to State Government"
+        },
+        {
+          "text": "Submit the completed Marketing Incentive claim to the concerned State Government with all supporting documents.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[6]",
+          "channel": "Offline",
+          "heading": "Step 3: Submit to State Government"
+        },
+        {
+          "text": "Step 4: State Government Verification",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[7]",
+          "channel": "Offline",
+          "heading": "Step 4: State Government Verification"
+        },
+        {
+          "text": "State Government will verify claims, ensure matching contribution availability, and complete prescribed certificates (Annexure - B9).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Offline",
+          "heading": "Step 4: State Government Verification"
+        },
+        {
+          "text": "Step 5: State Level Project Committee Recommendation",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[9]",
+          "channel": "Offline",
+          "heading": "Step 5: State Level Project Committee Recommendation"
+        },
+        {
+          "text": "Obtain recommendations from State Level Project Committee for the Marketing Incentive claims.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Offline",
+          "heading": "Step 5: State Level Project Committee Recommendation"
+        },
+        {
+          "text": "Step 6: State Government Consolidation",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[11]",
+          "channel": "Offline",
+          "heading": "Step 6: State Government Consolidation"
+        },
+        {
+          "text": "State Government prepares consolidated statement, sanction order for state share release, and certificate as per Annexure - B10.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[12]",
+          "channel": "Offline",
+          "heading": "Step 6: State Government Consolidation"
+        },
+        {
+          "text": "Step 7: Nodal Agency Identification",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[13]",
+          "channel": "Offline",
+          "heading": "Step 7: Nodal Agency Identification"
+        },
+        {
+          "text": "State Government identifies suitable nodal agency for fund aggregation and onward release to eligible agencies.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[14]",
+          "channel": "Offline",
+          "heading": "Step 7: Nodal Agency Identification"
+        },
+        {
+          "text": "Step 8: Forward to Development Commissioner (Handlooms)",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[15]",
+          "channel": "Offline",
+          "heading": "Step 7: Nodal Agency Identification"
+        },
+        {
+          "text": "State Government forwards verified claims to Office of Development Commissioner (Handlooms) with all required documentation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[16]",
+          "channel": "Offline",
+          "heading": "Step 7: Nodal Agency Identification"
+        },
+        {
+          "text": "Step 9: Central Government Processing",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[17]",
+          "channel": "Offline",
+          "heading": "Step 9: Central Government Processing"
+        },
+        {
+          "text": "Office of Development Commissioner (Handlooms) processes claims and releases Central Government share to identified Nodal Agency.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[18]",
+          "channel": "Offline",
+          "heading": "Step 9: Central Government Processing"
+        },
+        {
+          "text": "Step 10: Fund Distribution",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[19]",
+          "channel": "Offline",
+          "heading": "Step 10: Fund Distribution"
+        },
+        {
+          "text": "Nodal Agency releases amount to eligible handloom agencies and their member weavers through Direct Benefit Transfer within 7 days of receipt.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[20]",
+          "channel": "Offline",
+          "heading": "Step 10: Fund Distribution"
+        },
+        {
+          "text": "For National Level Handloom Organizations",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[22].children[0]",
+          "channel": "Offline",
+          "heading": "Step 10: Fund Distribution"
+        },
+        {
+          "text": "Step 1: Direct Application Preparation",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[23]",
+          "channel": "Offline",
+          "heading": "Step 1: Direct Application Preparation"
+        },
+        {
+          "text": "Prepare Marketing Incentive claim with all supporting documents and prescribed proforma (Annexure - B8).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[24]",
+          "channel": "Offline",
+          "heading": "Step 1: Direct Application Preparation"
+        },
+        {
+          "text": "Step 2: Submit to Development Commissioner (Handlooms)",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[25]",
+          "channel": "Offline",
+          "heading": "Step 2: Submit to Development Commissioner (Handlooms)"
+        },
+        {
+          "text": "Submit claims directly to Office of Development Commissioner (Handlooms) with complete documentation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[26]",
+          "channel": "Offline",
+          "heading": "Step 2: Submit to Development Commissioner (Handlooms)"
+        },
+        {
+          "text": "Step 3: Central Government Processing",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[27]",
+          "channel": "Offline",
+          "heading": "Step 3: Central Government Processing"
+        },
+        {
+          "text": "Office of Development Commissioner (Handlooms) processes and approves claims for National Level Organizations.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[28]",
+          "channel": "Offline",
+          "heading": "Step 3: Central Government Processing"
+        },
+        {
+          "text": "Step 4: Direct Release",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[29]",
+          "channel": "Offline",
+          "heading": "Step 4: Direct Release"
+        },
+        {
+          "text": "Marketing Incentive assistance released directly to National Level Handloom Organizations by Government of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "en.applicationProcess[0].process[30]",
+          "channel": "Offline",
+          "heading": "Step 4: Direct Release"
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "At Application Stage",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[0]",
+          "channel": null,
+          "heading": "At Application Stage"
+        },
+        {
+          "text": "Sales Bills/invoices for Handloom Products (Goods and Services Tax Compliant),",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[1].children[0]",
+          "channel": null,
+          "heading": "At Application Stage"
+        },
+        {
+          "text": "Yarn Purchase Bills (Goods and Services Tax Compliant).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[1].children[1]",
+          "channel": null,
+          "heading": "At Application Stage"
+        },
+        {
+          "text": "Average Sales Turnover Details of Handloom Products for the Last 3 Years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[1].children[2]",
+          "channel": null,
+          "heading": "At Application Stage"
+        },
+        {
+          "text": "Handloom Mark or India Handloom Brand Usage Documentation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[1].children[3]",
+          "channel": null,
+          "heading": "At Application Stage"
+        },
+        {
+          "text": "Final Transaction Proof of Product Sale to Consumer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[1].children[4]",
+          "channel": null,
+          "heading": "At Application Stage"
+        },
+        {
+          "text": "For State Government Processing",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[3]",
+          "channel": null,
+          "heading": "For State Government Processing"
+        },
+        {
+          "text": "Certificate as Per Prescribed Proforma (Annexure - B9) for Each Individual Claim.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[4].children[0]",
+          "channel": null,
+          "heading": "For State Government Processing"
+        },
+        {
+          "text": "Consolidated Statement of All Claims.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[4].children[1]",
+          "channel": null,
+          "heading": "For State Government Processing"
+        },
+        {
+          "text": "Recommendations of State Level Project Committee.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[4].children[2]",
+          "channel": null,
+          "heading": "For State Government Processing"
+        },
+        {
+          "text": "Sanction Order for Release of State Share.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[4].children[3]",
+          "channel": null,
+          "heading": "For State Government Processing"
+        },
+        {
+          "text": "Documentary Proof of Amount Transferred to Beneficiaries.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[4].children[4]",
+          "channel": null,
+          "heading": "For State Government Processing"
+        },
+        {
+          "text": "Certificate as Per Prescribed Proforma (Annexure - B10).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[4].children[5]",
+          "channel": null,
+          "heading": "For State Government Processing"
+        },
+        {
+          "text": "Identification of Suitable Nodal Agency for Fund Aggregation and Release.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[4].children[6]",
+          "channel": null,
+          "heading": "For State Government Processing"
+        },
+        {
+          "text": "At Verification Stage",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[6]",
+          "channel": null,
+          "heading": "At Verification Stage"
+        },
+        {
+          "text": "Utilization Certificate From Nodal Agency.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[7].children[0]",
+          "channel": null,
+          "heading": "At Verification Stage"
+        },
+        {
+          "text": "Certificate Of Direct Benefit Transfer Release Within 7 Days.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[7].children[1]",
+          "channel": null,
+          "heading": "At Verification Stage"
+        },
+        {
+          "text": "Details Of Beneficiaries (State Share And Government Of India Share) Uploaded In Public Domain.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[7].children[2]",
+          "channel": null,
+          "heading": "At Verification Stage"
+        },
+        {
+          "text": "NOTE: All sales bills/invoices and yarn purchase bills must be Goods and Services Tax compliant for claiming Marketing Incentive.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+          "source_path": "documents.en.documents_required[8]",
+          "channel": null,
+          "heading": "At Verification Stage"
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "National Handloom Development Programme (NHDP)",
+      "type": "other",
+      "url": "https://handlooms.nic.in/assets/img/Final%20Revised%20%20Guidelines%20NHDP%2012.04.2023.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".documents.en.documents_required[4].children[0].children[1]",
+      "title": "Annexure - B9",
+      "type": "other",
+      "url": "https://handlooms.nic.in/assets/img/Final%20Revised%20%20Guidelines%20NHDP%2012.04.2023.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".documents.en.documents_required[4].children[5].children[1]",
+      "title": "Annexure - B10",
+      "type": "other",
+      "url": "https://handlooms.nic.in/assets/img/Final%20Revised%20%20Guidelines%20NHDP%2012.04.2023.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

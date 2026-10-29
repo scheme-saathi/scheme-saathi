@@ -1,0 +1,620 @@
+{
+  "scheme_id": "C08",
+  "slug": "mda-fert",
+  "name": "Market Development Assistance",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "open",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Market Development Assistance\" was launched by the Ministry of Chemicals & Fertilizers, Department of Fertilizers, and the scheme aims to promote organic fertilizers produced at plants under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative covering various Bio-Gas and Compressed Bio-Gas support schemes. The scheme provides Market Development Assistance at ₹1,500/- per Metric Tonne for the sale of Fermented Organic Manure, Liquid Fermented Organic Manure, and enriched Phosphate Rich Organic Manure, along with gap funding for research from a corpus of ₹3,60,00,00,000/-. The applicant must register their manufacturing units on the Galvanizing Organic Bio-Agro Resources Dhan portal and market the fertilizers in conformity with the Fertilizer Control Order specifications.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Market Development Assistance of ₹1,500/- per Metric Tonne is provided for the sale of Fermented Organic Manure, Liquid Fermented Organic Manure, and enriched Phosphate Rich Organic Manure.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A corpus of ₹3,60,00,00,000/- is available for research gap funding, to be utilized only by Central and State Research Institutes or non-private fertilizer cooperatives.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The total budget outlay for the scheme is ₹14,51,82,00,000/- for three years from Financial Year 2023-24 to Financial Year 2025-26.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Disbursal",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Assistance is provided only for the quantity sold through Point of Sale machines.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Assistance claims must be generated through the Integrated Fertilizer Management System portal using Direct Benefit Transfer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[2].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Claims must be submitted within two months of the sale of the organic fertilizers.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[2].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Conditions",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Marketing entities must print the Maximum Retail Price along with applicable Market Development Assistance on the bags clearly.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any State subsidy provided on the organic fertilizers must be passed on to the farmers in terms of a lower Maximum Retail Price.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[4].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Each bag must display its constituents as given in the Fertilizer Control Order, the marketing entities' names, the manufacturer's name, and shelf-life.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[4].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Marketing entities must ensure that any sale above the printed net Maximum Retail Price is avoided, as it is punishable under the Essential Commodities Act.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.schemeContent.benefits[4].children[3]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must be a manufacturing-cum-marketing entity, a Compressed Bio-Gas operator, a Bio-gas operator, a marketer, or a distributor under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be a Fertilizer Marketing Company marketing their organic fertilizers.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must produce organic fertilizers at Bio-Gas or Compressed Bio-Gas plants established under the umbrella Galvanizing Organic Bio-Agro Resources Dhan initiative.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must ensure the Bio-Gas or Compressed Bio-Gas plants are supported under initiatives like the Sustainable Alternative Towards Affordable Transportation scheme, the Waste to Energy programme, or the Swachh Bharat Mission.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must register the Bio-Gas or Compressed Bio-Gas units with the Galvanizing Organic Bio-Agro Resources Dhan portal of the Department of Drinking Water & Sanitation as a pre-requisite condition.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must market Fermented Organic Manure, Liquid Fermented Organic Manure, or enriched Phosphate Rich Organic Manure.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must market the organic fertilizers in packed form.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must ensure the organic fertilizers conform to the specifications mentioned in the Fertilizer Control Order, 1985.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must undergo quality testing at Government notified laboratories or National Accreditation Board for Testing and Calibration Laboratories accredited private laboratories.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[8]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Relaxations",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant may market the fertilizers in bulk or loose form on an experimental basis subject to necessary notifications by the Department of Agriculture & Farmers Welfare.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Primary Agricultural Cooperative Societies may be engaged as aggregators by the Fertilizers Marketing Companies or manufacturers, wherever feasible.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Post-Selection Conditions",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must maintain records of a permanent nature in continuity year after year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must make all permanent records available to the Department of Fertilizers or the Fertilizer Flying Squad for audit and verification.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Registration Process",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 1: Accessing the Portal for Pre-requisite Registration",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Online",
+          "heading": "Step 1: Accessing the Portal for Pre-requisite Registration"
+        },
+        {
+          "text": "The applicant must access the Unified Galvanizing Organic Bio-Agro Resources Dhan portal of the Department of Drinking Water & Sanitation to register their Bio-Gas or Compressed Bio-Gas manufacturing units.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": "Step 1: Accessing the Portal for Pre-requisite Registration"
+        },
+        {
+          "text": "Step 2: Submitting Details for Registration",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": "Step 2: Submitting Details for Registration"
+        },
+        {
+          "text": "The applicant must submit all necessary plant and operational details on the portal to obtain the mandatory registration number required to avail the assistance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": "Step 2: Submitting Details for Registration"
+        },
+        {
+          "text": "Application Process",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[5].children[0]",
+          "channel": "Online",
+          "heading": "Step 2: Submitting Details for Registration"
+        },
+        {
+          "text": "Step 3: Intimation of Willingness to the Department",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[6]",
+          "channel": "Online",
+          "heading": "Step 3: Intimation of Willingness to the Department"
+        },
+        {
+          "text": "The applicant must submit a physical letter intimating their willingness to market the organic fertilizers to the Department of Fertilizers.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[7]",
+          "channel": "Online",
+          "heading": "Step 3: Intimation of Willingness to the Department"
+        },
+        {
+          "text": "Step 4: Submission of Annexures",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Online",
+          "heading": "Step 4: Submission of Annexures"
+        },
+        {
+          "text": "The applicant must attach the required operational details as per Annexure-I (for Fertilizer Marketing Companies) or Annexure-II (for Manufacturers) along with the intimation letter for formal approval.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[9]",
+          "channel": "Online",
+          "heading": "Step 4: Submission of Annexures"
+        },
+        {
+          "text": "Step 5: Registration on the Integrated Fertilizer Management System Portal",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Online",
+          "heading": "Step 5: Registration on the Integrated Fertilizer Management System Portal"
+        },
+        {
+          "text": "The applicant must register on the newly introduced module on the Integrated Fertilizer Management System portal where the Department of Fertilizers will allot a unique identification number to the manufacturing units.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[11]",
+          "channel": "Online",
+          "heading": "Step 5: Registration on the Integrated Fertilizer Management System Portal"
+        },
+        {
+          "text": "Step 6: Uploading Operational Data",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[12]",
+          "channel": "Online",
+          "heading": "Step 6: Uploading Operational Data"
+        },
+        {
+          "text": "The applicant must use the allotted identification number to upload the quantity of organic fertilizers produced, data relating to sales, Maximum Retail Price, remaining stock, and quality certificates on the Integrated Fertilizer Management System portal.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[13]",
+          "channel": "Online",
+          "heading": "Step 6: Uploading Operational Data"
+        },
+        {
+          "text": "Post-Application Processes",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[14].children[0]",
+          "channel": "Online",
+          "heading": "Step 6: Uploading Operational Data"
+        },
+        {
+          "text": "Step 7: Quality Testing and Certification",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[15]",
+          "channel": "Online",
+          "heading": "Step 7: Quality Testing and Certification"
+        },
+        {
+          "text": "The applicant must ensure batch-wise or dispatch-wise quality testing at accredited laboratories and get the test reports validated by the State Agriculture Department or State Energy Development Agency to receive the 'B2-MDA' certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[16]",
+          "channel": "Online",
+          "heading": "Step 7: Quality Testing and Certification"
+        },
+        {
+          "text": "Step 8: Generating Benefit Claims",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[17]",
+          "channel": "Online",
+          "heading": "Step 8: Generating Benefit Claims"
+        },
+        {
+          "text": "The applicant must generate Direct Benefit Transfer claims through the Integrated Fertilizer Management System portal using the prescribed Annexure within two months from the month of sale.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[18]",
+          "channel": "Online",
+          "heading": "Step 8: Generating Benefit Claims"
+        },
+        {
+          "text": "Step 9: Submission of Claim Documentation",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[19]",
+          "channel": "Online",
+          "heading": "Step 9: Submission of Claim Documentation"
+        },
+        {
+          "text": "The applicant must submit a copy of the Quality Certificate along with the claim for Market Development Assistance payment for that particular month to the Department of Fertilizers to receive the financial disbursement.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "en.applicationProcess[0].process[20]",
+          "channel": "Online",
+          "heading": "Step 9: Submission of Claim Documentation"
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Application Stage Documents",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Letter Intimating Willingness to Market Organic Fertilizers.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Purchasing Agreement for Supply of Fermented Organic Manure, Liquid Fermented Organic Manure, or Phosphate Rich Organic Manure (Required if marketing through Fertilizer Marketing Companies).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details of Fertilizer Marketing Companies Document (Annexure-I).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details of Organic Fertilizer Manufacturer Document (Annexure-II).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[1].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Tax Identification Number Certificate of the Company.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[1].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Permanent Account Number Card of the Company.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[1].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Bank Account Details (Account Number, Indian Financial System Code, Name of Account Holder, Address of the Bank).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[1].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Galvanizing Organic Bio-Agro Resources Dhan Portal Registration Certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[1].children[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Benefit Disbursal Documents",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Quantity Certificate for Organic Fertilizers (Proforma 'B1-MDA').",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Quality Certificate for Organic Fertilizers (Proforma 'B2-MDA').",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Quality Test Report from a Government Notified Laboratory or National Accreditation Board for Testing and Calibration Laboratories Accredited Private Laboratory.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[3].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proforma for Claiming Payment of Market Development Assistance (Annexure) with the Digital Signature of the Chartered Accountant or Statutory Auditor and the Authorized Officer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[3].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Verification and Audit Documents",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Stock Registers Showing Opening Balance, Production, Quantity Dispatched, and Closing Balance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Daily Report of Production and Stock Authenticated by the Production Manager.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Dispatch and Stock Transfer Advice Serially Numbered and Signed by the Sales Manager.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Dispatch Instructions Issued from Headquarters.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Gate Passes Bearing Printed Serial Numbers.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Register of Gate Passes Issued.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Register of Dispatches.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Sales Invoices Serially Numbered and Supported by Warehouse Delivery Notes.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Sales Day Book.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[8]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Delivery Challan Signed by the Receiver in Confirmation of Receipt.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[9]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Stock Register of Raw Materials Purchased and Consumed.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+          "source_path": "documents.en.documents_required[5].children[10]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[9].children[1]",
+      "title": "Annexure-I",
+      "type": "other",
+      "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[9].children[3]",
+      "title": "Annexure-II",
+      "type": "other",
+      "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".documents.en.documents_required[1].children[2].children[1]",
+      "title": "Annexure-I",
+      "type": "other",
+      "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".documents.en.documents_required[1].children[3].children[1]",
+      "title": "Annexure-II",
+      "type": "other",
+      "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

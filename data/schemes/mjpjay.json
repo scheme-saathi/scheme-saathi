@@ -1,0 +1,579 @@
+{
+  "scheme_id": "M20",
+  "slug": "mjpjay",
+  "name": "Mahatma Jyotirao Phule Jan Arogya Yojana",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The Mahatma Jyotirao Phule Jan Arogya Yojana (MJPJAY), launched by the Government of Maharashtra under  Public Health and Family Welfare Department,The scheme provides cashless medical services for secondary and tertiary treatments through empaneled hospitals. Initially targeted at low-income families, the scheme now covers all families in the state, offering up to ₹1.5 lakh under MJPJAY and ₹5 lakh under Ayushman Bharat annually. From 1st July 2024, it ensures comprehensive, cashless healthcare for the entire population of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.detailedDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Health Coverage for Categories A to E (Excluding D): ₹5 lakhs per family per year on a floater basis under both schemes.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Health Coverage for Category D: ₹1 lakh per person per year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Medical Benefits",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": "Medical Benefits"
+        },
+        {
+          "text": "• For categories A to E (Excluding D) - 1356 Health Benefits Packages under 34 specialities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": "Medical Benefits"
+        },
+        {
+          "text": "• For category D – 184 Health Benefits Packages for Road accident patients.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[4]",
+          "channel": null,
+          "heading": "Medical Benefits"
+        },
+        {
+          "text": "Follow-up treatment",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": "Follow-up treatment"
+        },
+        {
+          "text": "262 Health Benefits Packages for both schemes (for categories A to E)",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[6].children[0]",
+          "channel": null,
+          "heading": "Follow-up treatment"
+        },
+        {
+          "text": "Treatment Reserved for Govt. Hospitals",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[7]",
+          "channel": null,
+          "heading": "Treatment Reserved for Govt. Hospitals"
+        },
+        {
+          "text": "119 Health Benefits Packages for both the schemes (for categories A to E)",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[8].children[0]",
+          "channel": null,
+          "heading": "Treatment Reserved for Govt. Hospitals"
+        },
+        {
+          "text": "Benefits under Health Packages",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[9]",
+          "channel": null,
+          "heading": "Benefits under Health Packages"
+        },
+        {
+          "text": "The health packages provide comprehensive coverage, ensuring a cashless treatment experience for patients. The benefits include:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[10]",
+          "channel": null,
+          "heading": "Benefits under Health Packages"
+        },
+        {
+          "text": "Hospitalization Costs",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[11]",
+          "channel": null,
+          "heading": "Hospitalization Costs"
+        },
+        {
+          "text": "Bed charges in general wards.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[12].children[0]",
+          "channel": null,
+          "heading": "Hospitalization Costs"
+        },
+        {
+          "text": "Nursing and boarding charges.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[12].children[1]",
+          "channel": null,
+          "heading": "Hospitalization Costs"
+        },
+        {
+          "text": "Surgeons, anaesthetists, medical practitioners, and consultants' fees.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[12].children[2]",
+          "channel": null,
+          "heading": "Hospitalization Costs"
+        },
+        {
+          "text": "Medical Expenses",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[13]",
+          "channel": null,
+          "heading": "Medical Expenses"
+        },
+        {
+          "text": "Charges for oxygen, O.T., and ICU facilities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[14].children[0]",
+          "channel": null,
+          "heading": "Medical Expenses"
+        },
+        {
+          "text": "Cost of surgical appliances, drugs, disposables, consumables, implants, and prosthetic devices.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[14].children[1]",
+          "channel": null,
+          "heading": "Medical Expenses"
+        },
+        {
+          "text": "Expenses for blood transfusion (as per State Government policy).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[14].children[2]",
+          "channel": null,
+          "heading": "Medical Expenses"
+        },
+        {
+          "text": "Diagnostics and Support Services",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[15]",
+          "channel": null,
+          "heading": "Diagnostics and Support Services"
+        },
+        {
+          "text": "X-rays and diagnostic tests.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[16].children[0]",
+          "channel": null,
+          "heading": "Diagnostics and Support Services"
+        },
+        {
+          "text": "Food for inpatients during hospitalization.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[16].children[1]",
+          "channel": null,
+          "heading": "Diagnostics and Support Services"
+        },
+        {
+          "text": "Transportation Costs",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[17]",
+          "channel": null,
+          "heading": "Transportation Costs"
+        },
+        {
+          "text": "One-time transport cost by State Transport or second-class rail fare from the hospital to the patient’s residence.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[18].children[0]",
+          "channel": null,
+          "heading": "Transportation Costs"
+        },
+        {
+          "text": "In the unfortunate event of a patient's death, the cost of transporting the deceased's body from the network hospital to their village or township.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[18].children[1]",
+          "channel": null,
+          "heading": "Transportation Costs"
+        },
+        {
+          "text": "The package covers all costs from the date of reporting to discharge, including treatment complications, ensuring a truly cashless experience for patients.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[18].children[2]",
+          "channel": null,
+          "heading": "Transportation Costs"
+        },
+        {
+          "text": "Scheme on Assurance Mode",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[20]",
+          "channel": null,
+          "heading": "Scheme on Assurance Mode"
+        },
+        {
+          "text": "The Integrated Scheme is being implemented on an Assurance Basis. This means that the claims of the network hospitals for the expenses of the patients undergoing treatment under the scheme are being paid directly by the State Health Assurance Societies to the respective network hospitals. Accordingly, the State Health Assurance Society is paying claims up to ₹5 lakh per family per year of groups A, B, C and E and ₹1 lakh per person per year for road accident victims of group D.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.schemeContent.benefits[21]",
+          "channel": null,
+          "heading": "Scheme on Assurance Mode"
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Category A: Families holding Yellow, Antyodaya Anna Yojana (AAY), Annapurna Yojna and Orange Ration Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Category B",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1]",
+          "channel": null,
+          "heading": "Category B"
+        },
+        {
+          "text": "• White ration card holder families (including Govt./Semi Gov employees).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2]",
+          "channel": null,
+          "heading": "Category B"
+        },
+        {
+          "text": "• A family without having any kind of ration card but having domicile certificate of Maharashtra",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3]",
+          "channel": null,
+          "heading": "Category B"
+        },
+        {
+          "text": "Category C",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4]",
+          "channel": null,
+          "heading": "Category C"
+        },
+        {
+          "text": "• Students in Govt. and Govt. recognized Ashram School",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[5]",
+          "channel": null,
+          "heading": "Category C"
+        },
+        {
+          "text": "• Children in Govt. and Govt. recognized Orphanages",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[6]",
+          "channel": null,
+          "heading": "Category C"
+        },
+        {
+          "text": "• Women in Govt. and Govt. recognized Women's Ashram",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[7]",
+          "channel": null,
+          "heading": "Category C"
+        },
+        {
+          "text": "• Sr. citizens in Govt. and Govt. recognized old age homes",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[8]",
+          "channel": null,
+          "heading": "Category C"
+        },
+        {
+          "text": "• Journalists and their dependent family members as per criteria of Directorate General of Information and Public Relations Office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[9]",
+          "channel": null,
+          "heading": "Category C"
+        },
+        {
+          "text": "• Construction workers and their families (who are resident of outside of Maharashtra) registered with Maharashtra Building and Other Construction Workers Board.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[10]",
+          "channel": null,
+          "heading": "Category C"
+        },
+        {
+          "text": "Category D",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[11]",
+          "channel": null,
+          "heading": "Category D"
+        },
+        {
+          "text": "Road traffic accident victims from outside Maharashtra and outside India who met with an accident on roads in Maharashtra",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[12].children[0]",
+          "channel": null,
+          "heading": "Category D"
+        },
+        {
+          "text": "Category E",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[13]",
+          "channel": null,
+          "heading": "Category E"
+        },
+        {
+          "text": "Families holding below mentioned ration cards from 865 villages of Belgaon, Karwar, Kalburgi and Bidar Districts of Maharashtra- Karnataka border",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[14]",
+          "channel": null,
+          "heading": "Category E"
+        },
+        {
+          "text": "1) Antyodaya Anna Yojana (AAY)",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[15]",
+          "channel": null,
+          "heading": "Category E"
+        },
+        {
+          "text": "2) Priority House Holder (PHH)",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[16]",
+          "channel": null,
+          "heading": "Category E"
+        },
+        {
+          "text": "3) Annapurna Yojna",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[17]",
+          "channel": null,
+          "heading": "Category E"
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: The interested applicant should visit the  any Govt./Pvt. network hospital in State, and request the hard copy of the prescribed format of the application form from the concerned authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 2: In the application form, fill in all the mandatory fields, paste the passport-sized photograph (signed across, if required), and attach copies of all the mandatory documents (self-attest, if required).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.applicationProcess[0].process[0].children[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Submit the duly filled and signed application form along with the documents, within the prescribed period (if any), to the authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.applicationProcess[0].process[0].children[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Request a receipt or acknowledgement from the concerned authority to whom the application has been submitted. Ensure that the receipt contains essential details such as the date and time of submission, and a unique identification number (if applicable).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.applicationProcess[0].process[0].children[3]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "NOTE: Ensure that the application is submitted within the prescribed period, if any.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.applicationProcess[0].process[0].children[4]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Note 1:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.applicationProcess[0].process[0].children[5].children[0].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": " The claim settlement module along with electronic clearance and the payment gateway will be part of the workflow in the State Health Assurance Society (SHAS) portal and will be operated by the Insurer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.applicationProcess[0].process[0].children[5].children[0].children[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Note 2:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.applicationProcess[0].process[0].children[5].children[1].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": " The reports will be available for scrutiny on the State Health Assurance Society (SHAS) ",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.applicationProcess[0].process[0].children[5].children[1].children[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "login.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "en.applicationProcess[0].process[0].children[5].children[1].children[2].children[0]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "List of valid photo ID proofs to be accepted along with document of eligible criteria:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[0]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "1. Aadhaar Card or Aadhaar Registration Slip with a photo of the beneficiary. An Aadhaar Card would be insisted upon as an identification document and in the absence of an Aadhaar card/number; any document that is accepted for issuance of an Aadhaar card will also be accepted.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[1]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "2. Pan Card",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[2]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "3. Voter ID",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[3]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "4. Driving License",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[4]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "5. School/College Id",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[5]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "6. Passport",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[6]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "7. Freedom Fighter ID card",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[7]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "8. Health Card of RGJAY / MJPJAY",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[8]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "9. Handicap Certificate",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[9]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "10. Nationalized Bank Passbook with Photo",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[10]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "11. Senior citizen card issued by the Central Government or State Government",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[11]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "12. Defense ex-servicemen card issued by Sainik Board",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[12]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "13. Marine Fishery Identity card (Issued by Ministry of Agriculture / Fisheries Department Government of Maharashtra).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[13]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        },
+        {
+          "text": "14. Any photo ID proof issued by the Government of Maharashtra/ Government of India",
+          "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+          "source_path": "documents.en.documents_required[14]",
+          "channel": null,
+          "heading": "List of valid photo ID proofs to be accepted along with document of eligible criteria:"
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[5].children[1].children[2]",
+      "title": "login.",
+      "type": "other",
+      "url": "https://www.jeevandayee.gov.in/MJPJAY/FrontServlet?requestType=CommonRH&actionVal=RightFrame&page=undefined%3E%3E%3Cb%3EMJPJAY%20Login%3C/b%3E&pageName=MJPJAY_Login&mainMenu=MJPJAY_Login&subMenu=MJPJAY_Login",
+      "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Official Website",
+      "type": "other",
+      "url": "https://www.jeevandayee.gov.in/MJPJAY/FrontServlet?requestType=CommonRH&actionVal=RightFrame&page=undefined%3E%3E%3Cb%3EMJPJAY%3C/b%3E&pageName=MJPJAY&mainMenu=About&subMenu=MJPJAY",
+      "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "FAQs",
+      "type": "other",
+      "url": "https://www.jeevandayee.gov.in/MJPJAY/FrontServlet?requestType=CommonRH&actionVal=RightFrame&page=undefined%3E%3E%3Cb%3EMJPJAY%20FAQs%3C/b%3E&pageName=MJPJAY_FAQs&mainMenu=MJPJAY_FAQs&subMenu=MJPJAY_FAQs#",
+      "source_url": "https://www.myscheme.gov.in/schemes/mjpjay",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

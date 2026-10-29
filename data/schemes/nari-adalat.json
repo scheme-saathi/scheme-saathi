@@ -1,0 +1,128 @@
+{
+  "scheme_id": "C23",
+  "slug": "nari-adalat",
+  "name": "Nari Adalat",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Nari Adalat, a component of the \"Sambal\" sub-scheme under Mission Shakti, it aims to provide women with an alternate Grievance Redressal Mechanism for resolving cases of petty nature (harassment, subversion, curtailment of rights or entitlements) faced by them at Gram panchayat level by negotiation, mediation, and reconciliation with mutual consent for speedy, accessible, and affordable justice. It also be used as a platform for awareness of right, entitlements, social facilitation and hand holding of women centric organizations. The component of Nari Adalat is being implemented in a phased manner on pilot basis.  The scheme is being run in 50 Gram Panchayat each in the state of Assam and UT of Jammu and Kashmir. Further it is being expanded in the 10 Gram Panchayats of Bihar and Karnataka and 5 Gram Panchayats of Andaman and Nicobar Islands.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.schemeContent.detailedDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Nari Adalats or women collectives will be formed of committed and socially respected women chosen for that purpose. This platform will also be utilized for engaging with the public for awareness generation and getting feedback for improvement in the schemes and for effective public delivery of services. These will be provided logistic support through Gram Panchayats in convergence with the Ministry of Panchayati Raj, Ministry of Rural Development, and Common Service Centres (CSCs) run by the Ministry of Electronics and Information Technology.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.schemeContent.detailedDescription[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Initially, it will be launched in identified States/UTs, preferably where Elected Women Representatives (EWRs) are heading the Gram Panchayats (GPs) in Aspirational Districts. In the first year, an awareness drive regarding legal, constitutional rights and entitlements under various schemes/ programs will be undertaken. In the second year, committed and socially respected women will be identified and extensively trained in all women-related laws and schemes and a formal setup of women collectives having 7 to 11 members will be made who will address the socio, economic, and cultural issues faced by the women of that area and will provide alternative resolution to disputes by mediation and by connecting them to the duty bearers.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.schemeContent.detailedDescription[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The members or Nyaya Sakhis will be nominated / selected by the Gram Panchayat. The Nyaya Sakhis will amongst themselves select the head of the Nari Adalat, referred to as the „Mukhya Nyaya Sakhi‟ (MNS). The MNS will be responsible for all the activities and functioning of Nari Adalat in their respective jurisdiction. The tenure of Mukhya Nyaya Sakhi will generally be of six months after which a new MNS would be selected by Nyaya Sakhi.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.schemeContent.detailedDescription[2].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "1)\tAccessible and affordable justice",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2)\tConflict resolution",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3)\tReconciliation",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4)\tAwareness Generation",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The only specific requirement for eligibility is that the applicant must be a woman/girl.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "For the application process, please approach the nearest Nari Adalat with your concern. They will guide you through the necessary steps and provide further assistance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "The Scheme is being run in 50 Gram Panchayats Each in 11 Districts (Nalbari, Darrang, Morigaon, Dhubri, Udalguri, South Salmara, Goalpara, Kamrup, Barpeta, Tamulpur, and Baksa) of Assam and 2 Districts (Kupwara and Baramulla) of Jammu and Kashmir on pilot basis.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "As required/directed by the authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": []
+}

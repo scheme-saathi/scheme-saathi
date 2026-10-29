@@ -1,0 +1,243 @@
+{
+  "scheme_id": "C38",
+  "slug": "pahal-dbtl",
+  "name": "Pratyaksh Hanstantrit Labh / Direct Benefits Transfer For LPG",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "\"Pratyaksh Hanstantrit Labh / Direct Benefits Transfer For LPG (PAHAL)\" launched by the Ministry Of Petroleum and Natural Gas, ensures transparency by transferring LPG subsidies directly to consumers' bank accounts, eliminating diversion and reducing subsidy leakages. It empowers users, improves delivery, and enables self-selection for subsidy, with provisions for Aadhaar-linked and non-Aadhaar-linked accounts. This initiative protects consumer entitlement, prevents fraud, and promotes efficient subsidy management.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Direct Subsidy Transfer: LPG consumers receive subsidies directly in their bank accounts automatically.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.schemeContent.benefits[0].children[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Improved Availability: Enhanced market availability of new LPG connections for genuine consumers.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.schemeContent.benefits[0].children[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Health Benefits: Replaces unclean cooking fuels, reducing indoor pollution and preventing respiratory diseases among women and children in rural areas.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.schemeContent.benefits[0].children[0].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must be an LPG user.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The combined taxable income of the applicant and their spouse should not exceed ₹10,00,000 in the previous financial year, as per the Income Tax Act, 1961.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Through Bank:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 1: Visit your bank branch where you hold an account.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 2:Carry a copy of your Aadhaar card along with the original for verification.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 3:Request the bank staff to link your Aadhaar number with your bank account.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 4:Fill out the Aadhaar linking form provided by the bank and submit it along with a copy of your Aadhaar card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 5: The bank will notify you upon successful linking.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Through LPG Distributor:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[6].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 1: Visit your LPG distributor's office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[7]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 2: Carry a copy of your Aadhaar card and the original for verification.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Provide your LPG Consumer Number and request Aadhaar linking.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[9]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Fill out the Aadhaar linking form provided by the distributor and submit it along with a copy of your Aadhaar card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 5: You will be notified once the linking process is completed successfully.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[11]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Note: ",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[12].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "If the applicant does not link their Aadhaar Number to their Bank Account and LPG Consumer Number within 3 months, they will need to purchase cylinders at the market price. Subsidies will no longer be available without Aadhaar linkage.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "en.applicationProcess[0].process[12].children[1]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Form 1 -  Submit a copy of the Aadhaar letter to the LPG distributor or bank",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Form 2 - Aadhaar letter, in addition to residential proof, to be submitted to the LPG distributor",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Form 3 -  A copy of a current refill slip consisting of a 17-digit LPG ID number",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Form 4 - A copy of a bank passbook's front page and a canceled cheque",
+          "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0]",
+      "title": "Source link",
+      "type": "other",
+      "url": "http://petroleum.nic.in/dbt/forms.html",
+      "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://mopng.gov.in/en/marketing/pahal",
+      "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Booklet",
+      "type": "other",
+      "url": "https://mopng.gov.in/files/uploads/Booklet_edited.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

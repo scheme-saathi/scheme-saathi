@@ -1,18 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "scheme-saathi"
 version = "0.1.0"
 description = "Welfare-scheme navigator for citizens and CSC operators"
 requires-python = ">=3.11"
 dependencies = [
-    "fastmcp",
-    "fastapi",
-    "uvicorn",
     "pydantic",
-    "httpx",
+    "langgraph",
+    "langgraph-checkpoint-sqlite",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest"]
+rag = ["openpyxl>=3.1,<4", "sentence-transformers>=3,<6", "chromadb>=1,<2", "pypdf>=6,<7", "pdfplumber>=0.11,<0.12"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["servers", "servers.*", "agents", "agents.*", "graph", "graph.*"]
+namespaces = true

@@ -1,0 +1,381 @@
+{
+  "scheme_id": "M19",
+  "slug": "mmlby",
+  "name": "Mukhyamantri - Majhi Ladki Bahin Yojana",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The \"Mukhyamantri - Majhi Ladki Bahin Yojana\" scheme was launched by the Women and Child Development Department, Government of Maharashtra. The scheme aims to give economic freedom to women in the state age group of 21 to 65 years, improving their health and nutrition and strengthening their decisive role in the family. The women will get a financial benefit of ₹1,500/- through direct benefit transfer (DBT).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Financial Assistance of ₹1,500/- per month.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": "Financial Assistance of ₹1,500/- per month."
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant should be a female.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a resident of Maharashtra state.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant's age should be between 21-65 years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should have their bank account with an Aadhaar link.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The annual income of the applicant's family should not exceed ₹2,50,000/-.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Outsourced employees, voluntary workers, and contract workers with income up to ₹2,50,000/- are eligible.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be any one of the following:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Married Woman",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Widowed",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Divorced Woman",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Abandoned and Destitute Women",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "One Unmarried Woman in the family",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The combined annual family income is more than ₹2,50,000/-.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.schemeContent.exclusions[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The family member is an income taxpayer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.schemeContent.exclusions[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The family members are working as regular/permanent employees in a government department/undertaking/board/government of India or local body of the state government or are drawing pensions after retirement.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.schemeContent.exclusions[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The beneficiary women received ₹1,500 per month through the financial scheme implemented by other departments of the government.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.schemeContent.exclusions[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The family member is a present or former MP/MLA.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.schemeContent.exclusions[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The family member is the Chairman/Vice-Chairman/Director/Member of the Board/Corporation/Undertaking of the Government of India or State Government.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.schemeContent.exclusions[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A person has a four-wheeler (excluding a tractor) registered in the name of their family members.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.schemeContent.exclusions[0].children[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Registration Process:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Online",
+          "heading": "Registration Process:"
+        },
+        {
+          "text": "Step 01: The interested applicant visit the official website.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Online",
+          "heading": "Registration Process:"
+        },
+        {
+          "text": "Step 02: Select \"Applicant Login\" and click on \"Create Account.\"",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": "Registration Process:"
+        },
+        {
+          "text": "Step 03: Complete the registration form with the following details: Full Name as per Aadhaar, Mobile No, Password, Confirm Password, District, Taluka, Village, Municipal Corporation / Council, Authorized Person & Accept Terms and Conditions.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": "Registration Process:"
+        },
+        {
+          "text": "Step 04: Enter the Captcha code and click \"Sign-up.\" You will receive an OTP.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": "Registration Process:"
+        },
+        {
+          "text": "Step 05: Enter the OTP and the Captcha code again.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Online",
+          "heading": "Registration Process:"
+        },
+        {
+          "text": "Step 06: Click \"Verify the OTP\" to receive a message confirming that your login was successful.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[6]",
+          "channel": "Online",
+          "heading": "Registration Process:"
+        },
+        {
+          "text": "Application Process:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Online",
+          "heading": "Application Process:"
+        },
+        {
+          "text": "Step 01: Log in to the portal using your Mobile number, Password, and Captcha to log in.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[9]",
+          "channel": "Online",
+          "heading": "Application Process:"
+        },
+        {
+          "text": "Step 02: Click on \"Application of Mukhyamantri - Majhi Ladki Bahin Yojana\" and enter your Aadhaar Number and Captcha.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Online",
+          "heading": "Application Process:"
+        },
+        {
+          "text": "Step 03: Click on \"Valid Aadhaar\" and complete the registration form with the applicant's name, bank details, and permanent address.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[11]",
+          "channel": "Online",
+          "heading": "Application Process:"
+        },
+        {
+          "text": "Step 04: Upload relevant documents such as an Aadhaar card, Domicile certificate, Ration card, etc.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[12]",
+          "channel": "Online",
+          "heading": "Application Process:"
+        },
+        {
+          "text": "Step 05: Click \"Submit\" to receive your application ID via SMS.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[13]",
+          "channel": "Online",
+          "heading": "Application Process:"
+        },
+        {
+          "text": "Check the Status:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[15]",
+          "channel": "Online",
+          "heading": "Check the Status:"
+        },
+        {
+          "text": "Step 01: Log in to the portal using your Mobile number, Password, and Captcha to log in.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[16]",
+          "channel": "Online",
+          "heading": "Check the Status:"
+        },
+        {
+          "text": "Step 02: Click on \"Applications Made Earlier\" to view the status of your applications.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "en.applicationProcess[0].process[17]",
+          "channel": "Online",
+          "heading": "Check the Status:"
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Photograph of the Beneficiary Woman",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Aadhaar Card",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Domicile Certificate (If the Domicile Certificate is not available, any one of the following can be submitted: Ration Card issued before 15 years, Voter ID card issued before 15 years, Birth Certificate, or School Leaving Certificate).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For Women Born Abroad (Submit the Husband's Ration Card issued before 15 years, Voter ID card issued before 15 years, Birth Certificate, School Leaving Certificate, or Domicile Certificate).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Income Certificate (Not required if the woman has a Yellow or Orange Ration Card. Required if the woman has a White Ration Card or no Ration Card).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Marriage Certificate (If your name is not listed on the Ration Card and you are newly married, your husband’s Ration Card can be used as proof of income)",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Bank Account Details (account should be Aadhaar-linked)",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Affirmation Letter",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+          "source_path": "documents.en.documents_required[0].children[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[1].children[2]",
+      "title": "official website",
+      "type": "other",
+      "url": "https://ladakibahin.maharashtra.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://ladlibahinstorage.s3.ap-south-1.amazonaws.com/site-pdf/%E0%A4%AE%E0%A4%BE%E0%A4%B0%E0%A5%8D%E0%A4%97%E0%A4%A6%E0%A4%B0%E0%A5%8D%E0%A4%B6%E0%A4%95+%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE+%E0%A4%A6%E0%A4%BF.%E0%A5%A8%E0%A5%AD.%E0%A5%A6%E0%A5%AD.%E0%A5%A8%E0%A5%AA.pdf#toolbar=0",
+      "source_url": "https://www.myscheme.gov.in/schemes/mmlby",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

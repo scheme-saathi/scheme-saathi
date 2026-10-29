@@ -1,0 +1,298 @@
+{
+  "scheme_id": "C06",
+  "slug": "ignwps",
+  "name": "Indira Gandhi National Widow Pension Scheme",
+  "government_level": "Central",
+  "geography": "India; Maharashtra implementation",
+  "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Indira Gandhi National Widow Pension Scheme (IGNWPS) is implemented by Ministry of Rural Development, Government of India. It is a non-contributory pension scheme to provide social security to widows of poor family (BPL)  of the society.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "A pension of Rs.300/- per month is provided to Widows between 40 years and 79 years. For persons who are 80 years and above the pension is Rs.500/- per month.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The eligibility criteria under Indira Gandhi National Widow Pension Scheme (IGNWPS) is:-",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be a widow in the age group of 40-79 years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should belong to a household living below the poverty line according to the criteria prescribed by the Govt. of India",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Pension will be discontinued",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.schemeContent.exclusions[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "In case of remarriage of widow",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.schemeContent.exclusions[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Once the widow moves above poverty line",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.schemeContent.exclusions[2].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "One can download UMANG App or visit website https://web.umang.gov.in/web_new/home",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "The citizen can login using mobile number and OTP.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[0].process[0].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Once logged In, citizen can search for NSAP.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[0].process[0].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Click on “Apply Online”",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[0].process[0].children[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Fill the basic details, choose the mode of payment of pension, upload photo and click on “Submit”.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[0].process[0].children[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Individuals can submit completely filled applications to the Gram Panchayat / Block Office in the rural area and the Municipality / Municipal Council in the urban area, as per eligibility.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[1].process[0].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "A Verification Officer or Verification Team under an authorized officer verifies the applications with reference to facts related to eligibility",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[1].process[0].children[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "The Verification Officer make the necessary recommendation for sanction or rejection with reasons.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[1].process[0].children[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "The list of applicants with the recommendations of the Verifying Authority is discussed in the Gram Sabha in rural areas or Ward Sabha / Area Sabha as designated by the State Government in urban areas and thereafter in the Gram Panchayats and Municipalities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[1].process[0].children[3]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "If the time limits are not adhered to by Gram Sabha / Ward Sabhas, Gram Panchayats / Municipalities the Verification Officer directly submits his recommendations to the Sanctioning Authority under intimation to the Gram Panchayat / Municipality.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[1].process[0].children[4]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "After receipt of applications which are verified and recommended by the Gram Sabha / Ward Committee / Area Sabha, the Sanctioning Authority convey approval to the applicant in the form of a Sanction Order with a copy to Gram Panchayat / Municipality concerned.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[1].process[0].children[5]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "The Sanctioning Authority issues Sanction Order under his seal",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[1].process[0].children[6]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Every beneficiary who has been sanctioned pension under schemes of NSAP are issued a Pension Passbook. The Passbook contain details of the Sanction Order, particulars of the pensioner and disbursement details",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[1].process[0].children[7]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "The list of beneficiaries to whom sanctions are issued is displayed at the Gram Panchayat / Ward / Municipal Office and updated every three months.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[1].process[0].children[8]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "The Pension amount is directly paid to the beneficiaries through the Direct Benefit Transfer (DBT) process to their post office or bank account.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "en.applicationProcess[1].process[0].children[9]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Death Certificate of husband – With the name of the surviving wife(widow).",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "BPL Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Age Proof - For age, the birth certificate or school certificate may be relied on. In their absence ration card and EPIC may be considered. If there is no valid document, any Medical Officer of any government hospital may be authorized to issue the age certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[0].children[1]",
+      "title": "https://web.umang.gov.in/web_new/home",
+      "type": "other",
+      "url": "https://web.umang.gov.in/web_new/home",
+      "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://web.umang.gov.in/web_new/home",
+      "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "NSAP FAQs",
+      "type": "other",
+      "url": "https://nsap.nic.in/circular.do?method=faq",
+      "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "NSAP Guidelines",
+      "type": "guidelines",
+      "url": "https://nsap.nic.in/Guidelines/nsap_guidelines_oct2014.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[2]",
+      "title": "IGNWPS Office Memorandum Dated 08th Nov 2012",
+      "type": "other",
+      "url": "https://nsap.nic.in/Guidelines/wps.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[3]",
+      "title": "IGNWPS Office Memorandum Dated 30th Jun 2011",
+      "type": "other",
+      "url": "https://nsap.nic.in/Guidelines/english_wps.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[4]",
+      "title": "IGNWPS Office Memorandum Dated 30th Sep 2009",
+      "type": "other",
+      "url": "https://nsap.nic.in/Guidelines/guidelines%20on%20IGNWPS%2030sep09.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/ignwps",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

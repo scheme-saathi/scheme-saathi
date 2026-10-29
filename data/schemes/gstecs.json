@@ -1,0 +1,343 @@
+{
+  "scheme_id": "C33",
+  "slug": "gstecs",
+  "name": "GST Exemption Certificate Scheme",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The \"GST Exemption Certificate Scheme\" has been introduced by the Department of Heavy Industries, Ministry of Heavy Industries for issuing certificates to Persons with Disabilities (PwDs) having a disability percentage equal to or greater than 40%. The scheme provides GSC Concession to orthopedically disabled persons on purchase of a car.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "A concession of 10% on GST can be availed through this certificate and zero cess would be applicable. A person availing of this certificate will have to pay 18% GST & no cess instead of 28% GST & applicable cess on the purchase of a car.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The certificate is issued within a month of receipt of the application complete in all respects.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.schemeContent.benefits[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The certificate is valid for a period of 6 months from the date of issuance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.schemeContent.benefits[0].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Any Orthopedic Physically handicapped person having a permanent disability of 40% & above can apply for the benefit under the scheme, irrespective of whether the applicant drives the vehicle himself or otherwise.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Cars (automatic or manual) having a length less than or equal to 4m and engine capacity of not more than 1200 cc (petrol, Liquefied Petroleum Gases (LPG) or compressed natural gas (CNG) or 1500 cc (diesel) qualify for purchase under this scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The said Certificate for availing the GST concession would be valid for a period of three months from the date of issue of the certificate and the vehicle would have to be purchased by the applicant within this three-month period to avail the concession.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Interested and eligible applicants may send their applications in the prescribed format along with all required documents to the following address: The Under Secretary (AEI Section), Department of Heavy Industry, Udyog Bhavan, Room No 428, New Delhi 110011, Tel: 011-23061490",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "The applicant would inform DHI about the purchase of the vehicle and the Registration number of the vehicle to the Department of Heavy Industry within a period of 30 days from the date of registration of the vehicle.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[0].process[0].children[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 1: Home Page",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Visit the official website at https://dhigecs.heavyindustry.gov.in/ using any web browser or device.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 2: Login and Registration",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[2].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "If you are not registered, click the \"REGISTER\" button on the home page. Follow the registration process, which includes providing your full name, valid email ID, mobile number, and Aadhar number. An OTP will be sent to your registered mobile number for verification. You will also need to specify if you have a UDID number. If you do, provide the UDID number and validate it.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Create Password",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[4].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Create a password that meets the specified criteria (at least one lowercase letter, one uppercase letter, one number, one special character, and a minimum length of 8 characters). Confirm your password and enter the captcha code. Agree to the terms and conditions, and click \"REGISTER.\"",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[5]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Activate Your Account",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[6].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Check your registered email for a 4-digit OTP and click the provided activation link. Enter the OTP to activate your account.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[7]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 5: User Dashboard",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[8].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "After successful registration and activation, log in to the site using your email ID and the password you created. You'll be directed to the User Dashboard, where you can fill in your information. Save your filled information by clicking the \"Draft\" button and proceed to the next steps.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[9]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 6: Application Submission",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[10].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Complete all mandatory fields marked with an asterisk (*) in the User Dashboard. Click \"Next\" to proceed and continue to fill in additional mandatory fields on the subsequent page (SCR-11). Once all information is filled, click \"Final Submit.\"",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[11]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 7: Check Application Status",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[12].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Visit the Application Status page (SCR-12) to track the progress of your GST Exemption Certificate application. When your status shows \"Approved,\" you can click \"Download Certificate\" to access your certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[13]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 8: Update Vehicle Details",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[14].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "After purchasing a vehicle, it's mandatory to update your vehicle details. Click on \"Update Vehicle Details\" as displayed in SCR-14. Provide your vehicle number and the date of purchase.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[15]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 9: Request Form for OEM/Company",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[16].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "If the OEM/Company or model of your vehicle is not listed, you can request to add new entries. Click \"Add New OEM/Company Request\" and provide the relevant information as shown in SCR-15.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "en.applicationProcess[1].process[17]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Aadhar Card",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "PAN Card",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Unique Disability ID card (UDID) (issued by the Ministry of Social Justice and Empowerment, Govt. of India) or Disability certificate (issued by Central Govt./State Govt./District Govt. bearing the proper signature and seal of the issuing authority wherein their name and registration no. should be mentioned)",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Income Tax Return filed for the last three years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Self-Declaration stating that he has not availed this concession in the last five years and he will not dispose of the vehicle after availing the GST concession for a period of 5 years from the date of purchase in the prescribed format placed in Annexure C.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details of the Vehicle Model they intend to purchase along with the name of the dealer from whom the vehicle will be purchased and the name of RTO, where the vehicle will be registered.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "NOTE: If a person does not have either of the medical certificates as referred above, then duly-filled annexure B is required with the signature and countersignature of orthopaedic doctor and civil surgeon rank officers respectively with their seal indicating their name and registration number.",
+          "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+          "source_path": "documents.en.documents_required[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[0].children[1]",
+      "title": "prescribed format",
+      "type": "other",
+      "url": "https://gecs.heavyindustries.gov.in/assets/site/main/DHIGECS_procedure_(Revised).pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://gecs.heavyindustries.gov.in/assets/site/main/DHIGECS_procedure_(Revised).pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "User Manual - Application Process",
+      "type": "other",
+      "url": "https://gecs.heavyindustries.gov.in/assets/site/main/User_Manual_New.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[2]",
+      "title": "FAQs",
+      "type": "other",
+      "url": "https://gecs.heavyindustries.gov.in/assets/site/main/FAQS.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[3]",
+      "title": "Contact Us",
+      "type": "other",
+      "url": "https://gecs.heavyindustries.gov.in/home/contactUs",
+      "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[4]",
+      "title": "Approved Applications",
+      "type": "other",
+      "url": "https://gecs.heavyindustries.gov.in/home/allOnlineGSTConcessionApprovedApplicant",
+      "source_url": "https://www.myscheme.gov.in/schemes/gstecs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}
