@@ -5,6 +5,7 @@ from pathlib import Path
 
 from langgraph.types import Command
 
+from graph.persona import load_persona_profile
 from graph.workflow import build_graph, sqlite_checkpointer
 
 CITIZEN = {"age": 62, "is_widow": True, "income": 250000}
@@ -105,11 +106,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--thread-id", default="demo-1")
     parser.add_argument("--scheme-id", action="append", dest="scheme_ids",
                         help="Evaluate this scheme (repeatable). Default: every scheme with fully reviewed rules.")
-    parser.add_argument("--citizen", help="Simulated citizen profile as a JSON object. Default: a sample widow.")
+    # Let the user choose one profile source: custom JSON (--citizen) or a saved example (--persona-id). argparse rejects using both; 
+    # using neither keeps the default sample profile (CITIZEN).
+    profile_group = parser.add_mutually_exclusive_group()
+    profile_group.add_argument("--citizen", help="Simulated citizen profile as a JSON object. Default: a sample widow.")
+    profile_group.add_argument("--persona-id", help="Load a synthetic persona by ID (for example, SS001).")
     parser.add_argument("--decision", choices=["approve", "reject"], default="approve")
     args = parser.parse_args([] if argv is None else argv)
     try:
-        citizen = json.loads(args.citizen) if args.citizen else CITIZEN
+        citizen = load_persona_profile(args.persona_id) if args.persona_id else (
+            json.loads(args.citizen) if args.citizen else CITIZEN
+        )
         if not isinstance(citizen, dict):
             raise ValueError("--citizen must be a JSON object")
         if args.phase != "resume" and args.scheme_ids:
