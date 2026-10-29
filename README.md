@@ -175,3 +175,30 @@ python -m unittest discover -s tests -p test_keyword_search.py
 python -m unittest discover -s tests -p test_retrieval_evaluation.py
 python -m unittest discover -s tests -p test_scheme_loading.py
 ```
+
+Install the project dependencies into .venv (Windows)
+
+```bash
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+```
+
+To test the persona-loading functionality, run the focused tests from the project root:
+
+```bash
+python -m pytest -q tests/test_persona.py tests/test_resume_cli.py
+```
+These tests check that persona facts are converted to the expected fields, unknown facts are omitted, saved personas load correctly, and the CLI rejects using --persona-id and --citizen together. See test_persona.py and test_resume_cli.py.
+
+You can also try loading a persona through the workflow:
+
+```bash
+python -m graph.run --persona-id SS006
+```
+
+It should exit successfully and show the eligibility result for the loaded profile. To test that conflicting profile options are rejected:
+
+```bash
+python -m graph.run --persona-id SS001 --citizen '{"age": 40}'
+```
+
+That command should display an argument error because you must choose one profile source.
