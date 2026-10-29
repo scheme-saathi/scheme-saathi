@@ -1,0 +1,278 @@
+{
+  "scheme_id": "C34",
+  "slug": "neca",
+  "name": "National Energy Conservation Award",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/neca",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The National Energy Conservation Award under the Ministry of Power, Government of India, recognizes organizations for their outstanding efforts in energy conservation and energy efficiency.A total of 65 awards are given under different categories, including Tier-I and Tier-II. The award ceremony is held every year on 14th December on the occasion of National Energy Conservation Day.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Objective",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.schemeContent.detailedDescription[1]",
+          "channel": null,
+          "heading": "Objective"
+        },
+        {
+          "text": "a) Scope: The scope of the Awards is to cover sectors(Industries, Building, Transport, Institutions, Equipments) which have a share of around 56% of India’s total Electricity consumption(Energy Statistics 2022, MOSPI).",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.schemeContent.detailedDescription[2]",
+          "channel": null,
+          "heading": "Objective"
+        },
+        {
+          "text": "b) Purpose: The purpose of the awardis to recognize/reward organizations for the exemplary efforts on Energy Conservation and Energy Efficiency. It can be categorized into National Award(Tier-I/Tier-II) category.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.schemeContent.detailedDescription[3]",
+          "channel": null,
+          "heading": "Objective"
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Certificate & Trophy",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "All organizations are eligible to apply free of cost for the National Energy Conservation Award subject to the condition that their sector should be eligible for Award for a particular year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "However, the following organizations cannot apply for the Award:",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.schemeContent.exclusions[0]",
+          "channel": null,
+          "heading": "However, the following organizations cannot apply for the Award:"
+        },
+        {
+          "text": "a. Organizations having legal issues, blacklisted, or defaulters in any of the government schemes.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.schemeContent.exclusions[1]",
+          "channel": null,
+          "heading": "However, the following organizations cannot apply for the Award:"
+        },
+        {
+          "text": "b. Defaulters/repeated defaulters under the Perform Achieve and Trade scheme of the Bureau of Energy Efficiency, Ministry of Power.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.schemeContent.exclusions[2]",
+          "channel": null,
+          "heading": "However, the following organizations cannot apply for the Award:"
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Registration:",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Step 1: Visit the official website and click on the Registration button.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Step 2: Select your category: Individual or Organization.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Step 3: Fill in the required details:",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Individual: Name, Date of Birth, Nominator Type, Mobile, Email, Aadhaar Number.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Organization: Type, Authorized Person Name, Date of Birth, Organization Description, Designation, Mobile, Email, Aadhaar Number.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Step 4: Click Submit to complete registration.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[6]",
+          "channel": "Online",
+          "heading": "Registration:"
+        },
+        {
+          "text": "Apply:",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[7]",
+          "channel": "Online",
+          "heading": "Apply:"
+        },
+        {
+          "text": "Step 1: Log in to the portal using your registered credentials.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Online",
+          "heading": "Apply:"
+        },
+        {
+          "text": "Step 2: Select the scheme from the list of awards and click \"Nominate / Apply Now\".",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[9]",
+          "channel": "Online",
+          "heading": "Apply:"
+        },
+        {
+          "text": "Step 3: Fill in all mandatory fields in the online application form.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Online",
+          "heading": "Apply:"
+        },
+        {
+          "text": "Step 4: Click Submit to complete your application.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "en.applicationProcess[0].process[11]",
+          "channel": "Online",
+          "heading": "Apply:"
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Organization registration certificate",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Energy consumption data/report",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of energy-saving initiatives",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Supporting documents or reports",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other papers asked by the Awards team.",
+          "source_url": "https://www.myscheme.gov.in/schemes/neca",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[1].children[2]",
+      "title": "fficial website",
+      "type": "other",
+      "url": "https://awards.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/neca",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[1].children[4]",
+      "title": "Registration button.",
+      "type": "other",
+      "url": "https://awards.gov.in/Registration/SignUp",
+      "source_url": "https://www.myscheme.gov.in/schemes/neca",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[8].children[2]",
+      "title": "Log in",
+      "type": "other",
+      "url": "https://awards.gov.in/Login",
+      "source_url": "https://www.myscheme.gov.in/schemes/neca",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[9].children[2]",
+      "title": "Nominate / Apply Now\".",
+      "type": "other",
+      "url": "https://awards.gov.in/Home/AwardLibrary",
+      "source_url": "https://www.myscheme.gov.in/schemes/neca",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines/Website",
+      "type": "guidelines",
+      "url": "https://awards.gov.in/Home/AwardLibrary",
+      "source_url": "https://www.myscheme.gov.in/schemes/neca",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

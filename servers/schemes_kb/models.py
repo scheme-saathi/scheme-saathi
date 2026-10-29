@@ -31,11 +31,13 @@ class SchemeSections(Record):
 
 
 class ResourceLink(Record):
+    source_path: str | None = None
     title: str
     type: Literal["application_form", "application_portal", "guidelines", "other"]
     url: HttpUrl
     source_url: HttpUrl
     format: Literal["pdf", "webpage", "unknown"]
+    local_file: str | None = None
     verification_status: Literal["pending", "checked", "broken"] = "pending"
 
 

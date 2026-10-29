@@ -1,0 +1,220 @@
+{
+  "scheme_id": "C20",
+  "slug": "yhs",
+  "name": "Youth Hostel Scheme",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The Youth Hostel Scheme is managed by the Department of Youth Affairs & Sports under the Ministry of Youth Affairs & Sports, Government of India. The Central Government provides financial assistance to the State Governments for the construction and maintenance of youth hostels. The State Governments are responsible for the day-to-day management of youth hostels.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Affordable accommodation: Youth hostels offer a much cheaper alternative to hotels and guesthouses.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Social atmosphere: Youth hostels are a great place to meet new people from all over the world.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.schemeContent.benefits[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Cultural experience: Youth hostels are often located in places of cultural interest, giving you the opportunity to learn about the local culture and traditions.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.schemeContent.benefits[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Flexible options: Youth hostels offer a variety of accommodation options, including dormitories, private rooms, and family rooms. You can also choose to book meals at the hostel or cook your own food.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.schemeContent.benefits[0].children[3]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "There is no age restriction but if applicant is below 18 then he/she  must be accompanied by a parent or guardian when staying in a youth hostel.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Applicant must visit the official website.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Click on \"Apply Now\" under the Youth Hostel scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.applicationProcess[0].process[0].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Select the user type and scheme name.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.applicationProcess[0].process[0].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Now fill out the require details.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.applicationProcess[0].process[0].children[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Upload the recent photograph.",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.applicationProcess[0].process[0].children[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Give the consent for the Aadhaar to use as biometric and KYC .",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "en.applicationProcess[0].process[0].children[5]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Completed YHAI membership application form",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Passport size photograph",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of identity, such as a copy of your passport, driver's license, or Aadhaar card",
+          "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[0].children[1]",
+      "title": "official website",
+      "type": "other",
+      "url": "https://dbtyas-youth.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[1].children[1]",
+      "title": "Apply Now",
+      "type": "other",
+      "url": "https://dbtyas-youth.gov.in/userlogin.php",
+      "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://yas.nic.in/sites/default/files/Youth%20Hostel%20Scheme_0.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Office Order",
+      "type": "other",
+      "url": "https://yas.nic.in/sites/default/files/File845.PDF",
+      "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[2]",
+      "title": "Official Website",
+      "type": "other",
+      "url": "https://dbtyas-youth.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[3]",
+      "title": "List Of Youth Hostel",
+      "type": "other",
+      "url": "https://yas.gov.in/sites/default/files/YH%20details.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[4]",
+      "title": "CPC Order Dated 09.10.2015",
+      "type": "other",
+      "url": "https://yas.gov.in/sites/default/files/CPC%20Order.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/yhs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

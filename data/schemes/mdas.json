@@ -1,0 +1,467 @@
+{
+  "scheme_id": "C35",
+  "slug": "mdas",
+  "name": "Marketing Development Assistance Scheme",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The Ministry of Tourism launched the Marketing Development Assistance (MDA) Scheme under the Overseas Promotion & Publicity (OPP) Scheme. The scheme aims to provide financial support to tourism service providers approved by the Ministry of Tourism, Govt. of India or the respective State Government / Union Territory (UT) Administration for undertaking promotion and marketing of India in the overseas markets.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Objectives",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.detailedDescription[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": ": ",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.detailedDescription[2].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To motivate stakeholders to promote tourism to the country from the overseas markets.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.detailedDescription[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To enhance the visibility of the brand Incredible India in the overseas markets.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.detailedDescription[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To augment foreign tourist arrivals to the country.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.detailedDescription[3].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "For Tourism Service Providers",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "Financial support for study tours, and participation in travel shows/exhibitions/road shows in overseas markets (organized by the Ministry of Tourism) will be provided up to a maximum of ₹3,50,000/- per case/tour.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "     Sr. No.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[0].children[0].children[1]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "Particulars",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[0].children[1].children[1]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "Extent of Support ",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[0].children[2].children[1]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "1",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[1].children[0].children[0]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "Economy class airfare for travel between India to another country and from there to a group of countries by air/rail.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[1].children[1].children[0]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "90%",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[1].children[2].children[0]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "2",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[2].children[0].children[0]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "Cost of built-up/furnished stall, electricity and water charges, participation fee, etc., at travel fair/exhibitions held overseas.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[2].children[1].children[0]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "90%",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[2].children[2].children[0]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "3",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[3].children[0].children[0]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "Lodging expenses on overseas tour ",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[3].children[1].children[0]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "Max. 5 nights with an upper ceiling of room rate at ₹10,000/- per night.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[2].children[3].children[2].children[0]",
+          "channel": null,
+          "heading": "For Tourism Service Providers"
+        },
+        {
+          "text": "For Tourism Departments of State Governments / UT Administrations",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[4]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        },
+        {
+          "text": "Financial support for participation in overseas travel shows and exhibitions will be provided as follows:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        },
+        {
+          "text": "Sr. No.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[6].children[0].children[0].children[1]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        },
+        {
+          "text": "Particulars",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[6].children[0].children[1].children[1]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        },
+        {
+          "text": "                   Extent of Support",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[6].children[0].children[2].children[0]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        },
+        {
+          "text": "1. ",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[6].children[1].children[0].children[0]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        },
+        {
+          "text": "Cost of built-up/furnished stall, electricity and water charges, participation fee, etc., at travel fair/exhibitions held overseas.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[6].children[1].children[1].children[0]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        },
+        {
+          "text": "Overall ceiling of ₹3,50,000/-.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[6].children[1].children[2]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        },
+        {
+          "text": "2. Since, the representatives of State Govts and UTs are provided TA/DA by the States/UTs, the provisions of financial assistance towards international air fare and lodging are not applicable to them. ",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[7].children[0].children[0].children[0]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        },
+        {
+          "text": "For Tourism Service Providers /Tourism Departments of State Governments / UT Administrations",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[9]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        },
+        {
+          "text": "Financial support for online promotion of tourism destinations and products in overseas markets, including digital content creation, will cover 50% of the total cost, up to ₹1,00,000/- per financial year, subject to actuals.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.schemeContent.benefits[10]",
+          "channel": null,
+          "heading": "For Tourism Departments of State Governments / UT Administrations"
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The tourism service providers should be travel agents, inbound tour operators, tourist transport operators, classified hotels, classified bed & breakfast units, classified home stays, classified motels, guest houses & tented accommodation units, standalone restaurants, convention centers, and online aggregators, sales tours, participation in travel fairs/exhibitions and road shows (organized by Ministry of Tourism), online promotion of tourism destinations and products, tour packages in the overseas markets, including content creation/production of digital promotional brochures/leaflets etc.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The tourism service providers should be approved by the Ministry of Tourism, Government of India, or the concerned State / Union Territory Tourism Department.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The approved tourism service providers should show a minimum fee of ₹1.00 crore – ₹2.00 crore in any of the preceding two years i.e. 2018-19 or 2019-20, the number of tours may be limited to a maximum of two in one financial year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The approved tourism service providers should show a minimum fee of ₹2.00 crore and above in one of the preceding two years i.e. 2018-19 or 2019-20, the number of tours may be limited to a maximum of three in one financial year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Tourism departments of State Governments / UT Administrations are also eligible to avail benefits under the Scheme. However, the above eligibility conditions do not apply to them.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Prior Approval:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 01: The TSP/SG/UT shall obtain Prior Approval from the Ministry of Tourism, Government of India, before undertaking a tour overseas.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 02: The applicants download the prior approval application form Annexure-I.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 03: In the application form, fill in all the mandatory fields, and attach copies of all the mandatory documents (self-attest, if required).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 04: Submit the duly filled and signed application form at least 21 days before the tour to the Assistant Director General (Overseas Marketing) via email at mda-tourism@gov.in.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Reimbursement Claims:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[6].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "After undertaking the tourism promotional activity/tour abroad for which Prior Approval had been accorded by the Ministry of Tourism the Tourism Service Provider / State Govt./ UT Administration will apply to reimbursement/claim.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[7]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 01: The applicants download the claim application form Annexure-II, III & IV.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 02: In the application form, fill in all the mandatory fields, and attach copies of all the mandatory documents (self-attest, if required).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[9]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 03: Submit the duly filled and signed application form within 45 days of completion of the activity to the Assistant Director General (Overseas Marketing), Ministry of Tourism via email at mda-tourism@gov.in.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "NOTE: Submission of claims in physical form will not be accepted.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "en.applicationProcess[0].process[12]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "For Prior Approval:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of TSP approval by Ministry of Tourism or State/UT Tourism Department.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "documents.en.documents_required[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Declaration/Undertaking of no investigation or debarment.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "documents.en.documents_required[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "FEE certificate certified by a Chartered Accountant.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "documents.en.documents_required[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For Reimbursement:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "documents.en.documents_required[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Financial assistance details of the past three years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "documents.en.documents_required[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Air tickets and boarding passes or passport pages with immigration stamps.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "documents.en.documents_required[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Tour report (maximum 250 words).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "documents.en.documents_required[3].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Original receipts and proof of payments for air tickets, booth setup, participation fees, and lodging.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+          "source_path": "documents.en.documents_required[3].children[3]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[2].children[2]",
+      "title": "Annexure-I",
+      "type": "other",
+      "url": "https://tourism.gov.in/sites/default/files/2022-03/Revised%20MDA%20Guidelines%2010032022.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[8].children[2]",
+      "title": "Annexure-II, III & IV",
+      "type": "other",
+      "url": "https://tourism.gov.in/sites/default/files/2022-03/Revised%20MDA%20Guidelines%2010032022.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://tourism.gov.in/sites/default/files/2022-03/Revised%20MDA%20Guidelines%2010032022.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mdas",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

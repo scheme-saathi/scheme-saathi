@@ -5,7 +5,7 @@
   "government_level": "Central",
   "geography": "India",
   "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
-  "collected_on": "2026-10-24",
+  "collected_on": "2026-10-28",
   "review_status": "approved",
   "availability_status": "open",
   "sample_only": false,
@@ -350,43 +350,63 @@
   },
   "links": [
     {
+      "source_path": ".scheme.applicationProcess[0].process[1].children[2]",
       "title": "fficial website",
       "type": "other",
       "url": "https://awards.gov.in/",
       "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.applicationProcess[0].process[1].children[4]",
       "title": "Registration button.",
       "type": "other",
       "url": "https://awards.gov.in/Registration/SignUp",
       "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.applicationProcess[0].process[8].children[2]",
       "title": "Log in",
       "type": "other",
       "url": "https://awards.gov.in/Login",
       "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.applicationProcess[0].process[9].children[2]",
       "title": "Nominate / Apply Now\".",
       "type": "other",
       "url": "https://awards.gov.in/Home/AwardLibrary",
       "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://awards.gov.in/Home/AwardLibrary",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
       "title": "Website",
       "type": "other",
       "url": "https://icar.org.in/hi/node/22890",
       "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     }
   ]

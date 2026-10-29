@@ -1,0 +1,476 @@
+{
+  "scheme_id": "C05",
+  "slug": "pm-sym",
+  "name": "Pradhan Mantri Shram Yogi Maan-dhan",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Pradhan Mantri Shram Yogi Maan-dhan\" was launched by the Ministry of Labour and Employment, Government of India, and the scheme aims to ensure old age protection for unorganised workers. The scheme provides a minimum assured pension of ₹3,000/- per month after attaining the age of 60 years and a family pension amounting to 50% of the pension for the spouse. The applicant must be an unorganised worker in the entry age group of 18 to 40 years with a monthly income of ₹15,000/- or less, and must make regular age-specific monthly contributions. The fund manager of the scheme is Life Insurance Corporation of India and enrolment is being done through Common Services Centres.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Financial Assistance",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A minimum assured pension of ₹3,000/- per month is provided to the subscriber after attaining the age of 60 years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.benefits[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A matching contribution is provided by the Central Government on a 50:50 basis, where an equal amount to the subscriber's age-specific contribution (ranging from ₹55/- to ₹200/-) is credited to the pension account.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.benefits[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "NOTE:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.benefits[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "During the receipt of the pension, if the subscriber dies: The spouse of the beneficiary shall be entitled to receive a family pension equal to 50% of the pension received by the beneficiary.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.benefits[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "If a beneficiary has given regular contributions and died due to any cause before the age of 60 years: Their spouse will be entitled to join and continue the scheme subsequently by continuing payment of regular contributions on behalf of the spouse.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.benefits[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "If a beneficiary has given regular contributions and died due to any cause before the age of 60 years, and the spouse decides to exit: The beneficiary's contribution along with accumulated interest as actually earned by the fund or at the savings bank interest rate (whichever is higher) will be returned.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.benefits[3].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "If the subscriber exits the scheme within a period of less than 10 years: The beneficiary's share of contribution only will be returned to them with the savings bank interest rate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.benefits[3].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "If the subscriber exits after a period of 10 years or more but before the superannuation age of 60 years: The beneficiary's share of contribution along with accumulated interest as actually earned by the fund or at the savings bank interest rate, whichever is higher, will be returned.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.benefits[3].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Both voluntary and involuntary exits from the scheme are permitted only after completion of three years from the date of enrolment in the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.benefits[3].children[5]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must be an unorganized worker, construction workers, domestic workers, cobbler etc.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must have an entry age between 18 and 40 years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must have a monthly income of ₹15,000/- or less.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must possess a Savings Bank Account or Jan Dhan account number with an Indian Financial System Code.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must not be -",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.exclusions[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "An income tax payer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.exclusions[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Engaged in the organized sector.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.exclusions[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Holding membership in the Employees' Provident Fund Organization scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.exclusions[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Holding membership in the National Pension Scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.exclusions[1].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Holding membership in the Employees' State Insurance Corporation scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.exclusions[1].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Not a member of NPS-Traders scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.schemeContent.exclusions[1].children[5]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Application Process:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Step 1: The interested eligible person must visit the nearest Common Services Centre (CSC) to initiate the registration and enrollment process.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Step 2: The Village Level Entrepreneur (VLE) present at the CSC will key in the Aadhaar number, the exact name of the subscriber as printed on the Aadhaar card, and the date of birth into the system. These details will subsequently be instantly verified with the UIDAI database.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Step 3: The VLE will capture further details of the applicant, including Bank Account details, Mobile Number, Email-id, spouse, and nominee details into the registration portal. A self-certification verifying the required eligibility conditions will also be successfully completed in the system during this step.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Step 4: The system will automatically calculate the exact monthly contribution payable according to the entry age of the subscriber. The subscriber must then pay the full amount of the first subscription in cash to the VLE, who will generate a receipt and hand it over to the subscriber.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Step 5: An Enrolment Form cum Auto Debit mandate will be printed and must be physically signed by the subscriber. The VLE must then scan the signed enrolment cum auto debit mandate and safely upload it into the system.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Step 6: A unique Shram Yogi Pension Account Number will be instantly generated, and a Shram Yogi Card will be printed directly at the CSC. The subscriber will leave the center with the printed Shram Yogi Card and a signed copy of the enrolment form for their personal records.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[6]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Post-Application Process:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[7].children[0]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Step 1: The subscriber will regularly receive SMS notifications on their registered mobile phone regarding the activation of the auto-debit facility. An additional mini-statement message will be automatically sent to the mobile device upon every successful monthly deduction of the contribution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Step 2: The mandatory monthly subscription shall be automatically debited on a fixed date every single month from the subscriber's linked saving account or Jan-Dhan account. The subscriber must proactively maintain sufficient funds in their account to ensure the contribution, along with any applicable penalty or interest, is successfully processed.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[9]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Grievance Redressal and Help Support",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[10].children[0]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "A dedicated Call Centre and Project Management Unit actively administer the scheme, supervised tightly by the National Social Security Board. To address any grievances related to the scheme, subscribers can directly contact the official customer care number 1800 267 6888 on a 24*7 basis.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[11].children[0]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "The dedicated web portal and mobile application will also have a specific built-in facility specifically for registering complaints and raising issues digitally.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[0].process[11].children[1]",
+          "channel": "Online - via CSC",
+          "heading": null
+        },
+        {
+          "text": "Self-Enrollment Login Process:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[1].process[0]",
+          "channel": "Online",
+          "heading": "Self-Enrollment Login Process:"
+        },
+        {
+          "text": "Visit the Maandhan Homepage",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[1].process[1].children[0]",
+          "channel": "Online",
+          "heading": "Self-Enrollment Login Process:"
+        },
+        {
+          "text": "Click on Login. The Maandhan Login screen will appear.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[1].process[1].children[1]",
+          "channel": "Online",
+          "heading": "Self-Enrollment Login Process:"
+        },
+        {
+          "text": "Click on Self Enrollment.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[1].process[1].children[2]",
+          "channel": "Online",
+          "heading": "Self-Enrollment Login Process:"
+        },
+        {
+          "text": "Enter your Mobile Number.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[1].process[1].children[3]",
+          "channel": "Online",
+          "heading": "Self-Enrollment Login Process:"
+        },
+        {
+          "text": "Enter the OTP received on your registered mobile number.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[1].process[1].children[4]",
+          "channel": "Online",
+          "heading": "Self-Enrollment Login Process:"
+        },
+        {
+          "text": "Click on Proceed.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[1].process[1].children[5]",
+          "channel": "Online",
+          "heading": "Self-Enrollment Login Process:"
+        },
+        {
+          "text": "Complete Self Enrollment",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[1].process[1].children[6]",
+          "channel": "Online",
+          "heading": "Self-Enrollment Login Process:"
+        },
+        {
+          "text": "Note:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[1].process[2].children[0]",
+          "channel": "Online",
+          "heading": "Self-Enrollment Login Process:"
+        },
+        {
+          "text": "Maandhan User Manual",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "en.applicationProcess[1].process[2].children[2].children[0]",
+          "channel": "Online",
+          "heading": "Self-Enrollment Login Process:"
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Aadhaar Card",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Savings Bank Account Passbook / Jan-Dhan Account Passbook",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Mobile Number",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Self-Certification (At the time of enrollment)",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other documents as required",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[1].process[1].children[0].children[1]",
+      "title": "Maandhan Homepage",
+      "type": "other",
+      "url": "https://maandhan.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[1].process[2].children[2]",
+      "title": "Maandhan User Manual",
+      "type": "other",
+      "url": "https://maandhan.in/showfile.php?lang=1&level=1&ls_id=171&lid=260&page=101",
+      "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://www.labour.gov.in/offerings/schemes-and-services/details/pm-sym-QTOzATMtQWa",
+      "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "PIB Press Release (4th March 2025)",
+      "type": "other",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2108082&reg=48&lang=2",
+      "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[2]",
+      "title": "User Manual For Application",
+      "type": "other",
+      "url": "https://maandhan.in/showfile.php?lang=1&level=1&ls_id=171&lid=260&page=101",
+      "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[3]",
+      "title": "FAQs",
+      "type": "other",
+      "url": "https://maandhan.in/show_content.php?lang=1&level=1&ls_id=79&lid=63&page=74",
+      "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[4]",
+      "title": "Revival SoA Update Process",
+      "type": "other",
+      "url": "https://maandhan.in/show_content.php?lang=1&level=1&ls_id=104&lid=88&page=101",
+      "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[5]",
+      "title": "CSC Locator",
+      "type": "other",
+      "url": "https://findmycsc.nic.in/csc/",
+      "source_url": "https://www.myscheme.gov.in/schemes/pm-sym",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

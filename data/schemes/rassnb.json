@@ -1,0 +1,258 @@
+{
+  "scheme_id": "M12",
+  "slug": "rassnb",
+  "name": "Ramai Awas (Gharkul) Scheme for SC & Nav-Buddha (Urban and Rural)",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Ramai Awas (Gharkul) Scheme for SC & Nav-Buddha (Urban and Rural)\" is a housing scheme by the Department of Social Justice & Special Assistance of the Government of Maharashtra. The scheme aims to raise the standard of living of the individuals from the Scheduled Caste and Nav-Buddha communities residing in rural & urban areas of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The benefits vary with the area that the beneficiary resides in -",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rural Area: ₹ 1,00,000/- (Beneficiary's share is Nil)",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.schemeContent.benefits[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Municipal Area: ₹ 1,50,000/- (Beneficiary's share is 7.5%)",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.schemeContent.benefits[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Municipal Corporation: ₹ 2,00,000/- (Beneficiary's share is 10%)",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.schemeContent.benefits[1].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "1. The applicant should have lived for 15 years in Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2. The applicant's annual income limit is as under -",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For Rural Area, ₹1,00,000/- per annum.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For Municipal Area, ₹1,50,000/- per annum.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For Municipal Corporation, ₹2,00,000/- per annum.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3. Only one person in the family will get the benefit.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4. The applicant should have his/her own land",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "5. The applicant should not be receiving the benefits of any other housing scheme of the Government.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Reservation/Relaxation/Priority",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[6].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Priority will be given to applicants from the Below Poverty Line (BPL).",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: The interested applicant should visit (during office hours) one of the following officers and request a hard copy of the prescribed format of the application form from the concerned authority -",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Assistant Commissioner, Social Welfare Office",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.applicationProcess[0].process[1].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Project Director, District Rural Development Agency",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.applicationProcess[0].process[1].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "District Council / Municipal Commissioner",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.applicationProcess[0].process[1].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 2: In the application form, fill in all the mandatory fields, paste the passport-sized photograph (signed across, if required), and attach copies of all the mandatory documents (self-attest, if required).",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Submit the duly filled and signed application form along with the documents, within the prescribed period (if any), to the concerned authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Request a receipt or acknowledgement from the concerned authority to whom the application has been submitted. Ensure that the receipt contains essential details such as the date and time of submission, and a unique identification number (if applicable).",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "NOTE: Ensure that the application is submitted within the prescribed period, if any.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Residential / Domicile Certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Caste Certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Aadhaar Card",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Address Proof.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Identity Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Passport Size Photo.",
+          "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Official Website",
+      "type": "other",
+      "url": "https://sjsa.maharashtra.gov.in/en/ramai-awas-gharkul-scheme-sc-nav-buddha-urban-and-rural",
+      "source_url": "https://www.myscheme.gov.in/schemes/rassnb",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

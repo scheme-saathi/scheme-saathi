@@ -5,7 +5,7 @@
   "government_level": "Central",
   "geography": "India",
   "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
-  "collected_on": "2026-10-24",
+  "collected_on": "2026-10-28",
   "review_status": "approved",
   "availability_status": "open",
   "sample_only": false,
@@ -301,43 +301,53 @@
   },
   "links": [
     {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[0].children[2]",
       "title": "official website",
       "type": "other",
       "url": "https://www.kviconline.gov.in/",
       "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[1].children[2]",
       "title": "KVIC online portal",
       "type": "other",
       "url": "https://kviconline.gov.in/mdaclaims/certKhadi/index.jsp",
       "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[1].children[4]",
       "title": "Online Registration of Khadi Institutions",
       "type": "other",
       "url": "https://kviconline.gov.in/mdaclaims/certKhadi/khadiCertificateRenew.jsp?app=1",
       "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[4].children[2]",
       "title": "Login",
       "type": "other",
       "url": "https://kviconline.gov.in/mdaclaims/certKhadi/certApplicantLogin.jsp",
       "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.schemeContent.references[0]",
       "title": "Guidelines Page No. 28",
       "type": "guidelines",
       "url": "https://www.dcmsme.gov.in/ebook/MSMESchemebooklet2025-26.pdf",
       "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
       "format": "pdf",
+      "local_file": null,
       "verification_status": "pending"
     }
   ]

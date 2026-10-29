@@ -1,0 +1,1354 @@
+{
+  "dataset_id": "scheme-saathi-retrieval-v1",
+  "created_on": "2026-10-25",
+  "status": "candidate_gold_pending_human_review",
+  "scope": "Retrieval evidence and filtering against the frozen local corpus; not current legal guidance, eligibility persona labels or extracted-rule gold standards.",
+  "languages": [
+    "en",
+    "hi"
+  ],
+  "case_count": 32,
+  "intent_group_count": 16,
+  "label_policy": "AI-prepared source-grounded labels. Scheme approvals do not approve these test labels. Human reviewers must verify questions, translations, evidence and reference facts.",
+  "split_policy": "Keep translations in the same intent group/split. Tune only on development; do not inspect held_out performance until labels and configuration are frozen. This authoring session has seen all cases; independent held-out authoring is needed for stronger separation.",
+  "evidence_policy": "Each required_evidence_group must be covered. Any one ref in any_of satisfies that group. Match source type, scheme ID and source_path for pages, or PDF hash/document/page/table. Require the quoted evidence, not just citation presence: overlapping chunk citations can refer to a passage only partially included. Strip HTML tags/entities for table text checks. Source text is truth for this corpus snapshot; all conditions in reference_answer_en must be preserved.",
+  "metrics_policy": "Report scheme Hit@5 and required-evidence-group coverage@5 separately, split and language breakdowns, and latency. Do not count translated cases as independent intents. Negative no_results checks filters; abstain checks belong to answer generation/abstention, which current retrieval alone does not implement. This dataset does not define all relevant chunks, so exhaustive chunk Precision@5/MAP is not justified.",
+  "reference_answer_language": "en; Hindi questions share the same fact-based reference, not an exact-string answer requirement.",
+  "corpus_manifest": [
+    {
+      "path": "data/schemes/kvyoj.json",
+      "sha256": "62f70d15c41764470cb604ae4620e37f8206ae9854c1505d731c1fdefd449f7a"
+    },
+    {
+      "path": "data/schemes/mda-fert.json",
+      "sha256": "61449ff550ad0f82943ae4cd6a428dc9fdc9c8e39badf3eb890fd2409cf6d0df"
+    },
+    {
+      "path": "data/schemes/mi-hma-nhdp.json",
+      "sha256": "25d6322db5efad3ae23636a2a6aa1d523b3be68d38ca485b880a454b6437e832"
+    },
+    {
+      "path": "data/schemes/prism-c2-fwmpkhttptt.json",
+      "sha256": "54348ec2055cf0797b8424b73bb787c2c03251ef4c8e75e4b70571a1d37de9ad"
+    },
+    {
+      "path": "data/schemes/rkvp.json",
+      "sha256": "0ed07412fa8b01fabe06b5aefdf5fe025b5c5f152a53bd7dab305bbe5be79ad8"
+    },
+    {
+      "path": "data/schemes/sui.json",
+      "sha256": "37475137ddb98c344fe72385bc231a40c135059c1d49417517449c104c867c99"
+    },
+    {
+      "document_id": "C09-b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",
+      "file_sha256": "b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",
+      "source_url": "https://www.csio.res.in/CommonNew.php?ds=316&page=1",
+      "extraction_version": "tables_v1",
+      "note": "PDF and extraction are ignored locally. Re-extract the same PDF to reproduce PDF tests."
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "G01-en",
+      "intent_group": "G01",
+      "split": "development",
+      "language": "en",
+      "question": "For the young scientist category of Rashtriya Krishi Vigyan Puraskar, what are the age and qualification requirements?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C07"
+      ],
+      "reference_answer_en": "The captured source requires a doctoral degree, a regular position, and age below 45 years for this category.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G01-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C07",
+              "section": "eligibility",
+              "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+              "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[3]",
+              "evidence_text": "The applicant applying for the young scientist category should have a doctoral degree, hold a regular position, and must be below 45 years of age."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "age_boundary",
+        "category_specific"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G01-hi",
+      "intent_group": "G01",
+      "split": "development",
+      "language": "hi",
+      "question": "राष्ट्रीय कृषि विज्ञान पुरस्कार की युवा वैज्ञानिक श्रेणी के लिए आयु और योग्यता की क्या शर्तें हैं?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C07"
+      ],
+      "reference_answer_en": "The captured source requires a doctoral degree, a regular position, and age below 45 years for this category.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G01-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C07",
+              "section": "eligibility",
+              "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+              "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[3]",
+              "evidence_text": "The applicant applying for the young scientist category should have a doctoral degree, hold a regular position, and must be below 45 years of age."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "age_boundary",
+        "category_specific"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G02-en",
+      "intent_group": "G02",
+      "split": "held_out",
+      "language": "en",
+      "question": "Under Rashtriya Krishi Vigyan Puraskar, what team composition and leader age are required for interdisciplinary research?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C07"
+      ],
+      "reference_answer_en": "At least three members from different disciplines; the team leader must be below 60 years.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G02-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C07",
+              "section": "eligibility",
+              "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+              "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[1]",
+              "evidence_text": "The applicant applying for interdisciplinary research should be part of a team of at least three members from different disciplines, and the team leader must be below 60 years of age."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "team",
+        "age_boundary"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G02-hi",
+      "intent_group": "G02",
+      "split": "held_out",
+      "language": "hi",
+      "question": "राष्ट्रीय कृषि विज्ञान पुरस्कार में अंतर्विषयी अनुसंधान के लिए टीम की संरचना और टीम प्रमुख की आयु की क्या शर्तें हैं?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C07"
+      ],
+      "reference_answer_en": "At least three members from different disciplines; the team leader must be below 60 years.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G02-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C07",
+              "section": "eligibility",
+              "source_url": "https://www.myscheme.gov.in/schemes/rkvp",
+              "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[1]",
+              "evidence_text": "The applicant applying for interdisciplinary research should be part of a team of at least three members from different disciplines, and the team leader must be below 60 years of age."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "team",
+        "age_boundary"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G03-en",
+      "intent_group": "G03",
+      "split": "development",
+      "language": "en",
+      "question": "How much Market Development Assistance is provided per metric tonne for eligible organic fertilisers?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C08"
+      ],
+      "reference_answer_en": "INR 1,500 per metric tonne for sale of FOM, LFOM and enriched PROM, according to the captured source.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G03-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C08",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+              "source_path": "en.schemeContent.benefits[0].children[0]",
+              "evidence_text": "Market Development Assistance of ₹1,500/- per Metric Tonne is provided for the sale of Fermented Organic Manure, Liquid Fermented Organic Manure, and enriched Phosphate Rich Organic Manure."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "benefit_amount",
+        "units"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G03-hi",
+      "intent_group": "G03",
+      "split": "development",
+      "language": "hi",
+      "question": "पात्र जैविक उर्वरकों के लिए प्रति मीट्रिक टन कितनी बाजार विकास सहायता मिलती है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C08"
+      ],
+      "reference_answer_en": "INR 1,500 per metric tonne for sale of FOM, LFOM and enriched PROM, according to the captured source.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G03-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C08",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+              "source_path": "en.schemeContent.benefits[0].children[0]",
+              "evidence_text": "Market Development Assistance of ₹1,500/- per Metric Tonne is provided for the sale of Fermented Organic Manure, Liquid Fermented Organic Manure, and enriched Phosphate Rich Organic Manure."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "benefit_amount",
+        "units"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G04-en",
+      "intent_group": "G04",
+      "split": "held_out",
+      "language": "en",
+      "question": "What is the deadline after sale for submitting organic-fertiliser Market Development Assistance claims?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C08"
+      ],
+      "reference_answer_en": "Claims must be submitted within two months of sale.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G04-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C08",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+              "source_path": "en.schemeContent.benefits[2].children[2]",
+              "evidence_text": "Claims must be submitted within two months of the sale of the organic fertilizers."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "deadline",
+        "event_relative"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G04-hi",
+      "intent_group": "G04",
+      "split": "held_out",
+      "language": "hi",
+      "question": "जैविक उर्वरकों की बिक्री के बाद बाजार विकास सहायता का दावा कितने समय के भीतर जमा करना होता है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C08"
+      ],
+      "reference_answer_en": "Claims must be submitted within two months of sale.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G04-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C08",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+              "source_path": "en.schemeContent.benefits[2].children[2]",
+              "evidence_text": "Claims must be submitted within two months of the sale of the organic fertilizers."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "deadline",
+        "event_relative"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G05-en",
+      "intent_group": "G05",
+      "split": "development",
+      "language": "en",
+      "question": "What project-cost range qualifies for PRISM Phase I Category II?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C09"
+      ],
+      "reference_answer_en": "Project cost must be more than INR 5 lakh and up to INR 35 lakh; the lower boundary is exclusive and the upper boundary inclusive.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G05-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C09",
+              "section": "eligibility",
+              "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+              "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+              "evidence_text": "The applicant must propose a project where the project cost is more than ₹5,00,000/- and up to ₹35,00,000/-."
+            },
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C09",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+              "source_path": "en.schemeContent.benefits[0]",
+              "evidence_text": "The maximum support under Category II is ₹20,00,000/- or 90% of the approved project cost, whichever is lower. The approved project cost must be more than ₹5,00,000/- and up to ₹35,00,000/-."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "numeric_boundary",
+        "exclusive_inclusive"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G05-hi",
+      "intent_group": "G05",
+      "split": "development",
+      "language": "hi",
+      "question": "PRISM चरण एक, श्रेणी दो में परियोजना लागत की पात्र सीमा क्या है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C09"
+      ],
+      "reference_answer_en": "Project cost must be more than INR 5 lakh and up to INR 35 lakh; the lower boundary is exclusive and the upper boundary inclusive.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G05-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C09",
+              "section": "eligibility",
+              "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+              "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+              "evidence_text": "The applicant must propose a project where the project cost is more than ₹5,00,000/- and up to ₹35,00,000/-."
+            },
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C09",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+              "source_path": "en.schemeContent.benefits[0]",
+              "evidence_text": "The maximum support under Category II is ₹20,00,000/- or 90% of the approved project cost, whichever is lower. The approved project cost must be more than ₹5,00,000/- and up to ₹35,00,000/-."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "numeric_boundary",
+        "exclusive_inclusive"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G06-en",
+      "intent_group": "G06",
+      "split": "held_out",
+      "language": "en",
+      "question": "Does PRISM Category II support a proposal only for patenting, and what exception is stated?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C09"
+      ],
+      "reference_answer_en": "Patenting-only proposals are excluded unless patenting is along with prototype development.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G06-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C09",
+              "section": "exclusions",
+              "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+              "source_path": "en.schemeContent.exclusions[0].children[1]",
+              "evidence_text": "Proposals involving only patenting (unless patenting is along with prototype development)."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "exclusion",
+        "exception"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G06-hi",
+      "intent_group": "G06",
+      "split": "held_out",
+      "language": "hi",
+      "question": "क्या PRISM श्रेणी दो में केवल पेटेंट कराने के प्रस्ताव को सहायता मिलती है, और इसमें कौन सा अपवाद है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C09"
+      ],
+      "reference_answer_en": "Patenting-only proposals are excluded unless patenting is along with prototype development.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G06-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C09",
+              "section": "exclusions",
+              "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+              "source_path": "en.schemeContent.exclusions[0].children[1]",
+              "evidence_text": "Proposals involving only patenting (unless patenting is along with prototype development)."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "exclusion",
+        "exception"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G07-en",
+      "intent_group": "G07",
+      "split": "development",
+      "language": "en",
+      "question": "Under the ISEC component of Khadi Vikas Yojana, what interest rate does a Khadi institution pay and who covers the difference?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C10"
+      ],
+      "reference_answer_en": "The institution pays 4%; KVIC bears the difference between actual bank interest and 4% as interest subsidy.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G07-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C10",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+              "source_path": "en.schemeContent.benefits[2].children[2].children[0]",
+              "evidence_text": "Khadi Institution is required to pay only 4% interest rate. The difference between the actual Interest charged by the Bank and 4% is borne by the KVIC as “Interest Subsidy”."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "component",
+        "interest"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G07-hi",
+      "intent_group": "G07",
+      "split": "development",
+      "language": "hi",
+      "question": "खादी विकास योजना के ISEC घटक में खादी संस्था कितनी ब्याज दर देती है और शेष अंतर कौन वहन करता है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C10"
+      ],
+      "reference_answer_en": "The institution pays 4%; KVIC bears the difference between actual bank interest and 4% as interest subsidy.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G07-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C10",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+              "source_path": "en.schemeContent.benefits[2].children[2].children[0]",
+              "evidence_text": "Khadi Institution is required to pay only 4% interest rate. The difference between the actual Interest charged by the Bank and 4% is borne by the KVIC as “Interest Subsidy”."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "component",
+        "interest"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G08-en",
+      "intent_group": "G08",
+      "split": "held_out",
+      "language": "en",
+      "question": "What is the assistance for an individual workshed under Khadi Vikas Yojana, including the North Eastern Region condition?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C10"
+      ],
+      "reference_answer_en": "For an individual 20-square-metre workshed: INR 120,000 or 75% of cost including toilet, whichever is less; the percentage is 90% for NER.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G08-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C10",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+              "source_path": "en.schemeContent.benefits[4].children[0].children[0]",
+              "evidence_text": "Individual workshed (20 Sq. mtrs): ₹1,20,000/- or 75% of the cost of workshed including toilet (90% for NER), whichever is less."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "component",
+        "regional_condition",
+        "benefit_cap"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G08-hi",
+      "intent_group": "G08",
+      "split": "held_out",
+      "language": "hi",
+      "question": "खादी विकास योजना में व्यक्तिगत कार्यशाला के लिए कितनी सहायता है, और पूर्वोत्तर क्षेत्र के लिए क्या शर्त है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C10"
+      ],
+      "reference_answer_en": "For an individual 20-square-metre workshed: INR 120,000 or 75% of cost including toilet, whichever is less; the percentage is 90% for NER.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G08-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C10",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/kvyoj",
+              "source_path": "en.schemeContent.benefits[4].children[0].children[0]",
+              "evidence_text": "Individual workshed (20 Sq. mtrs): ₹1,20,000/- or 75% of the cost of workshed including toilet (90% for NER), whichever is less."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "component",
+        "regional_condition",
+        "benefit_cap"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G09-en",
+      "intent_group": "G09",
+      "split": "development",
+      "language": "en",
+      "question": "For historical reference, what composite loan range does the Stand-Up India record describe?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C11"
+      ],
+      "reference_answer_en": "INR 10 lakh to INR 100 lakh, including term loan and working capital. The scheme record is marked closed; do not invite a new application.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G09-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C11",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/sui",
+              "source_path": "en.schemeContent.benefits[0].children[0]",
+              "evidence_text": "Facilitation of composite loan (inclusive of term loan and working capital) between ₹10 Lakhs and ₹100 Lakhs. Rupay debit card to be issued for convenience of the borrower."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "historical",
+        "closed_scheme",
+        "loan_amount"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G09-hi",
+      "intent_group": "G09",
+      "split": "development",
+      "language": "hi",
+      "question": "पुरानी जानकारी के संदर्भ में, स्टैंड-अप इंडिया के रिकॉर्ड में संयुक्त ऋण की क्या सीमा दी गई है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C11"
+      ],
+      "reference_answer_en": "INR 10 lakh to INR 100 lakh, including term loan and working capital. The scheme record is marked closed; do not invite a new application.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G09-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C11",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/sui",
+              "source_path": "en.schemeContent.benefits[0].children[0]",
+              "evidence_text": "Facilitation of composite loan (inclusive of term loan and working capital) between ₹10 Lakhs and ₹100 Lakhs. Rupay debit card to be issued for convenience of the borrower."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "historical",
+        "closed_scheme",
+        "loan_amount"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G10-en",
+      "intent_group": "G10",
+      "split": "held_out",
+      "language": "en",
+      "question": "In the Stand-Up India checklist, what balance sheets are listed under cases with exposure above INR 25 lakh?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C11"
+      ],
+      "reference_answer_en": "The heading is exposure above INR 25 lakh. The listed item is the last three years of balance sheets of associate/group companies, if any. Do not reinterpret exposure as turnover. The record is closed.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G10-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C11",
+              "section": "required_documents",
+              "source_url": "https://www.myscheme.gov.in/schemes/sui",
+              "source_path": "documents.en.documents_required[1]",
+              "evidence_text": "For cases with exposure above ₹ 25 Lakhs:"
+            }
+          ]
+        },
+        {
+          "group_id": "G10-e2",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C11",
+              "section": "required_documents",
+              "source_url": "https://www.myscheme.gov.in/schemes/sui",
+              "source_path": "documents.en.documents_required[2].children[1]",
+              "evidence_text": "Last three years balance sheets of the Associate / Group Companies (if any)."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "conditional_heading",
+        "multi_passage",
+        "closed_scheme"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G10-hi",
+      "intent_group": "G10",
+      "split": "held_out",
+      "language": "hi",
+      "question": "स्टैंड-अप इंडिया की दस्तावेज सूची में 25 लाख रुपये से अधिक एक्सपोजर वाले मामलों के अंतर्गत कौन से बैलेंस शीट मांगे गए हैं?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C11"
+      ],
+      "reference_answer_en": "The heading is exposure above INR 25 lakh. The listed item is the last three years of balance sheets of associate/group companies, if any. Do not reinterpret exposure as turnover. The record is closed.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G10-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C11",
+              "section": "required_documents",
+              "source_url": "https://www.myscheme.gov.in/schemes/sui",
+              "source_path": "documents.en.documents_required[1]",
+              "evidence_text": "For cases with exposure above ₹ 25 Lakhs:"
+            }
+          ]
+        },
+        {
+          "group_id": "G10-e2",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C11",
+              "section": "required_documents",
+              "source_url": "https://www.myscheme.gov.in/schemes/sui",
+              "source_path": "documents.en.documents_required[2].children[1]",
+              "evidence_text": "Last three years balance sheets of the Associate / Group Companies (if any)."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "conditional_heading",
+        "multi_passage",
+        "closed_scheme"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G11-en",
+      "intent_group": "G11",
+      "split": "development",
+      "language": "en",
+      "question": "How is the Handloom Marketing Incentive rate calculated?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C12"
+      ],
+      "reference_answer_en": "10% on average sales of handloom products over the last three years.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G11-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C12",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+              "source_path": "en.schemeContent.benefits[1].children[0]",
+              "evidence_text": "Marketing Incentive Rate: 10% on average sales of handloom products of the last 3 years."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "rate",
+        "reference_period"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G11-hi",
+      "intent_group": "G11",
+      "split": "development",
+      "language": "hi",
+      "question": "हथकरघा विपणन प्रोत्साहन की दर की गणना कैसे होती है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C12"
+      ],
+      "reference_answer_en": "10% on average sales of handloom products over the last three years.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G11-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C12",
+              "section": "benefits",
+              "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+              "source_path": "en.schemeContent.benefits[1].children[0]",
+              "evidence_text": "Marketing Incentive Rate: 10% on average sales of handloom products of the last 3 years."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "rate",
+        "reference_period"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G12-en",
+      "intent_group": "G12",
+      "split": "held_out",
+      "language": "en",
+      "question": "Are barter-system sales eligible for the Handloom Marketing Incentive?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C12"
+      ],
+      "reference_answer_en": "Sales made under the barter system by handloom agencies are excluded. This is a sales exclusion, not an automatic exclusion of the whole agency.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G12-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C12",
+              "section": "exclusions",
+              "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+              "source_path": "en.schemeContent.exclusions[0].children[3]",
+              "evidence_text": "Sales made under barter system by handloom agencies are excluded."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "transaction_exclusion"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G12-hi",
+      "intent_group": "G12",
+      "split": "held_out",
+      "language": "hi",
+      "question": "क्या वस्तु-विनिमय प्रणाली से की गई बिक्री हथकरघा विपणन प्रोत्साहन के लिए पात्र है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C12"
+      ],
+      "reference_answer_en": "Sales made under the barter system by handloom agencies are excluded. This is a sales exclusion, not an automatic exclusion of the whole agency.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G12-e1",
+          "any_of": [
+            {
+              "source_type": "scheme_page",
+              "scheme_id": "C12",
+              "section": "exclusions",
+              "source_url": "https://www.myscheme.gov.in/schemes/mi-hma-nhdp",
+              "source_path": "en.schemeContent.exclusions[0].children[3]",
+              "evidence_text": "Sales made under barter system by handloom agencies are excluded."
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "transaction_exclusion"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G13-en",
+      "intent_group": "G13",
+      "split": "development",
+      "language": "en",
+      "question": "In the PRISM PDF project-cost table, what limit applies to technical-assistant manpower cost?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": true,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C09"
+      ],
+      "reference_answer_en": "Based on actual costs, not exceeding 20% of the approved project cost.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G13-e1",
+          "any_of": [
+            {
+              "source_type": "pdf",
+              "scheme_id": "C09",
+              "document_id": "C09-b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",
+              "file_sha256": "b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",
+              "source_url": "https://www.csio.res.in/CommonNew.php?ds=316&page=1",
+              "page": 6,
+              "kind": "table",
+              "table_id": "page-6-table-1",
+              "evidence_text": "Manpower cost of technical\nassistants\n(Based on actual &not exceeding\n20% of the approved project cost)",
+              "bbox": [
+                140.9,
+                303.17001,
+                316.370005,
+                349.61001
+              ]
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "pdf",
+        "table",
+        "percentage"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G13-hi",
+      "intent_group": "G13",
+      "split": "development",
+      "language": "hi",
+      "question": "PRISM की PDF की परियोजना लागत तालिका में तकनीकी सहायकों के मानव संसाधन खर्च की क्या सीमा है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": true,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C09"
+      ],
+      "reference_answer_en": "Based on actual costs, not exceeding 20% of the approved project cost.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G13-e1",
+          "any_of": [
+            {
+              "source_type": "pdf",
+              "scheme_id": "C09",
+              "document_id": "C09-b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",
+              "file_sha256": "b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",
+              "source_url": "https://www.csio.res.in/CommonNew.php?ds=316&page=1",
+              "page": 6,
+              "kind": "table",
+              "table_id": "page-6-table-1",
+              "evidence_text": "Manpower cost of technical\nassistants\n(Based on actual &not exceeding\n20% of the approved project cost)",
+              "bbox": [
+                140.9,
+                303.17001,
+                316.370005,
+                349.61001
+              ]
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "pdf",
+        "table",
+        "percentage"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G14-en",
+      "intent_group": "G14",
+      "split": "development",
+      "language": "en",
+      "question": "In the PRISM PDF project-cost table, what is the maximum travel-cost percentage?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": true,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C09"
+      ],
+      "reference_answer_en": "Travel is based on actual costs and must not exceed 5% of approved project cost.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G14-e1",
+          "any_of": [
+            {
+              "source_type": "pdf",
+              "scheme_id": "C09",
+              "document_id": "C09-b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",
+              "file_sha256": "b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",
+              "source_url": "https://www.csio.res.in/CommonNew.php?ds=316&page=1",
+              "page": 6,
+              "kind": "table",
+              "table_id": "page-6-table-1",
+              "evidence_text": "Travel (Based on actual & not\nexceeding 5% of the approved\nproject cost)",
+              "bbox": [
+                140.9,
+                361.61001,
+                316.370005,
+                396.649995
+              ]
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "pdf",
+        "table",
+        "percentage"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G14-hi",
+      "intent_group": "G14",
+      "split": "development",
+      "language": "hi",
+      "question": "PRISM की PDF की परियोजना लागत तालिका में यात्रा खर्च का अधिकतम प्रतिशत कितना है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": true,
+      "expected_behavior": "retrieve_evidence",
+      "expected_scheme_ids": [
+        "C09"
+      ],
+      "reference_answer_en": "Travel is based on actual costs and must not exceed 5% of approved project cost.",
+      "required_evidence_groups": [
+        {
+          "group_id": "G14-e1",
+          "any_of": [
+            {
+              "source_type": "pdf",
+              "scheme_id": "C09",
+              "document_id": "C09-b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",
+              "file_sha256": "b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",
+              "source_url": "https://www.csio.res.in/CommonNew.php?ds=316&page=1",
+              "page": 6,
+              "kind": "table",
+              "table_id": "page-6-table-1",
+              "evidence_text": "Travel (Based on actual & not\nexceeding 5% of the approved\nproject cost)",
+              "bbox": [
+                140.9,
+                361.61001,
+                316.370005,
+                396.649995
+              ]
+            }
+          ]
+        }
+      ],
+      "tags": [
+        "pdf",
+        "table",
+        "percentage"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G15-en",
+      "intent_group": "G15",
+      "split": "development",
+      "language": "en",
+      "question": "Has my PRISM application ABC123 been approved?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "abstain",
+      "expected_scheme_ids": [],
+      "reference_answer_en": "The static scheme corpus cannot determine a personal application status. State that it is unavailable here; do not invent approval or rejection.",
+      "required_evidence_groups": [],
+      "tags": [
+        "unanswerable",
+        "personal_status"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G15-hi",
+      "intent_group": "G15",
+      "split": "development",
+      "language": "hi",
+      "question": "क्या मेरा PRISM आवेदन ABC123 स्वीकृत हो गया है?",
+      "filters": {
+        "scheme_id": null,
+        "availability": null
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "abstain",
+      "expected_scheme_ids": [],
+      "reference_answer_en": "The static scheme corpus cannot determine a personal application status. State that it is unavailable here; do not invent approval or rejection.",
+      "required_evidence_groups": [],
+      "tags": [
+        "unanswerable",
+        "personal_status"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G16-en",
+      "intent_group": "G16",
+      "split": "development",
+      "language": "en",
+      "question": "Show Stand-Up India schemes currently open for new applications.",
+      "filters": {
+        "scheme_id": "C11",
+        "availability": "open"
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "no_results",
+      "expected_scheme_ids": [],
+      "reference_answer_en": "No matching records: C11 is closed in this corpus snapshot.",
+      "required_evidence_groups": [],
+      "tags": [
+        "availability_filter",
+        "negative"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    },
+    {
+      "case_id": "G16-hi",
+      "intent_group": "G16",
+      "split": "development",
+      "language": "hi",
+      "question": "नए आवेदनों के लिए अभी खुले स्टैंड-अप इंडिया रिकॉर्ड दिखाएं।",
+      "filters": {
+        "scheme_id": "C11",
+        "availability": "open"
+      },
+      "include_review_pdfs": false,
+      "expected_behavior": "no_results",
+      "expected_scheme_ids": [],
+      "reference_answer_en": "No matching records: C11 is closed in this corpus snapshot.",
+      "required_evidence_groups": [],
+      "tags": [
+        "availability_filter",
+        "negative"
+      ],
+      "label_status": "pending_human_review",
+      "reviewer": null,
+      "reviewed_on": null,
+      "review_notes": ""
+    }
+  ]
+}

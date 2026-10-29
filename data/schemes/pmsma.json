@@ -1,0 +1,529 @@
+{
+  "scheme_id": "C18",
+  "slug": "pmsma",
+  "name": "Pradhan Mantri Surakshit Matritva Abhiyan",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Pradhan Mantri Surakshit Matritva Abhiyan\" was launched on 9th June 2016 by the Ministry of Health & Family Welfare, Government of India, aims to provide fixed-day assured, comprehensive and quality antenatal care universally to all pregnant women (in 2nd and 3rd trimester) on the 9th of every month, addressing the critical need for standardized maternal healthcare services and reducing maternal and infant mortality rates across the country. The scheme provides assured, comprehensive and quality antenatal care, free of cost, universally to all pregnant women on the 9th of every month and includes a minimum package of antenatal care services provided by Obstetrics and Gynaecology specialists, Radiologists, and Physicians at government health facilities. The applicant must be a pregnant woman in her 2nd or 3rd trimester of pregnancy and must be willing to visit designated government health facilities on the 9th of every month for antenatal care services. The scheme is implemented by the Ministry of Health & Family Welfare, Government of India through National Health Mission at state and district levels and applications for this scheme are accepted both online through the Pradhan Mantri Surakshit Matritva Abhiyan portal and offline at designated government health facilities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Medical Services Provided",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Comprehensive Antenatal Care: Special Antenatal Care services provided by Obstetrics and Gynaecology specialists, Radiologists, and Physicians at government health facilities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Minimum Package of Services: A minimum package of investigations and medicines such as Iron Folic Acid and calcium supplements provided to all pregnant women attending Pradhan Mantri Surakshit Matritva Abhiyan clinics.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "High Risk Pregnancy Identification: Identification and follow-up of high risk pregnancies with red stickers added to Mother and Child Protection cards.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Fixed Day Service: Services provided on the 9th of every month at designated facilities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[1].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Service Delivery Mechanism",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Single Window System: Using principles of single window system for providing investigations and medicines.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Mobile Application Support: Mobile and web-based application to help pregnant women find their nearest Pradhan Mantri Surakshit Matritva Abhiyan facility.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Cost: Completely free of cost to all beneficiaries.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[3].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Coverage Areas",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Facility Types: Services provided at Government health facilities including Primary Health Centres, Community Health Centres, District Hospitals, and urban health facilities in both urban and rural areas.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Conditions",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[6].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Regular attendance on the 9th of every month for antenatal check-ups.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[7].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Compliance with medical advice and treatment prescribed by healthcare providers.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[7].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Follow-up visits as recommended for high-risk pregnancies.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[7].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Carrying Mother and Child Protection card during visits.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.schemeContent.benefits[7].children[3]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must be a pregnant woman in her 2nd or 3rd trimester of pregnancy.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be an Indian citizen residing in India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be willing to visit designated government health facilities on the 9th of every month.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Trimester Specific Criteria",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must have completed the first trimester of pregnancy (beyond 12 weeks of gestation).",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be in 2nd trimester (13-28 weeks) or 3rd trimester (29-40 weeks) of pregnancy.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Special Categories",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant identified as high-risk pregnancy cases receive priority attention and follow-up care.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant who are dropouts from regular antenatal care services are encouraged to participate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: Identify Nearest Pradhan Mantri Surakshit Matritva Abhiyan Facility",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": "Step 1: Identify Nearest Pradhan Mantri Surakshit Matritva Abhiyan Facility"
+        },
+        {
+          "text": "The pregnant woman should visit the Official Portal of PMSMA or download the 'PMSMA' mobile application to find their nearest PMSMA facility using the 'Nearest Facility' search feature.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": "Step 1: Identify Nearest Pradhan Mantri Surakshit Matritva Abhiyan Facility"
+        },
+        {
+          "text": "Step 2: Visit on Designated Day",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": "Step 2: Visit on Designated Day"
+        },
+        {
+          "text": "The beneficiary must visit the identified government health facility (Primary Health Centre, Community Health Centre, District Hospital, or urban health facility) on the 9th of every month. If the 9th falls on Sunday or holiday, services are provided on the next working day.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Offline",
+          "heading": "Step 2: Visit on Designated Day"
+        },
+        {
+          "text": "Step 3: Registration at Facility",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Offline",
+          "heading": "Step 3: Registration at Facility"
+        },
+        {
+          "text": "Upon reaching the facility, the pregnant woman should register herself at the PMSMA counter or reception desk by providing basic identity information and contact details.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Offline",
+          "heading": "Step 3: Registration at Facility"
+        },
+        {
+          "text": "Step 4: Medical Consultation and Examination",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[6]",
+          "channel": "Offline",
+          "heading": "Step 4: Medical Consultation and Examination"
+        },
+        {
+          "text": "The beneficiary will receive comprehensive antenatal care services including medical consultation with Obstetrics and Gynaecology specialists, Radiologists, or Physicians as per the minimum package of services defined under the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[7]",
+          "channel": "Offline",
+          "heading": "Step 4: Medical Consultation and Examination"
+        },
+        {
+          "text": "Step 5: Investigation and Tests",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Offline",
+          "heading": "Step 5: Investigation and Tests"
+        },
+        {
+          "text": "Required medical investigations, tests, and screening procedures will be conducted as per the standardized protocol for 2nd and 3rd trimester pregnant women under the single window system.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[9]",
+          "channel": "Offline",
+          "heading": "Step 5: Investigation and Tests"
+        },
+        {
+          "text": "Step 6: Medicine Distribution",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Offline",
+          "heading": "Step 6: Medicine Distribution"
+        },
+        {
+          "text": "The beneficiary will receive prescribed medicines including Iron Folic Acid tablets, calcium supplements, and other necessary medications free of cost from the facility pharmacy.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[11]",
+          "channel": "Offline",
+          "heading": "Step 6: Medicine Distribution"
+        },
+        {
+          "text": "Step 7: Risk Assessment and Follow-up",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[12]",
+          "channel": "Offline",
+          "heading": "Step 7: Risk Assessment and Follow-up"
+        },
+        {
+          "text": "Healthcare providers will assess pregnancy risk factors and if identified as high-risk, a red sticker will be placed on the Mother and Child Protection card with necessary follow-up instructions.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[13]",
+          "channel": "Offline",
+          "heading": "Step 7: Risk Assessment and Follow-up"
+        },
+        {
+          "text": "Step 8: Next Visit Scheduling",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[14]",
+          "channel": "Offline",
+          "heading": "Step 8: Next Visit Scheduling"
+        },
+        {
+          "text": "The healthcare provider will provide information about the next visit date (9th of following month) and any interim care requirements or emergency contact procedures.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[15]",
+          "channel": "Offline",
+          "heading": "Step 8: Next Visit Scheduling"
+        },
+        {
+          "text": "*The beneficiary is advised to maintain their Mother and Child Protection card and keep track of visit dates for continuous care throughout pregnancy.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[16]",
+          "channel": "Offline",
+          "heading": "Step 8: Next Visit Scheduling"
+        },
+        {
+          "text": "Grievance Redressal / Help & Support",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[18].children[0]",
+          "channel": "Offline",
+          "heading": "Step 8: Next Visit Scheduling"
+        },
+        {
+          "text": "National Portal: https://pmsma.nhp.gov.in/.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[19]",
+          "channel": "Offline",
+          "heading": "Step 8: Next Visit Scheduling"
+        },
+        {
+          "text": "Toll Free Number: 18001801104.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[20]",
+          "channel": "Offline",
+          "heading": "Step 8: Next Visit Scheduling"
+        },
+        {
+          "text": "Department: Ministry of Health & Family Welfare, Government of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[21]",
+          "channel": "Offline",
+          "heading": "Step 8: Next Visit Scheduling"
+        },
+        {
+          "text": "Local Contact: District Health Officer or Chief Medical Officer of respective district.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[22]",
+          "channel": "Offline",
+          "heading": "Step 8: Next Visit Scheduling"
+        },
+        {
+          "text": "Escalation: State Health Mission to National Health Mission.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "en.applicationProcess[0].process[23]",
+          "channel": "Offline",
+          "heading": "Step 8: Next Visit Scheduling"
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "At Health Facility Visit",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[0]",
+          "channel": null,
+          "heading": "At Health Facility Visit"
+        },
+        {
+          "text": "Mother And Child Protection Card (If Available).",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[1].children[0]",
+          "channel": null,
+          "heading": "At Health Facility Visit"
+        },
+        {
+          "text": "Aadhaar Card Or Any Government Issued Identity Proof.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[1].children[1]",
+          "channel": null,
+          "heading": "At Health Facility Visit"
+        },
+        {
+          "text": "Previous Medical Records (If Any).",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[1].children[2]",
+          "channel": null,
+          "heading": "At Health Facility Visit"
+        },
+        {
+          "text": "Antenatal Care Records From Previous Visits.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[1].children[3]",
+          "channel": null,
+          "heading": "At Health Facility Visit"
+        },
+        {
+          "text": "Prescription Slips From Previous Consultations (If Applicable).",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[1].children[4]",
+          "channel": null,
+          "heading": "At Health Facility Visit"
+        },
+        {
+          "text": "For Registration at Facility",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[2]",
+          "channel": null,
+          "heading": "For Registration at Facility"
+        },
+        {
+          "text": "Address Proof (Ration Card/Voter Identity Card/Utility Bills).",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[3].children[0]",
+          "channel": null,
+          "heading": "For Registration at Facility"
+        },
+        {
+          "text": "Mobile Number For Communication.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[3].children[1]",
+          "channel": null,
+          "heading": "For Registration at Facility"
+        },
+        {
+          "text": "Emergency Contact Details.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[3].children[2]",
+          "channel": null,
+          "heading": "For Registration at Facility"
+        },
+        {
+          "text": "Optional Documents",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[4]",
+          "channel": null,
+          "heading": "Optional Documents"
+        },
+        {
+          "text": "Bank Account Details (For Direct Benefit Transfer if applicable in future).",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[5].children[0]",
+          "channel": null,
+          "heading": "Optional Documents"
+        },
+        {
+          "text": "Husband's Identity Proof (If Required by Local Guidelines).",
+          "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+          "source_path": "documents.en.documents_required[5].children[1]",
+          "channel": null,
+          "heading": "Optional Documents"
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[1].children[1]",
+      "title": "Official Portal",
+      "type": "other",
+      "url": "https://pmsma.nhp.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://pmsma.mohfw.gov.in/wp-content/uploads/2016/09/Pradhan_Mantri_Surakshit_Matritva_Abhiyan-2.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Operational Framework",
+      "type": "other",
+      "url": "https://pmsma.mohfw.gov.in/wp-content/uploads/2016/09/PMSMA_Operational_Framework.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[2]",
+      "title": "Pre-requisites For Facilities",
+      "type": "other",
+      "url": "https://pmsma.mohfw.gov.in/wp-content/uploads/2016/10/PMSMA_Operational_Framework.34.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[3]",
+      "title": "Synopsis For High Risk Pregnancy",
+      "type": "other",
+      "url": "https://pmsma.mohfw.gov.in/wp-content/uploads/2016/10/High-Risk-Conditions-in-preg-modified-Final.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/pmsma",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

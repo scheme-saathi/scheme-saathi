@@ -1,0 +1,446 @@
+{
+  "scheme_id": "C13",
+  "slug": "kcc",
+  "name": "Kisan Credit Card",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The KCC Scheme was introduced with the objective of providing adequate and timely credit to the farmers for their agricultural operations. The Government of India provides interest subvention of 2% and Prompt Repayment Incentive of 3% to the farmers, thus making the credit available at a very subsidized rate of 4% per annum.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The scheme was further extended for the investment credit requirement of farmers viz. allied and non-farm activities in the year 2004 and further revisited in 2012 by a working Group under the Chairmanship of Shri T. M. Bhasin, CMD, Indian Bank with a view to simplify the scheme and facilitate issue of Electronic Kisan Credit Cards. The scheme provides broad guidelines to banks for operationalizing the KCC scheme. Implementing banks will have the discretion to adopt the same to suit institution/location-specific requirements.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Objective / Purpose",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[3]",
+          "channel": null,
+          "heading": "Objective / Purpose"
+        },
+        {
+          "text": "The Kisan Credit Card scheme aims at providing adequate and timely credit support from the banking system under a single window with the flexible and simplified procedures to the farmers for their cultivation and other needs as indicated below :",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[4]",
+          "channel": null,
+          "heading": "Objective / Purpose"
+        },
+        {
+          "text": "To meet the short term credit requirements for the cultivation of crops;",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[5].children[0]",
+          "channel": null,
+          "heading": "Objective / Purpose"
+        },
+        {
+          "text": "Post-harvest expenses;",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[5].children[1]",
+          "channel": null,
+          "heading": "Objective / Purpose"
+        },
+        {
+          "text": "Produce marketing loan;",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[5].children[2]",
+          "channel": null,
+          "heading": "Objective / Purpose"
+        },
+        {
+          "text": "Consumption requirements of farmer household;",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[5].children[3]",
+          "channel": null,
+          "heading": "Objective / Purpose"
+        },
+        {
+          "text": "Working capital for maintenance of farm assets and activities allied to agriculture;",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[5].children[4]",
+          "channel": null,
+          "heading": "Objective / Purpose"
+        },
+        {
+          "text": "Investment credit requirement for agriculture and allied activities",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[5].children[5]",
+          "channel": null,
+          "heading": "Objective / Purpose"
+        },
+        {
+          "text": "Type of Card",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[7]",
+          "channel": null,
+          "heading": "Type of Card"
+        },
+        {
+          "text": "A magnetic stripe card with PIN (Personal Identification Number) with an ISO IIN (International Standards Organization International Identification Number) to enable access to all banks ATMs and micro ATMs",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[8].children[0]",
+          "channel": null,
+          "heading": "Type of Card"
+        },
+        {
+          "text": "In cases where the Banks would want to utilize the centralized biometric authentication infrastructure of the UIDAI (Aadhaar authentication), debit cards with magnetic stripe and PIN with ISO IIN with biometric authentication of UIDAI can be provided.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[8].children[1]",
+          "channel": null,
+          "heading": "Type of Card"
+        },
+        {
+          "text": "Debit Cards with magnetic stripes and only biometric authentication can also be provided depending on the customer base of the bank. Till such time, UIDAI becomes widespread, if the banks want to get started without inter-operability using their existing centralized bio metric infrastructure, banks may do so.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[8].children[2]",
+          "channel": null,
+          "heading": "Type of Card"
+        },
+        {
+          "text": "Banks may choose to issue EMV (Europay, MasterCard and VISA, a global standard for the interoperation of integrated circuit cards) and RUPAY compliant chip cards with magnetic stripe and pin with ISO IIN.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[8].children[3]",
+          "channel": null,
+          "heading": "Type of Card"
+        },
+        {
+          "text": "Further, biometric authentication and smart cards may follow the common open standards prescribed by IDRBT and IBA. This will enable them to transact seamlessly with input dealers and also enable them to have the sales proceeds credited to their accounts when they sell their output at mandies, procurement centres, etc",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[8].children[4]",
+          "channel": null,
+          "heading": "Type of Card"
+        },
+        {
+          "text": "Delivery Channels :",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[10]",
+          "channel": null,
+          "heading": "Delivery Channels :"
+        },
+        {
+          "text": "The following delivery channels shall be put in place to start with so that the Kisan Credit Card is used by the farmers to effectively transact their operations in their KCC account.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[11]",
+          "channel": null,
+          "heading": "Delivery Channels :"
+        },
+        {
+          "text": "Withdrawal through ATMs / Micro ATM",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[12].children[0]",
+          "channel": null,
+          "heading": "Delivery Channels :"
+        },
+        {
+          "text": "Withdrawal through BCs using smart cards.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[12].children[1]",
+          "channel": null,
+          "heading": "Delivery Channels :"
+        },
+        {
+          "text": "PoS machine through input dealers",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[12].children[2]",
+          "channel": null,
+          "heading": "Delivery Channels :"
+        },
+        {
+          "text": "Mobile Banking with IMPS capabilities / IVR",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[12].children[3]",
+          "channel": null,
+          "heading": "Delivery Channels :"
+        },
+        {
+          "text": "Aadhaar enabled Cards",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.detailedDescription[12].children[4]",
+          "channel": null,
+          "heading": "Delivery Channels :"
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Fixation of credit limit/Loan amount",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": "Fixation of credit limit/Loan amount"
+        },
+        {
+          "text": "The short-term limit to arrive for the first year: For farmers raising a single crop in a year: Scale of finance for the crop (as decided by District Level Technical Committee) x Extent of area cultivated + 10% of limit towards post-harvest / household/consumption requirements + 20% of limit towards repairs and maintenance expenses of farm assets + crop insurance, PAIS & asset insurance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[1].children[0]",
+          "channel": null,
+          "heading": "Fixation of credit limit/Loan amount"
+        },
+        {
+          "text": "Limit for second & subsequent year: First-year limit for crop cultivation purposes arrived at as above plus 10% of the limit towards cost escalation/increase in the scale of finance for every successive year ( 2nd, 3rd, 4th and 5th year) and estimated Term loan component for the tenure of Kisan Credit Card, i.e., five years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[1].children[1]",
+          "channel": null,
+          "heading": "Fixation of credit limit/Loan amount"
+        },
+        {
+          "text": "For farmers raising more than one crop in a year, the limit is to be fixed as above depending upon the crops cultivated as per the proposed cropping pattern for the first year and an additional 10% of the limit towards cost escalation/increase in the scale of finance for every successive year (2nd, 3rd, 4th and 5th year). It is assumed that the farmer adopts the same cropping pattern for the remaining four years also. In case the cropping pattern adopted by the farmer is changed in the subsequent year, the limit may be reworked.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[1].children[2]",
+          "channel": null,
+          "heading": "Fixation of credit limit/Loan amount"
+        },
+        {
+          "text": "Term loans for investments towards land development, minor irrigation, purchase of farm equipment and allied agricultural activities. The banks may fix the quantum of credit for the term and working capital limit for agricultural and allied activities, etc., based on the unit cost of the asset/s proposed to be acquired by the farmer, the allied activities already being undertaken on the farm, the bank’s judgment on repayment capacity vis-a-vis total loan burden devolving on the farmer, including existing loan obligations.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[1].children[3]",
+          "channel": null,
+          "heading": "Fixation of credit limit/Loan amount"
+        },
+        {
+          "text": "The long-term loan limit is based on the proposed investments during the five-year period and the bank’s perception of the repaying capacity of the farmer",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[1].children[4]",
+          "channel": null,
+          "heading": "Fixation of credit limit/Loan amount"
+        },
+        {
+          "text": "Maximum Permissible Limit: The short-term loan limit arrived for the 5th year plus the estimated long-term loan requirement will be the Maximum Permissible Limit (MPL) and treated as the Kisan Credit Card Limit.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[1].children[5]",
+          "channel": null,
+          "heading": "Fixation of credit limit/Loan amount"
+        },
+        {
+          "text": "Fixation of Sub-limits for other than Marginal Farmers:",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[1].children[6]",
+          "channel": null,
+          "heading": "Fixation of Sub-limits for other than Marginal Farmers:"
+        },
+        {
+          "text": "Short-term loans and term loans are governed by different interest rates. Besides, at present, short-term crop loans are covered under Interest Subvention Scheme/ Prompt Repayment Incentive scheme. Further, repayment schedules and norms are different for short-term and term loans. Hence, in order to have operational and accounting convenience, the card limit is to be bifurcated into separate sub-limits for short-term cash credit limit cum savings account and term loans.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[2].children[0]",
+          "channel": null,
+          "heading": "Fixation of Sub-limits for other than Marginal Farmers:"
+        },
+        {
+          "text": "The drawing limit for short-term cash credit should be fixed based on the cropping pattern and the amounts for crop production, repairs and maintenance of farm assets and consumption may be allowed to be drawn at the convenience of the farmer. In case the revision of the scale of finance for any year by the district-level committee exceeds the notional hike of 10% contemplated while fixing the five-year limit, a revised drawable limit may be fixed and the farmer is advised about the same. In case such revisions require the card limit itself to be enhanced (4th or 5th year), the same may be done and the farmer be so advised. For term loans, instalments may be allowed to be withdrawn based on the nature of the investment and the repayment schedule drawn as per the economic life of the proposed investments. It is to be ensured that at any point in time, the total liability should be within the drawing limit of the concerned year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[2].children[1]",
+          "channel": null,
+          "heading": "Fixation of Sub-limits for other than Marginal Farmers:"
+        },
+        {
+          "text": "Wherever the card limit/liability so arrived warrants additional security, the banks may take suitable collateral as per their policy.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.schemeContent.benefits[2].children[2]",
+          "channel": null,
+          "heading": "Fixation of Sub-limits for other than Marginal Farmers:"
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Eligibility",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": "Eligibility"
+        },
+        {
+          "text": "Farmers - individual/joint borrowers who are owner cultivators;",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "channel": null,
+          "heading": "Eligibility"
+        },
+        {
+          "text": "Tenant farmers, oral lessees & share croppers;",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[1]",
+          "channel": null,
+          "heading": "Eligibility"
+        },
+        {
+          "text": "Self Help Groups (SHGs) or Joint Liability Groups (JLGs) of farmers including tenant farmers, share croppers etc",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[2]",
+          "channel": null,
+          "heading": "Eligibility"
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Visit the website of the bank you wish to apply for the kisan credit card scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "From the list of options, choose the Kisan Credit Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.applicationProcess[0].process[0].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "On clicking the option of ‘Apply’, the website will redirect you to the application page.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.applicationProcess[0].process[0].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Fill the form with the required details and click on ‘Submit’.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.applicationProcess[0].process[0].children[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "On doing so, an application reference number will be sent. If you are eligible, the bank will get back to you for the further process within 3-4 working days.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.applicationProcess[0].process[0].children[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Offline applications can be done by visiting the branch of the bank of your choice or by downloading the application form from the website of the bank as well.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.applicationProcess[1].process[0].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "The applicant can visit the branch and begin the application process with the help of the bank representative.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "en.applicationProcess[1].process[0].children[1]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Application Form.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Two Passport Size Photographs.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "ID proof such as Driving License / Aadhar Card / Voter Identity Card / Passport.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Address Proof such as Driving License, Aadhar Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of landholding duly certified by the revenue authorities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Cropping pattern (Crops grown) with acreage.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Security documents for loan limit above Rs.1.60 lakhs / Rs.3.00 lakhs, as applicable.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other document as per sanction.",
+          "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+          "source_path": "documents.en.documents_required[0].children[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Details-1",
+      "type": "other",
+      "url": "https://pib.gov.in/FactsheetDetails.aspx?Id=148600",
+      "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Details-2",
+      "type": "other",
+      "url": "https://sbi.co.in/web/agri-rural/agriculture-banking/crop-loan/kisan-credit-card",
+      "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[2]",
+      "title": "Notification",
+      "type": "other",
+      "url": "https://rbidocs.rbi.org.in/rdocs/notification/PDFs/04MCKCC030720171E79A08735884C429CF26F5414AB36D9.PDF",
+      "source_url": "https://www.myscheme.gov.in/schemes/kcc",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

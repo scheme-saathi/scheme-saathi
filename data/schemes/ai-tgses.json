@@ -1,0 +1,230 @@
+{
+  "scheme_id": "C36",
+  "slug": "ai-tgses",
+  "name": "AICTE-INAE Travel Grant Scheme For Engineering Students From AICTE Approved Engineering College/Institution",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "A Travel Grant Scheme by the All India Council for Technical Education (AICTE) and by the Indian National Academy of Engineering (INAE), for the students from AICTE approved Engineering College/institutions. The scheme aims at enhancing the quality of engineering education in the country and to inculcate a culture of research amongst the students. The scheme aims to provide partial travel assistance and registration fees to Bachelors's and Masters's Level engineering students for presenting a research paper at an international scientific event(conference/seminar/symposium/workshop/exhibition etc) to encourage engineering students to engage in research. Pre-final and final year students of B.E./B.Tech or Integrated M.Tech and first and second-year students of M.E./M. Tech from AICTE-approved Engineering Institutions is eligible under the scheme. The student must have scored a minimum 7 CGPA or 65% in order to be eligible to apply under this scheme. The student should have a letter of acceptance for presenting a research paper that has been accepted in a conference/seminar/symposium/workshop/exhibition abroad.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Financial Support",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The reimbursement of 100% Registration Fee, Visa Fee including travel insurance up to ₹5000.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.schemeContent.benefits[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The reimbursement of 50% of the actual Airfare or discounted /concessional air tickets along with local transport from the airport to the venue for presentation, in case not claimed from any other source.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.schemeContent.benefits[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Actual fare not exceeding AC II-Class train fare will be admissible for travel from the Technical Institution to the nearest airport and back in India).",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.schemeContent.benefits[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The maximum financial support per student for all the above reimbursements is limited to ₹1,00,000.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.schemeContent.benefits[1].children[3]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must EITHER be a Pre-final/final year student of B.E./B.Tech, OR Integrated M.Tech and first/second-year student of M.E./M. Tech, OR Students pursuing MS Research, M.Sc. in Engineering, dual degree B.Tech and M.Tech or any degree with a minimum of 4 years of engineering studies.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be pursuing the degree course from an AICTE-approved Engineering Institution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must have scored a minimum of 7 CGPA or 65% in the previous year's annual examination.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must possess a letter of acceptance for presenting a research paper accepted in a conference/seminar/symposium/workshop/exhibition abroad.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "NOTE: A student is eligible only once during the course of his/her study for finance al support under the subject scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Procedure to Apply",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "The application should be sent at least eight weeks prior to the date of presentation of the research paper through email at inaehq@inae.in and hard copy as well at the following address:",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Executive Director Indian National Academy of Engineering (INAE) Unit No 604-609",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "6th Floor, Tower A, SPAZE I-Tech Park, Sector-49, Sohna Road, Gurgaon - 122 018",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Phone: 0124-4239480 Fax: 0124-4239481",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Website: www.inae.in",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "en.applicationProcess[0].process[6]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Curriculum Vitae containing the Date of Birth and Age, Awards, Scholarships, Educational Qualification, Research Experience, and List of Publications.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Passport Size Photograph.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A copy of the Letter of Acceptance from the organizers of the event.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Abstract/Full text of paperas submitted for the event.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A brief on the Project Impact of the paper presented.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A brief on Expected Outcome from the paper presented.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A scanned copy of the Certificate by the student.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A scanned copy of the Endorsement by the Head of the Institution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+          "source_path": "documents.en.documents_required[0].children[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://www.aicte-india.org/sites/default/files/INAE-TG%20Scheme%20Guidelines.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

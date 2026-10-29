@@ -1,0 +1,229 @@
+{
+  "scheme_id": "M07",
+  "slug": "lgss",
+  "name": "LIDCOM Gattai Stall Scheme",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Being implemented particularly for the (Scheduled Caste) Charmakar Community, the \"Gattai Stall Scheme\" is a scheme by the Leather Industries Development Corporation (LIDCOM), Govt. of Maharashtra. This scheme is being implemented for the Roadsides Cobblers. The scheme provides a 100% subsidy for the erection of a Tin Stall of Size 4’ x 5’ x 6.5’ costing ₹16,367/- per stall and ₹500/- incidental charges. Only citizens who are permanent residents of the state of Maharashtra are eligible to apply for this scheme. This scheme is completely funded by the Govt. of Maharashtra. The main objective of LIDCOM is to implement various schemes to uplift the lifestyle of Charmakars (Dhor, Chambhar, Holar, Mochi, etc.) who are economically weak and below the poverty line and with an intention to develop them educationally, economically, and socially so as to give them a respectable place in society.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme provides a 100% subsidy for the erection of a Tin Stall of Size 4’ x 5’ x 6.5’ costing ₹16,367/- per stall and ₹500/- incidental charges.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant should be a citizen of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a Roadside Cobbler identified by the Gram Panchayat.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a permanent resident of Maharashtra State.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be in the 18 to 50 years age group.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be from Charmakar Community only (Dhor, Chambhar, Holar, Mochi, etc.).",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The annual income of the family of the applicant should be less than or equal to ₹1,00,000/-.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should have knowledge of the business for which he has applied for the loan.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: Take the format of the application form from the District Office of LIDCOM.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 2: Fill in all the mandatory fields, paste the passport-sized photograph (signed across), and attach all the (self-attested) mandatory documents.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Submit the duly filled and signed application form along with the documents to the District Office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Acquire the receipt/acknowledgment of the successful submission of the application form from the District Office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Aadhaar Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of Age (Birth Certificate, Marksheet of Class 10th/12th, etc)",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2-Passport Sized Photograph (Signed Across)",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Residential Certificate / Domicile Certificate of the State of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of being a Roadside Cobbler (issued by the Gram Panchayat),",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Income Certificate issued by an Authorised Govt.Officer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Caste Certificate issued by an Authorised Govt.Officer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "documents.en.documents_required[0].children[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other document required by the District Office of LIDCOM.",
+          "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+          "source_path": "documents.en.documents_required[0].children[8]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[2]",
+      "title": "District Office",
+      "type": "other",
+      "url": "https://lidcom.co.in/contact.php",
+      "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://www.lidcom.co.in/gattai-stall.php",
+      "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Contact Us",
+      "type": "other",
+      "url": "https://lidcom.co.in/contact.php",
+      "source_url": "https://www.myscheme.gov.in/schemes/lgss",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

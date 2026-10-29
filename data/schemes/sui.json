@@ -5,7 +5,7 @@
   "government_level": "Central",
   "geography": "India",
   "source_url": "https://www.myscheme.gov.in/schemes/sui",
-  "collected_on": "2026-10-24",
+  "collected_on": "2026-10-28",
   "review_status": "approved",
   "availability_status": "closed",
   "sample_only": false,
@@ -294,43 +294,53 @@
   },
   "links": [
     {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[1]",
       "title": "https://www.rbi.org.in/Scripts/query.aspx",
       "type": "other",
       "url": "https://www.rbi.org.in/Scripts/query.aspx",
       "source_url": "https://www.myscheme.gov.in/schemes/sui",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[3]",
       "title": "https://www.standupmitra.in/LDMS#NoBack",
-      "type": "application_portal",
+      "type": "other",
       "url": "https://www.standupmitra.in/LDMS#NoBack",
       "source_url": "https://www.myscheme.gov.in/schemes/sui",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.applicationProcess[0].process[1].children[1]",
       "title": "www.standupmitra.in",
-      "type": "application_portal",
+      "type": "other",
       "url": "https://www.standupmitra.in/",
       "source_url": "https://www.myscheme.gov.in/schemes/sui",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.applicationProcess[0].process[3].children[0].children[1]",
       "title": "https://www.standupmitra.in/Login/Register",
-      "type": "application_portal",
+      "type": "other",
       "url": "https://www.standupmitra.in/Login/Register",
       "source_url": "https://www.myscheme.gov.in/schemes/sui",
       "format": "webpage",
+      "local_file": null,
       "verification_status": "pending"
     },
     {
+      "source_path": ".scheme.schemeContent.references[0]",
       "title": "Guidelines",
       "type": "guidelines",
       "url": "https://www.udyami.org.in/storage/schemes/file/t4CQkv4D2TsdhI3MK8KqFSnYPw6RTBBsmh7p449D.pdf",
       "source_url": "https://www.myscheme.gov.in/schemes/sui",
       "format": "pdf",
+      "local_file": null,
       "verification_status": "pending"
     }
   ]

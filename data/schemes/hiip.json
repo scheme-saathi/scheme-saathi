@@ -1,0 +1,228 @@
+{
+  "scheme_id": "M06",
+  "slug": "hiip",
+  "name": "Homes For Intellectually Impaired Persons",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The \"Homes for Intellectually Impaired Persons\" is a scheme by the Department of Social Justice & Special Assistance, Govt. of Maharashtra. In this scheme, Mentally Deficient Children who are in need of care and protection are admitted into shelter homes through the Child Welfare Committee of the district formed under the Juvenile Justice (Care & Protection of Children) Act 2000 and Amendment Act 2006. The numbers of MDC homes are 19 out of which 14 are granted and 5 are non-granted.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The Mentally Deficient Children who are in need of care and protection are admitted into shelter homes.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "There are free facilities of food, shelter, and care & protection are provided in these homes.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.schemeContent.benefits[0].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant should be a citizen of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be an orphan.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a permanent resident of Maharashtra State.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a Mentally Deficient Child (MDC) who is in need of care and protection.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The percentage of the disability should be 40% or above.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: Visit the Child Welfare Committee, and request a hard copy of the format of the application form for the scheme from the concerned authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 2: In the application form, fill in all the mandatory fields, paste the passport-sized photograph (signed across), and attach all the (self-attested) mandatory documents.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Submit the duly filled and signed application form along with the documents at the office of the concerned Child Welfare Committee.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Acquire the receipt/acknowledgment of the successful submission of the application form from the office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Aadhaar Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2-Passport Sized Photograph (Signed Across).",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of Age (Birth Certificate, etc).",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Residential Certificate / Domicile Certificate of the State of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Disability Certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other document required by the Child Welfare Committee.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[2]",
+      "title": "Child Welfare Committee",
+      "type": "other",
+      "url": "https://jjis.maharashtra.gov.in/Site/ViewCWCList",
+      "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[4]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://sjsa.maharashtra.gov.in/en/contacts",
+      "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[2].children[2]",
+      "title": "Child Welfare Committee",
+      "type": "other",
+      "url": "https://jjis.maharashtra.gov.in/Site/ViewCWCList",
+      "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[2].children[4]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://sjsa.maharashtra.gov.in/en/contacts",
+      "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://sjsa.maharashtra.gov.in/en/scheme-category/disability-welfare",
+      "source_url": "https://www.myscheme.gov.in/schemes/hiip",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}
