@@ -1,0 +1,240 @@
+{
+  "scheme_id": "M08",
+  "slug": "mkym",
+  "name": "Mahila Kisan Yojana (Maharashtra)",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Mahila Kisan Yojana\" is implemented by the Department of Social Justice & Special Assistance, Government of Maharashtra, in collaboration with the National Scheduled Castes Finance and Development Corporation (NSFDC). The scheme aims to uplift the lifestyle of economically disadvantaged Charmakar communities (such as Dhor, Chambhar, Holar, and Mochi). The scheme promotes educational, economic, and social development to ensure a respectable place in society. Additionally, it supports the production and sale of various types of footwear and leather articles to government departments and the open market.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.schemeContent.detailedDescription[0].children[0].children[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Total Loan Amount: The scheme provides financial assistance of ₹50,000 for eligible female beneficiaries.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Subsidy Provided: A subsidy of ₹10,000 is granted, reducing the effective loan burden on the beneficiary",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Loan Component: The remaining ₹40,000 is provided as a loan with an affordable interest rate of 5% per annum.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant should be a permanent resident of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a female.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should belong to the Charmakar Community.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant's age should be between 18 to 50 years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must have knowledge of the business for which they are applying for a loan.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must have her own name, or joint name with her husband, or her husband’s name (with affidavit) on the 7/12 land extract for agricultural project loans.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For the 50% Subsidy Scheme and Margin Money, her annual income must be below the poverty line.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For the NSFDC Scheme, the income limit is ₹98,000 for rural areas and ₹1,20,000 for urban areas.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: The interested applicant should visit (during office hours) the District Office of  Leather Industries Development Corporation of Maharashtra (LIDCOM), and request the hard copy of the prescribed format of the application form from the concerned authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 2: In the application form, fill in all the mandatory fields, paste the passport-sized photograph (signed across, if required), and attach copies of all the mandatory documents (self-attest, if required).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Submit the duly filled and signed application form along with the documents, within the prescribed period (if any), to the District Office of  Leather Industries Development Corporation of Maharashtra (LIDCOM).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Request a receipt or acknowledgement from the concerned authority to whom the application has been submitted. Ensure that the receipt contains essential details such as the date and time of submission, and a unique identification number (if applicable).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "NOTE: Ensure that the application is submitted within the prescribed period, if any.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Completed application form from the LIDCOM District Office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Recent passport-size photograph.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Valid Income Certificate (issued by an authorized government officer).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Caste Certificate (Charmakar Community).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of Residence (Maharashtra).",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "7/12 Land Extract:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Applicant’s name, joint name with husband, or husband’s name (with affidavit) for agricultural loans.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Knowledge or experience proof relevant to the proposed business/project.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+          "source_path": "documents.en.documents_required[0].children[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[2]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://sjsa.maharashtra.gov.in/en/contacts",
+      "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://sjsa.maharashtra.gov.in/en/scheme-category/employment",
+      "source_url": "https://www.myscheme.gov.in/schemes/mkym",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

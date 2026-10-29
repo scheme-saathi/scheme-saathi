@@ -1,0 +1,323 @@
+{
+  "scheme_id": "C17",
+  "slug": "nikshay",
+  "name": "Nikshay Poshan Yojana",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The \"Nikshay Poshan Yojana\", launched in 2018 by the Ministry of Health and Family Welfare, provides financial assistance of ₹1,000/- per month to each notified tuberculosis (TB) patient for nutritional support. All TB patients notified on or after 1st April 2018 and registered on the NIKSHAY portal are eligible. The scheme aims to improve treatment outcomes by addressing malnutrition and supporting patients throughout their treatment.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Financial Incentive: An amount of ₹1,000/- per month for each notified TB patient.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "All patients with tuberculosis (TB) who are notified to the government on or after April 1, 2018, including those who are already being treated for TB, are eligible for financial incentives.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To be eligible for the incentives, patients must be registered or notified on the NIKSHAY portal.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Submission of Bank Account Details",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Patient need to submit his/her Aadhaar-linked savings bank account to TB health provider.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[1].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Supporting documents like a Aadhaar number, passbook, canceled cheque, or bank statement must be collected.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[1].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "If Patient don't have a bank account:",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[1].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Open a new account (e.g., via Jan Dhan Yojana/India Post Payments Bank).",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[1].children[3].children[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Alternatively, Patient may nominate a family member’s account with a written consent (standard format available in the manual).",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[1].children[3].children[0].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Registration in Nikshay",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[2].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Patient bank details will be entered by the TB health staff into the Nikshay system.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[3].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Ensure Patient account is unique—no two beneficiaries can use the same bank account.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[3].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Nikshay will automatically send the bank details to PFMS for validation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[3].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Bank Account Validation via PFMS",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[4].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Once validated:",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[5].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "A PFMS Beneficiary ID is assigned.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[5].children[1].children[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Patient status in Nikshay changes to “Validated”.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[5].children[1].children[0].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "If rejected:",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[5].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Patient will receive an SMS asking his/her to contact the health staff to correct the bank details.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "en.applicationProcess[0].process[0].children[5].children[3].children[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Bank Account Proof",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": "Bank Account Proof"
+        },
+        {
+          "text": "Photocopy of bank passbook (showing account holder name, account number, and IFSC)",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[1].children[0].children[0]",
+          "channel": null,
+          "heading": "Bank Account Proof"
+        },
+        {
+          "text": "Cancelled cheque",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[1].children[0].children[1]",
+          "channel": null,
+          "heading": "Bank Account Proof"
+        },
+        {
+          "text": "Recent bank statement.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[1].children[0].children[2]",
+          "channel": null,
+          "heading": "Bank Account Proof"
+        },
+        {
+          "text": "Note: The account must be a savings bank account, active, and preferably Aadhaar-linked.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[1].children[0].children[3]",
+          "channel": null,
+          "heading": "Bank Account Proof"
+        },
+        {
+          "text": "Aadhaar Document (Optional but Recommended)",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[2].children[0]",
+          "channel": null,
+          "heading": "Aadhaar Document (Optional but Recommended)"
+        },
+        {
+          "text": "Copy of Aadhaar Card (if available)",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[3].children[0].children[0]",
+          "channel": null,
+          "heading": "Aadhaar Document (Optional but Recommended)"
+        },
+        {
+          "text": "If Aadhaar is not available, you should:",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[3].children[0].children[1]",
+          "channel": null,
+          "heading": "Aadhaar Document (Optional but Recommended)"
+        },
+        {
+          "text": "Apply for Aadhaar and submit a copy of the acknowledgement receipt",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[3].children[0].children[2]",
+          "channel": null,
+          "heading": "Aadhaar Document (Optional but Recommended)"
+        },
+        {
+          "text": "Consent/Declaration Form (Only in specific cases)",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[4].children[0]",
+          "channel": null,
+          "heading": "Consent/Declaration Form (Only in specific cases)"
+        },
+        {
+          "text": "If you wish to receive benefits in a family member’s bank account:",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[5].children[0].children[0]",
+          "channel": null,
+          "heading": "Consent/Declaration Form (Only in specific cases)"
+        },
+        {
+          "text": "A written consent/authorization form is required (format provided in the annexure of the manual).",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[5].children[0].children[1].children[0].children[0]",
+          "channel": null,
+          "heading": "Consent/Declaration Form (Only in specific cases)"
+        },
+        {
+          "text": "If you refuse to receive DBT benefits:",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[5].children[0].children[2]",
+          "channel": null,
+          "heading": "Consent/Declaration Form (Only in specific cases)"
+        },
+        {
+          "text": "A signed declaration to forego benefits must be submitted.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+          "source_path": "documents.en.documents_required[5].children[0].children[3].children[0].children[0]",
+          "channel": null,
+          "heading": "Consent/Declaration Form (Only in specific cases)"
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://tbcindia.mohfw.gov.in/wp-content/uploads/2023/05/23294204DBTManualForNTEP.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Official Website",
+      "type": "other",
+      "url": "https://www.nikshay.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[2]",
+      "title": "Manual",
+      "type": "other",
+      "url": "https://communitysupport.nikshay.in/Guidance_Booklet_16_09_2022.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[3]",
+      "title": "State TB Officer Directory",
+      "type": "other",
+      "url": "https://reports.nikshay.in/Reports/StosDirectory",
+      "source_url": "https://www.myscheme.gov.in/schemes/nikshay",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

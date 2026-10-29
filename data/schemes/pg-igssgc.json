@@ -1,0 +1,353 @@
+{
+  "scheme_id": "C15",
+  "slug": "pg-igssgc",
+  "name": "Post Graduate Indira Gandhi Scholarship For Single Girl Child",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "A scholarship scheme by the University Grants Commission for Girl students who are admitted in the first year of PG courses in any designated university or a postgraduate college, and happen to be the only girl child in the family. The amount of fellowship is ₹ 36,200/- p.a. for the full duration of a PG course. The scheme has been introduced with an aim to compensate direct costs of girl education at all levels, especially for such girls who happen to be the only girl child in their families.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The objectives of the proposed scheme are:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.detailedDescription[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "a) To support the postgraduate education of single girl children in postgraduate courses only.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.detailedDescription[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "b) To recognize the value of observance of the small family norms.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.detailedDescription[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The candidates are required to apply online on National Scholarship Portal after initiation of the application process and notice to be published on the UGC website. 3,000 fresh scholarships will be awarded every year and will be paid on DBT mode on annual basis.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.detailedDescription[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Nature of Assistance Available Under the Scheme",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Amount of fellowship: ₹36,200/- per annum for a period of two years only i.e. full duration of a PG course.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3,000 fresh scholarships will be awarded every year and will be paid on DBT mode on annual basis.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Note",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.benefits[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "No other additional grant will be payable in lieu of hostel charges and medical charges, etc.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "1. The applicant must be a citizen of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2. The applicant must be the only girl child in the family.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3. Girl students without having any brothers or the girl student who are twin daughters/ fraternal daughters may also apply",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4. The age of the applicant should not be more than 30 years at the time of admission in the first year of PG",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "course.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "5. The applicant must have taken admission to regular, full-time first-year Master's Degree courses in any designated university or a post-graduate college.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "6. The candidate should be pursuing a non-professional course and be taking regular classes from a recognized institution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "7. The applicant must not be [ursuing education through Distance education mode.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "1. Admission to PG Course in Distance education mode is not covered under the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.exclusions[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2. Those Deemed Universities which do not receive funds from the Central/ State Government are not eligible institutions under the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.exclusions[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3. In a family if one son and one daughter are available then the girl child will not be considered for scholarship under the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.schemeContent.exclusions[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Procedure for Applying",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step-1: The candidates fulfilling the eligibility conditions are required to apply online on the National Scholarship Portal after initiation of the application process and notice to be published on the UGC website.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step-2: The host institution where the candidate is studying is required to verify the online",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "application.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step-3: It is expected from the institutions where students have taken admitted in the first year of PG course, that no tuition fees will be charged by the institute to girl students to pursue PG degree courses in Universities/Colleges/Institutions",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Notes",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.applicationProcess[0].process[6].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "1. Applications will be invited once a year on the National e-Scholarship Portal of the Government of India. 2. Short notifications will also be uploaded on the UGC website.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.applicationProcess[0].process[7]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "3. Incomplete applications will be summarily rejected. Only verified online applications will be considered for the award of scholarship.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "4. Affidavit regarding Single girl child status may be uploaded as per format given in Annexure-II.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.applicationProcess[0].process[9]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "5. Joining report as per Annexure-I has to be uploaded.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "To be submitted by the Student",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "1. Aadhaar Card",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "documents.en.documents_required[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2. Proof of admission into a recognized Master’s degree course in an institute located in India and recognized by the UGC.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "documents.en.documents_required[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3. Joining report (as per format given in Annexure-I)",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "documents.en.documents_required[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4. Affidavit regarding Single girl child status (as per format given in Annexure-II)",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "documents.en.documents_required[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "5. Copy of the Bank Passbook",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "documents.en.documents_required[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "6. Birth Certificate or Class 10th Marksheet",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "documents.en.documents_required[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To be submitted by the Institution",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "documents.en.documents_required[8].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "1. A progress Report after the completion of the first year along with the percentage of marks obtained by the candidates needs to be submitted by the institution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "documents.en.documents_required[9]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2. Funds Utilization Certificate also needs to be submitted by the Institution Authorities after completion of the First Year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+          "source_path": "documents.en.documents_required[10]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://scholarships.gov.in/public/schemeGuidelines/Guidelines_SGC1819.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "FAQs",
+      "type": "other",
+      "url": "https://scholarships.gov.in/public/FAQ/FAQ_SGC1819.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

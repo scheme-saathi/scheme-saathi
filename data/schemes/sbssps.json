@@ -1,0 +1,483 @@
+{
+  "scheme_id": "M02",
+  "slug": "sbssps",
+  "name": "Shravanbal Seva State Pension Scheme",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The \"Shravanbal Seva State Pension Scheme\" is a Pension Scheme by the Department of Social Justice & Special Assistance, Govt. of Maharashtra. In this scheme, a monthly pension of ₹ 600/- is provided to destitute persons in the state of Maharashtra. Only citizens who are permanent residents of the state of Maharashtra are eligible to apply for this scheme. This scheme is 100% funded by the Govt. of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "₹ 600/- per month is given to each beneficiary.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Group (A): The destitute men and women who are 65 years or above in age, and whose family is listed as \"Below Poverty Line\", are provided a monthly pension of ₹ 600/-. In this pension, ₹ 200/- per month is provided under Indira Gandhi Old Age Pension Scheme (Central Govt.), and ₹ 400/- per month under Shravan Bal State Pension Scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Group (B): The destitute men and women who are 65 years or above in age, whose family is not listed as \"Below Poverty Line\", and whose annual family income is less than or equal to ₹ 21,000 are provided a monthly pension of ₹ 600/- entirely by the Shravan Bal State Pension Scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.schemeContent.benefits[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant should be a citizen of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a domicile / permanent resident of the state of Maharashtra for at least 15 years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be destitute.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be 65 years or above in age.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The name of the applicant should be in the list of Below Poverty Line (BPL) families OR the annual income of the family should be less than or equal to ₹ 21,000/-.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Registration:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[0].children[1].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 1: Visit the Official Portal of Aaple Sarkar (Maha DBT). On the right pane (green), click \"New User? Register Here\". You will be directed to the Registration Page.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 2: Verify your Email ID and Mobile Number using OTP and then create a Unique Username and Password. (You will also find the link to the Registration Manual on the top right of the page.)",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Applicant Detail\" section, fill in the following mandatory fields: Salutation, Full Name(English), Full Name(Marathi), Father's Salutation, Father's Name (English), Father's Name(Marathi), Date of Birth, Age, Gender, Occupation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[6]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Applicant's Address\" section, fill in the following mandatory fields: Address (English), Address (Marathi), Street (English), Street (Marathi), Section (English), Section (Marathi), Building (English), Building (Marathi), Landmark (English), Landmark (Marathi), District, Taluka, Village, Pincode",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Mobile No. & Username Verification\" section, fill in the following mandatory fields: 10-digit Mobile Number (to be verified via OTP), PAN No, User Name, Email ID (to be verified via OTP), Password, and Confirm Password.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Upload your Photograph\" section, upload your passport-sized photograph following the instructions given below:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[12]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "1. The file size should fall between 5 KB to 20 KB.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[13]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "2. The format should be JPEG.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[14]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "3. The width should be 160 pixels.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[15]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "4. The height should fall between 200 to 212 pixels.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[16]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Proof Of Identity\" section, upload ANY ONE of the following documents: PAN Card, Voter ID Card (POI), Passport (POI), Aadhaar Card (POI), Driving License (POI), Government / Semi-Government ID, Proof MNREGA Job Card, RSBY Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[18]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "The format should be JPEG/ PDF, and the file size should be between 75 KB to 256 KB.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[19]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Proof Of Address\" section, upload ANY ONE of the following documents: Ration Card Passport (POA), Aadhaar Card (POA), Driving License (POA), Voter ID Card (POA), Extracts of 7/12 and 8 A, Property Tax Receipt, Property Agreement Copy, Water Bill, Electricity Bill, Telephone Bill, Rent Receipt.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[21]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 3: At the bottom of the Registration Page, read the following declaration carefully:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[23]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "\"I declare that the above-mentioned information submitted by me is true and correct to my knowledge and belief. I hereby agree to be liable for legal consequences for any information found incorrect or false under section 200 of the Indian penal code 1960.\"",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[24]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Select the \"I accept\" checkbox, and click \"Register\". Your Login Credentials will be shared over your registered Email ID and Mobile Number.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[26]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Application:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[28].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 1: Visit the Official Portal of Aaple Sarkar (Maha DBT). On the right pane (green), click \"Already Registered? Login Here\". Provide your Username and Password. Fill in the Captcha Code, Select your District from the dropdown menu, and click \"Login\".",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[30]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 2: On the next page, in the left pane, click \"All Schemes\". From the dropdown menu, select the Department Name, and the name of the scheme that you seek to apply for. Click \"Apply\" against the concerned scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[32]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Fill in all the mandatory fields and upload the mandatory documents, and click \"Apply\". A popup message acknowledging the successful submission of the application will be displayed, along with the Application ID:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[34]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "\"Dear [Username], you have successfully applied for [Scheme Name]. Your Application ID is [Application ID here].\"",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[35]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "The Application ID will also be shared over your registered Email ID and Mobile Number. Save this Application ID for future reference and for checking the application status.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[37]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 4: You can also view the status of your applications (Under Scrutiny / Approved / Rejected / Fund Disbursed) using the \"My Applied Scheme History\" in the left pane.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[0].process[39]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 1: Visit the Talathi Office, and request a hard copy of the format of the application form for the scheme from the concerned authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[1].process[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 2: In the application form, fill in all the mandatory fields, paste the passport-sized photograph (signed across), and attach all the (self-attested) mandatory documents.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[1].process[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Submit the duly filled and signed application form along with the documents to the Talathi Office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[1].process[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Acquire the receipt/acknowledgment of the successful submission of the application form.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "en.applicationProcess[1].process[3]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Aadhaar Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2-Passport Sized Photograph (Signed Across).",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of Age.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Income Certificate / BPL Card of the Family (if applicable)",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Residential Certificate / Domicile Certificate of the State of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other document required by the District Social Welfare Office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[1]",
+      "title": "Registration:",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/pdf/UM_AS_Reg.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[2].children[2]",
+      "title": "Official Portal",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[2].children[4]",
+      "title": "Registration Page",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/en/Registration/Register",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[4].children[2]",
+      "title": "Registration Manual",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/pdf/UM_AS_Reg.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[12].children[2]",
+      "title": "Upload your Photograph",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/pdf/Photoupload.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[30].children[2]",
+      "title": "Official Portal",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[1].process[0].children[2]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://cdn.s3waas.gov.in/s317e62166fc8586dfa4d1bc0e1742c08b/uploads/2018/03/2018031988.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://sjsa.maharashtra.gov.in/mr/schemes-page?scheme_nature=37",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Guidelines (Marathi)",
+      "type": "guidelines",
+      "url": "https://cdn.s3waas.gov.in/s317e62166fc8586dfa4d1bc0e1742c08b/uploads/2018/03/2018031988.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[2]",
+      "title": "Contact Us",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/en/CommonForm/ContactUs",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[3]",
+      "title": "Photo Upload Manual",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/pdf/Photoupload.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[4]",
+      "title": "Seva Kendras",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/en/CommonForm/SewaKendraDetails",
+      "source_url": "https://www.myscheme.gov.in/schemes/sbssps",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

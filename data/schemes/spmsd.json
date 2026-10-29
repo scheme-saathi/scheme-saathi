@@ -1,0 +1,408 @@
+{
+  "scheme_id": "M05",
+  "slug": "spmsd",
+  "name": "State Post-metric Scholarship For Disabled",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The \"State Post-metric Scholarship for Disabled\" is a scheme by the Department of Social Justice & Special Assistance, Govt. of Maharashtra. The objective of this scheme is to encourage students with disability (SwDs) to pursue higher education, i.e. H.S.C., Degree, Professional, Technical, Medical, Engineering, etc. Only citizens who are permanent residents of the state of Maharashtra are eligible to apply for this scheme. This scheme is 100% funded by the Govt. of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "A. Maintenance Allowance",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Group A: Degree Course in Medical, Engineering, Agricultural, Veterinary, and Postgraduate Degree Courses.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rate of Scholarship for Hosteller (in ₹ per month): 1200/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rate of Scholarship for Day Scholar (in ₹ per month): 550/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Group B: Diploma course in Medical, Engineering, Agricultural, and Veterinary.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rate of Scholarship for Hosteller (in ₹ per month): 820/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rate of Scholarship for Day Scholar (in ₹ per month): 530/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[8]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Group C: Post Graduate Course in Arts, Science, Commerce, and Diploma in Professional Education.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[10]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rate of Scholarship for Hosteller (in ₹ per month): 820/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[11]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rate of Scholarship for Day Scholar (in ₹ per month): 530/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[12]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Group D: From 2nd-year degree course",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[14]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rate of Scholarship for Hosteller (in ₹ per month): 570/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[15]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rate of Scholarship for Day Scholar (in ₹ per month): 300/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[16]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Group E: 11th, 10th and 1st year of Degree Course",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[18]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rate of Scholarship for Hosteller (in ₹ per month): 380/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[19]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rate of Scholarship for Day Scholar (in ₹ per month): 230/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[20]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "B. Reader Allowance for Blind and Low-Vision Students.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[22].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Group A, B, C (in ₹ per month): 100/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[24]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Group D (in ₹ per month): 75/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[26]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Group E (in ₹ per month): 50/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[28]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "C. Tuition Fees (in ₹ per month): ",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[30].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "As approved by the competent authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[31]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "D. Study Tour Expenditure (in ₹ per annum): ",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[33].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "500/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[34]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "E. Project Typing Expenditure (in ₹ per annum): ",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[36].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "600/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.schemeContent.benefits[37]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant should be a citizen of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a domicile / permanent resident of the state of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a student admitted/enrolled in a school recognized by the Govt. of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a Person with Disability (Visually Handicapped, Low Vision, Hearing Impaired, Orthopedically Handicapped, etc).",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The percentage of the disability should be 40% or above.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should have passed class 10th.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should not have failed in the last qualifying examination.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be pursuing a post-metric qualification, i.e. Higher Secondary School (Class 11th, Class 12th), or a Technical/Professional Degree in Medical, Engineering, etc.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: Request a hard copy of the format of the application form for the scheme from the concerned authority at your school/college.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 2: In the application form, fill in all the mandatory fields, paste the passport-sized photograph (signed across), and attach all the (self-attested) mandatory documents.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Submit the duly filled and signed application form along with the documents to the concerned authority at your school/college.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Acquire the receipt/acknowledgment of the successful submission of the application form from the concerned authority at your school/college.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Aadhaar Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2-Passport Sized Photograph (Signed Across).",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Residential Certificate / Domicile Certificate of the State of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Disability Certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of the Latest Educational Qualification (Passing Certificate or Marksheet)",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of Passing Class 10th.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Bonafide Certificate from the School/College",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "documents.en.documents_required[0].children[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of Pursuance of a Post-Matric Qualification (Fee Receipt, etc)",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "documents.en.documents_required[0].children[8]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other document required by the School/College or the District Social Welfare Office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+          "source_path": "documents.en.documents_required[0].children[9]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://sjsa.maharashtra.gov.in/en/scheme-category/disability-welfare?&Submit=Submit&page=1",
+      "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Contact Us",
+      "type": "other",
+      "url": "https://sjsa.maharashtra.gov.in/en/contacts",
+      "source_url": "https://www.myscheme.gov.in/schemes/spmsd",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

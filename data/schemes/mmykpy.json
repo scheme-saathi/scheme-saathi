@@ -1,0 +1,285 @@
+{
+  "scheme_id": "M21",
+  "slug": "mmykpy",
+  "name": "Mukhyamantri Yuva Karya Prashikshan Yojana",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The Mukhyamantri Yuva Karya Prashikshan Yojana scheme was launched by the Department of Skill, Employment, Entrepreneurship and Innovation to enhance candidates' employability through practical training with entrepreneurs. The scheme budget of ₹5,500 crore, and the training programs for approximately 10 lakh candidates per year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Training Duration: Job Training will be for 6 months.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.schemeContent.detailedDescription[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Stipend:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": "Stipend:"
+        },
+        {
+          "text": "12th Pass - 6,000/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": "Stipend:"
+        },
+        {
+          "text": "ITI / Diploma - 8,000/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": "Stipend:"
+        },
+        {
+          "text": "Degree / Post Graduation - 10,000/-",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": "Stipend:"
+        },
+        {
+          "text": "Note: Stipends are transferred directly to trainees' bank accounts linked with Aadhaar.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": "Stipend:"
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The candidate should be a resident of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The candidate's age should be between 18 to 35.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The candidate should have minimum education criteria of 12th Pass/ITI/Diploma/Graduation/Post Graduation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The candidate should be registered with Aadhaar.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The candidate's bank accounts should be linked with Aadhaar.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Registration Process for Candidate:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Online",
+          "heading": "Registration Process for Candidate:"
+        },
+        {
+          "text": "Go to the official CMYKPY website for job seeker registration and click on “Intern Login”.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[1].children[0]",
+          "channel": "Online",
+          "heading": "Registration Process for Candidate:"
+        },
+        {
+          "text": "Use your Aadhaar number as the username for your account.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[1].children[1]",
+          "channel": "Online",
+          "heading": "Registration Process for Candidate:"
+        },
+        {
+          "text": "Fill in your full name, date of birth, gender, email, and mobile number.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[1].children[2]",
+          "channel": "Online",
+          "heading": "Registration Process for Candidate:"
+        },
+        {
+          "text": "Create a secure password and confirm it.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[1].children[3]",
+          "channel": "Online",
+          "heading": "Registration Process for Candidate:"
+        },
+        {
+          "text": "After completing all required fields, submit the registration form to finish the process.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[1].children[4]",
+          "channel": "Online",
+          "heading": "Registration Process for Candidate:"
+        },
+        {
+          "text": "Log In Process:",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": "Log In Process:"
+        },
+        {
+          "text": "Fill Your Aadhar Number as a User Name and Password.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[4].children[0]",
+          "channel": "Online",
+          "heading": "Log In Process:"
+        },
+        {
+          "text": "Complete your profile details, and fill in the personal, address, qualification, and bank details.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[4].children[1]",
+          "channel": "Online",
+          "heading": "Log In Process:"
+        },
+        {
+          "text": "Upload the photo, qualification document, birth certificate, etc.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[4].children[2]",
+          "channel": "Online",
+          "heading": "Log In Process:"
+        },
+        {
+          "text": "Click on “Submit” and apply for the job.",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "en.applicationProcess[0].process[4].children[3]",
+          "channel": "Online",
+          "heading": "Log In Process:"
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Passport-size Photograph",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Aadhaar Card",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Bank Passbook or Cancelled Cheque",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Living Certificate",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Birth Certificate",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Education Certificate",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Domicile Certificate or SSC Passing Certificate",
+          "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[1].children[0].children[1]",
+      "title": "CMYKPY website",
+      "type": "other",
+      "url": "https://cmykpy.mahaswayam.gov.in/Index.aspx",
+      "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://cmykpy.mahaswayam.gov.in/DocMasters/PublicityDocuments/CMYKPY_Note.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Official Website",
+      "type": "other",
+      "url": "https://cmykpy.mahaswayam.gov.in/Index.aspx",
+      "source_url": "https://www.myscheme.gov.in/schemes/mmykpy",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

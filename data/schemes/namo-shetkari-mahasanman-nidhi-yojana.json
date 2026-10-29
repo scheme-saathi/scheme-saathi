@@ -1,0 +1,314 @@
+{
+  "scheme_id": "M13",
+  "slug": "namo-shetkari-mahasanman-nidhi-yojana",
+  "name": "Namo Shetkari Mahasanman Nidhi Yojana",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "•\tUnder this scheme an amount of Rs. 6000/- will be transferred annually in three equal instalments",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "•\tGovernment Resolution No Kisani-2023/CR 42/11 A dated 15/06/2023 has been issued regarding the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.detailedDescription[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "•\tFarmers which are eligible for PM Kisan Yojana will be eligible for the benefit of \"Namo Shetkari Mahasanman Nidhi Yojana\"",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.detailedDescription[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "1) Eligible Farmers families as per PM KISAN will be Benefited Rs. 2000/- per Instalment.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2) The beneficiaries benefited in PM KISAN will get the benefit of NSMNY.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3) The NSMNY beneficiaries will be benefited from the list provided by GoI.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4) First instalment of NSMNY is given as per the list of 14th instalment of PMKISAN.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "5) Eligible farmers family will get Rs. 2000/- from PMKISAN & NSMNY at each instalment.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.benefits[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "6) Eligible farmers will get Rs. 12,000/- in a year from both PM KISAN & NSMNY schems.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "7) Farmers will be benefited through DBT.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.benefits[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "8) The benefit of the NSMNY will be credited only in Aadhar linked bank accounts.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.benefits[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "9) The benefit credited to the ineligibles in NSMNY will be recovered as per the SoP of PMKISAN",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.benefits[8]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Cultivable land holding farmers families (comprising of husband, wife and minor children) having land holding on dated 01.02.2019 are eligible for both PM KISAN & NSMNY scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The following categories of beneficiaries of higher economic status shall not be eligible for benefit under the scheme:",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.exclusions[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "(a) All Institutional Land holders; and",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.exclusions[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "(b) Farmer families in which one or more of its members belong to following categories:",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.exclusions[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Former and present holders of constitutional post.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.exclusions[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Former and present Ministers/ State Ministers and former/present Members of Lok Sabha/ Rajya Sabha/ State Legislative Assemblies/ State Legislative Councils, former and present Mayors of Municipal Corporations, former and present Chairpersons of District Panchayats.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.exclusions[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "All serving or retired officers and employees of Central/ State Government Ministries /Offices/Departments and its field units Central or State PSEs and Attached offices /Autonomous Institutions under Government as well as regular employees of the Local Bodies (Excluding Multi-Tasking Staff / Class IV/Group D employees).",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.exclusions[3].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "All superannuated/retired pensioners whose monthly pension is Rs.10,000/-or more (Excluding Multi Tasking Staff / Class IV/Group D employees.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.exclusions[3].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "All Persons who paid Income Tax in last assessment year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.exclusions[3].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Professionals like Doctors, Engineers, Lawyers, Chartered Accountants, and Architects registered with Professional bodies and carrying out profession by undertaking practices.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.exclusions[3].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Non-Resident Indians (NRIs)",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.schemeContent.exclusions[3].children[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 01: Self Registration on PMKISAN Portal",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 02: Verification of eligibility of registered beneficiary.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 03: Approval at Taluka Nodal Officer level.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 04: Approval at District Nodal Officer level.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 05: Final Approval at State Nodal Officer level.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Note : - No need of approval at district and state level in case of direct registration at TNO login.",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "1.\tAadhar Card,",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "documents.en.documents_required[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2.\t7/12,",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "documents.en.documents_required[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3.\t8-A,",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "documents.en.documents_required[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4.\tFerfar,",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "documents.en.documents_required[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "5.\tRation card etc",
+          "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+          "source_path": "documents.en.documents_required[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[1]",
+      "title": "PMKISAN",
+      "type": "other",
+      "url": "https://fw.pmkisan.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://fw.pmkisan.gov.in/Documents/RevisedPM-KISANOperationalGuidelines(English).pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Online Link",
+      "type": "other",
+      "url": "http://nsmny.mahait.org/",
+      "source_url": "https://www.myscheme.gov.in/schemes/namo-shetkari-mahasanman-nidhi-yojana",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

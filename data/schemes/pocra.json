@@ -1,0 +1,300 @@
+{
+  "scheme_id": "M15",
+  "slug": "pocra",
+  "name": "Nanaji Deshmukh Krishi Sanjivani Prakalp",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The Nanaji Deshmukh Krishi Sanjivani Prakalp was conceptualised by the Department of Agriculture, Government of Maharashtra and the World Bank to develop a drought-proofing and climate-resilient strategy for the agriculture sector as a long-term and sustainable measure, to address the likely impacts of climate variabilities and climate change. The project focuses on the evidence-based scientific implementation of this plan.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The project has introduced transformational changes in the agriculture sector by scaling up the adoption of climate-smart technologies and practices at the farm and micro-watershed level, contributing to drought-proofing and creation of new opportunities in villages worst hit by drought and salinity/sodicity affected villages in the state. The project is supporting investments by farmers, farmers’ collectives, and communities for accessing water, optimal utilization of natural resources, value addition of agriculture commodities, and adoption of climate-resilient agriculture technologies. The project has taken a gender-sensitive approach to prioritize the needs of the women stakeholders in the planning and implementation of project interventions which is being driven through “Krushi Tais” (female mobilizers) at the village level.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.detailedDescription[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Direct Benefit Transfer portal and mobile application allow farmers to apply for matching grants for their farm-level investments aimed at improving incomes. The DBT portal is a workflow-based end to end online system through which the project officials can verify the eligibility and assets created and transfer the matching grants directly to the farmer’s Aadhar linked bank account. Another module of this portal allows the farmers’ collectives to receive matching grants for their value chain based agribusiness proposals.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.detailedDescription[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "1)\tBack ended financial subsidies for Farmers to adopt climate resilient agricultural initiatives in their farms",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2)\tFinancial assistance available for protected cultivation techniques such as Poly House, Poly Tunnels, etc.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3)\tSubsidy also available for on farm water conservation activities such as Drip, Sprinklers, Farm Pond, Farm Pond linings, etc.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4)\tClimate Resilient seed production also covered",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "5)\tSpecial assistance for Farmer Producing Organizations/companies and Self Help Groups",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.benefits[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "6)\tDisbursement through Aadhaar enabled payment system",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "7)\tPrivilege given to women, person with disabilities and landless labourers",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.benefits[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "1)\tFarmers producer companies under the project in the district, registered farmer groups/self-help groups in the project village.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2)\tIn the project, FPC’s registered with a minimum of 100 members from the district will be eligible to avail benefits under the agribusiness components.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3)\tFor the project, any eligible group of interested/qualified farmers/women/landless individuals registered with any govt. department (e.g., ATMA, MAVIM, MSRLM etc.) selected in the village can apply for the Prime Minister's Farmer Scheme, based on the family's eligibility criteria (husband, wife, and dependent children over 18 years of age). The explanation of the family's composition from different families within the group, with a minimum of 11 members in each family, is necessary. The benefits of the agribusiness components should not be directed solely towards one family; attention should be paid to this aspect.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4)\tThe financial condition of applicant farmers' producer companies/registered farmers/self help groups is proposed to be capable enough to establish and operate agricultural input service centers/industries.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "5)\tThe project mandates that loans sanctioned to farmers' producer companies/registered banks/financial institutions for projects exceeding Rs. 20.00 lakhs must be approved. The approved amount of the existing loan should be at least 1.25 times the minimum grant aid.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "6)\tThe proposal of Rs. 20.00 lakhs will be funded through self-financing. In such proposals, assurance should be given that the required funds are available in the registered bank account of the group/company or will be raised from the members (include this decision in the company/group resolution). While providing financial assistance under the project, the expenditure incurred for the project from the bank account of the group/company will be considered eligible for reimbursement.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "7)\tIf there's a loan involved, it's essential for the farmers' producer company and registered farmers/self help groups to enter into a tripartite agreement with the registered bank/financial institution and the relevant project management authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "1.\tFarmers with land holding more than 5.00 ha",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.schemeContent.exclusions[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Application Link: https://dbt.mahapocra.gov.in",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 01: Registration",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 02: Application",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 03: Pre-sanction by Agriculture officer",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.applicationProcess[0].process[6]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 04: Work completion by farmer",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.applicationProcess[0].process[8]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 05: Payment request by farmer",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.applicationProcess[0].process[10]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 06: Payment approval by the project",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.applicationProcess[0].process[12]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 07: Payment disbursement in Aadhaar linked bank account of the beneficiary farmer",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "en.applicationProcess[0].process[14]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "1)\tAadhaar Number",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "documents.en.documents_required[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2)\tLand details – 8A & 7/12 extract",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "documents.en.documents_required[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3)\tCast certificate (for applicants from SC ST communities)",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "documents.en.documents_required[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4)\tLandless certificate (for landless farmers & labourers)",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "documents.en.documents_required[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "5)\tDeath certificate of husband (for Widows)",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "documents.en.documents_required[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "6)\tDivorce certificate (for divorcee female)",
+          "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+          "source_path": "documents.en.documents_required[5]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[1]",
+      "title": "https://dbt.mahapocra.gov.in",
+      "type": "other",
+      "url": "https://dbt.mahapocra.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Online Application",
+      "type": "other",
+      "url": "https://dbt.mahapocra.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "PoCRA",
+      "type": "other",
+      "url": "https://mahapocra.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/pocra",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

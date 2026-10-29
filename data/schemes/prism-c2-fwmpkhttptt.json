@@ -5,7 +5,7 @@
   "government_level": "Central",
   "geography": "India",
   "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
-  "collected_on": "2026-10-24",
+  "collected_on": "2026-10-28",
   "review_status": "approved",
   "availability_status": "open",
   "sample_only": false,
@@ -757,11 +757,23 @@
   },
   "links": [
     {
+      "source_path": ".scheme.applicationProcess[0].process[4].children[1].children[1]",
       "title": "application form",
-      "type": "other",
+      "type": "application_form",
       "url": "https://www.dsir.gov.in/sites/default/files/2019-09/guide_ph1_cat2.pdf",
       "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
       "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://www.dsir.gov.in/sites/default/files/2019-09/guide_ph1_cat2.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+      "format": "pdf",
+      "local_file": null,
       "verification_status": "pending"
     }
   ]

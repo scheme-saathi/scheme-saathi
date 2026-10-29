@@ -172,3 +172,75 @@ python -m unittest discover -s tests -p test_keyword_search.py
 python -m unittest discover -s tests -p test_retrieval_evaluation.py
 python -m unittest discover -s tests -p test_scheme_loading.py
 ```
+
+### Bulk scheme and PDF import
+
+Save each PDF under `data/pdfs/<scheme_id>/`, for example
+`data/pdfs/C09/guidelines.pdf`. In that scheme's existing `links` list,
+add `"local_file": "data/pdfs/C09/guidelines.pdf"` to the corresponding
+resource link. Keep its official `url`, title and other required link fields.
+Every PDF in an approved scheme's folder must have a matching link.
+PDFs and extraction output are local and ignored by Git; teammates must copy
+these files separately if they need to rebuild the PDF index.
+
+Run the existing command for all approved schemes and their registered PDFs:
+
+```bash
+python -m servers.schemes_kb.import_schemes
+```
+
+The first run extracts new PDFs into `data/extracted/<scheme_id>/<sha256>.json`
+and prints pending review paths. Review prose, tables and page references against
+the PDF, resolve any OCR flags, then set that extraction's `review_status` to
+`approved`. Scheme approval alone does not approve a PDF. Run the same command
+again to index approved PDFs together with scheme-page chunks. Table review
+HTML is saved alongside the extraction. Large tables exceeding the embedding
+model input limit stop the import rather than being silently truncated.
+
+Imports use batched upserts with stable IDs. Repeated runs do not add duplicates.
+The page collection mirrors selected scheme records; the PDF collection mirrors
+registered, approved PDFs of approved schemes, removing obsolete approved chunks.
+Draft PDF records created by the existing review script remain review-only.
+Replacing a PDF changes its hash and requires a fresh review. `--review` continues
+to import scheme-page drafts separately and does not run bulk PDF import.
+Run only one importer at a time. Import is not transactional across collections;
+if interrupted, rerun the command. No PDF is downloaded automatically.
+
+Scheme reference links are stored in `Scheme.links` with their original titles, URLs,
+and myScheme source paths. Paths containing `references[` identify the Sources and
+References section. The importer stores `links_json` and `references_json` as Chroma
+metadata; search results expose `links` and `references`. Re-run the importer after
+link changes. Older indexed chunks return empty link lists until re-imported.
+These linked resources are navigation links, not evidence that their contents were
+downloaded, reviewed, or embedded. Local PDF paths are excluded from search output.
+
+For this dataset, myScheme is the selected content source. Preserve its published
+text and collection date; describe information as published on myScheme rather
+than guaranteeing current policy. Known source discrepancies remain review notes.
+
+Convert the approved review workbook to JSON without changing ChromaDB:
+
+```bash
+pip install -e '.[rag]'
+python -m servers.schemes_kb.import_schemes --from-excel --export-only
+```
+
+Use `--from-excel /path/to/review.xlsx` for another workbook with the same tabs and
+headers. Conversion validates every selected scheme before writing any JSON. It
+joins continuation parts in order, rejects missing parts or unapproved related
+rows, and keeps reference titles and URLs. Details, benefits, eligibility and
+exclusions come from Source passages; application steps and applicant-document
+text come from their review tabs. Eligibility rows provide an approval gate;
+edit source wording in Source passages and re-review related rows together.
+Existing local PDF paths are retained for matching link URLs. Link capture
+approval does not mark the destination as checked. Existing JSON files absent
+from the workbook are not automatically deleted.
+
+After reviewing the exported files, import them with the normal command:
+
+```bash
+python -m servers.schemes_kb.import_schemes
+```
+
+Omitting `--export-only` combines Excel conversion and the database import in one
+command. Export-only does not load the embedding model or open ChromaDB.

@@ -1,0 +1,611 @@
+{
+  "scheme_id": "M01",
+  "slug": "sgngs",
+  "name": "Sanjay Gandhi Niradhar Grant Scheme",
+  "government_level": "State",
+  "geography": "Maharashtra",
+  "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The \"Sanjay Gandhi Niradhar Grant Scheme\" is a scheme by the Department of Social Justice & Special Assistance, Govt. of Maharashtra. In this scheme, financial assistance of ₹600/- per month is given if there is only one beneficiary in the eligible family, and ₹900/- per month if there is more than one beneficiary in a family. In order to be eligible for this scheme, the name should be in the list of BPL families or the annual income of the family should be less than or equal to ₹ 21,000/-. Only citizens who are permanent residents of the state of Maharashtra are eligible to apply for this scheme. This scheme is 100% funded by the Govt. of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Financial assistance of ₹ 600/- per month, if there is one beneficiary in the eligible family.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Financial assistance of ₹ 900/- per month, if there is more than one beneficiary in the eligible family.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.schemeContent.benefits[0].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant should be a citizen of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be a domicile / permanent resident of the state of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The name of the applicant should be in the list of Below Poverty Line (BPL) families OR the annual income of the family should be less than or equal to ₹ 21,000/-.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should be one of the following:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "a) Destitute Men and Women below 65 Years of Age.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "b) Orphan Children.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "c) All categories of Person with Disability (PwD).",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "d) Men and Women Who Are Unable to Sustain Themselves Due to Diseases Like Tuberculosis, Cancer, Aids, Leprosy.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "e) Destitute Widows (including widows of farmers who committed suicide).",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "f) Women in the Divorce Process and Divorced but Not Alimony.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "g) Women Who Have Been Tortured and Released From Prostitution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "h) Transgender.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[8]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "i) Devadasi.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[9]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "j) Unmarried Women Above 35 Years of Age.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[10]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "k) The Wives of Prisoners Serving Sentences in Jail.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[11]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "l) Those Suffering From Sickle Cell Disease.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[12]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: Visit the Collector's Office / Tahsildar Sanjay Gandhi Yojana / Talathi Office, and request a hard copy of the format of the application form for the scheme from the concerned authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 2: In the application form, fill in all the mandatory fields, paste the passport-sized photograph (signed across), and attach all the (self-attested) mandatory documents.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Submit the duly filled and signed application form along with the documents to the Collector's Office / Tahsildar Sanjay Gandhi Yojana / Talathi Office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Acquire the receipt/acknowledgment of the successful submission of the application form.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Registration:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[0].children[1].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 1: Visit the Official Portal of Aaple Sarkar (Maha DBT). On the right pane (green), click \"New User? Register Here\". You will be directed to the Registration Page.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 2: Verify your Email ID and Mobile Number using OTP and then create a Unique Username and Password. (You will also find the link to the Registration Manual on the top right of the page.)",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[4]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Applicant Detail\" section, fill in the following mandatory fields: Salutation, Full Name(English), Full Name(Marathi), Father's Salutation, Father's Name (English), Father's Name(Marathi), Date of Birth, Age, Gender, Occupation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[6]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Applicant's Address\" section, fill in the following mandatory fields: Address (English), Address (Marathi), Street (English), Street (Marathi), Section (English), Section (Marathi), Building (English), Building (Marathi), Landmark (English), Landmark (Marathi), District, Taluka, Village, Pincode",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[8]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Mobile No. & Username Verification\" section, fill in the following mandatory fields: 10-digit Mobile Number (to be verified via OTP), PAN No, User Name, Email ID (to be verified via OTP), Password, and Confirm Password.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[10]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Upload your Photograph\" section, upload your passport-sized photograph following the instructions given below:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[12]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "1. The file size should fall between 5 KB to 20 KB.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[13]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "2. The format should be JPEG.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[14]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "3. The width should be 160 pixels.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[15]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "4. The height should fall between 200 to 212 pixels.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[16]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Proof Of Identity\" section, upload ANY ONE of the following documents: PAN Card, Voter ID Card (POI), Passport (POI), Aadhaar Card (POI), Driving License (POI), Government / Semi-Government ID, Proof MNREGA Job Card, RSBY Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[18]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "The format should be JPEG/ PDF, and the file size should be between 75 KB to 256 KB.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[19]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "In the \"Proof Of Address\" section, upload ANY ONE of the following documents: Ration Card Passport (POA), Aadhaar Card (POA), Driving License (POA), Voter ID Card (POA), Extracts of 7/12 and 8 A, Property Tax Receipt, Property Agreement Copy, Water Bill, Electricity Bill, Telephone Bill, Rent Receipt.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[21]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 3: At the bottom of the Registration Page, read the following declaration carefully:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[23]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "\"I declare that the above-mentioned information submitted by me is true and correct to my knowledge and belief. I hereby agree to be liable for legal consequences for any information found incorrect or false under section 200 of the Indian penal code 1960.\"",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[24]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Select the \"I accept\" checkbox, and click \"Register\". Your Login Credentials will be shared over your registered Email ID and Mobile Number.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[26]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Application:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[28].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 1: Visit the Official Portal of Aaple Sarkar (Maha DBT). On the right pane (green), click \"Already Registered? Login Here\". Provide your Username and Password. Fill in the Captcha Code, Select your District from the dropdown menu, and click \"Login\".",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[30]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 2: On the next page, in the left pane, click \"All Schemes\". From the dropdown menu, select the Department Name, and the name of the scheme that you seek to apply for. Click \"Apply\" against the concerned scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[32]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Fill in all the mandatory fields and upload the mandatory documents, and click \"Apply\". A popup message acknowledging the successful submission of the application will be displayed, along with the Application ID:",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[34]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "\"Dear [Username], you have successfully applied for [Scheme Name]. Your Application ID is [Application ID here].\"",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[35]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "The Application ID will also be shared over your registered Email ID and Mobile Number. Save this Application ID for future reference and for checking the application status.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[37]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 4: You can also view the status of your applications (Under Scrutiny / Approved / Rejected / Fund Disbursed) using the \"My Applied Scheme History\" in the left pane.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "en.applicationProcess[1].process[39]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Aadhaar Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2-Passport Sized Photograph (Signed Across).",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Residential Certificate / Domicile Certificate of the State of Maharashtra.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other document required by the District Social Welfare Office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Medical Certificate OR Certificate of Incapacity/Disease (issued by the Civil Surgeon and Medical Superintendent of the Government Hospital) (In the case of major illness)",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of Age",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Income Certificate / BPL Card of the Family",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Disability Certificate",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[8]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Transgender Certificate (in case the applicant is Transgender)",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[9]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Marriage Certificate, and Death Certificate of Husband (in the case of Widow applicants)",
+          "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+          "source_path": "documents.en.documents_required[0].children[10]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[2]",
+      "title": "format",
+      "type": "other",
+      "url": "https://cdn.s3waas.gov.in/s317e62166fc8586dfa4d1bc0e1742c08b/uploads/2018/03/2018031988.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://cdn.s3waas.gov.in/s317e62166fc8586dfa4d1bc0e1742c08b/uploads/2018/03/2018031988.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[1].process[0].children[1]",
+      "title": "Registration:",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/pdf/UM_AS_Reg.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[1].process[2].children[2]",
+      "title": "Official Portal",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[1].process[2].children[4]",
+      "title": "Registration Page",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/en/Registration/Register",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[1].process[4].children[2]",
+      "title": "Registration Manual",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/pdf/UM_AS_Reg.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[1].process[12].children[2]",
+      "title": "Upload your Photograph",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/pdf/Photoupload.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[1].process[30].children[2]",
+      "title": "Official Portal",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[1]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://sjsa.maharashtra.gov.in/mr/schemes-page?scheme_nature=37",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Guidelines (Marathi)",
+      "type": "guidelines",
+      "url": "https://static.s3waas.gov.in/s3db85e2590b6109813dafa101ceb2faeb/uploads/2018/03/2018030785.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[2]",
+      "title": "Mumbai Suburban",
+      "type": "other",
+      "url": "https://mumbaisuburban.gov.in/scheme/sanjay-gandhi-niradhar-pension-scheme/#:~:text=To%20provide%20financial%20assistance%20to,outraged%20women%2C%20Transgender%2C%20etc.",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[3]",
+      "title": "Application Form",
+      "type": "application_form",
+      "url": "https://cdn.s3waas.gov.in/s304025959b191f8f9de3f924f0940515f/uploads/2018/04/2018040628-1.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[4]",
+      "title": "Contact Us",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/en/CommonForm/ContactUs",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[5]",
+      "title": "Photo Upload Manual",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/pdf/Photoupload.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[6]",
+      "title": "Seva Kendras",
+      "type": "other",
+      "url": "https://aaplesarkar.mahaonline.gov.in/en/CommonForm/SewaKendraDetails",
+      "source_url": "https://www.myscheme.gov.in/schemes/sgngs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

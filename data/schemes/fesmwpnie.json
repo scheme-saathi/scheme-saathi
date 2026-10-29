@@ -1,0 +1,496 @@
+{
+  "scheme_id": "C32",
+  "slug": "fesmwpnie",
+  "name": "Free Education For Sports Medal Winners / Participants Of National/ International Events",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Free Education for Sports Medal Winners / Participants of National/ International Events\", introduced by the University Grants Commission, Ministry of Education, aims to assist medal-winning sportspersons pursuing higher education and motivate them to achieve excellence in sports and academics. Applicable to national medalists and international participants, it ensures their holistic development.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Medals at Olympics, World Championship (more than 20 countries)",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": "Medals at Olympics, World Championship (more than 20 countries)"
+        },
+        {
+          "text": "Tuition Fee and Other Funds: Bachelor's degree: Actual; PG: Actual; Diploma: Actual; PG Degree: Actual; M. Phil: ₹ 7500/- per month + Actual; Ph.D.: As per with JRF scale (UGC); MBA or",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": "Medals at Olympics, World Championship (more than 20 countries)"
+        },
+        {
+          "text": "other professional courses (*): ₹ 7500/- per month + Actual.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": "Medals at Olympics, World Championship (more than 20 countries)"
+        },
+        {
+          "text": "Hostel Facilities (Boarding and Lodging): Actual",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": "Medals at Olympics, World Championship (more than 20 countries)"
+        },
+        {
+          "text": "Allowances for special courses abroad: As per Govt of India’s norms",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[4]",
+          "channel": null,
+          "heading": "Medals at Olympics, World Championship (more than 20 countries)"
+        },
+        {
+          "text": "Kit: ₹ 15000 per annum",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": "Medals at Olympics, World Championship (more than 20 countries)"
+        },
+        {
+          "text": "Participations at Olympics, World Championship (more than 20 countries); Medal at Common Wealth, Asian, Afro-Asian Games",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[7]",
+          "channel": null,
+          "heading": "Participations at Olympics, World Championship (more than 20 countries); Medal at Common Wealth, Asian, Afro-Asian Games"
+        },
+        {
+          "text": "Tuition Fee and Other Funds: Bachelor's degree: Actual; PG: Actual; Diploma: Actual; PG Degree: Actual; M. Phil: ₹ 7500/- per month + Actual; Ph.D.: As per with JRF scale (UGC); MBA or",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[8]",
+          "channel": null,
+          "heading": "Participations at Olympics, World Championship (more than 20 countries); Medal at Common Wealth, Asian, Afro-Asian Games"
+        },
+        {
+          "text": "other professional courses (*): ₹ 7500/- per month + Actual.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[9]",
+          "channel": null,
+          "heading": "Participations at Olympics, World Championship (more than 20 countries); Medal at Common Wealth, Asian, Afro-Asian Games"
+        },
+        {
+          "text": "Hostel Facilities (Boarding and Lodging): Actual",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[10]",
+          "channel": null,
+          "heading": "Participations at Olympics, World Championship (more than 20 countries); Medal at Common Wealth, Asian, Afro-Asian Games"
+        },
+        {
+          "text": "Allowances for special courses abroad: As per Govt of India’s norms",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[11]",
+          "channel": null,
+          "heading": "Participations at Olympics, World Championship (more than 20 countries); Medal at Common Wealth, Asian, Afro-Asian Games"
+        },
+        {
+          "text": "Kit: ₹15000 per annum",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[12]",
+          "channel": null,
+          "heading": "Participations at Olympics, World Championship (more than 20 countries); Medal at Common Wealth, Asian, Afro-Asian Games"
+        },
+        {
+          "text": "Participation at World Championship (less than 20 countries), CommonWealth, Asian, and Afro-Asian, Games; Medal at Asian Championship (excluding Asian games)",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[14]",
+          "channel": null,
+          "heading": "Participation at World Championship (less than 20 countries), CommonWealth, Asian, and Afro-Asian, Games; Medal at Asian Championship (excluding Asian games)"
+        },
+        {
+          "text": "Tuition Fee and Other Funds: Bachelor's degree: Actual; PG: Actual; Diploma: Actual; PG Degree: Actual; M. Phil: ₹7500/- per month + Actual; Ph.D.: As per with JRF scale (UGC); MBA or",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[15]",
+          "channel": null,
+          "heading": "Participation at World Championship (less than 20 countries), CommonWealth, Asian, and Afro-Asian, Games; Medal at Asian Championship (excluding Asian games)"
+        },
+        {
+          "text": "other professional courses (*): ₹ 7500/- per month + Actual.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[16]",
+          "channel": null,
+          "heading": "Participation at World Championship (less than 20 countries), CommonWealth, Asian, and Afro-Asian, Games; Medal at Asian Championship (excluding Asian games)"
+        },
+        {
+          "text": "Hostel Facilities (Boarding and Lodging): Actual",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[17]",
+          "channel": null,
+          "heading": "Participation at World Championship (less than 20 countries), CommonWealth, Asian, and Afro-Asian, Games; Medal at Asian Championship (excluding Asian games)"
+        },
+        {
+          "text": "Allowances for special courses abroad: As per Govt of India’s norms",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[18]",
+          "channel": null,
+          "heading": "Participation at World Championship (less than 20 countries), CommonWealth, Asian, and Afro-Asian, Games; Medal at Asian Championship (excluding Asian games)"
+        },
+        {
+          "text": "Kit: ₹ 10000 per annum",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[19]",
+          "channel": null,
+          "heading": "Participation at World Championship (less than 20 countries), CommonWealth, Asian, and Afro-Asian, Games; Medal at Asian Championship (excluding Asian games)"
+        },
+        {
+          "text": "Participation at Asian Championship, World university games; Medal at SAF Games",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[21]",
+          "channel": null,
+          "heading": "Participation at Asian Championship, World university games; Medal at SAF Games"
+        },
+        {
+          "text": "Tuition Fee and Other Funds: Bachelor's degree: Actual; PG: Actual; Diploma: Actual; PG Degree: Actual; M. Phil:₹7500/- per month + Actual; Ph.D.: As per with JRF scale (UGC); MBA or",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[22]",
+          "channel": null,
+          "heading": "Participation at Asian Championship, World university games; Medal at SAF Games"
+        },
+        {
+          "text": "other professional courses (*): ₹ 7500/- per month + Actual.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[23]",
+          "channel": null,
+          "heading": "Participation at Asian Championship, World university games; Medal at SAF Games"
+        },
+        {
+          "text": "Hostel Facilities (Boarding and Lodging): Actual",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[24]",
+          "channel": null,
+          "heading": "Participation at Asian Championship, World university games; Medal at SAF Games"
+        },
+        {
+          "text": "Allowances for special courses abroad: As per Govt of India’s norms",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[25]",
+          "channel": null,
+          "heading": "Participation at Asian Championship, World university games; Medal at SAF Games"
+        },
+        {
+          "text": "Kit: ₹7500 per annum",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[26]",
+          "channel": null,
+          "heading": "Participation at Asian Championship, World university games; Medal at SAF Games"
+        },
+        {
+          "text": "Participation at SAF Games; Medal at National level Competitions",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[28]",
+          "channel": null,
+          "heading": "Participation at SAF Games; Medal at National level Competitions"
+        },
+        {
+          "text": "Tuition Fee and Other Funds: Bachelor's degree: 75% of Actual; PG: 75% of Actual; Diploma: 75% of Actual; PG Degree: 75% of Actual; M. Phil: ₹ 5000/- per month + Actual; Ph.D.: Rs. 7500/- per month + Actual; MBA or other professional courses (*): ₹. 5000/- per month + Actual.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[29]",
+          "channel": null,
+          "heading": "Participation at SAF Games; Medal at National level Competitions"
+        },
+        {
+          "text": "Hostel Facilities (Boarding and Lodging): Actual",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[30]",
+          "channel": null,
+          "heading": "Participation at SAF Games; Medal at National level Competitions"
+        },
+        {
+          "text": "Allowances for special courses abroad: As per Govt of India’s norms",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[31]",
+          "channel": null,
+          "heading": "Participation at SAF Games; Medal at National level Competitions"
+        },
+        {
+          "text": "Kit: ₹ 6000 per annum",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[32]",
+          "channel": null,
+          "heading": "Participation at SAF Games; Medal at National level Competitions"
+        },
+        {
+          "text": "(i) The pattern of assistance will be as per the chart mentioned above depending upon the level of performance of the concerned sportsperson.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[34]",
+          "channel": null,
+          "heading": "Participation at SAF Games; Medal at National level Competitions"
+        },
+        {
+          "text": "(ii) The financial assistance depending upon the eligibility will be reimbursed by the UGC to the university concerned. The university will be responsible for submitting all relevant documents as per the guidelines and the proformas of the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[35]",
+          "channel": null,
+          "heading": "Participation at SAF Games; Medal at National level Competitions"
+        },
+        {
+          "text": "(iii) For the loss of the classes of the concerned sports persons because of their engagement in sporting activity, the university concerned will make special efforts in terms of completion of syllabus and attendance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.benefits[36]",
+          "channel": null,
+          "heading": "Participation at SAF Games; Medal at National level Competitions"
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "(i) The Scholarship will be provided to the Medal winners of National games and participants in recognized international sporting events recognized by the World University Service, International Olympic Committee, and Olympic Committee of Asia (OCA) who have taken admitted to the Universities/Colleges/Institutions as indicated below:",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Universities/Institutions/Colleges included under sections 2(f) and 12(b) of the UGC Act, 1956.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Deemed to be Universities under section 3 of the UGC Act, 1956 which are eligible to receive grants",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "in aid from UGC.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Universities/Institutions/Colleges funded by Central/ State Govt.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Institutes of National Importance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "(ii) In the subsequent years this scholarship shall depend on their subsequent sports performance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "CANCELLATION OF SCHOLARSHIP",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.exclusions[0]",
+          "channel": null,
+          "heading": "CANCELLATION OF SCHOLARSHIP"
+        },
+        {
+          "text": "UGC may terminate the scholarship of any student in the case of the:",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.exclusions[1]",
+          "channel": null,
+          "heading": "CANCELLATION OF SCHOLARSHIP"
+        },
+        {
+          "text": "(i) Misconduct of the candidate, if any, reported by the University/College/Institution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.exclusions[2]",
+          "channel": null,
+          "heading": "CANCELLATION OF SCHOLARSHIP"
+        },
+        {
+          "text": "(ii) Unsatisfactory progress report i.e. if the candidate frequently fails in his/her examination will not be given further assistance.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.exclusions[3]",
+          "channel": null,
+          "heading": "CANCELLATION OF SCHOLARSHIP"
+        },
+        {
+          "text": "(iii) The scholarship may be terminated by the Commission, on the recommendation of the University at",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.exclusions[4]",
+          "channel": null,
+          "heading": "CANCELLATION OF SCHOLARSHIP"
+        },
+        {
+          "text": "anytime during the tenure and the decision of the Commission will be final and binding.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.schemeContent.exclusions[5]",
+          "channel": null,
+          "heading": "CANCELLATION OF SCHOLARSHIP"
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: Download the prescribed application form (Refer Page No. 5 ).",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 2: Fill in the application form with accurate details.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Attach a certificate of participation or medal-winning as proof of eligibility, attested by the Registrar or Principal of your institution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Verify the form and attached documents for completeness and accuracy.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 5: Submit the completed application form and required documents to the designated authority.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "en.applicationProcess[0].process[4]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "To Be Submitted by the Candidate through University/College -",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "documents.en.documents_required[0]",
+          "channel": null,
+          "heading": "To Be Submitted by the Candidate through University/College -"
+        },
+        {
+          "text": "1. The candidate is required to submit an application in the prescribed format for availing of the scholarship.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "documents.en.documents_required[1]",
+          "channel": null,
+          "heading": "To Be Submitted by the Candidate through University/College -"
+        },
+        {
+          "text": "2. A Certificate of the participation/medal winner as per the eligibility mentioned above as proof (Attested By Registrar/Principal).",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "documents.en.documents_required[2]",
+          "channel": null,
+          "heading": "To Be Submitted by the Candidate through University/College -"
+        },
+        {
+          "text": "To Be Submitted by the concerned University/College/Institution to the UGC -",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "documents.en.documents_required[4]",
+          "channel": null,
+          "heading": "To Be Submitted by the concerned University/College/Institution to the UGC -"
+        },
+        {
+          "text": "Every year University/Institution will submit a complete statement of the following:",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "documents.en.documents_required[5]",
+          "channel": null,
+          "heading": "To Be Submitted by the concerned University/College/Institution to the UGC -"
+        },
+        {
+          "text": "1. Statement giving the names of the students selected for the scholarship along with their receipt of the scholarship amount.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "documents.en.documents_required[6]",
+          "channel": null,
+          "heading": "To Be Submitted by the concerned University/College/Institution to the UGC -"
+        },
+        {
+          "text": "2. Progress Report to be submitted after the completion of the first year in terms of sports performance and academics.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "documents.en.documents_required[7]",
+          "channel": null,
+          "heading": "To Be Submitted by the concerned University/College/Institution to the UGC -"
+        },
+        {
+          "text": "3. Utilization certificate for the previous grant released.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "documents.en.documents_required[8]",
+          "channel": null,
+          "heading": "To Be Submitted by the concerned University/College/Institution to the UGC -"
+        },
+        {
+          "text": "4. A certificate giving justification for the continuance of the scholarship issued by the Director/Head of the Department duly forwarded by the Registrar/Principal.",
+          "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+          "source_path": "documents.en.documents_required[9]",
+          "channel": null,
+          "heading": "To Be Submitted by the concerned University/College/Institution to the UGC -"
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[2]",
+      "title": "application form",
+      "type": "application_form",
+      "url": "https://www.ugc.gov.in/oldpdf/xiiplanpdf/medal-winners-guidelines.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0]",
+      "title": "Source link",
+      "type": "other",
+      "url": "http://www.ugc.ac.in/page/XII-Plan%02Guidelines.aspx",
+      "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://www.ugc.ac.in/oldpdf/xiiplanpdf/medal-winners-guidelines.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

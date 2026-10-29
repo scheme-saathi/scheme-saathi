@@ -1,0 +1,752 @@
+{
+  "scheme_id": "C21",
+  "slug": "avyay-napsc-hssc",
+  "name": "AVYAY - National Action Plan for Senior Citizens: Health and Shelter for Senior Citizens",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"AVYAY - National Action Plan for Senior Citizens: Health and Shelter for Senior Citizens\" was launched by the Department of Social Justice and Empowerment, Ministry of Social Justice and Empowerment, Govt. of India. The scheme is a component of the umbrella scheme \" Atal Vayo Abhyuday Yojana (AVYAY)\". The scheme aims to improve the quality of life of Senior Citizens, particularly those who are indigent, by providing basic amenities like shelter, food, medical care and entertainment opportunities. The scheme provides financial assistance for projects such as the maintenance of Senior Citizen Homes (popularly known as Old Age Homes), Continuous Care Homes, Regional Resource and Training Centres (RRTCs), Mobile Medicare Units, and Physiotherapy Clinics under its two sub-schemes: the Integrated Programme for Senior Citizens (IPSrC) and the State Action Plan for Senior Citizens (SAPSrC).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Grant-in-Aid (GIA) for Senior Citizen Homes (25 beneficiaries)",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": "Grant-in-Aid (GIA) for Senior Citizen Homes (25 beneficiaries)"
+        },
+        {
+          "text": "Annual recurring expenditure grants are provided based on the classification of the city (X, Y, or Z), ranging from ₹25,04,355/- (X Category) to ₹24,38,355/- (Z Category).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": "Grant-in-Aid (GIA) for Senior Citizen Homes (25 beneficiaries)"
+        },
+        {
+          "text": "Grant-in-Aid (GIA) for Senior Citizen Homes (50 beneficiaries/50 elderly women only)",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[2]",
+          "channel": null,
+          "heading": "Grant-in-Aid (GIA) for Senior Citizen Homes (50 beneficiaries/50 elderly women only)"
+        },
+        {
+          "text": "Annual recurring expenditure grants range from ₹42,11,228/- (X Category) to ₹41,12,228/- (Z Category).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": "Grant-in-Aid (GIA) for Senior Citizen Homes (50 beneficiaries/50 elderly women only)"
+        },
+        {
+          "text": "Grant-in-Aid (GIA) for Continuous Care Homes (minimum 20 beneficiaries)",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[4]",
+          "channel": null,
+          "heading": "Grant-in-Aid (GIA) for Continuous Care Homes (minimum 20 beneficiaries)"
+        },
+        {
+          "text": "Annual recurring expenditure grants range from ₹30,77,310/- (X Category) to ₹30,11,310/- (Z Category).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": "Grant-in-Aid (GIA) for Continuous Care Homes (minimum 20 beneficiaries)"
+        },
+        {
+          "text": "Non-Recurring Grant for Senior Citizen Homes (25 indigent)",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[6]",
+          "channel": null,
+          "heading": "Non-Recurring Grant for Senior Citizen Homes (25 indigent)"
+        },
+        {
+          "text": "A grant of ₹3,09,105/- is admissible every five years, which includes the cost of Closed-Circuit Television (CCTV) cameras and website development charges.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[7]",
+          "channel": null,
+          "heading": "Non-Recurring Grant for Senior Citizen Homes (25 indigent)"
+        },
+        {
+          "text": "Non-Recurring Grant for Senior Citizen Homes (50 indigent)",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[8]",
+          "channel": null,
+          "heading": "Non-Recurring Grant for Senior Citizen Homes (50 indigent)"
+        },
+        {
+          "text": "A grant of ₹4,12,140/- is admissible every five years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[9]",
+          "channel": null,
+          "heading": "Non-Recurring Grant for Senior Citizen Homes (50 indigent)"
+        },
+        {
+          "text": "Non-Recurring Grant for Continuous Care Homes (20 indigent)",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[10]",
+          "channel": null,
+          "heading": "Non-Recurring Grant for Continuous Care Homes (20 indigent)"
+        },
+        {
+          "text": "A grant of ₹3,09,105/- is admissible every five years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[11]",
+          "channel": null,
+          "heading": "Non-Recurring Grant for Continuous Care Homes (20 indigent)"
+        },
+        {
+          "text": "Funeral Expenses",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[12]",
+          "channel": null,
+          "heading": "Funeral Expenses"
+        },
+        {
+          "text": "Reimbursement of funeral expenses is provided at ₹10,000/- per person or the actual expenses incurred, whichever is less, in case of the demise of any inmate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[13]",
+          "channel": null,
+          "heading": "Funeral Expenses"
+        },
+        {
+          "text": "State Action Plan for Senior Citizens (SAPSrC) Funding",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[14]",
+          "channel": null,
+          "heading": "State Action Plan for Senior Citizens (SAPSrC) Funding"
+        },
+        {
+          "text": "Financial support equivalent to 90% of the project cost is provided for admissible programmes proposed under State Action Plans.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[15]",
+          "channel": null,
+          "heading": "State Action Plan for Senior Citizens (SAPSrC) Funding"
+        },
+        {
+          "text": "Disbursal Mode, Frequency, and Conditions",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[17].children[0]",
+          "channel": null,
+          "heading": "State Action Plan for Senior Citizens (SAPSrC) Funding"
+        },
+        {
+          "text": "Grant-in-aid is provided through the E-anudaan portal and the Public Financial Management System (PFMS)/Expenditure, Audit and Tender (EAT) module.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[18].children[0]",
+          "channel": null,
+          "heading": "State Action Plan for Senior Citizens (SAPSrC) Funding"
+        },
+        {
+          "text": "The total annual grant is released in two equal half-yearly instalments.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[18].children[1]",
+          "channel": null,
+          "heading": "State Action Plan for Senior Citizens (SAPSrC) Funding"
+        },
+        {
+          "text": "Conditions for Disbursement",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[19]",
+          "channel": null,
+          "heading": "Conditions for Disbursement"
+        },
+        {
+          "text": "Recurring Grant-in-aid for Senior Citizen Homes is based on the number of days of attendance of beneficiaries as recorded through a contactless Information Technology (IT) system.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[20].children[0]",
+          "channel": null,
+          "heading": "Conditions for Disbursement"
+        },
+        {
+          "text": "The second half-yearly instalment is released only after the inspection report of the State Government, the officers of the Central Ministry, or the Project Monitoring Unit (PMU) is received.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[20].children[1]",
+          "channel": null,
+          "heading": "Conditions for Disbursement"
+        },
+        {
+          "text": "Conditions for Continuation",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[21]",
+          "channel": null,
+          "heading": "Conditions for Continuation"
+        },
+        {
+          "text": "Implementing Agencies must maintain the standards laid down in the scheme guidelines.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[22].children[0]",
+          "channel": null,
+          "heading": "Conditions for Continuation"
+        },
+        {
+          "text": "Implementing Agencies must use the Expenditure, Audit and Tender (EAT) module of the Public Financial Management System (PFMS).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[22].children[1]",
+          "channel": null,
+          "heading": "Conditions for Continuation"
+        },
+        {
+          "text": "Implementing Agencies must provide live streaming of the institution's functioning via Closed-Circuit Television (CCTV) cameras on their websites/E-anudaan website.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[22].children[2]",
+          "channel": null,
+          "heading": "Conditions for Continuation"
+        },
+        {
+          "text": "The assistance provided is subject to the Implementing Agency maintaining the institution in the manner prescribed in the guidelines and standards.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.benefits[22].children[3]",
+          "channel": null,
+          "heading": "Conditions for Continuation"
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "For Senior Citizens",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "1.  The applicant must be a Senior Citizen.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2.  The applicant must be one of the following:",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Indigent, having no sufficient means to maintain himself/herself, as determined by the State Government.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Afflicted with Alzheimer's disease/Dementia or seriously ill requiring continuous nursing care, for admittance into Continuous Care Homes.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For Implementing Agencies (General)",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "1.  The applicant must be one of the following:",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "State/Union Territory Government.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[6].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Panchayati Raj Institution (PRI).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[6].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Urban Local Body (ULB).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[6].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "An Institution or Organization set up by the Government as autonomous/subordinate bodies.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[6].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A Government Recognized Educational Institution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[6].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A recognized youth organization such as Nehru Yuva Kendra Sangathan (NYKS).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[6].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For Implementing Agencies (Non-Governmental Organizations/Voluntary Organizations)",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[7].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "1.  The applicant must be registered under the Societies Registration Act, 1860 (XXI of 1860) or any relevant Act of the State/Union Territory.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[8]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2.  The applicant must be one of the following:",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[9]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A Public Trust registered under the law for the time being in force.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[10].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "A charitable company licensed under Section 25 of the Companies Act, 1958.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[10].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Indian Red Cross Society or its branches.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[10].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other public body or institution having a legal status of its own.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[10].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other organization of repute, which may be approved by the Secretary, Department of Social Justice and Empowerment.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[10].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3.  The applicant (Voluntary Organization) should have been registered for at least two years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[11]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4.  The applicant should have had at least two years' experience in the social sector at the time of applying for the grant.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[12]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "5.  The applicant must have a Bank Account maintained and operated in the joint name of the Non-Governmental Organization/Voluntary Organization.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[13]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "6.  The applicant (for Continuous Care Homes) must have shown a credible track record in running Charitable Hospitals/Nursing Homes/Medical Institutions/Colleges.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[14]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Preference/Priority",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[15].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant agency will be selected in the order of preference as follows: Self Help Groups of the senior citizens, Corporate Social Responsibility (CSR) Foundations/Charities already in the field of elderly care, Start-ups in the segment of elderly care, and Non-Governmental Organizations/Trusts operating in the elderly care segment.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[16]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "New Mobile Medicare Units shall not be supported under the Integrated Programme for Senior Citizens (IPSrC) scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.exclusions[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "No Grant-in-Aid shall be released for new Physiotherapy Clinics under State Action Plan for Senior Citizens (SAPSrC).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.schemeContent.exclusions[0].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: Survey and Notification",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "The State/Union Territory Government must first conduct a district-wise survey of existing homes and upload the details of Gap Districts or Districts of having insufficient capacity onto the E-anudaan Portal.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[1].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "If the State/Union Territory Government records that it is unable to establish the Home on its own, the Central Government publishes an open notification inviting applications with wide publicity.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[1].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 2: Submission of Proposal",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[2].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "New Proposals: All fresh proposals for project sanction must be submitted online on the E-anudaan portal in the prescribed proforma along with relevant documents within the stipulated timeline.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[3].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "On-going/Renewal Proposals: Applications for the release of grants must be made in the prescribed proforma along with relevant documents and the Utilization Certificate of expenditure from the previous Financial Year before April 30th each year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[3].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 3: Verification and Approval",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[4].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "District Level Authentication: Once uploaded, the proposal is made available to the Central Ministry and the District Administration/State Government level for examination. The District Collector (or representative) is required to authenticate all certificates submitted by the applicant.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[5].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Recommendation: District Administration/State Government shall recommend New/Fresh proposals, along with Inspection reports, by June 15th each year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[5].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Screening and Sanction: The Screening Committee meeting is held by June 20th each year to assess and recommend new proposals based on fund availability. After approval by the Secretary, Department of Social Justice and Empowerment and concurrence of the Finance Division, sanction orders are issued by the programme division in one lot by June 25th each year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[5].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 4: Fund Disbursement",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[6].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "First Instalment Release: Grants should be released before June 30th each year. The total annual grant is released in two equal half-yearly instalments.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[7].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Recurring Grant Calculation: Recurring Grant-in-aid is calculated based on the number of days of attendance of beneficiaries, using a contactless IT system that seamlessly ports data into the E-anudaan portal.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[7].children[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Second Instalment Release: The second half-yearly instalment (balance based on attendance) is released before December 31st each year, only after the inspection report of the State Government, Central Ministry officers, or the Project Monitoring Unit is received.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "en.applicationProcess[0].process[7].children[2]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Organizational/Legal Documents",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Certified Copy of the Registration Certificate Under Societies Registration Act, 1860 Or Charitable Trust Act Etc.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Non-Governmental Organization Memorandum of Association (MOA).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Valid Registration Certificate for the Project (License From the District Authorities).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Copies of Rules, Aims, And Objectives of the Organization.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[1].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "List of Management/Managing Committee Members.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[1].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Valid Managing Committee Details of the Project.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[1].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Copy of Permanent Account Number (PAN) Card of the Organization.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[1].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Bond Execution, Rule 231(2) & 3 (Required for Implementing Agencies, Not Quasi-Government Institutions, Central Autonomous Organisations, Or Institutions With Government-Approved Budgets).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[1].children[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Financial and Annual Reporting Documents",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Annual Report for the Year for Which Grant-In-Aid Is Sought.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Annual Report for Last Two Years (If Non-Governmental Organization).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Audited Statement of Accounts (Income-Expenditure Statement, Receipt-Payment Statement, Balance Sheet, Audit Report of Chartered Accountant).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[3].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Audited Accounts of Previous Year (Required If Current Year Grant-In-Aid Is Proposed).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[3].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Utilization Certificate Duly Certified By Chartered Accountant for Previous Recurring Grant-In-Aid As Per Rule 238 of General Financial Rules (GFR) (Required for Renewal/On-Going Proposals).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[3].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Budget Estimates for the Proposed Year Is Uploaded.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[3].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Budget Estimate Details (Item Wise Recurring & Non-Recurring Expenditure).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[3].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Bank Authorization Letter.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[3].children[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Project Specific Documents",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[4].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Staff List Along With Their Requisite Qualification In the Prescribed Format.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[5].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "List of Beneficiaries.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[5].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Notarized Rent/Lease Agreement If Rented Building.",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[5].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Satisfactory Certificate From All Beneficiaries (Required for Renewal/On-Going Proposals).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[5].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Rural Area Certificate From Competent Authority (May Be Uploaded In Case of Centre Located In Rural Area, Along With Rent Agreement).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[5].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "State/Union Territory Annual Action Plan (For State Government Proposals).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[5].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Affirmative Statement Regarding Implementation of Expenditure, Audit and Tender (EAT) Module and Opening of Corresponding Code (For State Government Proposals).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[5].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Confirmations of the Compliance of Instructions Issued By Public Financial Management System (PFMS) Division (For State Government Proposals).",
+          "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+          "source_path": "documents.en.documents_required[5].children[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[1].children[0].children[1]",
+      "title": "E-anudaan Portal.",
+      "type": "other",
+      "url": "https://grants-msje.gov.in/",
+      "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://socialjustice.gov.in/schemes/43",
+      "source_url": "https://www.myscheme.gov.in/schemes/avyay-napsc-hssc",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

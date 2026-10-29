@@ -71,6 +71,8 @@ def search_schemes(question, top_k=5, scheme_id=None, availability=None, include
                 "availability_status": meta["availability_status"],
                 "section": meta.get("section"), "kind": meta.get("kind"),
                 "page": meta.get("page"), "text": text, "citations": citations,
+                "links": json.loads(meta.get("links_json", "[]")),
+                "references": json.loads(meta.get("references_json", "[]")),
             }
     if include_review_pdfs:
         warnings.append("Review mode may include draft PDF extractions; their applicability is not certified.")
@@ -127,6 +129,7 @@ def main():
               f"{result['review_status']} | {result['availability_status']} | {result['score_type']} score {result['rank_score']:.4f}")
         print(result["text"])
         print("Citations:", json.dumps(result["citations"], ensure_ascii=False))
+        print("Sources and References:", json.dumps(result["references"], ensure_ascii=False))
     if not response["results"]:
         print("No records match the selected filters.")
     print(response["notice"])

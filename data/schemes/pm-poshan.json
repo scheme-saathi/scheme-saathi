@@ -1,0 +1,163 @@
+{
+  "scheme_id": "C19",
+  "slug": "pm-poshan",
+  "name": "PM POSHAN - Prime Minister's Overarching Scheme For Holistic Nourishment",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "PM POSHAN is a centrally sponsored scheme by the Department of School Education & Literacy, Ministry of Education. Under this scheme, one hot cooked meal will be provided to the children studying in Government and Government – aided schools. The Scheme is implemented across the country covering all the eligible children without any discrimination of gender and social class.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The main objectives of the PM POSHAN Abhiyaan are to address two of the pressing problems for the majority of children in India, viz. hunger and education by improving the nutritional status of eligible children in Government and Government-aided schools as well as encouraging poor children, belonging to disadvantaged sections, to attend school more regularly and help them concentrate on classroom activities.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.schemeContent.detailedDescription[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "POSHAN Abhiyaan is one of the many schemes under the umbrella scheme \"Integrated Child Development Services Scheme (ICDS)\". ICDS also includes Anganwadi Services Scheme, Pradhan Mantri Matru Vandana Yojana, and Scheme for Adolescent Girls.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.schemeContent.detailedDescription[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Nutrition norm per child per day:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": "Nutrition norm per child per day:"
+        },
+        {
+          "text": "Primary: Calorie – 450; Protein - 12 gms",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.schemeContent.benefits[1].children[0]",
+          "channel": null,
+          "heading": "Nutrition norm per child per day:"
+        },
+        {
+          "text": "Upper Primary: Calorie – 700; Protein - 20 gms",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.schemeContent.benefits[1].children[1]",
+          "channel": null,
+          "heading": "Nutrition norm per child per day:"
+        },
+        {
+          "text": "Food norms per child per day:",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": "Food norms per child per day:"
+        },
+        {
+          "text": "Primary: Food grains - 100 gms; Pulses - 20 gms; Vegetables - 50 gms; Oil & fat - 5 gms, Salt & condiments - As per need.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.schemeContent.benefits[4].children[0]",
+          "channel": null,
+          "heading": "Food norms per child per day:"
+        },
+        {
+          "text": "Upper Primary: Food grains - 150 gms; Pulses - 30 gms; Vegetables - 75 gms; Oil & fat – 7.5 gms, Salt & condiments - As per need.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.schemeContent.benefits[4].children[1]",
+          "channel": null,
+          "heading": "Food norms per child per day:"
+        },
+        {
+          "text": "Under the Scheme, there is the provision of hot cooked meals to children of pre-schools or Bal Vatika (before class I) in primary schools also in addition to the 11.80 crore children of classes I to VIII studying in 11.20 lakh schools.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.schemeContent.benefits[6]",
+          "channel": null,
+          "heading": "Food norms per child per day:"
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must be a citizen of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be studying in a Primary or Upper Primary class (Class 1st to Class 8th) in a Government or a Government-aided school.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "There is no application process for this scheme. PM POSHAN is equally applicable to all children who are studying in Government and Government – aided schools.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "No documents are required for availing the benefits of this scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+          "source_path": "documents.en.documents_required[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://www.india.gov.in/spotlight/poshan-abhiyaan-pms-overarching-scheme-holistic-nourishment",
+      "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "PIB",
+      "type": "other",
+      "url": "https://pib.gov.in/Pressreleaseshare.aspx?PRID=1812421#:~:text=The%20Government%20has%20approved%20the,by%20the%20Ministry%20of%20Education.",
+      "source_url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

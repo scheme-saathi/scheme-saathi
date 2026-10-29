@@ -55,12 +55,14 @@ def main():
     matching = [s for s in schemes if s.scheme_id == args.scheme_id and not s.sample_only]
     if len(matching) != 1:
         parser.error("scheme-id must identify exactly one full scheme record.")
-    scheme = matching[0]
-    if not args.file.is_file() or args.file.suffix.lower() != ".pdf":
-        parser.error("Provide an existing local PDF file.")
-    source_url = str(TypeAdapter(HttpUrl).validate_python(args.source_url))
-    pages = extract_pages(args.file)
-    content = args.file.read_bytes()
+    extract_document(matching[0], args.file, args.source_url, args.title, args.reextract, args.collected_on)
+
+
+def extract_document(scheme, file, source_url, title=None, reextract=False, collected_on=None):
+    if not file.is_file() or file.suffix.lower() != ".pdf":
+        raise ValueError("Provide an existing local PDF file.")
+    source_url = str(TypeAdapter(HttpUrl).validate_python(source_url))
+    content = file.read_bytes()
     file_hash = hashlib.sha256(content).hexdigest()
     document_id = f"{scheme.scheme_id}-{file_hash}"
     raw_path = PROJECT_ROOT / "data" / "raw" / scheme.scheme_id / f"{file_hash}.pdf"
@@ -70,24 +72,25 @@ def main():
 
     previous = None
     if output_path.exists():
-        if not args.reextract:
+        if not reextract:
             print(f"Already extracted for this scheme: {output_path}; use --reextract to update.")
-            return
+            return output_path
         previous = json.loads(output_path.read_text(encoding="utf-8"))
         backup_dir = output_path.parent / "backups"
         backup_dir.mkdir(exist_ok=True)
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
         (backup_dir / f"{file_hash}-{stamp}.json").write_bytes(output_path.read_bytes())
+    pages = extract_pages(file)
     if not raw_path.exists():
         raw_path.write_bytes(content)
 
     record = {
         "document_id": document_id,
         "scheme_id": scheme.scheme_id,
-        "title": args.title or (previous or {}).get("title") or args.file.stem,
+        "title": title or (previous or {}).get("title") or file.stem,
         "document_type": "reference_pdf",
         "source_url": source_url,
-        "collected_on": args.collected_on.isoformat() if args.collected_on else (previous or {}).get("collected_on", date.today().isoformat()),
+        "collected_on": collected_on.isoformat() if collected_on else (previous or {}).get("collected_on", date.today().isoformat()),
         "extraction_version": "tables_v1",
         "extracted_at": datetime.now(timezone.utc).isoformat(),
         "file_sha256": file_hash,
@@ -116,6 +119,33 @@ def main():
         encoding="utf-8",
     )
     print(f"Table preview: {html_path}")
+    return output_path
+
+
+def build_records(document, tokenizer):
+    records = []
+    for page in document["pages"]:
+        number = page["page_number"]
+        if page["needs_ocr_review"]:
+            print(f"Skipping page {number}: OCR review needed")
+            continue
+        prefix = f"{document['title']} | {document['scheme_id']} | PDF page {number}\n"
+        text = page["prose_text"]
+        offsets = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)["offset_mapping"]
+        start = 0
+        while start < len(offsets):
+            end = min(start + 300, len(offsets))
+            body = text[offsets[start][0]:offsets[end - 1][1]]
+            records.append({"id": f"{document['document_id']}:page-{number}:text-{start}",
+                            "page": number, "kind": "prose", "text": prefix + body})
+            if end == len(offsets):
+                break
+            start = end - 50
+        for table in page["tables"]:
+            records.append({"id": f"{document['document_id']}:{table['table_id']}",
+                            "page": number, "kind": "table",
+                            "text": prefix + table["html"] + "\nSurrounding page text:\n" + text})
+    return records
 
 
 if __name__ == "__main__":

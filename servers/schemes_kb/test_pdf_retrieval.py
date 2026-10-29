@@ -7,36 +7,12 @@ import chromadb
 from sentence_transformers import SentenceTransformer
 
 from servers.schemes_kb.import_schemes import DB_PATH, MODEL_NAME
+from servers.schemes_kb.extract_documents import build_records
 from servers.schemes_kb.scheme_loading import load_schemes
 from servers.schemes_kb.preview_chunks import PROJECT_ROOT
 
 COLLECTION_NAME = "scheme_pdf_review_v1"
 
-
-def build_records(document, tokenizer):
-    records = []
-    for page in document["pages"]:
-        number = page["page_number"]
-        if page["needs_ocr_review"]:
-            print(f"Skipping page {number}: OCR review needed")
-            continue
-        prefix = f"{document['title']} | {document['scheme_id']} | PDF page {number}\n"
-        text = page["prose_text"]
-        offsets = tokenizer(text, add_special_tokens=False, return_offsets_mapping=True)["offset_mapping"]
-        start = 0
-        while start < len(offsets):
-            end = min(start + 300, len(offsets))
-            body = text[offsets[start][0]:offsets[end - 1][1]]
-            records.append({"id": f"{document['document_id']}:page-{number}:text-{start}",
-                            "page": number, "kind": "prose", "text": prefix + body})
-            if end == len(offsets):
-                break
-            start = end - 50
-        for table in page["tables"]:
-            records.append({"id": f"{document['document_id']}:{table['table_id']}",
-                            "page": number, "kind": "table",
-                            "text": prefix + table["html"] + "\nSurrounding page text:\n" + text})
-    return records
 
 
 def main():

@@ -1,0 +1,271 @@
+{
+  "scheme_id": "C22",
+  "slug": "nms",
+  "name": "Nyaya Mitra Scheme",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/nms",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Nyaya Mitra Scheme\" was launched by the Department of Justice, Ministry of Law and Justice, in April 2017, and the scheme aims to facilitate the expeditious disposal of ten to fifteen-year-old pending cases in High Courts and Subordinate Courts. The scheme provides assistance to litigants suffering due to delayed trials by actively identifying cases, offering legal advice, and referring marginalized applicants to Lok Adalats for priority resolution. The applicant must be a retired judicial or executive officer with legal experience who acts as a Nyaya Mitra to support affected individuals. The scheme is implemented by the Department of Justice, and the applications for this scheme are accepted and managed at District Facilitation Centres housed within Common Service Centers.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Expeditious disposal of ten to fifteen-year-old pending cases in High Courts and Subordinate Courts, including matrimonial cases, accident claims, and criminal cases.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Active identification of delayed cases through the National Judicial Data Grid.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.schemeContent.benefits[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Provision of legal advice and connection of litigants to the District Legal Services Authority, Common Service Centers Tele Law, other government agencies, and civil society organisations.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.schemeContent.benefits[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Referral of marginalized applicants to Lok Adalats for prioritized dispute resolution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.schemeContent.benefits[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Assistance towards prison reforms within the district in coordination with the district judiciary and other stakeholders.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.schemeContent.benefits[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Critical analysis of pending cases to assist Registrar Generals and district judges in understanding bottlenecks and finding solutions.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.schemeContent.benefits[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Coordination with state and district authorities to enable witnesses to arrive on time or within a stipulated time frame for the early disposal of cases.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.schemeContent.benefits[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Execution of follow-up actions such as issuing notices, summons, stays, injunctions, and letters to lower courts for summoning records pursuant to court orders.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.schemeContent.benefits[0].children[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "For Nyaya Mitras",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be a retired judicial officer or a retired executive officer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must possess legal experience or an educational background in law.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "For Beneficiaries (Litigants)",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be a litigant whose case has been languishing in the subordinate courts for more than ten years.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be an individual for whom quality legal aid is not available due to social and economic barriers.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be suffering due to a delay in investigations or trial.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[3].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1: The applicant must visit the designated District Facilitation Centres housed within the Common Service Centers of the selected districts to seek legal assistance. The designated Nyaya Mitra actively identifies pending cases through the National Judicial Data Grid and reaches out to the affected parties to initiate support.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 2: The applicant must interact with the Nyaya Mitra to undergo a critical analysis of their pending case and understand the specific bottlenecks causing the judicial delay. The Nyaya Mitra then provides necessary legal advice and explores practical solutions in coordination with relevant government departments.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Step 3: The applicant must follow the guidance of the Nyaya Mitra to connect with the District Legal Services Authority, Common Service Centers Tele Law, or other civil society organizations. Cases identified as suitable are systematically referred to Lok Adalats by the Nyaya Mitra for prioritized and expedited dispute resolution.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Place of Work",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.applicationProcess[0].process[4].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "The sitting space for the Nyaya Mitra placed at the High Court will be allocated by the respective High Court.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.applicationProcess[0].process[5].children[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "The Nyaya Mitra will be provided sitting space either at the District Legal Services Authority or the District Court, and no clerical support will be provided.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "en.applicationProcess[0].process[5].children[1]",
+          "channel": "Offline",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "*The following list of documents has been inferred from the eligibility criteria.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "documents.en.documents_required[0]",
+          "channel": null,
+          "heading": "*The following list of documents has been inferred from the eligibility criteria."
+        },
+        {
+          "text": "Proof of Retirement as a Judicial Officer or Executive Officer.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "documents.en.documents_required[1].children[0]",
+          "channel": null,
+          "heading": "*The following list of documents has been inferred from the eligibility criteria."
+        },
+        {
+          "text": "Proof of Legal Experience or Legal Background.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "documents.en.documents_required[1].children[1]",
+          "channel": null,
+          "heading": "*The following list of documents has been inferred from the eligibility criteria."
+        },
+        {
+          "text": "Pending Case Details and Case History from the National Judicial Data Grid.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "documents.en.documents_required[1].children[2]",
+          "channel": null,
+          "heading": "*The following list of documents has been inferred from the eligibility criteria."
+        },
+        {
+          "text": "Proof of Socio-Economic Status or Income Certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "documents.en.documents_required[1].children[3]",
+          "channel": null,
+          "heading": "*The following list of documents has been inferred from the eligibility criteria."
+        },
+        {
+          "text": "Valid Identity Proof of the Applicant.",
+          "source_url": "https://www.myscheme.gov.in/schemes/nms",
+          "source_path": "documents.en.documents_required[1].children[4]",
+          "channel": null,
+          "heading": "*The following list of documents has been inferred from the eligibility criteria."
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Scheme Guidelines",
+      "type": "guidelines",
+      "url": "https://drtktopecollege.in/wp-content/uploads/2021/03/Nyaya-Mitra-scheme.pdf?attachment_id=541",
+      "source_url": "https://www.myscheme.gov.in/schemes/nms",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "More Information",
+      "type": "other",
+      "url": "https://www.doj.gov.in/page/nyaya-mitra-programme",
+      "source_url": "https://www.myscheme.gov.in/schemes/nms",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[2]",
+      "title": "Press Release (29.07.2022)",
+      "type": "other",
+      "url": "https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1846198&reg=3&lang=2",
+      "source_url": "https://www.myscheme.gov.in/schemes/nms",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

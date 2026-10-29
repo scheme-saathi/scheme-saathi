@@ -1,0 +1,396 @@
+{
+  "scheme_id": "C30",
+  "slug": "hepsn",
+  "name": "Persons With Disabilities Scheme In Colleges: Higher Education For Persons With Special Needs",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The Higher Education for Persons with Special Needs (HEPSN) scheme is meant for creating an environment at higher education institutions to enrich the higher education learning experiences of differently-abled persons. Creating awareness about the capabilities of differently-abled persons, construction aimed at improving accessibility, purchase of equipment to enrich learning, etc., are the broad categories of assistance under this scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Specific Objectives of HEPSN",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.detailedDescription[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The specific objectives of the HEPSN Scheme are as follows: ",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.detailedDescription[2].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To provide equal educational opportunities to differently-abled persons in higher education institutions.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.detailedDescription[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To create awareness among the functionaries of higher education about the specific educational needs of differently-abled persons.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.detailedDescription[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To equip higher education institutions with the facilities to provide access to differently-abled persons.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.detailedDescription[3].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To provide special devices to higher education institutions that will augment the learning experiences of differently-abled persons.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.detailedDescription[3].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To monitor the implementation of all existing and future legislation and policies, which are about higher education of differently-abled persons.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.detailedDescription[3].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Provision of Facilities and Financial assistance",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The HEPSN scheme has three components. They are enumerated as follows:",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Component 1: Establishment of Enabling Units for differently-abled Persons ",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "To develop awareness in the higher education system and also to provide necessary guidance and counseling to differently-abled persons, it is proposed to establish resource units in colleges in the country, which will be called Enabling Units. The functions of this Enabling Unit will be to:",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "1. Facilitate admission of differently-abled persons in various courses;",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2. Provide guidance and counseling to differently-abled individuals;",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "3. Create awareness about the needs of differently-abled persons, and other general issues concerning their learning; and",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "4. Assist differently-abled graduates to gain successful employment in the public as well as private sectors.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[7]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The special unit will be coordinated by a faculty member to be nominated by the head of the institution. He/she will work as an honorary coordinator for which a token honorarium of Rs. 4000/- per month will be paid. The unit will also have a budgetary provision of ₹ 50,000/per year towards general administration, stationery, and contingencies, and to avail the services of experts and personnel for organizing awareness programs, counseling sessions, etc., for efficient and independent functioning in order to achieve its objectives.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[8]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Component 2: Providing Access to Differently-abled Persons",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[10].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The UGC will make a one-time grant of up to ₹ 5,00,000 per college during the Plan period so that the colleges can address the accessibility issues pertaining to disability and make special arrangements in the environment for their mobility and independent functioning.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[12].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The colleges address accessibility-related issues as per the stipulations of the Persons with Disabilities Act 1995.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[12].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The colleges ensure that all existing structures as well as future construction projects in their campuses are made disabled-friendly.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[12].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The institutes create special facilities such as ramps, rails, and special toilets, and make other necessary changes to suit the special needs of differently-abled persons.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[12].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Component 3: Providing Special Equipment to Augment Educational Services for Differently-abled Persons ",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[14].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Differently-abled persons require special aids and appliances for their daily functioning. These aids are available through various schemes of the Ministry of Social Justice and Empowerment. In addition to the procurement of assistive devices through these schemes, higher education institutions may also need special learning and assessment devices to help differently-abled students enrolled in higher education. In addition, visually challenged students need Readers. Availability of devices such as computers with screen reading software, low-vision aids, scanners, mobility devices, etc., in the institutes, would enrich the educational experiences of differently-abled persons. Therefore, colleges are encouraged to procure such devices and provide the facility of Readers for visually challenged students. The UGC will provide an ad hoc one-time grant of up to ₹1,50,000  per college during the Twelfth Plan period",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.schemeContent.benefits[15]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The college applying for a grant for any one of the components of the scheme should have enrolled disabled persons, including persons with visual impairment, hearing impairment, locomotor disability, etc., in various courses of the institute. The definitions of disability are in accordance with the Persons with Disabilities Act 1995.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Institutions applying for the scheme should have been approved by the UGC under Sections 2(f) and 12 B.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The college should have constituted an expert committee involving faculty members, experts in the field and differently-abled persons themselves. The committee should meet at least once a year to review the activities related to the concerned scheme(s).",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "not_in_source",
+      "items": []
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Application for specific projects should be sent in the prescribed Proforma For financial assistance under the scheme to assist for college to facilitate higher Education for Person (HEPSN) Scheme on Page number 6 along with the College Development proposal.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.applicationProcess[0].process[0]",
+          "channel": "Offline",
+          "heading": null
+        },
+        {
+          "text": "Procedure for release of grant",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.applicationProcess[0].process[2]",
+          "channel": "Offline",
+          "heading": "Procedure for release of grant"
+        },
+        {
+          "text": "Component 1. ",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.applicationProcess[0].process[3].children[0]",
+          "channel": "Offline",
+          "heading": "Procedure for release of grant"
+        },
+        {
+          "text": "Honorarium to the coordinator and other budgetary provisions @ Rs.50,000/- per year will be released for the 1st year after approval of the proposal. Subsequent grants will be released on the basis of an audited utilization certificate and statement of expenditure. ",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.applicationProcess[0].process[3].children[1]",
+          "channel": "Offline",
+          "heading": "Procedure for release of grant"
+        },
+        {
+          "text": "Component 2.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.applicationProcess[0].process[5].children[0]",
+          "channel": "Offline",
+          "heading": "Procedure for release of grant"
+        },
+        {
+          "text": " The grant will be released upon receipt of detailed plans and estimate as per UGC building guidelines. ",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.applicationProcess[0].process[5].children[1]",
+          "channel": "Offline",
+          "heading": "Procedure for release of grant"
+        },
+        {
+          "text": "Component 3.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.applicationProcess[0].process[7].children[0]",
+          "channel": "Offline",
+          "heading": "Procedure for release of grant"
+        },
+        {
+          "text": " 90% of the grant allocated will be released as 1st installment and the remaining 10% on a reimbursement basis, upon receipt of the audited statement of expenditure and utilization certificate. ",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "en.applicationProcess[0].process[7].children[1]",
+          "channel": "Offline",
+          "heading": "Procedure for release of grant"
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Aadhaar Card.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "2-Passport Sized Photograph (Signed Across).",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "documents.en.documents_required[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Residential Certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "documents.en.documents_required[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Disability Certificate.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "documents.en.documents_required[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "documents.en.documents_required[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Proof of the Latest Educational Qualification (Passing Certificate or Marksheet)",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "documents.en.documents_required[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Bonafide Certificate from the School/College",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "documents.en.documents_required[0].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Any other document required by the College or the District Social Welfare Office.",
+          "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+          "source_path": "documents.en.documents_required[0].children[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.applicationProcess[0].process[0].children[1]",
+      "title": "Proforma For financial assistance under the scheme to assist for college to facilitate higher Education for Person (HEPSN) Scheme",
+      "type": "other",
+      "url": "https://www.ugc.gov.in/pdfnews/1112642_Person-with-Disability-guidelines.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0]",
+      "title": "Source link",
+      "type": "other",
+      "url": "https://www.ugc.gov.in/pdfnews/1112642_Person-with-Disability-guidelines.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.eligibilityCriteria.eligibilityDescription[0].children[0].children[1]",
+      "title": "Persons with Disabilities Act 1995",
+      "type": "other",
+      "url": "https://thenationaltrust.gov.in/upload/uploadfiles/files/Persons%20with%20Disability%20Act%201995.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.eligibilityCriteria.eligibilityDescription[0].children[1].children[1]",
+      "title": "UGC under Sections 2(f) and 12",
+      "type": "other",
+      "url": "https://www.ugc.gov.in/recog_college.aspx#:~:text=**%20Apart%20from%20inclusion%20of,funds%20from%20the%20Central%20Government.",
+      "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guideline",
+      "type": "guidelines",
+      "url": "https://www.ugc.gov.in/pdfnews/1112642_Person-with-Disability-guidelines.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/hepsn",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}

@@ -5,7 +5,7 @@
   "government_level": "Central",
   "geography": "India",
   "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
-  "collected_on": "2026-10-24",
+  "collected_on": "2026-10-28",
   "review_status": "approved",
   "availability_status": "open",
   "sample_only": false,
@@ -567,11 +567,53 @@
   },
   "links": [
     {
+      "source_path": ".scheme.applicationProcess[0].process[9].children[1]",
       "title": "Annexure-I",
       "type": "other",
       "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
       "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
       "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.applicationProcess[0].process[9].children[3]",
+      "title": "Annexure-II",
+      "type": "other",
+      "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".documents.en.documents_required[1].children[2].children[1]",
+      "title": "Annexure-I",
+      "type": "other",
+      "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".documents.en.documents_required[1].children[3].children[1]",
+      "title": "Annexure-II",
+      "type": "other",
+      "url": "https://fert.gov.in/sites/default/files/Guidelines%20on%20Market%20Development%20Assistance%20(MDA)%20for%20Promotion%20of%20Organic%20Fertilizers%20-%20Regarding%20(20-09-2023)_0.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/mda-fert",
+      "format": "pdf",
+      "local_file": null,
       "verification_status": "pending"
     }
   ]

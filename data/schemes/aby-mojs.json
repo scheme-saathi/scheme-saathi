@@ -1,0 +1,416 @@
+{
+  "scheme_id": "C39",
+  "slug": "aby-mojs",
+  "name": "Atal Bhujal Yojana",
+  "government_level": "Central",
+  "geography": "India",
+  "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+  "collected_on": "2026-10-28",
+  "review_status": "approved",
+  "availability_status": "unverified",
+  "sample_only": false,
+  "sections": {
+    "details": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme \"Atal Bhujal Yojana\" was launched by the Department of Water Resources, River Development and Ganga Rejuvenation, Ministry of Jal Shakti, in 2020. The scheme aims to improve the management of groundwater resources in the water-stressed areas of the selected states. The scheme provides institutional strengthening, capacity building, and financial incentives for the preparation of community-led Water Security Plans, adoption of efficient water use practices, and improvement in the rate of decline of groundwater levels. The applicant must ensure community participation, measure groundwater levels, prepare a water budget, and develop a Gram Panchayat-level Water Security Plan. The scheme is implemented by the National Program Management Unit at the central level and State Program Management Units at the state level. The applications for this scheme are accepted through the submission of Water Security Plans to the District Program Management Units for further action and consolidation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.detailedDescription[0]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "benefits": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The scheme provides an overall financial outlay of ₹60,00,00,00,000/- over five years, which includes ₹30,00,00,00,000/- as a loan from the World Bank and ₹30,00,00,00,000/- as a matching contribution from the Government of India.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The Institutional Strengthening and Capacity Building Component offers ₹14,00,00,00,000/- for training, community mobilization, and the procurement of equipment such as Digital Water Level Recorders, rain gauges, and water quality testing kits.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The Incentive Component provides ₹46,00,00,00,000/- in financial rewards to states and Gram Panchayats for achieving predefined targets in groundwater management.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The scheme funds demand-side interventions, including micro-irrigation practices like drip and sprinkler systems, the use of recycled or reused water for irrigation, underground pipelines, and crop diversification.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The scheme supports supply-side interventions, including the construction of artificial recharge and water conservation structures such as check dams, percolation ponds, contour trenches, sub-surface dykes, and farm ponds.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The scheme provides for the upgrading of state-level groundwater quality laboratories to receive accreditation from the National Accreditation Board for Testing and Calibration Laboratories.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[0].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Conditions",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The beneficiary must form or strengthen a Village Water and Sanitation Committee to function as the Participatory Groundwater Management Committee.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The beneficiary must continuously engage in regular water budgeting exercises, preferably season-wise or at least once a year.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[2].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The beneficiary must update the Water Security Plan on an annual basis to reflect changing water needs and interventions.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[2].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The beneficiary must actively conduct social audits to gather community feedback regarding the activities undertaken during the implementation of the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[2].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The beneficiary must maintain proper documentation and submit audited financial statements and utilization certificates to avoid the recall of scheme funds.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.benefits[2].children[4]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "eligibility": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant must reside or operate within the identified water-stressed districts, blocks, or Gram Panchayats selected for the scheme.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must be located in one of the seven participating states, namely Gujarat, Haryana, Karnataka, Madhya Pradesh, Maharashtra, Rajasthan, or Uttar Pradesh.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must formulate a Water Security Plan with active community participation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must obtain the final approval of the prepared Water Security Plan from the Gram Sabha.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant must ensure the presence of at least 33% female members in the Gram Panchayat-level Water User Associations or Village Water and Sanitation Committees.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "The applicant should identify and train local volunteers or community resource persons to handle data collection equipment.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "exclusions": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "The applicant MUST NOT utilize the scheme funds for -",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.exclusions[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Construction of major or minor dams.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.exclusions[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Construction of new large-scale irrigation systems.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.exclusions[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Major industrial wastewater collection, treatment, and injection systems.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.exclusions[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Payment of salaries to government employees.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.exclusions[1].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Construction or maintenance of religious structures such as temples, mosques, churches, or tombs.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.exclusions[1].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Development of commercial ventures, including hotels, restaurants, or resorts.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.exclusions[1].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Activities of a military or paramilitary nature.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.exclusions[1].children[6]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Purchase of vehicles, land, arms, ammunition, alcohol, or tobacco.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.schemeContent.exclusions[1].children[7]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    },
+    "application_process": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "Step 1:",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[0].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Accessing The Portal And Submitting Baseline Data",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[0].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "The applicant must access the official Management Information System portal developed for Atal Bhujal Yojana to enter the required baseline data. The designated community resource persons must regularly feed the collected groundwater level, rainfall, and water quality data into the digital application to facilitate accurate water budgeting.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[1]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 2:",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[2].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Submitting The Water Security Plan For Approval",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[2].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "The applicant must convene a community meeting to review the water budget and pass a formal resolution approving the finalized Water Security Plan. The applicant must then submit the approved Water Security Plan to the District Program Management Unit for further review, allocation, and action.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[3]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Step 3:",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[4].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "District And State Level Consolidation",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[4].children[2]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "The District Program Management Unit must consolidate and validate the submitted plans at the district level before forwarding the recommendations to the State Program Management Unit. The State Program Management Unit must review the state-level plans and submit them to the State Level Steering Committee for final budget allocation, convergence mapping, and approval.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[5]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "Grievance Redressal / Help & Support",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[6].children[0]",
+          "channel": "Online",
+          "heading": null
+        },
+        {
+          "text": "A dedicated online Grievance Redressal Mechanism has been developed and integrated with the Management Information System for the early resolution of complaints. The applicants can utilize the official Toll-Free Number (011-1800110121) allocated for the immediate registration and redressal of grievances and complaints.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "en.applicationProcess[0].process[7]",
+          "channel": "Online",
+          "heading": null
+        }
+      ]
+    },
+    "required_documents": {
+      "capture_status": "captured",
+      "items": [
+        {
+          "text": "At The Application And Planning Stage",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[0].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Demographic Data And Beneficiary Census Report.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[1].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Gram Panchayat Level Water Budget Document.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[1].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Gram Panchayat Level Water Security Plan.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[1].children[2]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Gram Sabha Resolution Approving The Water Security Plan.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[1].children[3]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Record Of Minutes Of Community-Level Meetings.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[1].children[4]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Attendance Sheets Of The Gram Sabha (Ensuring At Least 20 Percent Women Members).",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[1].children[5]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "At The Benefit Disbursal And Monitoring Stage",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[2].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Audited Financial Statements Of The Gram Panchayat.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[3].children[0]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Monthly Expenditure Statements With Supporting Documentation.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[3].children[1]",
+          "channel": null,
+          "heading": null
+        },
+        {
+          "text": "Utilization Certificates For The Received Scheme Funds.",
+          "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+          "source_path": "documents.en.documents_required[3].children[2]",
+          "channel": null,
+          "heading": null
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "source_path": ".scheme.schemeContent.references[0]",
+      "title": "Guidelines",
+      "type": "guidelines",
+      "url": "https://ataljal.mowr.gov.in/WriteReadData/GeneralNotices/398cc9fe-774f-421c-9e3d-82d0ac040659_Atal%20Bhujal%20Yojana%20Program%20Guideline%201.2.pdf",
+      "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+      "format": "pdf",
+      "local_file": null,
+      "verification_status": "pending"
+    },
+    {
+      "source_path": ".scheme.schemeContent.references[1]",
+      "title": "Website",
+      "type": "other",
+      "url": "https://ataljal.mowr.gov.in/Home/Index/EN",
+      "source_url": "https://www.myscheme.gov.in/schemes/aby-mojs",
+      "format": "webpage",
+      "local_file": null,
+      "verification_status": "pending"
+    }
+  ]
+}
