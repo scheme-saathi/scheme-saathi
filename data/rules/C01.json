@@ -1,0 +1,26 @@
+{
+  "scheme_id": "C01",
+  "name": "Pradhan Mantri Jeevan Jyoti Bima Yojana",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/pmjjby",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The age of the applicant must be between 18 to 50 Years."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant must hold an individual bank / post office account."
+    }
+  ],
+  "documents_required": [],
+  "rules": [
+    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-1", "status": "draft"},
+    {"field": "age", "op": "lte", "value": 50, "clause_id": "elig-1", "status": "draft"},
+    {"field": "has_individual_bank_or_post_office_account", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"}
+  ]
+}

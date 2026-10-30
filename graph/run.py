@@ -12,7 +12,13 @@ CITIZEN = {"age": 62, "is_widow": True, "income": 250000}
 DEFAULT_DB = Path("data/checkpoints.sqlite3")
 
 
+PREVIEW_BANNER = ("DRAFT PREVIEW: these verdicts use unreviewed draft rules. They are for rule authors only, "
+                  "are not eligibility advice, and no application is drafted or submitted.")
+
+
 def print_verdicts(state) -> None:
+    if state.get("include_draft"):
+        print(PREVIEW_BANNER + "\n")
     print("Eligibility results:")
     for scheme_id, result in state["verdicts"].items():
         print(f"\n  Scheme: {scheme_id}")
@@ -77,34 +83,35 @@ def finish(graph, config, result, decision: str) -> None:
         print_submission(result)
 
 
-def initial_input(citizen: dict, scheme_ids: list[str] | None) -> dict:
-    return {"simulated_citizen": citizen, **({"scheme_ids": scheme_ids} if scheme_ids else {})}
+def initial_input(citizen: dict, scheme_ids: list[str] | None, include_draft: bool = False) -> dict:
+    return {"simulated_citizen": citizen, **({"scheme_ids": scheme_ids} if scheme_ids else {}),
+            **({"include_draft": True} if include_draft else {})}
 
 
-def run_demo(citizen: dict, scheme_ids: list[str] | None) -> None:
+def run_demo(citizen: dict, scheme_ids: list[str] | None, include_draft: bool = False) -> None:
     graph = build_graph()
     config = {"configurable": {"thread_id": "demo-1"}}
-    state = graph.invoke(initial_input(citizen, scheme_ids), config)
+    state = graph.invoke(initial_input(citizen, scheme_ids, include_draft), config)
     print_verdicts(state)
     if "__interrupt__" not in state:
-        print("\nNo application to approve.")
+        print("\nPreview only; no application drafted." if include_draft else "\nNo application to approve.")
         return
     print_approval(state)
     approval = decision_payload(graph, config, "approve", None, None)
     print_submission(graph.invoke(Command(resume=approval), config))
 
 
-def run_start(db: Path, thread_id: str, citizen: dict, scheme_ids: list[str] | None) -> int:
+def run_start(db: Path, thread_id: str, citizen: dict, scheme_ids: list[str] | None, include_draft: bool = False) -> int:
     with sqlite_checkpointer(db) as saver:
         graph = build_graph(saver)
         config = {"configurable": {"thread_id": thread_id}}
         if graph.get_state(config).values:
             print(f"Thread '{thread_id}' already exists in {db}; choose another --thread-id.", file=sys.stderr)
             return 1
-        state = graph.invoke(initial_input(citizen, scheme_ids), config)
+        state = graph.invoke(initial_input(citizen, scheme_ids, include_draft), config)
         print_verdicts(state)
         if "__interrupt__" not in state:
-            print("\nNo application to approve.")
+            print("\nPreview only; no application drafted." if include_draft else "\nNo application to approve.")
             return 0
         print_approval(state)
         print(f"\nPaused and saved to {db} (thread '{thread_id}'). Resume later with: "
@@ -142,6 +149,8 @@ def main(argv: list[str] | None = None) -> int:
     profile_group = parser.add_mutually_exclusive_group()
     profile_group.add_argument("--citizen", help="Simulated citizen profile as a JSON object. Default: a sample widow.")
     profile_group.add_argument("--persona-id", help="Load a synthetic persona by ID (for example, SS001).")
+    parser.add_argument("--include-draft", action="store_true",
+                        help="Preview verdicts using unreviewed draft rules. For rule authors; nothing is drafted or submitted.")
     parser.add_argument("--decision", choices=["approve", "edit", "reject"], default="approve")
     parser.add_argument("--changes", help="With --decision edit: JSON object of profile fields to change.")
     parser.add_argument("--payload-hash", help="With --decision approve: hash of the form being approved "
@@ -158,14 +167,14 @@ def main(argv: list[str] | None = None) -> int:
             raise ValueError("--decision edit requires --changes as a JSON object")
         if args.phase != "resume" and args.scheme_ids:
             from graph.mock_tools import search_schemes
-            search_schemes({}, args.scheme_ids)
+            search_schemes({}, args.scheme_ids, args.include_draft)
     except ValueError as error:
         parser.error(str(error))
     if args.phase == "start":
-        return run_start(args.db, args.thread_id, citizen, args.scheme_ids)
+        return run_start(args.db, args.thread_id, citizen, args.scheme_ids, args.include_draft)
     if args.phase == "resume":
         return run_resume(args.db, args.thread_id, args.decision, changes, args.payload_hash)
-    run_demo(citizen, args.scheme_ids)
+    run_demo(citizen, args.scheme_ids, args.include_draft)
     return 0
 
 

@@ -1,0 +1,41 @@
+{
+  "scheme_id": "C06",
+  "name": "Indira Gandhi National Widow Pension Scheme",
+  "level": "central",
+  "state": "Maharashtra implementation",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/ignwps",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant must be a widow in the age group of 40-79 years."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant should belong to a household living below the poverty line according to the criteria prescribed by the Govt. of India"
+    },
+    {
+      "clause_id": "excl-1",
+      "text": "Pension will be discontinued"
+    },
+    {
+      "clause_id": "excl-2",
+      "text": "In case of remarriage of widow"
+    },
+    {
+      "clause_id": "excl-3",
+      "text": "Once the widow moves above poverty line"
+    }
+  ],
+  "documents_required": [],
+  "rules": [
+    {"field": "is_widow", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
+    {"field": "age", "op": "gte", "value": 40, "clause_id": "elig-1", "status": "draft"},
+    {"field": "age", "op": "lte", "value": 79, "clause_id": "elig-1", "status": "draft"},
+    {"field": "household_below_bpl", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"},
+    {"field": "is_remarried", "op": "eq", "value": false, "clause_id": "excl-2", "status": "draft"},
+    {"field": "has_not_moved_above_bpl", "op": "eq", "value": true, "clause_id": "excl-3", "status": "draft"}
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "scheme_id": "C02",
+  "name": "Pradhan Mantri Suraksha Bima Yojana",
+  "level": "central",
+  "state": null,
+  "source": {"url": "https://www.myscheme.gov.in/schemes/pmsby", "collected_on": "2026-10-28"},
+  "clauses": [
+    {"clause_id": "elig-1", "text": "Individual bank account holders of participating banks aged between 18 years (completed) and 70 years (age nearer birthday) who give their consent to join / enable auto-debit, will be enrolled into the scheme."},
+    {"clause_id": "exit-1", "text": "The accident cover of the member shall terminate / be restricted accordingly on attaining age 70 years (age nearer birth day), or on closure of account with the Bank or insufficiency of balance to keep the insurance in force."}
+  ],
+  "documents_required": [
+    "Duly filled PMSBY enrolment form, submitted at the bank branch where the savings account is held (or enrolment via the bank's net banking)"
+  ],
+  "rules": [
+    {"field": "has_bank_account", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
+    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-1", "status": "draft"},
+    {"field": "age", "op": "lte", "value": 70, "clause_id": "elig-1", "status": "draft"},
+    {"field": "consents_to_auto_debit", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"}
+  ]
+}

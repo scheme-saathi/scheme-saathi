@@ -17,6 +17,7 @@ MAX_DRAFT_ATTEMPTS = 3
 class GraphState(TypedDict, total=False):
     simulated_citizen: dict[str, Any]
     scheme_ids: list[str]
+    include_draft: bool
     profile: dict[str, Any]
     questions_asked: int
     plan: list[str]
@@ -33,7 +34,7 @@ class GraphState(TypedDict, total=False):
 
 
 def unanswered(state: GraphState) -> list[str]:
-    return [f for f in mock_tools.required_fields(state.get("scheme_ids")) if f not in state["profile"]]
+    return [f for f in mock_tools.required_fields(state.get("scheme_ids"), state.get("include_draft", False)) if f not in state["profile"]]
 
 
 def plan_node(state: GraphState) -> dict[str, Any]:
@@ -54,8 +55,9 @@ def intake_node(state: GraphState) -> dict[str, Any]:
 
 
 def eligibility_node(state: GraphState) -> dict[str, Any]:
-    schemes = mock_tools.search_schemes(state["profile"], state.get("scheme_ids"))
-    return {"verdicts": {s: mock_tools.evaluate_scheme(state["profile"], s) for s in schemes}}
+    preview = state.get("include_draft", False)
+    schemes = mock_tools.search_schemes(state["profile"], state.get("scheme_ids"), preview)
+    return {"verdicts": {s: mock_tools.evaluate_scheme(state["profile"], s, preview) for s in schemes}}
 
 
 def route_after_eligibility(state: GraphState) -> str:
@@ -66,6 +68,11 @@ def route_after_eligibility(state: GraphState) -> str:
 def documents_node(state: GraphState) -> dict[str, Any]:
     eligible = [s for s, v in state["verdicts"].items() if v["verdict"] == "eligible"]
     return {"documents": {s: mock_tools.list_documents(s) for s in eligible}}
+
+
+def route_after_documents(state: GraphState) -> str:
+    # Verdicts from unreviewed draft rules are a preview only: never draft, approve or submit from them.
+    return END if state.get("include_draft") else "draft"
 
 
 def draft_node(state: GraphState) -> dict[str, Any]:
@@ -166,7 +173,7 @@ def build_graph(checkpointer=None):
     builder.add_edge("plan", "intake")
     builder.add_edge("intake", "eligibility")
     builder.add_conditional_edges("eligibility", route_after_eligibility, ["intake", "documents"])
-    builder.add_edge("documents", "draft")
+    builder.add_conditional_edges("documents", route_after_documents, ["draft", END])
     builder.add_conditional_edges("draft", route_after_draft, ["validate", END])
     builder.add_conditional_edges("validate", route_after_validate, ["approval", "draft", "escalate"])
     builder.add_edge("escalate", END)
