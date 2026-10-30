@@ -8,6 +8,7 @@ from graph.workflow import build_graph
 
 ROOT = Path(__file__).resolve().parents[1]
 PMSBY_OK = {"has_bank_account": True, "age": 40, "consents_to_auto_debit": True}
+APY_OK = {"has_savings_account": True, "age": 30, "is_or_was_income_tax_payer": False}
 
 
 def run(citizen, scheme_ids, include_draft):
@@ -57,3 +58,29 @@ def test_cli_preview_prints_banner_and_verdict():
     assert result.returncode == 0, result.stderr
     assert "DRAFT PREVIEW" in result.stdout and "Eligible" in result.stdout
     assert "Preview only; no application drafted." in result.stdout and "Mock submission" not in result.stdout
+
+
+def test_apy_rules_are_valid_cited_drafts():
+    record = json.loads((ROOT / "data/rules/C04.json").read_text())
+    assert {rule["status"] for rule in record["rules"]} == {"draft"}
+    assert {rule["clause_id"] for rule in record["rules"]} <= {
+        clause["clause_id"] for clause in record["clauses"]
+    }
+    assert mock_tools.search_schemes({}, ["C04"]) == ["C04"]
+    assert "C04" not in mock_tools.search_schemes({})
+
+
+def test_apy_draft_preview_observes_age_and_tax_payer_rules():
+    verdict = lambda **changes: run({**APY_OK, **changes}, ["C04"], True)["verdicts"]["C04"]["verdict"]
+    assert [verdict(age=17), verdict(age=18), verdict(age=40), verdict(age=41)] == [
+        "not_eligible", "eligible", "eligible", "not_eligible"
+    ]
+    assert verdict(is_or_was_income_tax_payer=True) == "not_eligible"
+
+
+def test_apy_drafts_fail_closed_without_preview_and_do_not_mutate():
+    state = run(APY_OK, ["C04"], False)
+    assert state["verdicts"]["C04"]["verdict"] == "cant_tell"
+    run(APY_OK, ["C04"], True)
+    record = json.loads((ROOT / "data/rules/C04.json").read_text())
+    assert {rule["status"] for rule in record["rules"]} == {"draft"}
