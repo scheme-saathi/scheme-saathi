@@ -57,3 +57,33 @@ def test_persona_id_and_citizen_cannot_be_combined():
     result = run("--persona-id", "SS001", "--citizen", '{"age": 40}')
     assert result.returncode == 2
     assert "not allowed with argument" in result.stderr
+
+
+def hash_in(output):
+    import re
+    return re.search(r"'payload_hash': '([0-9a-f]{64})'", output).group(1)
+
+
+def test_edit_then_approve_in_separate_processes(tmp_path):
+    db = str(tmp_path / "cp.sqlite3")
+    started = run("--phase", "start", "--db", db, "--thread-id", "e1")
+    old = hash_in(started.stdout)
+    edited = run("--phase", "resume", "--db", db, "--thread-id", "e1", "--decision", "edit",
+                 "--changes", '{"income": 200000}')
+    assert edited.returncode == 0, edited.stderr
+    assert "needs a new approval" in edited.stdout and hash_in(edited.stdout) != old
+    approved = run("--phase", "resume", "--db", db, "--thread-id", "e1", "--decision", "approve")
+    assert "submitted (mock)" in approved.stdout
+
+
+def test_stale_approval_after_an_edit_is_refused(tmp_path):
+    db = str(tmp_path / "cp.sqlite3")
+    old = hash_in(run("--phase", "start", "--db", db, "--thread-id", "e2").stdout)
+    run("--phase", "resume", "--db", db, "--thread-id", "e2", "--decision", "edit", "--changes", '{"income": 200000}')
+    stale = run("--phase", "resume", "--db", db, "--thread-id", "e2", "--decision", "approve", "--payload-hash", old)
+    assert "did not match the current application" in stale.stdout
+    assert "submitted (mock)" not in stale.stdout
+
+
+def test_edit_requires_changes():
+    assert run("--phase", "resume", "--decision", "edit").returncode == 2
