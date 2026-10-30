@@ -6,6 +6,7 @@ from pathlib import Path
 from langgraph.types import Command
 
 from graph.persona import load_persona_profile
+from graph.tools import ToolCallError
 from graph.workflow import build_graph, sqlite_checkpointer
 
 CITIZEN = {"age": 62, "is_widow": True, "income": 250000}
@@ -166,9 +167,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.decision == "edit" and not isinstance(changes, dict):
             raise ValueError("--decision edit requires --changes as a JSON object")
         if args.phase != "resume" and args.scheme_ids:
-            from graph.mock_tools import search_schemes
+            from graph.tools import search_schemes
             search_schemes({}, args.scheme_ids, args.include_draft)
-    except ValueError as error:
+    except (ValueError, ToolCallError) as error:
         parser.error(str(error))
     if args.phase == "start":
         return run_start(args.db, args.thread_id, citizen, args.scheme_ids, args.include_draft)

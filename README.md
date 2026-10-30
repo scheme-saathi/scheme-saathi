@@ -90,7 +90,7 @@ python -m graph.run --phase start --thread-id demo-1
 python -m graph.run --phase resume --thread-id demo-1 --decision approve
 ```
 
-`--decision reject` resumes without submitting. State is stored in `data/checkpoints.sqlite3` (git-ignored); use `--db` to choose another file. A thread ID can be started only once, and `resume` only works for a thread waiting at approval. Running `python -m graph.run` without `--phase` keeps the earlier in-memory demo. This checkpoints the mock workflow only.
+`--decision reject` resumes without submitting. State is stored in `data/checkpoints.sqlite3` (git-ignored); use `--db` to choose another file. A thread ID can be started only once, and `resume` only works for a thread waiting at approval. Running `python -m graph.run` without `--phase` keeps the earlier in-memory demo. This checkpoints the workflow only. All graph tool calls go through the FastMCP servers in `servers/` via `graph/tools.py`; only `submit` writes to the mock portal, after approval.
 
 ### Approval, edit and self-correction
 

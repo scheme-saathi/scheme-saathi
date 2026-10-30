@@ -3,7 +3,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from graph import mock_tools
+from graph import tools
 from graph.workflow import build_graph
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,8 +20,8 @@ def test_second_scheme_rules_are_valid_cited_drafts():
     record = json.loads((ROOT / "data/rules/C02.json").read_text())
     assert {r["status"] for r in record["rules"]} == {"draft"}
     assert {r["clause_id"] for r in record["rules"]} <= {c["clause_id"] for c in record["clauses"]}
-    assert mock_tools.search_schemes({}, ["C02"]) == ["C02"]
-    assert "C02" not in mock_tools.search_schemes({})
+    assert tools.search_schemes({}, ["C02"]) == ["C02"]
+    assert "C02" not in tools.search_schemes({})
 
 
 def test_without_the_flag_draft_rules_fail_closed():
@@ -66,8 +66,8 @@ def test_apy_rules_are_valid_cited_drafts():
     assert {rule["clause_id"] for rule in record["rules"]} <= {
         clause["clause_id"] for clause in record["clauses"]
     }
-    assert mock_tools.search_schemes({}, ["C04"]) == ["C04"]
-    assert "C04" not in mock_tools.search_schemes({})
+    assert tools.search_schemes({}, ["C04"]) == ["C04"]
+    assert "C04" not in tools.search_schemes({})
 
 
 def test_apy_draft_preview_observes_age_and_tax_payer_rules():
