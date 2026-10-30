@@ -65,6 +65,6 @@
     {"field": "is_epfo_member", "op": "eq", "value": false, "clause_id": "excl-4", "status": "draft"},
     {"field": "is_nps_member", "op": "eq", "value": false, "clause_id": "excl-5", "status": "draft"},
     {"field": "is_esic_member", "op": "eq", "value": false, "clause_id": "excl-6", "status": "draft"},
-    {"field": "is_nps_traders_member", "op": "eq", "value": true, "clause_id": "excl-7", "status": "draft"}
+    {"field": "is_nps_traders_member", "op": "eq", "value": false, "clause_id": "excl-7", "status": "draft"}
   ]
 }

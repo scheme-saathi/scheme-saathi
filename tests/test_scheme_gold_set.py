@@ -43,3 +43,16 @@ def test_each_new_record_can_be_preview_evaluated_when_its_rules_are_satisfied()
                 profile[rule.field] = rule.value
         result = mock_tools.evaluate_scheme(profile, scheme_id, include_draft=True)
         assert result["verdict"] == "eligible", scheme_id
+
+
+def test_c05_exclusions_reject_members_and_tax_payers():
+    ok = {"is_unorganized_worker": True, "age": 30, "monthly_income": 12000,
+          "has_savings_or_jandhan_account_with_ifsc": True, "is_income_tax_payer": False,
+          "is_organized_sector_worker": False, "is_epfo_member": False, "is_nps_member": False,
+          "is_esic_member": False, "is_nps_traders_member": False}
+    verdict = lambda **c: mock_tools.evaluate_scheme({**ok, **c}, "C05", include_draft=True)["verdict"]
+    assert verdict() == "eligible"
+    assert verdict(is_nps_traders_member=True) == "not_eligible"
+    assert verdict(is_epfo_member=True) == "not_eligible"
+    assert verdict(monthly_income=15001) == "not_eligible"
+    assert verdict(age=41) == "not_eligible"
