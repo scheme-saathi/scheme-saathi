@@ -3,12 +3,17 @@ from langgraph.types import Command
 from graph.workflow import build_graph
 
 
+def approve(graph, config):
+    h = graph.get_state(config).tasks[0].interrupts[0].value["payload_hash"]
+    return Command(resume={"action": "approve", "payload_hash": h})
+
+
 def test_eligible_citizen_pauses_then_submits_after_approval():
     graph = build_graph()
     config = {"configurable": {"thread_id": "approve"}}
     state = graph.invoke({"simulated_citizen": {"age": 62, "is_widow": True, "income": 250000}}, config)
     assert state["__interrupt__"]
-    final = graph.invoke(Command(resume={"approved": True}), config)
+    final = graph.invoke(approve(graph, config), config)
     assert final["submission"]["status"].startswith("submitted")
 
 
@@ -16,7 +21,7 @@ def test_rejected_form_is_not_submitted():
     graph = build_graph()
     config = {"configurable": {"thread_id": "reject"}}
     graph.invoke({"simulated_citizen": {"age": 62, "is_widow": True, "income": 250000}}, config)
-    final = graph.invoke(Command(resume={"approved": False}), config)
+    final = graph.invoke(Command(resume={"action": "reject"}), config)
     assert final.get("submission") is None
 
 
@@ -40,5 +45,5 @@ def test_sqlite_checkpoint_resumes_with_a_fresh_graph(tmp_path):
     with sqlite_checkpointer(db) as saver:
         graph = build_graph(saver)
         assert graph.get_state(config).next == ("approval",)
-        final = graph.invoke(Command(resume={"approved": True}), config)
+        final = graph.invoke(approve(graph, config), config)
     assert final["submission"]["status"].startswith("submitted")

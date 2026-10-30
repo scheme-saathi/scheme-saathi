@@ -50,7 +50,8 @@ def test_reviewed_scheme_is_discovered_and_asks_only_its_own_questions(reviewed_
     assert state["verdicts"]["C10"]["verdict"] == "eligible"
     assert state["questions_asked"] == 5
     assert set(state["profile"]) == set(KHADI_OK)
-    final = graph.invoke(Command(resume={"approved": True}), config)
+    h = graph.get_state(config).tasks[0].interrupts[0].value["payload_hash"]
+    final = graph.invoke(Command(resume={"action": "approve", "payload_hash": h}), config)
     assert final["submission"]["scheme_id"] == "C10"
 
 

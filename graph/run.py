@@ -41,12 +41,40 @@ def print_approval(state) -> None:
 
 
 def print_submission(final) -> None:
+    if final.get("needs_human"):
+        print("\nNo valid application could be drafted; sent to a person for review.")
+        for problem in final.get("critique", []):
+            print(f"  - {problem}")
+        return
+    if final.get("approval_status") == "invalid":
+        print("\nThe approval did not match the current application; nothing was submitted.")
+        return
     if not final.get("submission"):
         print("\nApplication was not approved; nothing was submitted.")
         return
     print("\nMock submission:")
     print(f"  Status: {final['submission']['status']}")
     print(f"  Scheme: {final['submission']['scheme_id']}")
+
+
+def pending_hash(graph, config) -> str:
+    return graph.get_state(config).tasks[0].interrupts[0].value["payload_hash"]
+
+
+def decision_payload(graph, config, decision: str, changes: dict | None, payload_hash: str | None) -> dict:
+    if decision == "approve":
+        return {"action": "approve", "payload_hash": payload_hash or pending_hash(graph, config)}
+    if decision == "edit":
+        return {"action": "edit", "changes": changes or {}}
+    return {"action": "reject"}
+
+
+def finish(graph, config, result, decision: str) -> None:
+    if "__interrupt__" in result:
+        print("\nThe edited application needs a new approval:" if decision == "edit" else "\nStill waiting for approval:")
+        print_approval(result)
+    else:
+        print_submission(result)
 
 
 def initial_input(citizen: dict, scheme_ids: list[str] | None) -> dict:
@@ -62,7 +90,8 @@ def run_demo(citizen: dict, scheme_ids: list[str] | None) -> None:
         print("\nNo application to approve.")
         return
     print_approval(state)
-    print_submission(graph.invoke(Command(resume={"approved": True}), config))
+    approval = decision_payload(graph, config, "approve", None, None)
+    print_submission(graph.invoke(Command(resume=approval), config))
 
 
 def run_start(db: Path, thread_id: str, citizen: dict, scheme_ids: list[str] | None) -> int:
@@ -83,7 +112,8 @@ def run_start(db: Path, thread_id: str, citizen: dict, scheme_ids: list[str] | N
     return 0
 
 
-def run_resume(db: Path, thread_id: str, decision: str) -> int:
+def run_resume(db: Path, thread_id: str, decision: str, changes: dict | None = None,
+               payload_hash: str | None = None) -> int:
     if not db.exists():
         print(f"Checkpoint database not found: {db}", file=sys.stderr)
         return 1
@@ -94,7 +124,8 @@ def run_resume(db: Path, thread_id: str, decision: str) -> int:
             print(f"Thread '{thread_id}' is not waiting for approval.", file=sys.stderr)
             return 1
         print(f"Resuming thread '{thread_id}' from {db} with decision: {decision}")
-        print_submission(graph.invoke(Command(resume={"approved": decision == "approve"}), config))
+        resume = decision_payload(graph, config, decision, changes, payload_hash)
+        finish(graph, config, graph.invoke(Command(resume=resume), config), decision)
     return 0
 
 
@@ -111,7 +142,10 @@ def main(argv: list[str] | None = None) -> int:
     profile_group = parser.add_mutually_exclusive_group()
     profile_group.add_argument("--citizen", help="Simulated citizen profile as a JSON object. Default: a sample widow.")
     profile_group.add_argument("--persona-id", help="Load a synthetic persona by ID (for example, SS001).")
-    parser.add_argument("--decision", choices=["approve", "reject"], default="approve")
+    parser.add_argument("--decision", choices=["approve", "edit", "reject"], default="approve")
+    parser.add_argument("--changes", help="With --decision edit: JSON object of profile fields to change.")
+    parser.add_argument("--payload-hash", help="With --decision approve: hash of the form being approved "
+                        "(default: the form currently waiting).")
     args = parser.parse_args([] if argv is None else argv)
     try:
         citizen = load_persona_profile(args.persona_id) if args.persona_id else (
@@ -119,6 +153,9 @@ def main(argv: list[str] | None = None) -> int:
         )
         if not isinstance(citizen, dict):
             raise ValueError("--citizen must be a JSON object")
+        changes = json.loads(args.changes) if args.changes else None
+        if args.decision == "edit" and not isinstance(changes, dict):
+            raise ValueError("--decision edit requires --changes as a JSON object")
         if args.phase != "resume" and args.scheme_ids:
             from graph.mock_tools import search_schemes
             search_schemes({}, args.scheme_ids)
@@ -127,7 +164,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.phase == "start":
         return run_start(args.db, args.thread_id, citizen, args.scheme_ids)
     if args.phase == "resume":
-        return run_resume(args.db, args.thread_id, args.decision)
+        return run_resume(args.db, args.thread_id, args.decision, changes, args.payload_hash)
     run_demo(citizen, args.scheme_ids)
     return 0
 

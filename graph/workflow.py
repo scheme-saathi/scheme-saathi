@@ -1,3 +1,5 @@
+import hashlib
+import json
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, TypedDict
@@ -9,6 +11,8 @@ from langgraph.types import interrupt
 
 from graph import mock_tools
 
+MAX_DRAFT_ATTEMPTS = 3
+
 
 class GraphState(TypedDict, total=False):
     simulated_citizen: dict[str, Any]
@@ -19,7 +23,12 @@ class GraphState(TypedDict, total=False):
     verdicts: dict[str, dict[str, Any]]
     documents: dict[str, list[str]]
     application: dict[str, Any]
+    draft_attempts: int
+    critique: list[str]
+    needs_human: bool
     approved: bool
+    approved_hash: str
+    approval_status: str
     submission: dict[str, Any]
 
 
@@ -63,23 +72,82 @@ def draft_node(state: GraphState) -> dict[str, Any]:
     eligible = [s for s, v in state["verdicts"].items() if v["verdict"] == "eligible"]
     if not eligible:
         return {"application": {}}
-    return {"application": mock_tools.draft_application(state["profile"], eligible[0])}
+    return {
+        "application": mock_tools.draft_application(state["profile"], eligible[0]),
+        "draft_attempts": state.get("draft_attempts", 0) + 1,
+    }
 
 
 def route_after_draft(state: GraphState) -> str:
-    return "approval" if state["application"] else END
+    return "validate" if state["application"] else END
+
+
+def check_application(state: GraphState) -> list[str]:
+    """Deterministic checker: the draft must match the evaluated facts and verdicts."""
+    application = state["application"]
+    problems = []
+    scheme_id = application.get("scheme_id")
+    if state["verdicts"].get(scheme_id, {}).get("verdict") != "eligible":
+        problems.append(f"Scheme '{scheme_id}' is not an eligible scheme for this profile.")
+    applicant = application.get("applicant")
+    if not isinstance(applicant, dict):
+        return problems + ["The application has no applicant section."]
+    for field in mock_tools.required_fields([scheme_id]) if scheme_id in state["verdicts"] else []:
+        if field not in applicant:
+            problems.append(f"Applicant is missing required field '{field}'.")
+    for field, value in applicant.items():
+        if field in state["profile"] and state["profile"][field] != value:
+            problems.append(f"Applicant field '{field}' differs from the collected profile.")
+    return problems
+
+
+def validate_node(state: GraphState) -> dict[str, Any]:
+    return {"critique": check_application(state)}
+
+
+def route_after_validate(state: GraphState) -> str:
+    if not state["critique"]:
+        return "approval"
+    return "draft" if state.get("draft_attempts", 0) < MAX_DRAFT_ATTEMPTS else "escalate"
+
+
+def escalate_node(state: GraphState) -> dict[str, Any]:
+    return {"needs_human": True, "application": {}}
+
+
+def application_hash(application: dict[str, Any]) -> str:
+    canonical = json.dumps(application, sort_keys=True, separators=(",", ":"), ensure_ascii=False, default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 def approval_node(state: GraphState) -> dict[str, Any]:
-    decision = interrupt({"form": state["application"]})
-    return {"approved": bool(decision.get("approved"))}
+    """Pause for a person. Approval counts only if it names the hash of this exact form."""
+    current = application_hash(state["application"])
+    decision = interrupt({
+        "form": state["application"],
+        "payload_hash": current,
+        "options": ["approve", "edit", "reject"],
+    })
+    action = decision.get("action") if isinstance(decision, dict) else None
+    if action == "approve":
+        if decision.get("payload_hash") == current:
+            return {"approved": True, "approved_hash": current, "approval_status": "approved"}
+        return {"approved": False, "approval_status": "invalid"}
+    if action == "edit" and isinstance(decision.get("changes"), dict):
+        return {"profile": {**state["profile"], **decision["changes"]}, "approved": False,
+                "approved_hash": "", "approval_status": "edited", "draft_attempts": 0}
+    return {"approved": False, "approval_status": "rejected" if action == "reject" else "invalid"}
 
 
 def route_after_approval(state: GraphState) -> str:
-    return "submit" if state["approved"] else END
+    if state["approval_status"] == "approved":
+        return "submit"
+    return "eligibility" if state["approval_status"] == "edited" else END
 
 
 def submit_node(state: GraphState) -> dict[str, Any]:
+    if application_hash(state["application"]) != state.get("approved_hash"):
+        return {"approved": False, "approval_status": "invalid"}
     return {"submission": mock_tools.submit_application(state["application"])}
 
 
@@ -90,6 +158,8 @@ def build_graph(checkpointer=None):
     builder.add_node("eligibility", eligibility_node)
     builder.add_node("documents", documents_node)
     builder.add_node("draft", draft_node)
+    builder.add_node("validate", validate_node)
+    builder.add_node("escalate", escalate_node)
     builder.add_node("approval", approval_node)
     builder.add_node("submit", submit_node)
     builder.add_edge(START, "plan")
@@ -97,8 +167,10 @@ def build_graph(checkpointer=None):
     builder.add_edge("intake", "eligibility")
     builder.add_conditional_edges("eligibility", route_after_eligibility, ["intake", "documents"])
     builder.add_edge("documents", "draft")
-    builder.add_conditional_edges("draft", route_after_draft, ["approval", END])
-    builder.add_conditional_edges("approval", route_after_approval, ["submit", END])
+    builder.add_conditional_edges("draft", route_after_draft, ["validate", END])
+    builder.add_conditional_edges("validate", route_after_validate, ["approval", "draft", "escalate"])
+    builder.add_edge("escalate", END)
+    builder.add_conditional_edges("approval", route_after_approval, ["submit", "eligibility", END])
     builder.add_edge("submit", END)
     return builder.compile(checkpointer=checkpointer or MemorySaver())
 
