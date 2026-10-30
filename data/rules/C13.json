@@ -1,0 +1,59 @@
+{
+  "scheme_id": "C13",
+  "name": "Kisan Credit Card",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/kcc",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "Farmers - individual/joint borrowers who are owner cultivators;"
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "Tenant farmers, oral lessees & share croppers;"
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "Self Help Groups (SHGs) or Joint Liability Groups (JLGs) of farmers including tenant farmers, share croppers etc"
+    }
+  ],
+  "documents_required": [],
+  "rule_logic": "any",
+  "rules": [
+    {
+      "field": "farmer_applicant_category",
+      "op": "in",
+      "value": [
+        "individual owner cultivator",
+        "joint borrower owner cultivator"
+      ],
+      "clause_id": "elig-1",
+      "status": "draft"
+    },
+    {
+      "field": "farmer_applicant_category",
+      "op": "in",
+      "value": [
+        "tenant farmer",
+        "oral lessee",
+        "sharecropper"
+      ],
+      "clause_id": "elig-2",
+      "status": "draft"
+    },
+    {
+      "field": "farmer_applicant_category",
+      "op": "in",
+      "value": [
+        "farmer self-help group",
+        "farmer joint-liability group"
+      ],
+      "clause_id": "elig-3",
+      "status": "draft"
+    }
+  ]
+}

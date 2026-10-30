@@ -8,6 +8,7 @@ from fastmcp import FastMCP
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEME_DIR = ROOT / "data" / "schemes"
+RULES_DIR = ROOT / "data" / "rules"
 
 mcp = FastMCP(
     "schemes-kb",
@@ -84,6 +85,16 @@ def get_required_documents(scheme_id: str) -> dict[str, Any]:
             },
         }
     items = list(record.get("documents_required", []))
+    if not items:
+        # Hand-coded rule records hold the checklist for schemes whose source record has none at top level.
+        for path in sorted(RULES_DIR.glob("*.json")):
+            try:
+                rule_record = json.loads(path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                continue
+            if rule_record.get("scheme_id") == scheme_id:
+                items = list(rule_record.get("documents_required", []))
+                break
     return {"ok": True, "access": "read", "data": items}
 
 
