@@ -90,7 +90,22 @@ python -m graph.run --phase start --thread-id demo-1
 python -m graph.run --phase resume --thread-id demo-1 --decision approve
 ```
 
-`--decision reject` resumes without submitting. State is stored in `data/checkpoints.sqlite3` (git-ignored); use `--db` to choose another file. A thread ID can be started only once, and `resume` only works for a thread waiting at approval. Running `python -m graph.run` without `--phase` keeps the earlier in-memory demo. This checkpoints the mock workflow only; it does not yet tie approval to an exact payload.
+`--decision reject` resumes without submitting. State is stored in `data/checkpoints.sqlite3` (git-ignored); use `--db` to choose another file. A thread ID can be started only once, and `resume` only works for a thread waiting at approval. Running `python -m graph.run` without `--phase` keeps the earlier in-memory demo. This checkpoints the mock workflow only.
+
+### Approval, edit and self-correction
+
+Approval is bound to the exact application. The approval prompt shows the form, its `payload_hash` (SHA-256) and the options `approve`, `edit`, `reject`. Submission happens only if the approved hash matches the form being submitted.
+
+```bash
+python -m graph.run --phase resume --thread-id demo-1 --decision approve [--payload-hash <hash>]
+python -m graph.run --phase resume --thread-id demo-1 --decision edit --changes '{"income": 200000}'
+```
+
+`approve` without `--payload-hash` approves the form currently pending; a stale or wrong hash is refused and nothing is submitted. `edit` merges the changes into the profile, re-runs eligibility and drafting, and asks for a new approval, so an earlier approval never carries over. The legacy `{"approved": true}` decision is no longer accepted.
+
+After drafting, a deterministic `validate` step checks eligibility, required fields and consistency with the profile. A failed draft is redrafted up to 3 times, then escalated to a person (`needs_human`) without submitting. The current drafter is deterministic, so the loop is exercised in tests with an injected faulty drafter; it is ready for LLM drafting.
+
+Print the graph as Mermaid with `python -m graph.diagram`, or refresh [docs/workflow-graph.md](docs/workflow-graph.md) with `python -m graph.diagram --write`.
 
 ### Choosing schemes
 
