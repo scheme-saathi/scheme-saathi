@@ -1,0 +1,70 @@
+{
+  "scheme_id": "C05",
+  "name": "Pradhan Mantri Shram Yogi Maan-dhan",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/pm-sym",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant must be an unorganized worker, construction workers, domestic workers, cobbler etc."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant must have an entry age between 18 and 40 years."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant must have a monthly income of ₹15,000/- or less."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant must possess a Savings Bank Account or Jan Dhan account number with an Indian Financial System Code."
+    },
+    {
+      "clause_id": "excl-1",
+      "text": "The applicant must not be -"
+    },
+    {
+      "clause_id": "excl-2",
+      "text": "An income tax payer."
+    },
+    {
+      "clause_id": "excl-3",
+      "text": "Engaged in the organized sector."
+    },
+    {
+      "clause_id": "excl-4",
+      "text": "Holding membership in the Employees' Provident Fund Organization scheme."
+    },
+    {
+      "clause_id": "excl-5",
+      "text": "Holding membership in the National Pension Scheme."
+    },
+    {
+      "clause_id": "excl-6",
+      "text": "Holding membership in the Employees' State Insurance Corporation scheme."
+    },
+    {
+      "clause_id": "excl-7",
+      "text": "Not a member of NPS-Traders scheme."
+    }
+  ],
+  "documents_required": [],
+  "rules": [
+    {"field": "is_unorganized_worker", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
+    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-2", "status": "draft"},
+    {"field": "age", "op": "lte", "value": 40, "clause_id": "elig-2", "status": "draft"},
+    {"field": "monthly_income", "op": "lte", "value": 15000, "clause_id": "elig-3", "status": "draft"},
+    {"field": "has_savings_or_jandhan_account_with_ifsc", "op": "eq", "value": true, "clause_id": "elig-4", "status": "draft"},
+    {"field": "is_income_tax_payer", "op": "eq", "value": false, "clause_id": "excl-2", "status": "draft"},
+    {"field": "is_organized_sector_worker", "op": "eq", "value": false, "clause_id": "excl-3", "status": "draft"},
+    {"field": "is_epfo_member", "op": "eq", "value": false, "clause_id": "excl-4", "status": "draft"},
+    {"field": "is_nps_member", "op": "eq", "value": false, "clause_id": "excl-5", "status": "draft"},
+    {"field": "is_esic_member", "op": "eq", "value": false, "clause_id": "excl-6", "status": "draft"},
+    {"field": "is_nps_traders_member", "op": "eq", "value": true, "clause_id": "excl-7", "status": "draft"}
+  ]
+}

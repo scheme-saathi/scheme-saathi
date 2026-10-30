@@ -1,0 +1,27 @@
+{
+  "scheme_id": "C19",
+  "name": "PM POSHAN - Prime Minister's Overarching Scheme For Holistic Nourishment",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/pm-poshan",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant must be a citizen of India."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant must be studying in a Primary or Upper Primary class (Class 1st to Class 8th) in a Government or a Government-aided school."
+    }
+  ],
+  "documents_required": [],
+  "rules": [
+    {"field": "is_indian_citizen", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
+    {"field": "school_class", "op": "gte", "value": 1, "clause_id": "elig-2", "status": "draft"},
+    {"field": "school_class", "op": "lte", "value": 8, "clause_id": "elig-2", "status": "draft"},
+    {"field": "school_type", "op": "in", "value": ["government", "government-aided"], "clause_id": "elig-2", "status": "draft"}
+  ]
+}

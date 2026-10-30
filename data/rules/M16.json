@@ -1,0 +1,30 @@
+{
+  "scheme_id": "M16",
+  "name": "Medical Assistance for the Treatment of Critical Illness",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/matci",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The worker must be engaged in building or construction work."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The worker should be registered under the Maharashtra Building and Other Construction Workers Welfare Board (MBOCWW)."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The worker or family member must be undergoing treatment for a serious illness or critical medical condition."
+    }
+  ],
+  "documents_required": [],
+  "rules": [
+    {"field": "is_building_or_construction_worker", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
+    {"field": "registered_with_mbo_cww_board", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"},
+    {"field": "worker_or_family_member_undergoing_critical_treatment", "op": "eq", "value": true, "clause_id": "elig-3", "status": "draft"}
+  ]
+}

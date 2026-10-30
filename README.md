@@ -124,6 +124,8 @@ Draft rule files for real schemes live in `data/rules/` (separate from the sourc
 
 `C04.json` (Atal Pension Yojana) adds draft rules for savings-account holder status, joining age 18 to 40, and the exclusion for anyone who is or has been an income-tax payer (effective 1 October 2022). Its rules cite the captured eligibility and exclusion text; KYC details are listed as fetched from the active bank/post-office savings account. Both C02 and C04 need human review before their rules can be marked `reviewed`. In particular, verify field meanings and the effective date against current official scheme guidance.
 
+The other 12 hand-coded candidates for the 15-scheme rule reference set are `C01`, `C05`, `C06`, `C13`, `C17`, `C19`, `C23`, `C30`, `C38`, `M13`, `M16`, and `M18`. This covers central schemes and Maharashtra schemes. Their source clauses and rules are stored separately by ID in `data/rules/`; like the first three, all remain `draft` pending human review. Reviewers should pay special attention to the ambiguous NPS-Traders exclusion wording in C05, the family-level exclusions in M13, and the abstract profile fields used for institutional/state-specific conditions. Do not treat these 15 files as a reviewed gold set until the team validates them against current official sources.
+
 ### Draft preview
 
 `--include-draft` lets a rule author see what a draft rule set would decide, without waiting for review:
