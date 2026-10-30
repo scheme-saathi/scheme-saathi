@@ -11,6 +11,8 @@ dependencies = [
     "pydantic",
     "langgraph",
     "langgraph-checkpoint-sqlite",
+    "fastmcp",
+    "fastapi",
 ]
 
 [project.optional-dependencies]

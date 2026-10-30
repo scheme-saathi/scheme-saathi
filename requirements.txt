@@ -1,2 +1,2 @@
-# Install this project with development dependencies; install RAG dependencies separately when needed.
--e .[dev]
+# Install the project with both dev and RAG dependencies for full local validation.
+-e .[dev,rag]
