@@ -209,7 +209,7 @@ def _post_stream( endpoint: str, payload: dict[str, Any], progress: Any,) -> dic
 @st.cache_data
 def _available_schemes() -> dict[str, str]:
     """Return labels for schemes whose rule sets are fully reviewed."""
-    scheme_ids = mock_tools.search_schemes({})
+    scheme_ids = tools.search_schemes({})
     labels = {scheme_id: scheme_id for scheme_id in scheme_ids}
     for directory in (PROJECT_ROOT / "data" / "schemes", PROJECT_ROOT / "data" / "rules"):
         for path in directory.glob("*.json"):
