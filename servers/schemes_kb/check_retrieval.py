@@ -1,7 +1,8 @@
 """Quick pass/fail smoke check of scheme retrieval (not the gold-set evaluation).
 
 Searches each approved scheme by its own name and requires that scheme to appear in
-the top-k results. Also checks that every rule record in data/rules has an indexed
+the top-k results. Also runs labelled questions (tests/evaluation/retrieval_check_v1.json): each must
+return its scheme with a chunk citing the clause that answers it. Also checks that every rule record in data/rules has an indexed
 source scheme. Exits non-zero on any failure so it can run in CI or before a demo.
 """
 
@@ -12,6 +13,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCHEMES_DIR = PROJECT_ROOT / "data" / "schemes"
+QUESTIONS_FILE = PROJECT_ROOT / "tests" / "evaluation" / "retrieval_check_v1.json"
 RULES_DIR = PROJECT_ROOT / "data" / "rules"
 
 
@@ -43,6 +45,24 @@ def check(search, schemes: dict[str, str], rule_ids: list[str], top_k: int, meth
     return rows
 
 
+def check_questions(search_full, questions: list[dict], top_k: int, method: str) -> list[dict]:
+    """Each labelled question must return its scheme and a chunk citing its clause path in the top-k."""
+    rows = []
+    for q in questions:
+        results = search_full(q["question"], top_k, method)
+        scheme_rank = next((i for i, r in enumerate(results, 1) if r["scheme_id"] == q["scheme_id"]), None)
+        clause_rank = next((i for i, r in enumerate(results, 1) if r["scheme_id"] == q["scheme_id"]
+                            and any(c.get("source_path") == q["clause_path"] for c in r["citations"])), None)
+        detail = f"scheme rank {scheme_rank or 'miss'}, clause rank {clause_rank or 'miss'}"
+        rows.append({"check": f"{q['id']} {q['scheme_id']}: {q['question']}", "ok": clause_rank is not None, "detail": detail})
+    return rows
+
+
+def live_search_full(question: str, top_k: int, method: str) -> list[dict]:
+    from servers.schemes_kb.search import search_schemes
+    return search_schemes(question, top_k=top_k, method=method)["results"]
+
+
 def live_search(question: str, top_k: int, method: str) -> list[str]:
     from servers.schemes_kb.search import search_schemes
     response = search_schemes(question, top_k=top_k, method=method)
@@ -53,6 +73,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Smoke-check scheme retrieval against the local index.")
     parser.add_argument("--method", choices=["vector", "bm25", "hybrid"], default="hybrid")
     parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument("--questions", type=Path, default=QUESTIONS_FILE, help="Labelled questions JSON.")
+    parser.add_argument("--skip-questions", action="store_true", help="Only run the name and rule-record checks.")
     parser.add_argument("--scheme-id", action="append", dest="scheme_ids", help="Check only this scheme (repeatable).")
     args = parser.parse_args(argv)
     if not 1 <= args.top_k <= 20:
@@ -65,6 +87,11 @@ def main(argv: list[str] | None = None) -> int:
         schemes = {s: schemes[s] for s in args.scheme_ids}
     try:
         rows = check(live_search, schemes, rule_record_ids(), args.top_k, args.method)
+        if not args.skip_questions:
+            labelled = json.loads(args.questions.read_text(encoding="utf-8"))["questions"]
+            if args.scheme_ids:
+                labelled = [q for q in labelled if q["scheme_id"] in args.scheme_ids]
+            rows += check_questions(live_search_full, labelled, args.top_k, args.method)
     except Exception as error:
         print(f"Retrieval check could not run: {error}\nHave you run python -m servers.schemes_kb.import_schemes?",
               file=sys.stderr)

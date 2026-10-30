@@ -26,3 +26,15 @@ def test_approved_schemes_skips_drafts_and_rule_fixtures(tmp_path):
 
 def test_real_rule_records_are_listed():
     assert {"C02", "C10"} <= set(rule_record_ids())
+
+
+def test_labelled_questions_need_the_clause_not_just_the_scheme():
+    from servers.schemes_kb.check_retrieval import QUESTIONS_FILE, check_questions
+    questions = json.loads(QUESTIONS_FILE.read_text())["questions"]
+    assert len(questions) == 10 and all({"question", "scheme_id", "clause_path"} <= set(q) for q in questions)
+    q = questions[0]
+    right = [{"scheme_id": q["scheme_id"], "citations": [{"source_path": q["clause_path"]}]}]
+    wrong_clause = [{"scheme_id": q["scheme_id"], "citations": [{"source_path": "other"}]}]
+    assert check_questions(lambda *a: right, [q], 5, "hybrid")[0]["ok"]
+    row = check_questions(lambda *a: wrong_clause, [q], 5, "hybrid")[0]
+    assert not row["ok"] and "scheme rank 1, clause rank miss" in row["detail"]

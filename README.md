@@ -143,7 +143,7 @@ The output starts with a DRAFT PREVIEW banner. Draft rules are evaluated as in-m
 python -m servers.schemes_kb.check_retrieval [--method hybrid|vector|bm25] [--top-k 5] [--scheme-id C02]
 ```
 
-A quick pass/fail smoke test (run `import_schemes` first): it searches each approved scheme by its own name, requires that scheme in the top-k, and checks every `data/rules/` record has an indexed source scheme. It exits 1 on any failure. This is not the gold-set evaluation; use `servers.schemes_kb.evaluate_retrieval` for that.
+A quick pass/fail smoke test (run `import_schemes` first): it searches each approved scheme by its own name, requires that scheme in the top-k, and checks every `data/rules/` record has an indexed source scheme. It also runs 10 labelled questions from `tests/evaluation/retrieval_check_v1.json` (each names the scheme and the source clause path that answers it) and passes only if a returned chunk cites that clause; `--skip-questions` turns this off. It exits 1 on any failure. This is not the gold-set evaluation; use `servers.schemes_kb.evaluate_retrieval` for that.
 
 Run the rule-engine unit and integration tests:
 
