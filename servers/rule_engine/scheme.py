@@ -94,3 +94,9 @@ def live_conditions(scheme: SchemeRecord) -> RuleSet:
         clauses=scheme.clauses,
         ready=ready,
     )
+
+
+def preview_conditions(scheme: SchemeRecord) -> RuleSet:
+    """Draft preview only: evaluate every rule as if reviewed, on in-memory copies."""
+    rules = [rule.model_copy(update={"status": "reviewed"}) for rule in scheme.rules]
+    return RuleSet(rules=rules, logic=scheme.rule_logic, clauses=scheme.clauses, ready=bool(rules))

@@ -20,7 +20,8 @@ from fastapi.responses import StreamingResponse
 from langgraph.types import Command
 from pydantic import BaseModel, Field
 
-from graph import mock_tools
+from graph import tools
+from graph.tools import ToolCallError
 from graph.workflow import build_graph
 
 
@@ -126,8 +127,10 @@ def create_api() -> FastAPI:
     def analyze(payload: AnalysisRequest) -> StreamingResponse:
         """Validate requested schemes, start a citizen workflow, and stream its progress."""
         try:
-            mock_tools.search_schemes({}, payload.scheme_ids)
-        except ValueError as error:
+            tools.search_schemes({}, payload.scheme_ids)
+        except ToolCallError as error:
+            if error.code != "scheme_not_found":
+                raise
             raise HTTPException(status_code=422, detail=str(error)) from error
 
         thread_id = str(uuid4())

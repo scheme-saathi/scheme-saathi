@@ -1,7 +1,7 @@
 import pytest
 from langgraph.types import Command
 
-from graph import mock_tools, workflow
+from graph import tools, workflow
 from graph.workflow import MAX_DRAFT_ATTEMPTS, application_hash, build_graph
 
 CITIZEN = {"age": 62, "is_widow": True, "income": 250000}
@@ -74,7 +74,7 @@ def test_submit_refuses_a_form_that_changed_after_approval():
 
 def faulty_then_correct(fail_times):
     calls = {"n": 0}
-    real = mock_tools.draft_application
+    real = tools.draft_application
 
     def draft(profile, scheme_id):
         calls["n"] += 1
@@ -88,7 +88,7 @@ def faulty_then_correct(fail_times):
 
 def test_self_correction_loop_redrafts_until_the_checker_passes(monkeypatch):
     draft, calls = faulty_then_correct(fail_times=2)
-    monkeypatch.setattr(mock_tools, "draft_application", draft)
+    monkeypatch.setattr(tools, "draft_application", draft)
     graph, config, state = start("loop")
     assert calls["n"] == 3 and state["draft_attempts"] == 3
     assert state["critique"] == []
@@ -97,7 +97,7 @@ def test_self_correction_loop_redrafts_until_the_checker_passes(monkeypatch):
 
 def test_loop_is_bounded_and_escalates_to_a_person(monkeypatch):
     draft, calls = faulty_then_correct(fail_times=99)
-    monkeypatch.setattr(mock_tools, "draft_application", draft)
+    monkeypatch.setattr(tools, "draft_application", draft)
     graph, config, state = start("bounded")
     assert calls["n"] == MAX_DRAFT_ATTEMPTS
     assert state["needs_human"] is True and "__interrupt__" not in state

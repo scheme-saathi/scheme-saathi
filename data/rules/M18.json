@@ -1,0 +1,25 @@
+{
+  "scheme_id": "M18",
+  "name": "Training Of Motor Driving To VJNT, SBS & OBC",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/tmdvso",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "Applicant should belong to VJNT, OBC or SBC Category."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "Applicant should fulfil all the conditions of Age, Education, and fitness as per the Motor Vehicle Act."
+    }
+  ],
+  "documents_required": [],
+  "rules": [
+    {"field": "social_category", "op": "in", "value": ["VJNT", "OBC", "SBC"], "clause_id": "elig-1", "status": "draft"},
+    {"field": "meets_motor_vehicle_act_age_education_and_fitness_conditions", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"}
+  ]
+}
