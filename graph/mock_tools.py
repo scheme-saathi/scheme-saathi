@@ -17,6 +17,7 @@ def _rule_records() -> dict[str, SchemeRecord]:
             if "rules" not in data or "sections" in data:
                 continue
             record = SchemeRecord.model_validate(data)
+            print(f"directory-record:{record}")
             records[record.scheme_id] = record
     return records
 

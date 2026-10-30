@@ -13,6 +13,8 @@ dependencies = [
     "langgraph-checkpoint-sqlite",
     "fastmcp",
     "fastapi",
+    "streamlit>=1.57",
+    "uvicorn>=0.30",
 ]
 
 [project.optional-dependencies]
