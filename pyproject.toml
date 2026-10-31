@@ -14,6 +14,7 @@ dependencies = [
     "fastmcp",
     "fastapi",
     "streamlit>=1.57",
+    "python-multipart>=0.0.20",
     "uvicorn>=0.30",
     "langchain-openai",
     "python-dotenv",
@@ -29,5 +30,14 @@ pythonpath = ["."]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["servers", "servers.*", "agents", "agents.*", "graph", "graph.*"]
+include = [
+    "app",
+    "app.*",
+    "servers",
+    "servers.*",
+    "agents",
+    "agents.*",
+    "graph",
+    "graph.*",
+]
 namespaces = true

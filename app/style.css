@@ -1,0 +1,38 @@
+/* Scheme Saathi demo styling */
+.stApp {
+    background:
+        radial-gradient(ellipse at 12% 0%, rgba(31, 119, 90, 0.10), transparent 34rem),
+        #f6f8f6;
+}
+
+.block-container {
+    max-width: 1120px;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+h1, h2, h3 {
+    color: #173c32;
+    letter-spacing: -0.025em;
+}
+
+[data-testid="stMetric"] {
+    background: #ffffff;
+    border: 1px solid #e3ebe6;
+    border-radius: 14px;
+    padding: 1rem;
+}
+
+div.stButton > button[kind="primary"],
+div.stFormSubmitButton > button[kind="primary"] {
+    border-radius: 10px;
+    font-weight: 650;
+}
+
+[data-testid="stVerticalBlock"] > [data-testid="stContainer"] {
+    border-radius: 14px;
+}
+
+[data-testid="stSidebar"] {
+    background: #eef4f0;
+}

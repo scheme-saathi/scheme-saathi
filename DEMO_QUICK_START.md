@@ -1,9 +1,32 @@
-# 🚀 Quick Start: Demo UI/API Build Plan
+# Quick Start: Scheme Saathi Demo
 
-**For:** Developers ready to build the demo  
-**Timeline:** 2 weeks  
-**Effort:** 2-3 developers (1 backend, 1 frontend, 1 QA optional)  
-**Goal:** Working demo by end of Week 2  
+**For:** Developers running the local Streamlit and FastAPI demo
+**Goal:** Start the citizen workflow locally with one command
+
+## Run the current demo
+
+The runnable demo uses Streamlit for the citizen portal and FastAPI for its API.
+FastAPI starts automatically with Streamlit unless `SCHEME_SAATHI_API_URL` points
+to an already-running API.
+
+```powershell
+# From the repository root, after installing the project dependencies
+streamlit run app/app.py
+```
+
+To run the API separately:
+
+```powershell
+uvicorn app.api:app --reload --port 8000
+```
+
+Then set `SCHEME_SAATHI_API_URL=http://127.0.0.1:8000` before starting Streamlit.
+The API also exposes `/health` and `/docs`. Profile and document metadata stay
+in process memory for this demo. Uploads are validated, then file contents are
+discarded rather than persisted.
+
+The sections below retain the original React-based implementation checklist as
+historical planning notes. They are not required to run the current Streamlit demo.
 
 ---
 
