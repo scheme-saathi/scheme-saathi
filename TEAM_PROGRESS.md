@@ -1,9 +1,9 @@
 # Scheme Saathi - Team Progress Tracker
 
-**Last Updated:** 2026-10-31 08:24 IST  
+**Last Updated:** 2026-10-31 14:45 IST  
 **Project Status:** 🟢 ON TRACK  
-**Current Phase:** Phase 2 (Memory Integration) - ✅ COMPLETE  
-**Architecture Verification:** ✅ VERIFIED (95%+ compliance with design document)
+**Current Phase:** Phase 3 Scoping - 🎯 READY FOR DEMO BUILD  
+**Architecture Verification:** ✅ VERIFIED | Demo Plan: ✅ APPROVED | Production Plan: ✅ DOCUMENTED
 
 ---
 
@@ -18,8 +18,9 @@
 | **Persona Validation** | ✅ Working | All 5 agents have boundaries |
 | **Persistent Storage** | ✅ Working | ChromaDB with DuckDB backend |
 | **Concurrent Access** | ✅ Tested | 3+ concurrent households isolated |
-| **UI Team Ready** | 🟡 Partial | Contracts defined, APIs waiting for Phase 3 |
-| **Project Timeline** | ✅ On Track | Phase 1-2 complete (same week!), Phase 3 ready after decisions |
+| **UI/API Plan** | 🟢 READY | Demo plan (4 endpoints) + Production plan (26 endpoints) |
+| **Next Decision** | 🟡 PENDING | Start with Demo (2 weeks) or Production (4 weeks)? |
+| **Project Timeline** | ✅ On Track | Phase 1-2 complete, Phase 3 demo-ready |
 
 ---
 
@@ -79,90 +80,127 @@
 
 ---
 
-### Phase 3: Agent Enhancement (Weeks 3-4)
-**Status:** ⏹️ **BLOCKED ON 3 DECISIONS** (Ready to start immediately once decisions made)
+### Phase 3: Demo UI & API Layer (Weeks 1-2) - 🎯 RECOMMENDED APPROACH
+**Status:** 🟢 **READY TO START**
 
-**See:** [PHASE_3_DETAILED_ROADMAP.md](./PHASE_3_DETAILED_ROADMAP.md) for complete specifications
+**Decision Made:** Build a **DEMO** version first (not full production)
 
-**Deliverables (6 items):**
-1. [ ] **Intake Agent** - Multi-turn household info collection
-   - Status: ⏹️ Skeleton ready, logic blocked on LLM model
-   - Effort: 2-3 days
-   - Key features: Clarification loops, consent recording, sensitive data rejection
-   - Tests: 15-20 unit tests
+**Reasoning:**
+- Project is still in PoC phase (Phases 1-2 just completed)
+- Need working demo to validate with stakeholders
+- Demo is 2x faster (2 weeks vs 4 weeks)
+- Demo is 1000x cheaper ($0-30 vs $20-34k/month)
+- Full migration path to production (demo → add features → production)
+- Lower risk (smaller scope, clear success criteria)
 
-2. [ ] **Eligibility Agent** - Rule engine + verdict logic
-   - Status: ⏹️ Skeleton ready, logic blocked on LLM model + rule engine decision
-   - Effort: 3-4 days
-   - Key features: Two implementation paths (deterministic vs LLM-constrained), verdict preservation
-   - Tests: 15-20 unit tests
+**See:** 
+- [DEMO_UI_API_PLAN.md](./DEMO_UI_API_PLAN.md) - Minimal, pragmatic plan
+- [DEMO_VS_PRODUCTION_COMPARISON.md](./DEMO_VS_PRODUCTION_COMPARISON.md) - Decision matrix
 
-3. [ ] **Document Checker Agent** - Requirement mapping
-   - Status: ⏹️ Skeleton ready, logic blocked on Portal API spec
-   - Effort: 2-3 days
-   - Key features: Requirement retrieval, format validation, completeness checking (NO data extraction)
-   - Tests: 10-15 unit tests
+**Deliverables (Demo Version):**
 
-4. [ ] **Application Agent** - Consolidation + approval gate
-   - Status: ⏹️ Skeleton ready, logic blocked on Portal API spec
-   - Effort: 2-3 days
-   - Key features: Consolidate intake/eligibility/documents, explicit user approval, portal submission
-   - Tests: 15-20 unit tests
+| Item | Production | Demo | Status |
+|------|-----------|------|--------|
+| Entry Points | 3 (Citizen, CSC, Admin) | 1 (Citizen only) | ✅ Simplified |
+| UI Pages | 7 pages | 5 pages | ✅ Streamlined |
+| API Endpoints | 26 endpoints | 4 endpoints | ✅ Minimal |
+| Authentication | JWT + OTP | None | ✅ Skipped |
+| Database | PostgreSQL | In-memory | ✅ No setup |
+| Document Storage | S3 | Local filesystem | ✅ Simple |
+| Deployment | Kubernetes | Docker/Local | ✅ Easy |
 
-5. [ ] **Orchestrator Enhancement** - State transitions + supervision
-   - Status: ⏹️ Skeleton ready, enhancement blocked on all agents
-   - Effort: 2-3 days
-   - Key features: Full state machine, workflow resumption, scope isolation, error handling
-   - Tests: 20-30 unit tests
+**4 Core API Endpoints:**
+1. POST `/api/intake` - Collect user info, ask clarifications
+2. POST `/api/eligibility` - Check scheme eligibility
+3. POST `/api/documents/upload` - Upload required documents
+4. POST `/api/submit-application` - Submit and get reference number
 
-6. [ ] **Unit Tests** - Comprehensive test coverage
-   - Status: ⏹️ Ready to write alongside agents
-   - Effort: 3-5 days (parallel)
-   - Target: 85-130 new tests
-   - Coverage: Unit, integration, E2E, concurrent access
+**5 UI Pages:**
+1. Start Page - Welcome + entry button
+2. Intake Form - Multi-step household info collection
+3. Eligibility Results - Show eligible schemes
+4. Document Upload - Upload required docs
+5. Confirmation - Reference number + next steps
 
-**Foundation Ready (All ✅ from Phase 2):**
-- ✅ All 5 agent skeletons exist (agents/intake.py, eligibility.py, etc.)
-- ✅ Orchestrator skeleton exists (graph/workflow.py)
-- ✅ Memory service production-ready (ChromaDB + 3 collections)
-- ✅ Checkpointer ready (LangGraph workflow resumption)
-- ✅ Persona validator ready (all agent boundaries defined)
-- ✅ Validation framework ready (Pydantic + allowlist)
+**Tech Stack:**
+- Frontend: React 18 + TypeScript + Tailwind + Vite
+- Backend: FastAPI (Python 3.12) + existing LangGraph orchestrator
+- Storage: In-memory + local filesystem
 
-**Required Decisions (BLOCKING PHASE 3 START):**
+**Implementation Schedule:**
 
-| Decision | Status | Details | Timeline |
-|----------|--------|---------|----------|
-| 1. LLM Model | ⏳ PENDING | GPT-4 vs GPT-3.5-turbo vs Claude 3 | Needed ASAP |
-| 2. Rule Engine | ✅ DECIDED | DETERMINISTIC (per agents/eligibility.py instructions) | Already decided in code |
-| 3. Portal API | ⏳ PENDING | Endpoint spec for document/application workflows | Mid-Phase 3 (can mock until then) |
+**Week 1: Core Setup**
+- Day 1: FastAPI project + endpoint structure
+- Day 2: Connect to existing LangGraph orchestrator
+- Day 3-4: React project + Intake page implementation
+- Day 5: Eligibility results display
 
-**Key Finding:** Rule engine approach has been pre-decided as DETERMINISTIC (see agents/eligibility.py INSTRUCTIONS). Only 2 decisions now blocking Phase 3 (not 3).
+**Week 2: Completion**
+- Day 1: Document upload implementation
+- Day 2: Review & submission flow
+- Day 3-4: End-to-end testing
+- Day 5: Deployment (Docker or local)
 
-**Phase 3 Critical Path (Updated - Only 2 decisions to make):**
-```
-Mon (Day 1): Make 2 decisions (LLM model + confirm Portal API timeline)
-  ↓
-Tue-Wed (Days 2-3): Intake + Eligibility agents (rule engine already decided)
-  ↓
-Thu-Fri (Days 4-5): Document Checker + Application agents
-  ↓
-Week 2: Orchestrator enhancement + integration tests
-  ↓
-By End of Week 2: All agents complete, 85-130+ tests passing
-```
+**Deployment Options:**
+- Option A: Local (`npm run dev` + `uvicorn main:app`)
+- Option B: Docker Compose (`docker-compose up`)
+- Option C: Single server (AWS EC2 / DigitalOcean)
 
-**Start Date:** After decisions made (estimated 2026-11-03)  
-**Estimated Duration:** 1-2 weeks  
-**Target Completion:** 2026-11-17  
-**Success Criteria:** All 5 agents complete (not just skeletons), 85-130+ new tests passing
+**Key Metrics:**
+- Build time: 2 weeks
+- Setup time: 5 minutes (Docker) or 10 minutes (local)
+- Cost: $0-30 (demo only)
+- Concurrent users: 1-5 (sufficient for demo)
+- Response time: <100ms
+- Full workflow time: < 2 minutes
+
+**What Makes This Demo Effective:**
+✅ Shows the core workflow (intake → eligibility → documents → confirmation)  
+✅ Uses existing agents (no rewrite of Phase 1-2)  
+✅ Validates business logic works  
+✅ Clear UI for stakeholders to understand flow  
+✅ Fast to build (lower risk of issues)  
+✅ Easy to test locally  
+✅ Straightforward path to production later  
+
+**No Blockers** - Can start immediately once team assigned
+
+**Start Date:** Immediately after team assignment  
+**Estimated Duration:** 2 weeks  
+**Target Completion:** 2026-11-14  
+**Success Criteria:** Working demo showing full intake→eligibility→submission flow
+
+**Next Phase (Phase 4 - After Stakeholder Approval):**
+- Add authentication (JWT + OTP)
+- Add PostgreSQL database
+- Add Redis caching
+- Add S3 document storage
+- Add Admin & CSC portals
+- Ready for production deployment
+
+---
+
+### Phase 3-Extended: Agent Enhancement (Parallel or After Demo)
+**Status:** ⏹️ **BLOCKED ON 2 DECISIONS**
+
+**Can start while demo is being built, or after demo approval**
+
+**Required Decisions:**
+1. ⏳ LLM Model: GPT-4 vs GPT-3.5-turbo vs Claude 3
+2. ✅ Rule Engine: DETERMINISTIC (already decided in code)
+
+**Agent Enhancement Details:**
+- [PHASE_3_DETAILED_ROADMAP.md](./PHASE_3_DETAILED_ROADMAP.md) for full specifications
+- 5 agents: Intake, Eligibility, Document Checker, Application, Orchestrator
+- 85-130+ new tests expected
+- Effort: 1-2 weeks (after decisions made)
 
 ---
 
 ### Phase 4: RAG & Knowledge (Weeks 4-5)
 **Status:** 🔵 **SKIPPED** (Per User Request)
 
-**Note:** Skipped in current iteration. UI team building interface first. RAG integration can be added later without breaking existing agents.
+**Note:** Skipped in current iteration. UI team building demo interface first. RAG integration can be added later without breaking existing agents.
 
 ---
 
