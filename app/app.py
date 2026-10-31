@@ -7,6 +7,7 @@ import os
 import threading
 import time
 from collections.abc import Iterator
+from html import escape
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -280,8 +281,10 @@ def _run_analysis(
 
 
 def _render_header() -> None:
-    st.title("Scheme Saathi")
-    st.caption("A guided way to explore welfare schemes and prepare an application.")
+    brand, audience = st.columns([4, 1], vertical_alignment="center")
+    brand.markdown("#### :material/account_balance: Scheme Saathi")
+    brand.caption("A simpler way to discover public support")
+    audience.badge("Citizen portal", icon=":material/person:")
     page = st.session_state["page"]
     if page in STEPS:
         step, label = STEPS[page]
@@ -289,29 +292,85 @@ def _render_header() -> None:
 
 
 def _render_welcome() -> None:
-    st.write("")
-    with st.container(border=True):
-        st.subheader("Find support that fits your situation")
-        st.write(
-            "Share a few details to compare your profile with reviewed welfare "
-            "scheme rules. You can review every result before continuing."
-        )
-        st.caption(
-            "This demo provides informational results only. It does not submit "
-            "an application to a government portal."
-        )
-        if st.button(
-            "Start a scheme search",
-            type="primary",
-            icon=":material/arrow_forward:",
-        ):
-            _set_page("intake")
-            st.rerun()
+    with st.container(key="welcome-page"):
+        introduction, overview = st.columns([1.08, 0.92], gap="large")
+        with introduction:
+            st.badge(
+                "WELFARE SCHEME NAVIGATOR",
+                icon=":material/verified_user:",
+                color="green",
+            )
+            st.markdown(
+                '<div class="welcome-title">Find support that fits your life.</div>',
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                '<div class="welcome-description">Discover public benefit '
+                "schemes that may match your circumstances. Get a clear, "
+                "step-by-step view of your options.</div>",
+                unsafe_allow_html=True,
+            )
+            if st.button(
+                "Explore eligible schemes",
+                type="primary",
+                icon=":material/arrow_forward:",
+                key="start-scheme-search",
+            ):
+                _set_page("intake")
+                st.rerun()
+            st.caption(
+                ":material/lock: Your details stay in this demo session | "
+                "No government application is submitted"
+            )
+
+        with overview:
+            with st.container(border=True, key="welcome-overview"):
+                st.markdown("##### A clear path to support")
+                st.caption("A guided experience, from your details to next steps.")
+                steps = [
+                    (
+                        "person",
+                        "Tell us about yourself",
+                        "A few details help us understand your needs.",
+                    ),
+                    (
+                        "fact_check",
+                        "See what may fit",
+                        "Compare your profile with reviewed scheme rules.",
+                    ),
+                    (
+                        "description",
+                        "Prepare with confidence",
+                        "Review required documents and your application.",
+                    ),
+                ]
+                for index, (icon, title, description) in enumerate(steps, start=1):
+                    icon_column, detail_column = st.columns(
+                        [0.16, 0.84], vertical_alignment="top"
+                    )
+                    icon_column.markdown(
+                        f'<div class="journey-step">{index}</div>',
+                        unsafe_allow_html=True,
+                    )
+                    detail_column.markdown(
+                        f"**:material/{icon}: {title}**  \n"
+                        f"<span class='journey-description'>{description}</span>",
+                        unsafe_allow_html=True,
+                    )
+                    if index < len(steps):
+                        st.html('<div class="journey-connector"></div>')
+                st.caption(
+                    ":material/info: Eligibility guidance is informational, "
+                    "not an official decision."
+                )
 
 
 def _render_intake(api_base: str, schemes: list[dict[str, Any]]) -> None:
     citizen = st.session_state["citizen"]
-    scheme_options = {scheme["scheme_id"]: scheme["name"] for scheme in schemes}
+    scheme_options = {
+        scheme["scheme_id"]: f"{scheme['name']} ({scheme['scheme_id']})"
+        for scheme in schemes
+    }
     default_schemes = [
         scheme_id
         for scheme_id in st.session_state["selected_schemes"]
@@ -406,6 +465,7 @@ def _render_intake(api_base: str, schemes: list[dict[str, Any]]) -> None:
             "Check eligibility",
             type="primary",
             width="stretch",
+            key="check-eligibility",
         )
 
     if submitted:
@@ -440,14 +500,44 @@ def _render_verdicts(
 ) -> None:
     scheme_names = {scheme["scheme_id"]: scheme["name"] for scheme in schemes}
     verdicts = result.get("verdicts", {})
+    eligible_schemes = [
+        scheme_id
+        for scheme_id, verdict in verdicts.items()
+        if verdict.get("verdict") == "eligible"
+    ]
+    with st.container(key="eligibility-summary"):
+        st.badge(
+            f"{len(eligible_schemes)} eligible scheme"
+            f"{'' if len(eligible_schemes) == 1 else 's'}",
+            icon=":material/check_circle:",
+            color="green" if eligible_schemes else "gray",
+        )
+        if eligible_schemes:
+            st.markdown("#### Schemes you may be eligible for - ")
+            for scheme_id in eligible_schemes:
+                st.markdown(
+                    f"**{scheme_names.get(scheme_id, scheme_id)}** "
+                    f'<span class="scheme-id-pill" title="Scheme Id">{scheme_id}</span>',
+                    unsafe_allow_html=True,
+                )
+        else:
+            st.caption(
+                "No selected schemes currently match all reviewed eligibility "
+                "rules."
+            )
     st.subheader("Your eligibility results")
     if not verdicts:
         st.info("No reviewed eligibility rules were available for the selected schemes.")
         return
 
     for scheme_id, verdict in verdicts.items():
-        with st.container(border=True):
-            st.markdown(f"### {scheme_names.get(scheme_id, scheme_id)}")
+        with st.container(border=True):           
+            st.markdown(
+                f"### Scheme: {scheme_names.get(scheme_id, scheme_id)}"
+                f'<span class="scheme-id-pill" title="Scheme Id">'
+                f'{escape(scheme_id)}</span></h3>',
+                unsafe_allow_html=True,
+            )
             decision = verdict.get("verdict", "cant_tell")
             if decision == "eligible":
                 st.success("Eligible", icon=":material/check_circle:")
@@ -523,7 +613,12 @@ def _render_documents(api_base: str, schemes: list[dict[str, Any]]) -> None:
     required_documents = result.get("documents", {}).get(scheme_id, [])
     uploaded = st.session_state["uploads"].setdefault(scheme_id, {})
 
-    st.subheader(f"Documents for {scheme_name}")
+    st.markdown(
+        f'<h3>Documents for Scheme: {escape(scheme_name)} '
+        f'<span class="scheme-id-pill" title="Scheme Id">'
+        f'{escape(scheme_id)}</span></h3>',
+        unsafe_allow_html=True,
+    )
     st.caption(
         "Files are validated and tracked for this local demo; file contents are "
         "discarded after validation. Redact personal ID numbers before uploading."
@@ -579,7 +674,8 @@ def _render_documents(api_base: str, schemes: list[dict[str, Any]]) -> None:
     if right.button(
         "Continue to review",
         type="primary",
-        disabled=bool(missing_documents),
+        # disabled=bool(missing_documents),
+        disabled = False,
         key="documents-continue",
     ):
         _set_page("review")
@@ -614,8 +710,13 @@ def _render_review(api_base: str, schemes: list[dict[str, Any]]) -> None:
         )
         second.write(f"**Employment:** {citizen.get('employment_status', 'Not provided')}")
 
-    with st.container(border=True):
-        st.markdown(f"#### Scheme: {scheme_name}")
+    with st.container(border=True):        
+        st.markdown(
+        f"#### Scheme: {scheme_name}"
+        f'<span class="scheme-id-pill" title="Scheme Id">'
+        f'{escape(scheme_id)}</span></h3>',
+        unsafe_allow_html=True,
+    )
         if verdict.get("verdict") == "eligible":
             st.success("Eligible", icon=":material/check_circle:")
         else:
@@ -756,18 +857,6 @@ def main() -> None:
     except (RuntimeError, ValueError, OSError) as error:
         st.error(str(error), title="FastAPI is unavailable")
         st.stop()
-
-    with st.sidebar:
-        st.subheader("Demo service")
-        st.success("FastAPI connected", icon=":material/cloud_done:")
-        st.caption(
-            "Eligibility checks use reviewed scheme rules. Results are "
-            "informational and are not an official benefit decision."
-        )
-        st.caption(
-            "Profile and document metadata stay in process memory. Uploaded file "
-            "contents are discarded after validation."
-        )
 
     if not schemes:
         st.warning("No schemes with reviewed rules are available.")
