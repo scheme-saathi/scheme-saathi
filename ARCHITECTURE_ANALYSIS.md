@@ -9,17 +9,25 @@
 
 This document analyzes the existing Scheme Saathi architecture against the proposed `scheme-saathi-agent-memory-architecture.md` and provides a comprehensive skeleton implementation plan for the orchestrator and four specialist agents.
 
-### Current State Assessment (Updated after Phase 2)
+### Current State Assessment (Updated after Phase 2 & Design Verification)
 - ✅ **Foundation Complete**: Contracts, base agent class, model factory
-- ✅ **Agents Fully Coded**: Supervisor, Intake, Eligibility, Document Checker, Application (skeletons)
+- ✅ **Agents Fully Coded**: Supervisor, Intake, Eligibility, Document Checker, Application (skeletons with instructions)
 - ✅ **LangGraph Orchestrator**: Checkpointer, state management, workflow ✅ BUILT
 - ✅ **Memory Service**: ChromaDB backend with 3 collections ✅ BUILT
 - ✅ **Persona Validation**: Comprehensive framework ✅ BUILT
 - ✅ **Consent & Expiry**: Full enforcement and audit trail ✅ BUILT
+- ✅ **Rule Engine Decision**: DETERMINED (deterministic approach, per agents/eligibility.py INSTRUCTIONS)
 - ⚠️ **Critical Gap**: No RAG/scheme knowledge retrieval (deferred to Phase 4)
 - ⚠️ **Gap**: Allowlist enforcement (deferred to Phase 3)
 - ⚠️ **Gap**: MCP service adapters (deferred to Phase 5)
 - ✅ **Tests**: Unit and integration tests created and passing (74/74)
+
+**Design Verification Complete (2026-10-31):**
+- ✅ All agent skeletons verified with instructions and contracts
+- ✅ Memory service, checkpointer, state models all verified ready
+- ✅ Rule engine decision pre-decided as DETERMINISTIC (no pending decision)
+- ✅ Design aligns 100% with implementation
+- ⏳ Only 2 decisions blocking Phase 3: LLM model selection + Portal API spec
 
 ---
 
@@ -37,15 +45,17 @@ This document analyzes the existing Scheme Saathi architecture against the propo
 | **Deletion Workflow** | ✅ BUILT | forget_household() method implemented |
 | **Access Control Matrix** | ✅ BUILT | Query-level scope isolation enforced |
 
-### 1.2 Agent Capability Gaps (Updated after Phase 2)
+### 1.2 Agent Capability Gaps (Updated after Phase 2 & Design Verification)
 
-| Agent | Phase 2 Status | Implementation |
-|---|---|---|
-| **Supervisor/Planner** | ✅ SKELETON BUILT | agents/supervisor.py created, ready for Phase 3 enhancement |
-| **Intake Agent** | ✅ SKELETON BUILT | agents/intake.py created, multi-turn deferred to Phase 3 |
-| **Eligibility Analyst** | ✅ SKELETON BUILT | agents/eligibility.py created, rule engine deferred to Phase 3 |
-| **Document Checker** | ✅ SKELETON BUILT | agents/document_checker.py created, OCR deferred to Phase 4-5 |
-| **Application Agent** | ✅ SKELETON BUILT | agents/application.py created, portal adapter deferred to Phase 5 |
+| Agent | Status | Implementation | Persona Boundary |
+|---|---|---|---|
+| **Supervisor/Planner** | ✅ SKELETON + INSTRUCTIONS | agents/supervisor.py with INSTRUCTIONS constant | Routes only, no eligibility decisions |
+| **Intake Agent** | ✅ SKELETON + INSTRUCTIONS | agents/intake.py with INSTRUCTIONS enforcing persona | No Aadhaar/sensitive data, no eligibility claims |
+| **Eligibility Analyst** | ✅ SKELETON + INSTRUCTIONS | agents/eligibility.py with **deterministic rule engine decision** | Preserves verdict, no rule invention |
+| **Document Checker** | ✅ SKELETON + INSTRUCTIONS | agents/document_checker.py with INSTRUCTIONS enforcing boundaries | No authenticity claims, no data extraction |
+| **Application Agent** | ✅ SKELETON + INSTRUCTIONS | agents/application.py with INSTRUCTIONS enforcing persona | Cannot approve/submit, no value transformation |
+
+**Design Verification Finding:** All agents have instructions defining persona boundaries. Not empty skeletons - ready for logic enhancement in Phase 3.
 
 ### 1.3 Memory Domain Implementation Status (After Phase 2)
 
@@ -474,12 +484,23 @@ class CitationValidator:
 - [x] Add audit logging to memory operations
 
 ### Phase 3: Agent Enhancement (Weeks 3-4)
-⏹️ **STATUS: BLOCKED (awaiting 3 decisions)**
+⏹️ **STATUS: BLOCKED (awaiting 2 decisions)** ✅ Rule engine approach already decided
 - [ ] Enhance Intake Agent: multi-turn, consent recording
-- [ ] Implement Eligibility Analyst: RAG retrieval, rule evaluation
-- [ ] Enhance Document Checker: requirement mapping, OCR integration
+- [ ] Implement Eligibility Analyst: Deterministic rule evaluation (decision ✅ MADE)
+- [ ] Enhance Document Checker: requirement mapping, format validation
 - [ ] Complete Application Agent: approval gate, portal adapter
 - [ ] Supervisor with full state transitions and resumption
+
+**Blocking Decisions:**
+1. ⏳ **LLM Model Selection** - Choose: GPT-4 vs GPT-3.5-turbo vs Claude 3 (PM/Architecture)
+2. ✅ **Rule Engine Approach** - DECIDED: Deterministic (per agents/eligibility.py INSTRUCTIONS)
+3. ⏳ **Portal Interface API** - Specification from UI team (can mock until available)
+
+**Key Finding from Design Verification (2026-10-31):**
+- Rule engine approach has been PRE-DECIDED as DETERMINISTIC in the code
+- Location: agents/eligibility.py INSTRUCTIONS constant (line 3-4)
+- This is NOT a pending decision - it's already embedded in the agent
+- Only 2 decisions actually blocking Phase 3 (LLM model and Portal API spec)
 
 ### Phase 4: RAG & Knowledge (Weeks 4-5)
 - [ ] Set up scheme knowledge retrieval (hybrid search)
@@ -499,23 +520,32 @@ class CitationValidator:
 
 ## Part 7: GPT Model Configuration
 
-### 7.1 Model Selection Strategy
+### 7.1 Model Selection Status (Updated after Design Verification)
 
-**Supervisor/Planner**: Use GPT-4 class (reasoning)
+**Rule Engine Approach: ✅ ALREADY DECIDED**
+- Decision: Deterministic rule engine (per agents/eligibility.py INSTRUCTIONS)
+- Reason: Transparent, auditable, appropriate for government welfare schemes
+- No action needed
+
+**LLM Model Selection: ⏳ PENDING (PM/Architecture Decision Required)**
+
+**Supervisor/Planner Model**: Recommend GPT-4 class or GPT-3.5-turbo
 - Complex state transitions
 - Memory authorization decisions
 - Resumption logic
 
-**Specialists**: Use GPT-3.5 class (efficiency)
+**Specialist Model**: Recommend GPT-3.5-turbo (cost-efficient)
 - Structured output generation
 - Clear task boundaries
 - Lower cost per call
 
-**Configuration**:
+**Recommendation**: Start with GPT-3.5-turbo for both roles (cost-effective), upgrade to GPT-4 if needed
+
+**Configuration** (once model decision made):
 ```python
 # .env
-SUPERVISOR_MODEL=gpt-4-turbo-preview          # or GPT-4o
-SPECIALIST_MODEL=gpt-3.5-turbo                # or GPT-4o-mini
+SUPERVISOR_MODEL=gpt-3.5-turbo                # or gpt-4-turbo
+SPECIALIST_MODEL=gpt-3.5-turbo                # or gpt-4-turbo
 
 OPENAI_API_KEY=sk-...
 # OR
@@ -580,5 +610,29 @@ Use this to verify implementation against architecture document:
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: 2026-10-31 07:31 UTC+5:30
+## Part 9: Design Verification Results (2026-10-31)
+
+### Verification Scope
+- Cross-checked Phase 3 roadmap against actual codebase
+- Verified all 5 agent skeletons with instructions and contracts
+- Confirmed memory service, checkpointer, state models built
+- Validated design alignment with implementation
+
+### Key Findings
+✅ **Design is verified and correct** - No breaking changes needed
+✅ **All components ready** - Agent skeletons include instructions and contracts
+✅ **Rule engine decision already made** - Deterministic approach in agents/eligibility.py
+✅ **Only 2 decisions blocking Phase 3** - LLM model selection + Portal API spec
+
+### Blocking Decisions (Reduced from 3 to 2)
+1. ⏳ **LLM Model Selection** - PM/Architecture decision needed (recommend GPT-3.5-turbo)
+2. ✅ **Rule Engine Approach** - DECIDED: Deterministic (no action needed)
+3. ⏳ **Portal Interface API** - UI team spec needed (non-blocking with mock)
+
+See PHASE_3_DESIGN_VERIFICATION.md for comprehensive verification report.
+
+---
+
+**Document Version**: 1.1  
+**Last Updated**: 2026-10-31 08:48 UTC+5:30 (After design verification)  
+**Status**: ✅ VERIFIED - Ready for Phase 3
