@@ -1,12 +1,15 @@
 # Phase 3 - Required Decisions Summary
 
-**Status:** ⛔ BLOCKING Phase 3 Start  
+**Status:** ✅ PARTIALLY DECIDED (Rule engine decided, 2 decisions pending)  
 **Created:** 2026-10-31  
+**Updated:** 2026-10-31 (Design verification found rule engine already decided in code)  
 **Target Resolution:** ASAP (needed before Phase 3 starts 2026-11-03)
 
 ---
 
 ## Quick Decision Board
+
+**Key Finding:** Rule Engine decision (Decision 2) has already been pre-decided as **DETERMINISTIC** in the code (see agents/eligibility.py INSTRUCTIONS). Only 2 decisions remain pending.
 
 ### Decision 1: LLM Model Selection
 **Owner:** PM / Architecture Lead  
@@ -51,14 +54,14 @@ Total per complete workflow: ~$0.10-0.15
 
 ---
 
-### Decision 2: Rule Engine Approach
-**Owner:** Architecture Lead  
-**Status:** ⏹️ PENDING  
-**Impact:** HIGH - Affects Eligibility Agent architecture
+### Decision 2: Rule Engine Approach ✅ ALREADY DECIDED
+**Status:** ✅ DECIDED - Deterministic (pre-decided in code)  
+**Location:** agents/eligibility.py (INSTRUCTIONS constant)  
+**Impact:** HIGH - Affects Eligibility Agent architecture (no change needed from decision)
 
-#### Option A: Deterministic Rule Engine
+#### Decision Made: DETERMINISTIC RULE ENGINE
 
-**Implementation:**
+The code already implements the deterministic approach (see agents/eligibility.py):
 ```python
 # Example: PMJDY eligibility logic
 def evaluate_pmjdy(facts: FactMap) -> Verdict:
@@ -295,59 +298,67 @@ class RealPortalAdapter:
 ## Decision Dependencies
 
 ```
-Decision 1 (LLM Model)
-├── Unblocks: Intake Agent, Eligibility Agent
-├── Needed by: Phase 3 Day 2
-└── Effort: 1 hour to decide, 30 min to configure
+Decision 1 (LLM Model) ⏳ PENDING
+├── Unblocks: All agents (Intake, Eligibility, Document Checker, Application)
+├── Needed by: Phase 3 Day 1
+├── Effort: 1 hour to decide, 30 min to configure
+└── Owner: PM / Architecture Lead
 
-Decision 2 (Rule Engine)
-├── Unblocks: Eligibility Agent implementation
-├── Needed by: Phase 3 Day 2
-└── Effort: 2 hours to decide, 1 day to implement base framework
+Decision 2 (Rule Engine) ✅ DECIDED
+├── Status: Already decided as DETERMINISTIC
+├── Location: agents/eligibility.py INSTRUCTIONS
+├── Impact: Eligibility Agent architecture is ready
+└── No further decision needed
 
-Decision 3 (Portal API)
-├── Unblocks: Document Checker, Application Agent
-├── Needed by: Phase 3 Day 4 (can use mock until then)
-├── Effort: UI team responsibility (we can mock it)
-└── Note: Non-blocking with workaround
+Decision 3 (Portal API) ⏳ PENDING
+├── Unblocks: Document Checker & Application Agent finalization
+├── Needed by: Phase 3 Day 4
+├── Effort: Awaiting UI team (we can mock until ready)
+└── Workaround: Mock adapter ready to use immediately
 ```
 
 ---
 
 ## Blocking Timeline
 
+**Updated Status:** Only 2 decisions blocking Phase 3 (Rule Engine already decided)
+
 ```
-Now (2026-10-31): Phase 3 ready, all decisions pending
+Now (2026-10-31): Phase 3 ready, 2 decisions pending
 
-Decision 1 + 2 needed by: 2026-11-01 (Mon)
-├── Will allow: Intake + Eligibility agent start
-├── Unblocks: Days 2-3 of Phase 3
+Decision 1 (LLM Model) needed by: 2026-11-01 (Mon)
+├── Will allow: All agents to start
+├── Unblocks: Days 2-5 of Phase 3
+└── Effort: 1 hour decide, 30 min configure
 
-Decision 3 needed by: 2026-11-04 (Thu)
+Decision 2 (Rule Engine): ✅ Already decided (no action needed)
+
+Decision 3 (Portal API) needed by: 2026-11-04 (Thu)
 ├── Will allow: Document Checker + Application agent finalization
 ├── Unblocks: Days 4-5 of Phase 3
 └── Workaround: Use mock adapter until then
 
-Phase 3 Completion target: 2026-11-17 (if all decisions made by Monday)
+Phase 3 Completion target: 2026-11-17 (can start immediately once LLM model chosen)
 ```
 
 ---
 
 ## Recommendation
 
-**Action Items:**
+**Action Items (Updated - Only 1 decision pending):**
 
-1. **Monday, 2026-11-01** (EOD)
+1. **Monday, 2026-11-01** (EOD) - URGENT
    - [ ] PM decides on LLM model → **Recommendation: GPT-3.5-turbo**
-   - [ ] Architect confirms rule engine → **Recommendation: Deterministic (Option A)**
+   - [ ] ✅ Rule Engine approach: Already DECIDED (no action needed - it's deterministic)
+   - [ ] Set SUPERVISOR_MODEL and SPECIALIST_MODEL environment variables
 
-2. **Wednesday, 2026-11-03** (Phase 3 starts)
-   - [ ] Backend starts Intake + Eligibility agents
-   - [ ] Use mock portal adapter for testing
+2. **Wednesday, 2026-11-03** (Phase 3 starts immediately after LLM decision)
+   - [ ] Backend starts ALL agents (Intake + Eligibility + Document Checker + Application)
+   - [ ] Use mock portal adapter for testing (can start without Portal API spec)
 
 3. **Thursday, 2026-11-04** (EOD)
-   - [ ] UI team provides Portal API spec
-   - [ ] Backend integrates real adapter
+   - [ ] UI team provides Portal API spec (target)
+   - [ ] Backend integrates real adapter if spec available
 
 4. **Week of 2026-11-10**
    - [ ] All 5 agents complete

@@ -131,17 +131,19 @@
 
 **Required Decisions (BLOCKING PHASE 3 START):**
 
-| Decision | Owner | Options | Impact | Timeline |
-|----------|-------|---------|--------|----------|
-| 1. LLM Model | PM / Arch Lead | GPT-4 vs GPT-3.5-turbo vs Claude 3 | Agent quality, cost, latency | Needed ASAP |
-| 2. Rule Engine | Arch Lead | Deterministic if/else vs LLM-constrained | Eligibility logic, governance | Needed ASAP |
-| 3. Portal API | UI Team | Endpoint spec for document/application workflows | Document Checker, Application Agent | Mid-Phase 3 |
+| Decision | Status | Details | Timeline |
+|----------|--------|---------|----------|
+| 1. LLM Model | ⏳ PENDING | GPT-4 vs GPT-3.5-turbo vs Claude 3 | Needed ASAP |
+| 2. Rule Engine | ✅ DECIDED | DETERMINISTIC (per agents/eligibility.py instructions) | Already decided in code |
+| 3. Portal API | ⏳ PENDING | Endpoint spec for document/application workflows | Mid-Phase 3 (can mock until then) |
 
-**Phase 3 Critical Path:**
+**Key Finding:** Rule engine approach has been pre-decided as DETERMINISTIC (see agents/eligibility.py INSTRUCTIONS). Only 2 decisions now blocking Phase 3 (not 3).
+
+**Phase 3 Critical Path (Updated - Only 2 decisions to make):**
 ```
-Mon (Day 1): Make 3 decisions
+Mon (Day 1): Make 2 decisions (LLM model + confirm Portal API timeline)
   ↓
-Tue-Wed (Days 2-3): Intake + Eligibility agents
+Tue-Wed (Days 2-3): Intake + Eligibility agents (rule engine already decided)
   ↓
 Thu-Fri (Days 4-5): Document Checker + Application agents
   ↓
