@@ -313,9 +313,17 @@ def _render_application(result: dict[str, Any], api_base: str, scheme_labels: di
         elif result.get("submission"):
             st.success(f"Mock application status: {result['submission'].get('status', 'submitted')}")
         elif result.get("approval_status") == "rejected":
-            st.info("The draft was rejected. Nothing was submitted.")
+            st.html(
+                '<p style="color: #df5881ea; background-color: #fff0f4; '
+                'padding: 0.75rem 1rem; border-radius: 0.5rem;">'
+                'The draft was rejected. Nothing was submitted.</p>'
+            )
         elif result.get("approval_status") == "invalid":
-            st.error("Approval did not match the current draft. Nothing was submitted.")
+            st.html(
+                '<p style="color: #df5881ea; background-color: #fff0f4; '
+                'padding: 0.75rem 1rem; border-radius: 0.5rem;">'
+                'Approval did not match the current draft. Nothing was submitted.</p>'
+            )
         return
 
     st.subheader("Review your application")
