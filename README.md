@@ -329,3 +329,7 @@ python -m servers.schemes_kb.import_schemes
 
 Omitting `--export-only` combines Excel conversion and the database import in one
 command. Export-only does not load the embedding model or open ChromaDB.
+
+## Single-agent baseline (L11)
+
+`graph/baseline.py` is one ReAct agent holding every MCP tool, used later to compare against the supervisor-and-specialists team. It shares the same tools, hash-bound approval gate and model setting (`SUPERVISOR_MODEL`, `OPENROUTER_API_KEY`), and stops at a fixed step budget (`MAX_STEPS`). `summarize()` reports LLM calls, tool calls, tokens and budget use. Run it with `python -m graph.baseline --decision approve`; tests use a scripted model and need no key.
