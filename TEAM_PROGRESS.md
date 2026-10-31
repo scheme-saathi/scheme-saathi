@@ -166,36 +166,34 @@ By End of Week 2: All agents complete, 85-130+ tests passing
 
 ---
 
-### Phase 5: Portal & Services (Weeks 5-6)
-**Status:** 🟠 **NOT STARTED**
-
-**Deliverables:**
-- [ ] Portal Adapter Implementation
-- [ ] Document Upload Handling
-- [ ] OCR/Document Extraction
-- [ ] Application Status Retrieval
-- [ ] End-to-End Workflow Tests
-
-**Dependencies:**
-- ⏳ Phase 3 agent completion
-- ⏳ Portal API specification from UI team
-- ⏳ Document upload infrastructure
-
-**Note:** UI team building interface in parallel
-
----
-
-### Phase 6: Testing & Validation (Week 6+)
+### Phase 5: Testing & Integration (Weeks 5-6)
 **Status:** 🟠 **NOT STARTED**
 
 **Deliverables:**
 - [ ] Unit Test Suite (>80% coverage)
 - [ ] Integration Test Suite
-- [ ] Compliance Tests (Memory Governance)
+- [ ] Memory Service Compliance Tests
 - [ ] Persona Validation Tests
-- [ ] Load Testing (100+ concurrent users)
-- [ ] Security Review
-- [ ] Production Readiness
+- [ ] End-to-End Workflow Tests
+
+**Note:** MCP (Model Context Protocol) is NOT needed for demo. Direct Python function calls provide sufficient isolation and authorization for this capstone project. MCP can be added in Phase 6+ (production deployment) without changing agent code.
+
+**Dependencies:**
+- ✅ Phase 3 agent completion
+- ✅ Phase 4 RAG integration (if needed)
+
+---
+
+### Phase 6: Production Hardening (Week 6+)
+**Status:** 🟠 **NOT STARTED**
+
+**Deliverables (Demo Phase Not Required):**
+- [ ] Load Testing (100+ concurrent users) - *Optional for demo*
+- [ ] Security Review - *Optional for demo*
+- [ ] MCP Integration (Production Interoperability) - *Optional for demo, Phase 6+*
+- [ ] Deployment Hardening - *Optional for demo*
+
+**Note:** MCP is deferred to Phase 6+ for production. Current direct function call approach is optimal for demo/capstone project.
 
 ---
 

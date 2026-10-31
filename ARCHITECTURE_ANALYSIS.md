@@ -19,7 +19,7 @@ This document analyzes the existing Scheme Saathi architecture against the propo
 - ✅ **Rule Engine Decision**: DETERMINED (deterministic approach, per agents/eligibility.py INSTRUCTIONS)
 - ⚠️ **Critical Gap**: No RAG/scheme knowledge retrieval (deferred to Phase 4)
 - ⚠️ **Gap**: Allowlist enforcement (deferred to Phase 3)
-- ⚠️ **Gap**: MCP service adapters (deferred to Phase 5)
+- ✅ **MCP Requirement**: NOT NEEDED for demo (deferred to Phase 6+ production hardening)
 - ✅ **Tests**: Unit and integration tests created and passing (74/74)
 
 **Design Verification Complete (2026-10-31):**
@@ -516,6 +516,8 @@ class CitationValidator:
 - [ ] Persona validation tests
 - [ ] End-to-end workflows
 
+**Note:** MCP is not needed for demo. MCP service boundaries and tool definitions deferred to Phase 6+ (production deployment). Current direct Python function calls are sufficient and preferred for demo simplicity.
+
 ---
 
 ## Part 7: GPT Model Configuration
@@ -592,11 +594,13 @@ Use this to verify implementation against architecture document:
 - [ ] Citations include source, version, clause ID
 
 ### Control Requirements
-- [ ] MCP service boundaries defined
-- [ ] Authorization enforced at service layer
+- [ ] Authorization enforced at service layer (Python function level)
 - [ ] Destructive operations (forget) require explicit user request
 - [ ] All memory operations logged
 - [ ] Personal data not in traces/logs
+
+### MCP Integration (Phase 6+, Not Required for Demo)
+MCP (Model Context Protocol) is NOT needed for demo functionality. Direct Python function calls provide sufficient isolation and authorization for this capstone project. MCP can be added in Phase 6+ for production interoperability without changing agent code.
 
 ---
 
