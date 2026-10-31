@@ -80,31 +80,80 @@
 ---
 
 ### Phase 3: Agent Enhancement (Weeks 3-4)
-**Status:** ⏹️ **BLOCKED ON DECISIONS** (Ready to start immediately once decisions made)
+**Status:** ⏹️ **BLOCKED ON 3 DECISIONS** (Ready to start immediately once decisions made)
 
-**Deliverables:**
-- [ ] Intake Agent Multi-turn Logic
-- [ ] Eligibility Agent Verdict Logic
-- [ ] Document Checker Requirement Mapping
-- [ ] Application Agent Approval Gate
-- [ ] Unit Tests for Each Agent
-- [ ] API Contracts Finalized
+**See:** [PHASE_3_DETAILED_ROADMAP.md](./PHASE_3_DETAILED_ROADMAP.md) for complete specifications
 
-**Foundation Ready:**
-- ✅ All 5 agent skeletons built (Phase 2)
-- ✅ Orchestrator skeleton built (Phase 2)
-- ✅ Memory service ready (Phase 2)
-- ✅ Checkpointer ready (Phase 2)
-- ✅ Persona validator ready (Phase 2)
+**Deliverables (6 items):**
+1. [ ] **Intake Agent** - Multi-turn household info collection
+   - Status: ⏹️ Skeleton ready, logic blocked on LLM model
+   - Effort: 2-3 days
+   - Key features: Clarification loops, consent recording, sensitive data rejection
+   - Tests: 15-20 unit tests
 
-**Blockers (Decisions Required):**
-1. ⛔ **LLM Model Selection** - Choose: GPT-4 | GPT-3.5-turbo | Claude 3 (PM/Arch)
-2. ⛔ **Rule Engine Approach** - Choose: Deterministic if/else | LLM-based with constraints (Arch)
-3. ⛔ **Portal Interface Spec** - Needed from UI team for Document/Application agents
+2. [ ] **Eligibility Agent** - Rule engine + verdict logic
+   - Status: ⏹️ Skeleton ready, logic blocked on LLM model + rule engine decision
+   - Effort: 3-4 days
+   - Key features: Two implementation paths (deterministic vs LLM-constrained), verdict preservation
+   - Tests: 15-20 unit tests
 
-**Start Date:** After decisions made  
+3. [ ] **Document Checker Agent** - Requirement mapping
+   - Status: ⏹️ Skeleton ready, logic blocked on Portal API spec
+   - Effort: 2-3 days
+   - Key features: Requirement retrieval, format validation, completeness checking (NO data extraction)
+   - Tests: 10-15 unit tests
+
+4. [ ] **Application Agent** - Consolidation + approval gate
+   - Status: ⏹️ Skeleton ready, logic blocked on Portal API spec
+   - Effort: 2-3 days
+   - Key features: Consolidate intake/eligibility/documents, explicit user approval, portal submission
+   - Tests: 15-20 unit tests
+
+5. [ ] **Orchestrator Enhancement** - State transitions + supervision
+   - Status: ⏹️ Skeleton ready, enhancement blocked on all agents
+   - Effort: 2-3 days
+   - Key features: Full state machine, workflow resumption, scope isolation, error handling
+   - Tests: 20-30 unit tests
+
+6. [ ] **Unit Tests** - Comprehensive test coverage
+   - Status: ⏹️ Ready to write alongside agents
+   - Effort: 3-5 days (parallel)
+   - Target: 85-130 new tests
+   - Coverage: Unit, integration, E2E, concurrent access
+
+**Foundation Ready (All ✅ from Phase 2):**
+- ✅ All 5 agent skeletons exist (agents/intake.py, eligibility.py, etc.)
+- ✅ Orchestrator skeleton exists (graph/workflow.py)
+- ✅ Memory service production-ready (ChromaDB + 3 collections)
+- ✅ Checkpointer ready (LangGraph workflow resumption)
+- ✅ Persona validator ready (all agent boundaries defined)
+- ✅ Validation framework ready (Pydantic + allowlist)
+
+**Required Decisions (BLOCKING PHASE 3 START):**
+
+| Decision | Owner | Options | Impact | Timeline |
+|----------|-------|---------|--------|----------|
+| 1. LLM Model | PM / Arch Lead | GPT-4 vs GPT-3.5-turbo vs Claude 3 | Agent quality, cost, latency | Needed ASAP |
+| 2. Rule Engine | Arch Lead | Deterministic if/else vs LLM-constrained | Eligibility logic, governance | Needed ASAP |
+| 3. Portal API | UI Team | Endpoint spec for document/application workflows | Document Checker, Application Agent | Mid-Phase 3 |
+
+**Phase 3 Critical Path:**
+```
+Mon (Day 1): Make 3 decisions
+  ↓
+Tue-Wed (Days 2-3): Intake + Eligibility agents
+  ↓
+Thu-Fri (Days 4-5): Document Checker + Application agents
+  ↓
+Week 2: Orchestrator enhancement + integration tests
+  ↓
+By End of Week 2: All agents complete, 85-130+ tests passing
+```
+
+**Start Date:** After decisions made (estimated 2026-11-03)  
 **Estimated Duration:** 1-2 weeks  
-**Critical Path:** Decisions → Implementation → Testing
+**Target Completion:** 2026-11-17  
+**Success Criteria:** All 5 agents complete (not just skeletons), 85-130+ new tests passing
 
 ---
 
