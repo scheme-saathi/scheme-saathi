@@ -895,3 +895,67 @@ The baseline reduces open design choices but does not invent scheme-specific req
 - Verify ChromaDB structured-record encoding, authorization filters, deletion behavior, crash recovery, and checkpoint compatibility; explicitly report unsupported capabilities rather than silently switching storage.
 - Review translated notices and align deletion wording with measured cleanup behavior.
 - Set concrete evaluation cases and acceptance thresholds before assessing results.
+
+## 13. Orchestrator and agent skeleton implementation plan
+
+The first implementation increment is a **GPT-backed scaffold**, not a production-ready autonomous system. Keep it separate from the existing deterministic `graph.workflow` demo until its service and memory boundaries are verified.
+
+### 13.1 Agent and orchestration boundaries
+
+Build one LangGraph orchestrator and four typed specialists:
+
+| Component | Initial responsibility | Must not do |
+|---|---|---|
+| Supervisor / Planner | Select a bounded next step from validated intake output | Evaluate eligibility, create consent, approve forms, or submit |
+| Intake | Detect language, classify task, propose candidate facts, ask clarifying questions | Treat extracted facts as confirmed or persist them |
+| Eligibility Analyst | Explain a supplied deterministic evaluation and its citations | Generate or alter a verdict, rules, missing fields, or citations |
+| Document Checker | Compare supplied requirements and available evidence; report uncertainty | Claim authenticity or retain raw uploads |
+| Application Agent | Explain a draft populated by deterministic mapping of confirmed facts | Invent applicant values, approve, or submit |
+
+Use strict Pydantic request/response contracts and bounded route enums. Untrusted user, scheme, and document text remains data, not instructions. GPT structured output improves shape consistency but is not an authorization or correctness boundary; validate outputs and enforce all consequential policy in backend services.
+
+### 13.2 Short-term workflow memory
+
+- Keep conversation/run state in LangGraph state with an explicit thread identifier supplied by the application.
+- The scaffold selects no persistent checkpointer by default. Allow an injected checkpointer for tests or verified deployments only.
+- Persist only the minimum state needed to resume: route, scheme/version references, outstanding questions, relevant confirmed-fact references, evaluation result, document-check summary, and draft reference.
+- Do not checkpoint raw documents, full chat histories, access tokens, complete identity or bank numbers, or redundant household profiles.
+- Implement workflow completion/discard deletion, 24-hour idle expiry, seven-day absolute expiry, and upload deletion independently. A LangGraph checkpoint is short-term workflow state, not durable household memory.
+- Until checkpointer isolation, expiry, deletion, crash recovery, and resume semantics are verified for the selected ChromaDB direction, do not claim cross-process durable resumption.
+
+### 13.3 Long-term household memory
+
+- Keep the model-facing workflow independent of storage. The authenticated application backend supplies an opaque authorization context; the model never chooses a household ID or grants itself access.
+- Route every read, confirmed-fact write, application-reference write, consent change, and deletion through a `MemoryService` boundary that checks identity, household scope, consent, field allowlist, freshness, and expiry on every operation.
+- Offer memory-off operation. Candidate facts extracted by Intake remain temporary until the citizen confirms them; confirmation alone does not grant durable-storage consent.
+- Return only the minimum relevant facts to an agent, with provenance/freshness information where required. Do not embed personal facts or use semantic search for household records.
+- Keep profile facts, application references, workflow checkpoints, drafts, approval records, and uploads in separately governed storage domains. Deletion covers all household-linked domains, not shared scheme knowledge.
+- The initial scaffold defines memory contracts only; it does not claim ChromaDB-backed household storage, consent enforcement, or deletion is implemented.
+
+### 13.4 GPT model configuration
+
+- Use `langchain-openai` structured outputs with model IDs supplied through `SUPERVISOR_MODEL` and `SPECIALIST_MODEL`; never hard-code a deployment model ID.
+- Support the existing OpenRouter configuration and direct OpenAI credentials through environment variables. Keep keys out of workflow state, logs, prompts, and source control.
+- Share one specialist-model client across the specialist agents and use a separately configured supervisor client. Set bounded timeouts and retry limits.
+- Begin with no autonomous tool loop. Specialists receive only typed, minimum-necessary inputs; the orchestrator and backend select and authorize all tools.
+- Test graph routing and validators with fake model clients. Live-provider smoke tests are opt-in and must never be required for unit tests.
+
+### 13.5 Reuse and validate existing application data
+
+- Reuse `servers.rule_engine.scheme.SchemeRecord`, `servers.rule_engine.rules.Evaluation`, and the existing fail-closed evaluator. Do not create a parallel eligibility schema.
+- Reuse `servers.schemes_kb.models.Scheme` for source records; keep source-record review status distinct from reviewed executable rules.
+- Reuse `graph.persona.profile_facts_to_rule_fields` for the established household-test-case aliases and omission of unknown (`null`) facts. Validate the normalized JSON facts at the agent boundary, and keep persona fixtures synthetic test inputs rather than production memory.
+- Preserve the household-profile test cases' missing-field, consent, confirmation, and no-sensitive-identifier expectations. Add agent-contract validation against the existing fixture set.
+- Application mappings and document requirements must be versioned and reviewed for each selected scheme before enabling those routes.
+
+### 13.6 Incremental delivery gates
+
+1. Add typed agent contracts and GPT model configuration; verify missing configuration fails explicitly without network access.
+2. Add stubbed Intake, Supervisor, Eligibility, Document, and Application agents; exercise clarification and explicit route transitions.
+3. Connect only read-only scheme lookup and deterministic rule evaluation; prove the LLM cannot change verdicts or citations.
+4. Add a scoped MemoryService adapter after identity, consent, allowlist, and expiry policies are implemented.
+5. Add document processing and draft generation using synthetic fixtures; verify raw uploads are temporary and field mapping is deterministic.
+6. Add exact-form human approval and mock submission only after approval invalidation, authorization rechecks, and idempotent retry tests pass.
+7. Enable short-term checkpointing only after retention, isolation, deletion, and crash/restart tests pass.
+
+The scaffold is complete only when fake-model tests cover the existing persona/profile fixtures, all workflow routes, missing deterministic evaluations, and the invariant that no GPT response can approve or submit an application.

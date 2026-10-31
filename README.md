@@ -153,6 +153,21 @@ python -m pytest -q tests/test_scheme.py tests/test_rule_engine.py
 
 The current evaluator supports reviewed scalar comparisons and membership checks. A scheme's flat rules are combined with either `all` or `any`; nested mixed expressions are not supported. The synthetic pension fixture is the current executable example. Other scheme records contain source material and have not yet been converted into reviewed machine-readable eligibility rules, so the evaluator does not provide verified eligibility decisions for them.
 
+### GPT agent skeleton
+
+The GPT-backed orchestrator is separate from the deterministic demo workflow:
+
+```python
+from graph.agent_workflow import build_agent_graph
+
+agent_graph = build_agent_graph()
+result = agent_graph.invoke({"request": "Which schemes should I check?"})
+```
+
+Set `SUPERVISOR_MODEL` and `SPECIALIST_MODEL` in `.env`, plus either `OPENROUTER_API_KEY` (with an OpenRouter model ID such as `openai/gpt-4o-mini`) or `OPENAI_API_KEY` (with an OpenAI model ID). `OPENAI_BASE_URL` can be set for an OpenAI-compatible endpoint. The model IDs are configuration, not code defaults.
+
+This is a scaffold: scheme retrieval, authenticated household scoping, memory storage, document extraction, and application submission are not wired into this graph. Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. Application fields are copied only from caller-supplied confirmed facts and reviewed field mappings; the GPT agent cannot approve or submit. No persistent checkpoint is enabled by default.
+
 ## Guides
 
 - [60-scheme review workbook](docs/Scheme-Saathi-60-Schemes-Schema-Review.xlsx) — manual review of scheme details and source information. Excel edits do not automatically update scheme JSON or ChromaDB.

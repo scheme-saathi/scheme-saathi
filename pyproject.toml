@@ -13,6 +13,8 @@ dependencies = [
     "langgraph-checkpoint-sqlite",
     "fastmcp",
     "fastapi",
+    "langchain-openai",
+    "python-dotenv",
 ]
 
 [project.optional-dependencies]
