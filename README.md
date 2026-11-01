@@ -35,6 +35,7 @@ python -m pip install -r requirements.txt
 `requirements.txt` installs the project in editable mode with its `dev` extra. Dependency declarations stay in `pyproject.toml`, so there is one list to maintain:
 
 - Pydantic and LangGraph for the current application code.
+- FastAPI and Uvicorn for the streaming API, and Streamlit for the local web UI.
 - Pytest for tests.
 
 Install the optional RAG dependencies only when working on local retrieval:
@@ -69,7 +70,30 @@ python -m servers.schemes_kb.test_retrieval --review
 
 The database is stored in `data/chroma/` and is ignored by Git. Each teammate builds it from the shared JSON records and reruns importing after pulling data updates. Closed schemes are retained for reference; use `--availability open` for open-only retrieval tests.
 
-For later OpenRouter-backed agents, copy `.env.example` to `.env` and add your key. Never commit `.env`. A FastAPI application entry point and Docker setup have not been implemented yet.
+For later OpenRouter-backed agents, copy `.env.example` to `.env` and add your key. Never commit `.env`.
+The local API/UI entry point is described below; Docker setup has not been implemented yet.
+
+### Local Streamlit UI
+
+Start the Scheme Saathi interface from the project root:
+
+```bash
+streamlit run app/app.py
+```
+
+The UI starts a local FastAPI service on `127.0.0.1:8765` and consumes its
+server-sent event stream while the eligibility workflow runs. The current
+eligibility rules include a synthetic widow-pension example for testing; results
+are not official benefit decisions. Applications are only submitted by the
+mock workflow after the user approves the exact drafted form.
+The approval and rejection button colors are set by `approvedButtonColor` and
+`rejectButtonColor` in `.streamlit/scheme_saathi.toml`; Streamlit's standard
+`config.toml` does not support per-button theme colors.
+
+The API can also be run separately with
+`uvicorn app.app:create_api --factory --host 127.0.0.1 --port 8765`. It exposes
+`POST /api/analyze` and `POST /api/threads/{thread_id}/decision` as streaming
+endpoints, plus `GET /health`.
 
 ## Eligibility rule engine (prototype)
 
