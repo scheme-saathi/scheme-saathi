@@ -47,11 +47,25 @@ h1, h2, h3, h4, h5 {
 }
 
 div.stButton > button,
-div.stFormSubmitButton > button {
+div.stButton > button *,
+div.stFormSubmitButton > button,
+div.stFormSubmitButton > button *,
+div.stDownloadButton > button,
+div.stDownloadButton > button * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+div.stButton > button,
+div.stFormSubmitButton > button,
+div.stDownloadButton > button {
     min-height: 2.8rem;
     border-radius: 9px;
     font-weight: 600;
-    color: #ffffff !important;
+}
+
+div.stButton > button,
+div.stFormSubmitButton > button {
     background: var(--ss-blue) !important;
     border-color: var(--ss-blue) !important;
     transition: transform 140ms ease, box-shadow 140ms ease;
@@ -63,33 +77,8 @@ div.stFormSubmitButton > button[kind="primary"] {
 }
 
 
-.st-key-review-submit button,
-.st-key-review-submit button p,
-.st-key-review-back button,
-.st-key-review-back button p,
-.st-key-documents-continue button,
-.st-key-documents-continue button p,
-.st-key-documents-back button,
-.st-key-documents-back button p,
-.st-key-back-welcome button,
-.st-key-back-welcome button p,
-.st-key-start-scheme-search button,
-.st-key-start-scheme-search button p,
-.st-key-check-eligibility button,
-.st-key-check-eligibility button p,
-.st-key-eligibility-back button,
-.st-key-eligibility-back button p,
-[class*="st-key-upload-button-"] button,
-[class*="st-key-upload-button-"] button p,
-[class*="st-key-select-"] button,
-[class*="st-key-select-"] button p {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-}
-
 div.stButton > button:hover,
 div.stFormSubmitButton > button:hover {
-    color: #ffffff !important;
     background: var(--ss-blue-hover) !important;
     border-color: var(--ss-blue-hover) !important;
     transform: translateY(-1px);

@@ -37,6 +37,11 @@ class DecisionRequest(BaseModel):
     changes: dict[str, Any] = Field(default_factory=dict)
 
 
+class ChatRequest(BaseModel):
+    user_input: str = Field(min_length=1, max_length=4000)
+    session_id: str | None = None
+
+
 @lru_cache(maxsize=1)
 def get_service() -> DemoService:
     """Share one in-memory demo workflow across requests."""
@@ -81,6 +86,12 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         except ToolCallError as error:
             raise HTTPException(status_code=422, detail=str(error)) from error
         return _event_stream(events)
+
+    @application.post("/api/chat")
+    def chat(payload: ChatRequest) -> StreamingResponse:
+        return _event_stream(
+            demo.chat_turn(payload.user_input, payload.session_id)
+        )
 
     @application.post("/api/threads/{thread_id}/documents/upload")
     async def upload_document(

@@ -14,6 +14,21 @@ to an already-running API.
 streamlit run app/app.py
 ```
 
+For the conversational UI with the complete step-by-step workflow, run:
+
+```powershell
+streamlit run app/app_new.py
+```
+
+It uses the same FastAPI service and reviewed rules, asks for missing facts
+before evaluating eligibility, and streams progress to the chat. After an
+eligible result, choose a scheme to continue through document upload, draft
+review, profile edits, rejection or approval, and mock submission confirmation.
+The local API starts on port `8766`; override it with
+`SCHEME_SAATHI_CHAT_API_PORT` or point `SCHEME_SAATHI_API_URL` at a running API.
+Uploads are validated and tracked as metadata only; file contents are discarded.
+The final submission is a local mock and is not sent to a government service.
+
 To run the API separately:
 
 ```powershell
