@@ -32,42 +32,126 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-`requirements.txt` installs the project in editable mode with its `dev` extra. Dependency declarations stay in `pyproject.toml`, so there is one list to maintain:
+`requirements.txt` installs the project in editable mode with its `dev` and `rag` extras, so this one command installs everything: the application code (Pydantic, LangGraph, LangChain), Pytest, and the RAG stack (ChromaDB, Sentence Transformers, PyTorch, pypdf, pdfplumber, openpyxl). Dependency declarations stay in `pyproject.toml`, so there is one list to maintain. PyTorch needs substantial disk space. These are version ranges rather than a frozen environment; add a lockfile when the team stabilizes the stack for submission. If you created your environment before a dependency was added, rerun the install command.
 
-- Pydantic and LangGraph for the current application code.
-- Pytest for tests.
+## Scheme search database (RAG)
 
-Install the optional RAG dependencies only when working on local retrieval:
+Scheme search uses a ChromaDB database in `data/chroma/`. It is ignored by Git, so each teammate needs a copy. There are two ways to get one:
 
-```bash
-python -m pip install -e '.[rag]'
-```
+- **Option A, download the shared database (recommended):** about 4 MB, ready in a minute, no import needed.
+- **Option B, build it yourself:** needed only if you change scheme data and want to search the change before a new release exists.
 
-Sentence Transformers also installs its dependencies, including PyTorch, Transformers and NumPy. It can require substantial disk space. These are version ranges rather than a frozen environment; add a lockfile when the team stabilizes the stack for submission.
+### Step 1: Download the embedding model (once per machine)
 
-Download and test the local embedding model once:
+Vector and hybrid search turn your question into numbers with the BGE-M3 model, which runs on your computer. Download it once:
 
 ```bash
 python -m servers.schemes_kb.embedding_demo
 ```
 
-The first run downloads BGE-M3 from Hugging Face, requiring internet access and several GB of disk space. Import and retrieval scripts then reuse cached model files. Installing Python modules alone does not download these model weights or populate ChromaDB. Local embedding and retrieval do not require an OpenRouter key.
+This needs internet access and about 2.3 GB of disk space. The model is cached in `~/.cache/huggingface/`, and other scripts reuse it offline. It does not need an OpenRouter key.
 
-Build the local index and test it:
+You can skip this step if you only use keyword search (`--method bm25`), which works with the database alone.
+
+### Step 2, Option A: Download the shared database
+
+The database is published as a zip on the [GitHub Releases page](https://github.com/scheme-saathi/scheme-saathi/releases). Each release is tagged `chroma-YYYY-MM-DD`; use the newest one.
+
+With the GitHub CLI (`gh`, installed and logged in with `gh auth login`):
+
+```bash
+# 1. Move any old database aside (unzipping over it would mix two databases).
+[ -d data/chroma ] && mv data/chroma "data/chroma.old-$(date +%Y%m%d)"
+
+# 2. Find the newest database release and download its zip into dist/.
+TAG=$(gh release list --repo scheme-saathi/scheme-saathi --limit 100 --json tagName \
+  --jq '[.[].tagName | select(startswith("chroma-"))] | sort | last')
+echo "Downloading $TAG"
+gh release download "$TAG" --repo scheme-saathi/scheme-saathi --pattern "$TAG.zip" --dir dist --clobber
+
+# 3. Unzip it. This creates data/chroma/.
+unzip "dist/$TAG.zip" -d data/
+
+# 4. Check what you downloaded.
+cat data/chroma/MANIFEST.json
+```
+
+Without `gh`: open the Releases page in a browser, download the `chroma-YYYY-MM-DD.zip` asset from the newest `chroma-` release, move any existing `data/chroma` folder aside, and extract the zip into `data/`. On Windows (PowerShell), extract with `tar -xf chroma-YYYY-MM-DD.zip -C data`.
+
+`MANIFEST.json` records the release date, the Git commit the database was built from, the embedding model, the ChromaDB version and the record counts. Your `chromadb` package must be the same major version (1.x), which `requirements.txt` already ensures. The shared database contains approved records only: no draft review collection and no draft PDF chunks.
+
+When a new database release is announced, repeat steps 1 to 4. Delete old `data/chroma.old-*` folders once the new copy works.
+
+### Step 2, Option B: Build the database yourself
 
 ```bash
 python -m servers.schemes_kb.import_schemes
-python -m servers.schemes_kb.test_retrieval
 ```
 
-To also inspect draft schemes in a separate review collection:
+This reads the approved records in `data/schemes/`, embeds them with BGE-M3 (about 1 to 2 minutes on a laptop CPU) and writes `data/chroma/`. Rerun it whenever you change scheme JSON files. To also inspect draft schemes in a separate review collection:
 
 ```bash
 python -m servers.schemes_kb.import_schemes --review
 python -m servers.schemes_kb.test_retrieval --review
 ```
 
-The database is stored in `data/chroma/` and is ignored by Git. Each teammate builds it from the shared JSON records and reruns importing after pulling data updates. Closed schemes are retained for reference; use `--availability open` for open-only retrieval tests.
+### Step 3: Search and check
+
+```bash
+# Keyword search (no model needed)
+python -m servers.schemes_kb.search --method bm25 --question "loan to start a small business"
+
+# Hybrid search (keyword + vector; needs the model from step 1)
+python -m servers.schemes_kb.search --method hybrid --question "loan to start a small business"
+
+# Only schemes currently open for applications
+python -m servers.schemes_kb.search --method hybrid --availability open --question "pension for elderly"
+
+# Pass/fail smoke check across all approved schemes
+python -m servers.schemes_kb.check_retrieval
+```
+
+If you see `Database not found`, step 2 was skipped or the zip was extracted to the wrong folder; `data/chroma/chroma.sqlite3` must exist. If you see an error about cached model files, run step 1. Closed schemes are kept for reference; use `--availability open` to leave them out.
+
+### Publishing a new database release (maintainers)
+
+Publish a new release whenever approved scheme data changes, so teammates don't have to re-import.
+
+1. Commit the scheme data changes (`data/schemes/`, and the review workbook if it changed). The packaging script refuses to run while `data/schemes/` has uncommitted changes, so the release always matches a commit.
+2. Rebuild your local database from the committed data:
+
+   ```bash
+   python -m servers.schemes_kb.import_schemes
+   ```
+
+3. Package it. This copies only approved records into a fresh database, adds `MANIFEST.json`, writes `dist/chroma-YYYY-MM-DD.zip`, and reopens the zip to check it:
+
+   ```bash
+   python -m servers.schemes_kb.package_db
+   ```
+
+4. Push the commit, then publish the zip as a GitHub Release (needs release permission on the repository):
+
+   ```bash
+   gh release create chroma-YYYY-MM-DD dist/chroma-YYYY-MM-DD.zip \
+     --repo scheme-saathi/scheme-saathi --target develop \
+     --title "Scheme database YYYY-MM-DD" \
+     --notes "Approved scheme database built from commit <git_commit in MANIFEST.json>. Download and extract into data/ (see README: Scheme search database)."
+   ```
+
+5. Tell the team the new tag so they can repeat Option A.
+
+The repository is public, so release assets can be downloaded by anyone. Only publish approved data from public sources.
+
+### Updating scheme availability
+
+`availability_status` records whether applications are open (`open`), closed (`closed`) or not yet checked (`unverified`). It is separate from `review_status`, which records whether the scheme's content was reviewed. To update availability:
+
+1. Check the scheme's official page (`source_url` in its JSON file) for an active apply option or a stated deadline.
+2. Change `availability_status` in `data/schemes/<slug>.json`, and set the matching "Application availability" cell in the "Scheme review" sheet of `docs/Scheme-Saathi-60-Schemes-Schema-Review.xlsx` (`Available`, `Closed` or `Not verified`). Keep both in step, because `import_schemes --from-excel` regenerates the JSON from the workbook.
+3. Follow the maintainer steps above. ChromaDB stores availability at import time, so the `--availability` filter only sees the change after a re-import.
+
+Never mark a scheme `open` without checking; unknown availability stays `unverified`.
 
 For later OpenRouter-backed agents, copy `.env.example` to `.env` and add your key. Never commit `.env`. A FastAPI application entry point and Docker setup have not been implemented yet.
 
