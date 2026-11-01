@@ -24,7 +24,6 @@ else:
     from api import create_api
 
 CSS_PATH = Path(__file__).with_name("style.css")
-MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 
 
 @st.cache_resource
@@ -370,8 +369,8 @@ def _render_application_start(
                 st.rerun()
 
 
-def _render_document_step(api_base: str, result: dict[str, Any]) -> bool:
-    """Show required documents, upload them, and report whether review can begin."""
+def _render_document_step(result: dict[str, Any]) -> bool:
+    """Show document status and explain how to attach the next required file."""
     scheme_id = result.get("application", {}).get("scheme_id")
     required_documents = result.get("documents", {}).get(scheme_id, [])
     uploads = st.session_state["application_uploads"]
@@ -380,42 +379,22 @@ def _render_document_step(api_base: str, result: dict[str, Any]) -> bool:
         "The demo validates each file, then discards its contents and keeps only "
         "upload metadata. Use redacted test files; maximum size is 10 MB."
     )
-    for index, document_type in enumerate(required_documents):
+    missing = []
+    for document_type in required_documents:
         with st.container(border=True):
             st.markdown(f"**{document_type}**")
             existing = uploads.get(document_type)
             if existing:
                 st.success(f"Uploaded: {existing['filename']}")
-                continue
-            uploaded_file = st.file_uploader(
-                f"Choose {document_type}",
-                type=["pdf", "png", "jpg", "jpeg"],
-                max_upload_size=10,
-                key=f"workflow-upload-{result['thread_id']}-{index}",
-            )
-            if uploaded_file and st.button(
-                f"Upload {document_type}",
-                key=f"workflow-upload-button-{result['thread_id']}-{index}",
-                disabled=uploaded_file.size > MAX_UPLOAD_BYTES,
-            ):
-                try:
-                    response = _upload_document(
-                        api_base,
-                        result,
-                        scheme_id,
-                        document_type,
-                        uploaded_file,
-                    )
-                except (RuntimeError, ValueError) as error:
-                    st.error(str(error), title="Upload failed")
-                else:
-                    uploads[document_type] = response
-                    st.success(f"{document_type} uploaded.")
-                    st.rerun()
+            else:
+                missing.append(document_type)
 
-    missing = [doc for doc in required_documents if doc not in uploads]
     if missing:
-        st.info("Still required: " + ", ".join(missing))
+        st.info(
+            "Still required: "
+            + ", ".join(missing)
+            + ". Attach the next document using the paperclip in the chat input below."
+        )
     else:
         st.success("All required documents are recorded.")
     return not missing
@@ -589,11 +568,157 @@ def _render_application_workflow(api_base: str) -> None:
         return
 
     journey_progress = st.progress(0.6, text="Step 3 of 5 · Documents")
-    documents_complete = _render_document_step(api_base, result)
+    documents_complete = _render_document_step(result)
     if documents_complete:
         journey_progress.progress(0.8, text="Step 4 of 5 · Review and decision")
     st.markdown("#### Step 4 — Review and decide")
     _render_review_step(api_base, result, documents_complete)
+
+
+def _handle_chat_submission(
+    api_base: str, submission: Any, response_slot: Any
+) -> None:
+    """Render a submitted turn and its streaming response above the chat composer."""
+    text = submission if isinstance(submission, str) else submission.text
+    files = [] if isinstance(submission, str) else submission.files
+    user_text = text.strip()
+    display_text = "\n".join(
+        [
+            *([user_text] if user_text else []),
+            *[f"Attached document: {upload.name}" for upload in files],
+        ]
+    )
+    with response_slot:
+        with st.chat_message("user"):
+            st.markdown(display_text)
+
+        st.session_state["chat_messages"].append(
+            {"role": "user", "content": display_text}
+        )
+        application_result = st.session_state["application_result"]
+
+        if files:
+            with st.chat_message("assistant"):
+                if len(files) > 1:
+                    assistant_reply = (
+                        "Attach one document at a time so it can be matched to "
+                        "the next required document."
+                    )
+                elif not application_result or not application_result.get("application"):
+                    assistant_reply = (
+                        "First complete the eligibility check and choose an "
+                        "eligible scheme. Then attach its required documents here."
+                    )
+                else:
+                    scheme_id = application_result["application"]["scheme_id"]
+                    required = application_result.get("documents", {}).get(
+                        scheme_id, []
+                    )
+                    uploaded = st.session_state["application_uploads"]
+                    next_document = next(
+                        (name for name in required if name not in uploaded), None
+                    )
+                    if next_document is None:
+                        assistant_reply = (
+                            "All required documents have already been uploaded."
+                        )
+                    else:
+                        try:
+                            with st.status(
+                                f"Validating {next_document}...", expanded=True
+                            ) as progress:
+                                progress.write(
+                                    "Checking the file and recording upload metadata."
+                                )
+                                upload_result = _upload_document(
+                                    api_base,
+                                    application_result,
+                                    scheme_id,
+                                    next_document,
+                                    files[0],
+                                )
+                                st.session_state["application_uploads"][
+                                    next_document
+                                ] = upload_result
+                                progress.update(
+                                    label=f"{next_document} uploaded",
+                                    state="complete",
+                                )
+                            assistant_reply = (
+                                f"Uploaded **{next_document}** "
+                                f"({upload_result['filename']})."
+                            )
+                        except (RuntimeError, ValueError) as error:
+                            assistant_reply = f"Document upload failed: {error}"
+                            st.error(str(error), title="Upload failed")
+                st.markdown(assistant_reply)
+            st.session_state["chat_messages"].append(
+                {"role": "assistant", "content": assistant_reply}
+            )
+
+        if user_text:
+            assistant_result = None
+            with st.chat_message("assistant"):
+                if st.session_state["chat_eligibility_result"] is not None:
+                    assistant_reply = (
+                        "This eligibility check is complete. Attach a required "
+                        "document here or start a new chat to check another profile."
+                    )
+                    st.markdown(assistant_reply)
+                else:
+                    try:
+                        with st.status(
+                            "Reviewing your details...", expanded=True
+                        ) as progress:
+                            (
+                                session_id,
+                                chat_reply,
+                                assistant_result,
+                            ) = _send_chat(
+                                api_base,
+                                user_text,
+                                st.session_state["chat_session_id"],
+                                progress,
+                            )
+                            st.session_state["chat_session_id"] = session_id
+                            progress.update(
+                                label=(
+                                    "Eligibility check complete"
+                                    if assistant_result
+                                    and assistant_result.get("status")
+                                    == "eligibility_checked"
+                                    else "Waiting for your details"
+                                ),
+                                state="complete",
+                            )
+                        st.markdown(chat_reply)
+                        if assistant_result and assistant_result.get("verdicts"):
+                            _render_eligibility(assistant_result)
+                        assistant_reply = chat_reply
+                    except (RuntimeError, ValueError, json.JSONDecodeError) as error:
+                        assistant_reply = (
+                            "I couldn’t complete that step. Please try again. "
+                            f"Details: {error}"
+                        )
+                        st.error(str(error), title="Request failed")
+                        st.markdown(assistant_reply)
+
+            if (
+                assistant_result
+                and assistant_result.get("status") == "eligibility_checked"
+            ):
+                st.session_state["chat_eligibility_result"] = assistant_result
+            st.session_state["chat_messages"].append(
+                {
+                    "role": "assistant",
+                    "content": assistant_reply,
+                    "result": (
+                        assistant_result
+                        if assistant_result and assistant_result.get("verdicts")
+                        else None
+                    ),
+                }
+            )
 
 
 def main() -> None:
@@ -611,9 +736,8 @@ def main() -> None:
     st.session_state.setdefault("application_uploads", {})
     st.session_state.setdefault("application_outcome", None)
 
-    title_col, action_col = st.columns([5, 1], vertical_alignment="center")
+    title_col, action_col = st.columns([5, 1], vertical_alignment="center"    )
     title_col.markdown("### :material/account_balance: Scheme Saathi")
-    title_col.caption("Tell us what you need. We’ll ask only for missing details.")
     if action_col.button(
         "New chat",
         icon=":material/add:",
@@ -645,14 +769,21 @@ def main() -> None:
         _render_application_start(api_base, eligibility_result)
     _render_application_workflow(api_base)
 
-    # Nest the input so Streamlit lays it out inline, allowing the starter card
-    # to appear directly beneath it instead of pinning the input to the viewport.
-    with st.container():
+    # Reserve this location before the composer so submitted messages and streamed
+    # workflow updates render above the input even though the submission is handled later.
+    response_slot = st.container()
+    # Pin the prompt and its always-visible starter guidance to the bottom of
+    # the app viewport while keeping workflow output in the main content above.
+    with st.bottom:
+        st.caption("Tell us what you need. We’ll ask only for missing details.")
         prompt = st.chat_input(
             "Ask about eligibility or share a requested detail...",
             max_chars=4000,
+            max_upload_size=10,
+            accept_file=True,
+            file_type=["pdf", "png", "jpg", "jpeg"],
             submit_mode="disable",
-            disabled=st.session_state["chat_eligibility_result"] is not None,
+            disabled=st.session_state["application_outcome"] is not None,
         )
         with st.container(border=True):
             st.markdown("#### Start with your question")
@@ -662,58 +793,12 @@ def main() -> None:
             )
             st.caption(
                 "Share only details needed for eligibility. Never enter Aadhaar, "
-                "bank-account numbers, OTPs, or passwords."
+                "bank-account numbers, OTPs, or passwords. When asked for a "
+                "document, attach one PDF or image with the paperclip in this chat box."
             )
 
     if prompt:
-        st.session_state["chat_messages"].append(
-            {"role": "user", "content": prompt}
-        )
-        _render_message({"role": "user", "content": prompt})
-
-        with st.chat_message("assistant"):
-            assistant_reply = None
-            result = None
-            try:
-                with st.status("Reviewing your details...", expanded=True) as progress:
-                    (
-                        session_id,
-                        assistant_reply,
-                        result,
-                    ) = _send_chat(
-                        api_base,
-                        prompt,
-                        st.session_state["chat_session_id"],
-                        progress,
-                    )
-                    st.session_state["chat_session_id"] = session_id
-                    progress.update(
-                        label="Eligibility check complete"
-                        if result and result.get("status") == "eligibility_checked"
-                        else "Waiting for your details",
-                        state="complete",
-                    )
-            except (RuntimeError, ValueError, json.JSONDecodeError) as error:
-                assistant_reply = (
-                    "I couldn’t complete that step. Please try again. "
-                    f"Details: {error}"
-                )
-                st.error(str(error), title="Request failed")
-
-            if assistant_reply:
-                st.markdown(assistant_reply)
-            if result and result.get("verdicts"):
-                _render_eligibility(result)
-
-            if result and result.get("status") == "eligibility_checked":
-                st.session_state["chat_eligibility_result"] = result
-            st.session_state["chat_messages"].append(
-                {
-                    "role": "assistant",
-                    "content": assistant_reply or "I could not produce a response.",
-                    "result": result if result and result.get("verdicts") else None,
-                }
-            )
+        _handle_chat_submission(api_base, prompt, response_slot)
         st.rerun()
 
 if __name__ == "__main__":

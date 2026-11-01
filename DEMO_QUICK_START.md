@@ -24,6 +24,8 @@ It uses the same FastAPI service and reviewed rules, asks for missing facts
 before evaluating eligibility, and streams progress to the chat. After an
 eligible result, choose a scheme to continue through document upload, draft
 review, profile edits, rejection or approval, and mock submission confirmation.
+Attach each requested PDF or image from the chat input's paperclip; the UI
+matches attachments to the next required document in order.
 The local API starts on port `8766`; override it with
 `SCHEME_SAATHI_CHAT_API_PORT` or point `SCHEME_SAATHI_API_URL` at a running API.
 Uploads are validated and tracked as metadata only; file contents are discarded.
