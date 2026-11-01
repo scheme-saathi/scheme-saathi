@@ -90,6 +90,10 @@ div.stFormSubmitButton > button:disabled {
     opacity: 0.62;
 }
 
+.st-key-new-chat {
+    margin-top: 2rem;
+}
+
 .st-key-eligibility-summary {
     margin: 0.25rem 0 1.1rem;
     border: 1px solid #d5e5f1;

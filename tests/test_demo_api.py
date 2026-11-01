@@ -3,9 +3,23 @@ import json
 from fastapi.testclient import TestClient
 
 from agents.contracts import CandidateFact, IntakeResult
-from app import business_logic
+from app import app_new, business_logic
 from app.api import create_api
 from app.business_logic import ChatIntakeInput, DemoService
+
+
+def test_local_api_url_reuses_an_existing_demo_api(monkeypatch):
+    api_base = "http://127.0.0.1:8766"
+    monkeypatch.delenv("SCHEME_SAATHI_API_URL", raising=False)
+    monkeypatch.setenv("SCHEME_SAATHI_CHAT_API_PORT", "8766")
+    monkeypatch.setattr(app_new, "_is_scheme_saathi_api", lambda url: url == api_base)
+
+    def fail_if_started(port):
+        raise AssertionError(f"Should reuse the API already on port {port}.")
+
+    monkeypatch.setattr(app_new, "_start_local_api", fail_if_started)
+
+    assert app_new._api_base_url() == api_base
 
 
 def parse_events(body):

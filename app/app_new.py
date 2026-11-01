@@ -59,8 +59,32 @@ def _api_base_url() -> str:
     if external_url:
         return external_url.rstrip("/")
     port = int(os.environ.get("SCHEME_SAATHI_CHAT_API_PORT", "8766"))
-    _start_local_api(port)
-    return f"http://127.0.0.1:{port}"
+    api_base = f"http://127.0.0.1:{port}"
+    if _is_scheme_saathi_api(api_base):
+        return api_base
+
+    try:
+        _start_local_api(port)
+    except RuntimeError:
+        if _is_scheme_saathi_api(api_base):
+            return api_base
+        raise
+    return api_base
+
+
+def _is_scheme_saathi_api(api_base: str) -> bool:
+    """Return whether a local server already exposes the expected demo API."""
+    try:
+        with urlopen(f"{api_base}/health", timeout=1) as response:
+            health = json.loads(response.read().decode("utf-8"))
+        if not isinstance(health, dict) or health.get("status") != "ok":
+            return False
+
+        with urlopen(f"{api_base}/api/schemes", timeout=1) as response:
+            schemes = json.loads(response.read().decode("utf-8"))
+        return isinstance(schemes, dict) and isinstance(schemes.get("schemes"), list)
+    except (HTTPError, URLError, OSError, ValueError, json.JSONDecodeError):
+        return False
 
 
 def _parse_sse(response: Any) -> Iterator[tuple[str, dict[str, Any]]]:
@@ -308,8 +332,12 @@ def _reset_chat() -> None:
     st.session_state["application_result"] = None
     st.session_state["application_uploads"] = {}
     st.session_state["application_outcome"] = None
+    st.session_state["application_editing"] = False
+    st.session_state["application_edit_revision"] = 0
     for key in list(st.session_state):
-        if key.startswith("edit-field-") or key == "confirm-application-submission":
+        if key.startswith(
+            ("edit-field-", "confirm-application-submission-")
+        ):
             del st.session_state[key]
 
 
@@ -347,7 +375,6 @@ def _render_application_start(
         "Eligibility guidance is informational. The remaining steps prepare "
         "and record a mock application; nothing is sent to a government service."
     )
-    st.progress(0.4, text="Step 2 of 5 · Eligibility")
     if not eligible:
         st.info("No eligible scheme is available to continue to an application.")
         return
@@ -403,19 +430,58 @@ def _render_document_step(result: dict[str, Any]) -> bool:
 def _render_review_step(
     api_base: str, result: dict[str, Any], documents_complete: bool
 ) -> None:
-    """Let the user inspect the draft, edit profile facts, reject, or approve it."""
+    """Let the user approve, edit, or reject the reviewed application draft."""
     st.markdown("#### Step 4 — Review the application draft")
     st.write("Check the profile and exact draft below before making a decision.")
     st.json(result.get("profile", {}), expanded=False)
     st.markdown("**Application draft**")
     st.json(result.get("application", {}), expanded=True)
     st.caption(
-        "Approval is tied to this exact draft. Editing sends the updated facts "
-        "through eligibility checks again and requires fresh review."
+        "Approval is tied to this exact draft. Editing rechecks eligibility "
+        "and creates a new draft for you to review."
     )
 
-    profile = result.get("profile", {})
-    with st.expander("Edit profile facts and regenerate the draft"):
+    if result.get("needs_human"):
+        st.warning("This draft needs human review. It cannot be submitted by this demo.")
+        return
+    if not result.get("approval"):
+        st.warning(
+            "A reviewable draft is not available. Check the eligibility details "
+            "or start a new chat."
+        )
+        return
+
+    approval_hash = result["approval"]["payload_hash"]
+    confirmed = st.checkbox(
+        "I reviewed this draft and understand that this is a mock submission.",
+        key=f"confirm-application-submission-{approval_hash}",
+    )
+    approve_col, edit_col, reject_col = st.columns(3)
+    if approve_col.button(
+        "Approve",
+        type="primary",
+        disabled=not documents_complete or not confirmed,
+        key="approve-mock-application",
+    ):
+        _finish_application(
+            api_base,
+            result,
+            {"action": "approve", "payload_hash": approval_hash},
+        )
+    if edit_col.button("Edit", key="edit-mock-application"):
+        st.session_state["application_editing"] = True
+        st.rerun()
+    if reject_col.button("Reject", key="reject-mock-application"):
+        _finish_application(api_base, result, {"action": "reject"})
+
+    if st.session_state["application_editing"]:
+        st.markdown("**Edit profile details**")
+        st.caption(
+            "Changing a detail runs eligibility checks again. You’ll need to "
+            "review the updated draft before approving it."
+        )
+        profile = result.get("profile", {})
+        edit_revision = st.session_state["application_edit_revision"]
         with st.form("edit-application-profile"):
             changes: dict[str, Any] = {}
             for field, value in profile.items():
@@ -423,33 +489,33 @@ def _render_review_step(
                     updated = st.checkbox(
                         field.replace("_", " ").title(),
                         value=value,
-                        key=f"edit-field-{field}",
+                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
                     )
                 elif isinstance(value, int):
                     updated = st.number_input(
                         field.replace("_", " ").title(),
                         value=value,
                         step=1,
-                        key=f"edit-field-{field}",
+                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
                     )
                 elif isinstance(value, float):
                     updated = st.number_input(
                         field.replace("_", " ").title(),
                         value=value,
-                        key=f"edit-field-{field}",
+                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
                     )
                 elif isinstance(value, str):
                     updated = st.text_input(
                         field.replace("_", " ").title(),
                         value=value,
-                        key=f"edit-field-{field}",
+                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
                     )
                 else:
                     continue
                 if updated != value:
                     changes[field] = updated
             edit_submitted = st.form_submit_button(
-                "Recheck and regenerate draft",
+                "Save changes and recheck eligibility",
                 disabled=not changes,
             )
         if edit_submitted:
@@ -469,39 +535,14 @@ def _render_review_step(
             else:
                 st.session_state["application_result"] = updated_result
                 st.session_state["application_outcome"] = None
+                st.session_state["application_editing"] = False
+                st.session_state["application_edit_revision"] += 1
                 st.rerun()
 
-    if result.get("needs_human"):
-        st.warning("This draft needs human review. It cannot be submitted by this demo.")
-        return
-    if not result.get("approval"):
-        st.warning(
-            "A reviewable draft is not available. Check the eligibility details "
-            "or start a new chat."
-        )
-        return
-
-    confirmed = st.checkbox(
-        "I reviewed this draft and understand that this is a mock submission.",
-        key="confirm-application-submission",
-    )
-    approve_col, reject_col = st.columns(2)
-    if approve_col.button(
-        "Approve and submit mock application",
-        type="primary",
-        disabled=not documents_complete or not confirmed,
-        key="approve-mock-application",
-    ):
-        _finish_application(
-            api_base,
-            result,
-            {"action": "approve", "payload_hash": result["approval"]["payload_hash"]},
-        )
-    if reject_col.button(
-        "Reject draft",
-        key="reject-mock-application",
-    ):
-        _finish_application(api_base, result, {"action": "reject"})
+        if st.button("Cancel editing", key="cancel-edit-application"):
+            st.session_state["application_editing"] = False
+            st.session_state["application_edit_revision"] += 1
+            st.rerun()
 
 
 def _finish_application(
@@ -520,10 +561,62 @@ def _finish_application(
             st.error(str(error), title="Could not record the decision")
             return
     st.session_state["application_result"] = outcome
-    st.session_state["application_outcome"] = (
-        "submitted" if outcome.get("submission") else "rejected"
-    )
+    if outcome.get("submission"):
+        st.session_state["application_outcome"] = "submitted"
+    elif outcome.get("approval_status") == "rejected":
+        st.session_state["application_outcome"] = "rejected"
+    else:
+        st.session_state["application_outcome"] = "not_submitted"
     st.rerun()
+
+
+def _journey_step() -> tuple[int, str]:
+    """Return the visible step in the documented five-step citizen journey."""
+    outcome = st.session_state["application_outcome"]
+    if outcome:
+        return 5, "Confirmation"
+
+    if not st.session_state["chat_eligibility_result"]:
+        return 1, "Your details"
+    if not st.session_state["application_result"]:
+        return 2, "Eligibility"
+
+    result = st.session_state["application_result"]
+    if not result.get("application"):
+        return 2, "Eligibility"
+    scheme_id = result.get("application", {}).get("scheme_id")
+    required = result.get("documents", {}).get(scheme_id, [])
+    uploaded = st.session_state["application_uploads"]
+    if all(document in uploaded for document in required):
+        return 4, "Review"
+    return 3, "Documents"
+
+
+def _render_welcome() -> None:
+    """Explain the demo journey and safe-data expectations before chat starts."""
+    if st.session_state["chat_messages"]:
+        return
+
+    with st.container(border=True):
+        st.subheader("Find support that may fit your situation")
+        st.write(
+            "Describe your household and what support you need. The assistant "
+            "will ask for missing details before checking reviewed scheme rules."
+        )
+        st.caption(
+            "1. Share your details  →  2. Check eligibility  →  "
+            "3. Add requested documents  →  4. Review the draft and "
+            "approve, edit, or reject"
+        )
+        st.info(
+            "This is a local demo. Uploads keep metadata only, and approval "
+            "creates a mock submission—not a government application. Never "
+            "share Aadhaar, bank-account numbers, OTPs, or passwords."
+        )
+        st.markdown(
+            "**Try:** “I’m 62, a widow, and our household earns ₹20,000 a month. "
+            "What support may I qualify for?”"
+        )
 
 
 def _render_application_workflow(api_base: str) -> None:
@@ -540,7 +633,6 @@ def _render_application_workflow(api_base: str) -> None:
     outcome = st.session_state["application_outcome"]
     if outcome == "submitted" or result.get("submission"):
         submission = result.get("submission") or {}
-        st.progress(1.0, text="Step 5 of 5 · Confirmation")
         st.success("Your mock application was submitted.")
         st.write(f"**Reference:** {submission.get('application_id', 'Unavailable')}")
         st.write(f"**Status:** {submission.get('status', 'submitted (mock)')}")
@@ -553,9 +645,21 @@ def _render_application_workflow(api_base: str) -> None:
             st.rerun()
         return
     if outcome == "rejected" or result.get("approval_status") == "rejected":
-        st.progress(1.0, text="Step 5 of 5 · Draft rejected")
         st.info("The draft was rejected. Nothing was submitted.")
         if st.button("Start a new chat", type="primary", key="new-chat-after-reject"):
+            _reset_chat()
+            st.rerun()
+        return
+    if outcome == "not_submitted":
+        st.error(
+            "The application was not submitted. Review the result and start a "
+            "new chat if you want to prepare another draft."
+        )
+        if st.button(
+            "Start a new chat",
+            type="primary",
+            key="new-chat-after-not-submitted",
+        ):
             _reset_chat()
             st.rerun()
         return
@@ -567,10 +671,7 @@ def _render_application_workflow(api_base: str) -> None:
         )
         return
 
-    journey_progress = st.progress(0.6, text="Step 3 of 5 · Documents")
     documents_complete = _render_document_step(result)
-    if documents_complete:
-        journey_progress.progress(0.8, text="Step 4 of 5 · Review and decision")
     st.markdown("#### Step 4 — Review and decide")
     _render_review_step(api_base, result, documents_complete)
 
@@ -735,14 +836,18 @@ def main() -> None:
     st.session_state.setdefault("application_result", None)
     st.session_state.setdefault("application_uploads", {})
     st.session_state.setdefault("application_outcome", None)
+    st.session_state.setdefault("application_editing", False)
+    st.session_state.setdefault("application_edit_revision", 0)
 
-    title_col, action_col = st.columns([5, 1], vertical_alignment="center"    )
+    title_col, action_col = st.columns([4, 1], vertical_alignment="center")
     title_col.markdown("### :material/account_balance: Scheme Saathi")
+    title_col.caption("A guided way to explore public support")
     if action_col.button(
         "New chat",
         icon=":material/add:",
         disabled=not st.session_state["chat_messages"],
         key="new-chat",
+        width="stretch",
     ):
         _reset_chat()
         st.rerun()
@@ -757,6 +862,10 @@ def main() -> None:
     except (RuntimeError, ValueError, OSError) as error:
         st.error(str(error), title="FastAPI is unavailable")
         st.stop()
+
+    step, label = _journey_step()
+    st.progress(step / 5, text=f"Step {step} of 5 · {label}")
+    _render_welcome()
 
     if st.session_state["chat_messages"]:
         for message in st.session_state["chat_messages"]:
@@ -785,19 +894,8 @@ def main() -> None:
             submit_mode="disable",
             disabled=st.session_state["application_outcome"] is not None,
         )
-        with st.container(border=True):
-            st.markdown("#### Start with your question")
-            st.write(
-                "For example: “I’m 62, a widow, and our household earns "
-                "₹20,000 a month. What support may I qualify for?”"
-            )
-            st.caption(
-                "Share only details needed for eligibility. Never enter Aadhaar, "
-                "bank-account numbers, OTPs, or passwords. When asked for a "
-                "document, attach one PDF or image with the paperclip in this chat box."
-            )
 
-    if prompt:
+    if prompt:       
         _handle_chat_submission(api_base, prompt, response_slot)
         st.rerun()
 
