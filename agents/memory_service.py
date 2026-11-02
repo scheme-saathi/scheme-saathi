@@ -130,7 +130,11 @@ class InMemoryMemoryService(MemoryService):
                 if not fact_obj:
                     continue
 
-                if fact_obj.field == field and fact_obj.expires_at > now:
+                if (
+                    fact_obj.field == field
+                    and fact_obj.expires_at > now
+                    and fact_obj.reconfirm_by > now
+                ):
                     # Verify consent is still valid
                     consent = self.consents.get(fact_obj.consent_reference)
                     if consent and consent.granted and consent.expires_at > now:
