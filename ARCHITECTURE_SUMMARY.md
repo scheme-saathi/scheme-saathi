@@ -49,7 +49,7 @@ TEST SUITE:
 ✅ Total: 271/276 tests passing (98.2%)
 
 ============================================================================
-ARCHITECTURE OVERVIEW (Updated Flow)
+ARCHITECTURE OVERVIEW (Updated Flow - Supervisor as Entry Point)
 ============================================================================
 
 USER INPUT FLOW:
@@ -58,41 +58,44 @@ USER INPUT FLOW:
 │ via: Chat endpoint, Web UI, Voice Interface                 │
 └────────────────┬────────────────────────────────────────────┘
                  ↓
-        ┌────────────────────┐
-        │ INTAKE AGENT       │ ← Collect household facts
-        │ (LangGraph Node)   │   Ask clarifying questions
-        └────────┬───────────┘   Detect language & intent
+        ┌─────────────────────────────────┐
+        │ ⭐ SUPERVISOR AGENT (Entry)     │ ← FIRST AGENT
+        │ (gpt-4o-mini via OpenRouter)    │ - Validate input (no sensitive data)
+        │                                 │ - Detect language & intent (1 call)
+        │                                 │ - Enforce rate limiting
+        └────────┬────────────────────────┘
                  ↓
-        ┌────────────────────┐
-        │ SUPERVISOR AGENT   │ ← Route to next agent
-        │ (gpt-4o-mini via   │   Language: en, hi, mr ✅
-        │  OpenRouter)       │   Intent: discover, eligibility,
-        └────────┬───────────┘          documents, application, follow_up
-                 ↓                      Input validation (sensitive data)
-    ┌────────────┼────────────────┐    Output validation (contracts)
-    ↓            ↓                ↓
-┌──────────┐ ┌──────────┐ ┌────────────┐
-│ELIGIBILITY│ │DOCUMENT  │ │APPLICATION│
-│ AGENT    │ │ CHECKER  │ │ AGENT      │
-│          │ │ AGENT    │ │            │
-└────┬─────┘ └────┬─────┘ └────┬───────┘
-     ↓            ↓            ↓
-  Verdict      Gap Report   Draft Form
-  (✅/❌)      (Missing)     (Review)
-     │            │             │
-     └───────┬────┴────┬────────┘
-             ↓         ↓
-        ┌─────────────────────┐
-        │ RESPOND AGENT       │ ← Return final response
-        │ (via Supervisor)    │   Language match requested language
-        └─────────────────────┘
+    ┌────────────────────────────────────┐
+    │ Routing Decision Based on:         │
+    │ - Intent (discover/eligibility/..) │
+    │ - Available Facts                  │
+    └──────┬──────┬──────┬───────────┬───┘
+           ↓      ↓      ↓           ↓
+      ┌────────┐┌──────────┐┌─────────┐┌──────────┐
+      │ INTAKE ││ELIGIBILITY││DOCUMENT ││APPLICATION
+      │ AGENT  ││ AGENT     ││CHECKER  ││AGENT
+      │        ││           ││ AGENT   ││
+      │Collect ││Rule Based ││Gap      ││Draft
+      │facts   ││evaluation ││analysis ││form
+      └───┬────┘└─────┬─────┘└────┬────┘└───┬─────┘
+          │            │           │         │
+          └──────┬─────┴───────┬───┴─────────┘
+                 ↓             ↓
+        ┌─────────────────────────────────┐
+        │ SUPERVISOR VALIDATES OUTPUT     │ ← Post-Check
+        │ - Check contract structure      │ - Mask sensitive data
+        │ - Verify eligibility claims     │ - Enforce boundaries
+        │ - Format response in language   │
+        └────────┬────────────────────────┘
                  ↓
         ┌──────────────────────┐
         │ Return to User       │
         │ JSON Response +      │
-        │ Conversation History │
-        │ Session Context      │
+        │ - Text in language   │
+        │ - Conversation hist  │
+        │ - Session context    │
         └──────────────────────┘
+```
 
 ============================================================================
 SUPERVISOR AGENT ARCHITECTURE (New - Phase 3)
