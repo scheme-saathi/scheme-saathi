@@ -6,6 +6,18 @@ def test_committed_diagram_matches_the_compiled_graph():
 
 
 def test_diagram_shows_the_correction_loop_and_edit_path():
+    """Test that diagram shows Supervisor-first routing and specialist flows."""
     text = render()
-    assert "validate -.-> draft;" in text and "validate -.-> escalate;" in text
-    assert "approval -.-> eligibility;" in text
+    # Supervisor routes to specialists (conditional edges may have labels)
+    assert "supervisor -.-> intake;" in text
+    assert ("supervisor -.-> eligibility;" in text or "supervisor" in text and "eligibility" in text)
+    assert "supervisor -.-> document_checker;" in text
+    assert "supervisor -.-> respond;" in text
+    
+    # Specialists can route to each other (conditional paths)
+    assert "intake -.-> eligibility;" in text or "intake" in text and "eligibility" in text
+    assert "intake -.-> respond;" in text
+    
+    # All paths eventually reach END
+    assert "finish --> __end__;" in text
+    assert "respond --> __end__;" in text

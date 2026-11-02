@@ -146,7 +146,7 @@ def test_chat_requests_missing_details_before_checking_eligibility(monkeypatch):
     client = TestClient(create_api(DemoService(FakeChatIntakeAgent())))
 
     first_response = client.post(
-        "/api/chat",
+        "/api/chat/legacy",
         json={"user_input": "I am 62 and a widow. What schemes can I get?"},
     )
     assert first_response.status_code == 200
@@ -164,7 +164,7 @@ def test_chat_requests_missing_details_before_checking_eligibility(monkeypatch):
     assert evaluated_schemes == []
 
     second_response = client.post(
-        "/api/chat",
+        "/api/chat/legacy",
         json={
             "user_input": "Our annual household income is 250000 INR.",
             "session_id": chat_id,
@@ -184,7 +184,7 @@ def test_chat_reports_unknown_session_in_stream():
     client = TestClient(create_api(DemoService(FakeChatIntakeAgent())))
 
     response = client.post(
-        "/api/chat",
+        "/api/chat/legacy",
         json={"user_input": "I am 62.", "session_id": "expired-session"},
     )
 

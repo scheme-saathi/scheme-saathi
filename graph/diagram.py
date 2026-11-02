@@ -3,22 +3,21 @@
 import sys
 from pathlib import Path
 
-from graph.workflow import build_graph
+from graph.agent_workflow import build_agent_graph
 
 DOC_PATH = Path(__file__).resolve().parents[1] / "docs" / "workflow-graph.md"
 HEADER = """# Workflow graph
 
-Generated from `graph/workflow.py` by `python -m graph.diagram --write`; do not edit by hand.
-Dashed arrows are conditional edges.
-
-- `validate` is the self-correction check: a failed draft returns to `draft` (at most 3 attempts), then goes to `escalate` for a person.
-- `approval` pauses with `interrupt()`. Approve must carry the hash of the exact form; edit re-runs `eligibility` and needs a new approval; anything else ends the run.
+Generated from `graph/agent_workflow.py` by `python -m graph.diagram --write`; do not edit by hand.
+Supervisor-first architecture: All requests flow through Supervisor FIRST for input validation,
+language/intent detection, and routing to specialists (Intake, Eligibility, DocumentChecker, Application).
+Dashed arrows are conditional edges based on Supervisor's routing decision.
 
 """
 
 
 def render() -> str:
-    return HEADER + "```mermaid\n" + build_graph().get_graph().draw_mermaid().rstrip() + "\n```\n"
+    return HEADER + "```mermaid\n" + build_agent_graph().get_graph().draw_mermaid().rstrip() + "\n```\n"
 
 
 def main(argv: list[str]) -> int:
