@@ -7,7 +7,7 @@ The supervisor acts as a gatekeeper with three layers:
 
 This ensures safe, controlled information flow across all agents.
 
-Unified Classification Strategy:
+ Unified Classification Strategy:
 - Primary: gpt-4o-mini via OpenRouter (language + intent in single call)
 - Latency: ~50-100ms (one round-trip)
 - Fallback: Character-based language + keyword intent detection (<1ms)
