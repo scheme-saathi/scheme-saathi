@@ -53,6 +53,15 @@ class InMemoryMemoryService(MemoryService):
         self.application_refs: dict[str, ApplicationReference] = (
             {}
         )  # ref_id -> reference
+        self.consent_owner: dict[str, str] = {}  # consent_reference -> household_id
+
+    def _consent_for(
+        self, scope: MemoryScope, consent_reference: str
+    ) -> Optional[MemoryConsent]:
+        """Return the consent only if it belongs to the scope's household."""
+        if self.consent_owner.get(consent_reference) != scope.household_id:
+            return None
+        return self.consents.get(consent_reference)
 
     def record_consent(
         self, scope: MemoryScope, consent: MemoryConsent
@@ -64,8 +73,16 @@ class InMemoryMemoryService(MemoryService):
         if consent.expires_at <= datetime.now():
             raise ValueError("Cannot record consent that is already expired")
 
+        # A consent reference belongs to exactly one household
+        owner = self.consent_owner.get(consent.consent_reference)
+        if owner is not None and owner != scope.household_id:
+            raise ValueError(
+                f"Consent {consent.consent_reference} belongs to another household"
+            )
+
         # Store consent
         self.consents[consent.consent_reference] = consent
+        self.consent_owner[consent.consent_reference] = scope.household_id
 
         # Ensure household entry exists
         if scope.household_id not in self.households:
@@ -86,11 +103,12 @@ class InMemoryMemoryService(MemoryService):
         """Withdraw user consent and delete associated data."""
         self._validate_scope(scope)
 
-        if consent_reference not in self.consents:
+        if self._consent_for(scope, consent_reference) is None:
             raise ValueError(f"Consent {consent_reference} not found")
 
         # Remove consent record
         del self.consents[consent_reference]
+        del self.consent_owner[consent_reference]
 
         # Delete all facts tied to this consent
         facts_to_delete = [
@@ -132,7 +150,7 @@ class InMemoryMemoryService(MemoryService):
 
                 if fact_obj.field == field and fact_obj.expires_at > now:
                     # Verify consent is still valid
-                    consent = self.consents.get(fact_obj.consent_reference)
+                    consent = self._consent_for(scope, fact_obj.consent_reference)
                     if consent and consent.granted and consent.expires_at > now:
                         result[field] = fact_obj.value
                         break
@@ -150,7 +168,7 @@ class InMemoryMemoryService(MemoryService):
             raise ValueError(f"Field {fact.field} is not allowed for storage")
 
         # Verify consent exists and is valid
-        consent = self.consents.get(fact.consent_reference)
+        consent = self._consent_for(scope, fact.consent_reference)
         if not consent or not consent.granted:
             raise ValueError(f"Consent {fact.consent_reference} not found or denied")
 
@@ -196,7 +214,7 @@ class InMemoryMemoryService(MemoryService):
             # Only return non-expired references
             if ref.expires_at > now:
                 # Verify consent is still valid
-                consent = self.consents.get(ref.consent_reference)
+                consent = self._consent_for(scope, ref.consent_reference)
                 if consent and consent.granted and consent.expires_at > now:
                     result.append(ref)
 
@@ -209,7 +227,7 @@ class InMemoryMemoryService(MemoryService):
         self._validate_scope(scope)
 
         # Verify consent exists and is valid
-        consent = self.consents.get(reference.consent_reference)
+        consent = self._consent_for(scope, reference.consent_reference)
         if not consent or not consent.granted:
             raise ValueError(
                 f"Consent {reference.consent_reference} not found or denied"
@@ -243,8 +261,8 @@ class InMemoryMemoryService(MemoryService):
 
         # Delete all consents
         for consent_ref in household_data.get("consents", []):
-            if consent_ref in self.consents:
-                del self.consents[consent_ref]
+            self.consents.pop(consent_ref, None)
+            self.consent_owner.pop(consent_ref, None)
 
         # Delete all facts
         for fact_id in household_data.get("facts", []):
