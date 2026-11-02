@@ -1,0 +1,25 @@
+{
+  "scheme_id": "C38",
+  "name": "Pratyaksh Hanstantrit Labh / Direct Benefits Transfer For LPG",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/pahal-dbtl",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant must be an LPG user."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The combined taxable income of the applicant and their spouse should not exceed ₹10,00,000 in the previous financial year, as per the Income Tax Act, 1961."
+    }
+  ],
+  "documents_required": [],
+  "rules": [
+    {"field": "is_lpg_user", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
+    {"field": "applicant_and_spouse_combined_taxable_income_previous_fy", "op": "lte", "value": 1000000, "clause_id": "elig-2", "status": "draft"}
+  ]
+}

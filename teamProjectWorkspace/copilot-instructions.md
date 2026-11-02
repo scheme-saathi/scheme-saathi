@@ -15,7 +15,7 @@ Capstone project 1 (Public Services, Agentic AI). Help a family find government 
 
 ## Code layout
 - `servers/rule_engine/`: `rules.py` (Verdict, Condition, evaluate) and `scheme.py` (SchemeRecord, rules with draft or reviewed status).
-- `graph/`: LangGraph workflow (`workflow.py`), mock tools (`mock_tools.py`), demo (`run.py`).
+- `graph/`: LangGraph workflow (`workflow.py`), MCP tool client (`tools.py`), demo (`run.py`).
 - `memory/`: `store.py`, a ChromaDB-backed MemoryStore with remember, recall, forget, and purge_expired.
 - `data/schemes/`: scheme JSON. Synthetic data only, with clearly fake ID numbers.
 - `tests/`: pytest. Run `pytest --cov`.

@@ -2,7 +2,7 @@
 
 import pytest
 
-from graph.mock_tools import evaluate_scheme
+from graph.tools import evaluate_scheme
 
 
 @pytest.mark.parametrize(

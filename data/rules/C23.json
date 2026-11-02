@@ -1,0 +1,20 @@
+{
+  "scheme_id": "C23",
+  "name": "Nari Adalat",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/nari-adalat",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The only specific requirement for eligibility is that the applicant must be a woman/girl."
+    }
+  ],
+  "documents_required": [],
+  "rules": [
+    {"field": "is_woman_or_girl", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"}
+  ]
+}

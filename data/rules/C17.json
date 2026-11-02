@@ -1,0 +1,26 @@
+{
+  "scheme_id": "C17",
+  "name": "Nikshay Poshan Yojana",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/nikshay",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "All patients with tuberculosis (TB) who are notified to the government on or after April 1, 2018, including those who are already being treated for TB, are eligible for financial incentives."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "To be eligible for the incentives, patients must be registered or notified on the NIKSHAY portal."
+    }
+  ],
+  "documents_required": [],
+  "rules": [
+    {"field": "has_tuberculosis", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
+    {"field": "government_notification_on_or_after_2018_04_01", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
+    {"field": "registered_or_notified_on_nikshay", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"}
+  ]
+}

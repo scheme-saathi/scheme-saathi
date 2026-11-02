@@ -1,0 +1,39 @@
+{
+  "scheme_id": "C30",
+  "name": "Persons With Disabilities Scheme In Colleges: Higher Education For Persons With Special Needs",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/hepsn",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The college applying for a grant for any one of the components of the scheme should have enrolled disabled persons, including persons with visual impairment, hearing impairment, locomotor disability, etc., in various courses of the institute. The definitions of disability are in accordance with the Persons with Disabilities Act 1995."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "Institutions applying for the scheme should have been approved by the UGC under Sections 2(f) and 12 B."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The college should have constituted an expert committee involving faculty members, experts in the field and differently-abled persons themselves. The committee should meet at least once a year to review the activities related to the concerned scheme(s)."
+    }
+  ],
+  "documents_required": [
+    "Aadhaar Card",
+    "2-Passport Sized Photograph (Signed Across)",
+    "Residential Certificate",
+    "Disability Certificate",
+    "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc)",
+    "Proof of the Latest Educational Qualification (Passing Certificate or Marksheet)",
+    "Bonafide Certificate from the School/College",
+    "Any other document required by the College or the District Social Welfare Office"
+  ],
+  "rules": [
+    {"field": "college_has_enrolled_students_with_disabilities", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
+    {"field": "institution_ugc_approved_under_2f_and_12b", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"},
+    {"field": "college_has_annual_expert_committee", "op": "eq", "value": true, "clause_id": "elig-3", "status": "draft"}
+  ]
+}

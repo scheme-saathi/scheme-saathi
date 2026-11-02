@@ -1,0 +1,17 @@
+{
+  "dataset_id": "scheme-saathi-retrieval-check-v1",
+  "status": "ai_prepared_pending_human_review",
+  "note": "Each clause_path is the source_path of the eligibility/exclusion text that answers the question, taken from data/schemes/<slug>.json.",
+  "questions": [
+    {"id": "Q01", "question": "What is the age limit to join Atal Pension Yojana?", "scheme_id": "C04", "clause_path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]"},
+    {"id": "Q02", "question": "Can an income tax payer join Atal Pension Yojana?", "scheme_id": "C04", "clause_path": "en.schemeContent.exclusions[0].children[0]"},
+    {"id": "Q03", "question": "What age must I be to get Jeevan Jyoti Bima Yojana life insurance?", "scheme_id": "C01", "clause_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]"},
+    {"id": "Q04", "question": "What is the maximum monthly income for Shram Yogi Maan-dhan pension?", "scheme_id": "C05", "clause_path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]"},
+    {"id": "Q05", "question": "What age should a widow be for the Indira Gandhi widow pension?", "scheme_id": "C06", "clause_path": "en.eligibilityCriteria.eligibilityDescription[2].children[0]"},
+    {"id": "Q06", "question": "Does the Indira Gandhi widow pension need a below poverty line household?", "scheme_id": "C06", "clause_path": "en.eligibilityCriteria.eligibilityDescription[2].children[1]"},
+    {"id": "Q07", "question": "Which TB patients get Nikshay Poshan financial incentives?", "scheme_id": "C17", "clause_path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]"},
+    {"id": "Q08", "question": "What is the income limit for LPG direct benefit transfer PAHAL?", "scheme_id": "C38", "clause_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]"},
+    {"id": "Q09", "question": "Which school classes are covered by PM POSHAN mid-day meals?", "scheme_id": "C19", "clause_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]"},
+    {"id": "Q10", "question": "Which construction workers can get medical help for critical illness in Maharashtra?", "scheme_id": "M16", "clause_path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]"}
+  ]
+}
