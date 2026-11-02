@@ -110,7 +110,7 @@ class InMemoryMemoryService(MemoryService):
         del self.consents[consent_reference]
         del self.consent_owner[consent_reference]
 
-        # Delete all facts tied to this consent
+        # Delete all facts and application references tied to this consent
         facts_to_delete = [
             fid
             for fid, fact in self.facts.items()
@@ -118,6 +118,21 @@ class InMemoryMemoryService(MemoryService):
         ]
         for fid in facts_to_delete:
             del self.facts[fid]
+        refs_to_delete = [
+            rid
+            for rid, ref in self.application_refs.items()
+            if ref.consent_reference == consent_reference
+        ]
+        for rid in refs_to_delete:
+            del self.application_refs[rid]
+
+        # Drop dangling ids from every household index
+        for data in self.households.values():
+            data["consents"] = [c for c in data["consents"] if c != consent_reference]
+            data["facts"] = [f for f in data["facts"] if f in self.facts]
+            data["application_refs"] = [
+                r for r in data["application_refs"] if r in self.application_refs
+            ]
 
     def read_facts(
         self, scope: MemoryScope, fields: list[str]
