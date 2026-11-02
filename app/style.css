@@ -1,0 +1,262 @@
+/* Scheme Saathi citizen portal */
+:root {
+    --ss-ink: #172f2a;
+    --ss-muted: #63766f;
+    --ss-blue: #347fb9;
+    --ss-blue-hover: #286da5;
+    --ss-line: #dce8e1;
+    --ss-surface: #ffffff;
+    --ss-canvas: #f5f8f6;
+}
+
+.stApp {
+    background:
+        radial-gradient(ellipse at 10% 12%, rgba(22, 115, 90, 0.08), transparent 34rem),
+        var(--ss-canvas);
+}
+
+.block-container {
+    max-width: 1240px;
+    padding-top: 1.15rem;
+    padding-bottom: 1.4rem;
+}
+
+h1, h2, h3, h4, h5 {
+    color: var(--ss-ink);
+    letter-spacing: -0.025em;
+}
+
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stCaptionContainer"] {
+    color: var(--ss-muted);
+}
+
+[data-testid="stVerticalBlock"] {
+    gap: 0.85rem;
+}
+
+[data-testid="stHorizontalBlock"] {
+    gap: 1.1rem;
+}
+
+[data-testid="stMetric"] {
+    background: var(--ss-surface);
+    border: 1px solid var(--ss-line);
+    border-radius: 16px;
+    padding: 1rem;
+}
+
+div.stButton > button,
+div.stButton > button *,
+div.stFormSubmitButton > button,
+div.stFormSubmitButton > button *,
+div.stDownloadButton > button,
+div.stDownloadButton > button * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+div.stButton > button,
+div.stFormSubmitButton > button,
+div.stDownloadButton > button {
+    min-height: 2.8rem;
+    border-radius: 9px;
+    font-weight: 600;
+}
+
+div.stButton > button,
+div.stFormSubmitButton > button {
+    background: var(--ss-blue) !important;
+    border-color: var(--ss-blue) !important;
+    transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+div.stButton > button[kind="primary"],
+div.stFormSubmitButton > button[kind="primary"] {
+    box-shadow: 0 5px 14px rgba(52, 127, 185, 0.2);
+}
+
+
+div.stButton > button:hover,
+div.stFormSubmitButton > button:hover {
+    background: var(--ss-blue-hover) !important;
+    border-color: var(--ss-blue-hover) !important;
+    transform: translateY(-1px);
+}
+
+div.stButton > button:disabled,
+div.stFormSubmitButton > button:disabled {
+    color: #ffffff !important;
+    opacity: 0.62;
+}
+
+.st-key-new-chat {
+    margin-top: 2rem;
+}
+
+.st-key-eligibility-summary {
+    margin: 0.25rem 0 1.1rem;
+    border: 1px solid #d5e5f1;
+    border-radius: 14px;
+    background: linear-gradient(110deg, #f1f8fd, #ffffff 76%);
+    padding: 1rem 1.2rem;
+}
+
+.st-key-eligibility-summary [data-testid="stVerticalBlock"] {
+    gap: 0.45rem;
+}
+
+.st-key-eligibility-summary h4 {
+    margin: 0;
+}
+
+.scheme-id-pill {
+    display: inline-block;
+    margin-left: 0.35rem;
+    padding: 0.16rem 0.58rem;
+    border: 1px solid #c9dff0;
+    border-radius: 999px;
+    background: #e8f3fb;
+    color: #245c86;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.5;
+    vertical-align: 0.08em;
+    white-space: nowrap;
+}
+
+[data-testid="stForm"] {
+    border: 1px solid var(--ss-line);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.88);
+    padding: 1rem 1.15rem;
+}
+
+.st-key-welcome-page {
+    min-height: max(540px, calc(100vh - 190px));
+    display: flex;
+    align-items: center;
+}
+
+.st-key-welcome-page [data-testid="stHorizontalBlock"] {
+    align-items: center;
+}
+
+.st-key-welcome-page .welcome-title {
+    max-width: 630px;
+    margin: 1rem 0 0.85rem;
+    color: var(--ss-ink);
+    font-size: clamp(2.6rem, 0vw, 4.35rem);
+    font-weight: 720;
+    letter-spacing: -0.065em;
+    line-height: 1.04;
+}
+
+.st-key-welcome-page .welcome-description {
+    max-width: 540px;
+    margin-bottom: 1.4rem;
+    color: #52665f;
+    font-size: 1.08rem;
+    line-height: 1.7;
+}
+
+.st-key-welcome-page .st-key-start-scheme-search button {
+    min-height: 3.2rem;
+    padding-right: 1.35rem;
+    padding-left: 1.35rem;
+    font-size: 1rem;
+}
+
+.st-key-welcome-overview {
+    border: 1px solid rgba(220, 232, 225, 0.95);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 22px 65px rgba(25, 62, 49, 0.07);
+    padding: 1.35rem 1.45rem;
+}
+
+.st-key-welcome-overview [data-testid="stVerticalBlock"] {
+    gap: 0.55rem;
+}
+
+.journey-step {
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #cfe2d7;
+    border-radius: 50%;
+    background: #edf6f0;
+    color: var(--ss-blue-hover);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.journey-description {
+    color: var(--ss-muted);
+    font-size: 0.88rem;
+}
+
+.journey-connector {
+    width: 1px;
+    height: 0.65rem;
+    margin: -0.5rem 0 -0.5rem 0.95rem;
+    background: #d5e5dc;
+}
+
+[data-testid="stSidebar"] {
+    background: #edf4ef;
+    border-right: 1px solid var(--ss-line);
+}
+
+@media (max-width: 800px) {
+    .block-container {
+        padding: 1rem 1rem 2rem;
+    }
+
+    .st-key-welcome-page {
+        min-height: 0;
+        align-items: flex-start;
+    }
+
+    .st-key-welcome-page .welcome-title {
+        font-size: clamp(2.45rem, 10vw, 3.5rem);
+    }
+
+    .st-key-welcome-overview {
+        padding: 1rem;
+    }
+}
+
+@media (max-height: 700px) and (min-width: 801px) {
+    .st-key-welcome-page {
+        min-height: 0;
+        padding: 0.6rem 0;
+    }
+
+    .st-key-welcome-page .welcome-title {
+        margin-top: 0.55rem;
+        margin-bottom: 0.5rem;
+        font-size: clamp(2.1rem, 4vw, 3rem);
+    }
+
+    .st-key-welcome-page .welcome-description {
+        margin-bottom: 0.85rem;
+        font-size: 0.98rem;
+        line-height: 1.5;
+    }
+
+    .st-key-welcome-overview {
+        padding: 0.8rem 1rem;
+    }
+
+    .st-key-welcome-overview [data-testid="stCaptionContainer"],
+    .st-key-welcome-overview .journey-description {
+        display: none;
+    }
+
+    [data-testid="stVerticalBlock"] {
+        gap: 0.65rem;
+    }
+}
