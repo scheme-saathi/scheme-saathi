@@ -132,6 +132,18 @@ class ChromaDBMemoryService:
             documents=["{}"],
         )
 
+        # Delete everything stored under this consent
+        by_consent = {
+            "$and": [
+                {"household_id": {"$eq": scope.household_id}},
+                {"consent_reference": {"$eq": consent_reference}},
+            ]
+        }
+        for collection in (self.facts_collection, self.applications_collection):
+            stored = collection.get(where=by_consent)
+            if stored["ids"]:
+                collection.delete(ids=stored["ids"])
+
     def read_facts(
         self,
         scope: MemoryScope,
@@ -271,6 +283,7 @@ class ChromaDBMemoryService:
                 "household_id": scope.household_id,
                 "application_id": reference.application_id,
                 "scheme_id": reference.scheme_id,
+                "consent_reference": reference.consent_reference,
                 "submitted_at": reference.submitted_at.isoformat(),
                 "expires_at": reference.expires_at.isoformat(),
             },
