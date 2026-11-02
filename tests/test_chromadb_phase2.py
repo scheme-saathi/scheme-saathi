@@ -11,6 +11,7 @@ import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pydantic import ValidationError
 
 from agents.chromadb_memory_service import ChromaDBMemoryService
 from agents.memory import MemoryFact, MemoryScope, MemoryConsent, ApplicationReference
@@ -386,16 +387,11 @@ class TestScopeIsolation:
 
     def test_invalid_scope_rejected(self, service):
         """Test that incomplete scopes raise errors."""
-        incomplete_scope = MemoryScope(
-            actor_id="actor_001",
-            household_id="",  # Empty household_id
-            actor_role="operator",
-        )
-
-        with pytest.raises((ValueError, AttributeError)):
-            service.read_facts(
-                scope=incomplete_scope,
-                fields=["state_code"],
+        with pytest.raises(ValidationError):
+            MemoryScope(
+                actor_id="actor_001",
+                household_id="",  # Empty household_id
+                actor_role="operator",
             )
 
 
