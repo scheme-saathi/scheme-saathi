@@ -151,7 +151,12 @@ class InMemoryMemoryService(MemoryService):
                 if fact_obj.field == field and fact_obj.expires_at > now:
                     # Verify consent is still valid
                     consent = self._consent_for(scope, fact_obj.consent_reference)
-                    if consent and consent.granted and consent.expires_at > now:
+                    if (
+                        consent
+                        and consent.granted
+                        and consent.purpose == "profile_facts"
+                        and consent.expires_at > now
+                    ):
                         result[field] = fact_obj.value
                         break
 
@@ -171,6 +176,11 @@ class InMemoryMemoryService(MemoryService):
         consent = self._consent_for(scope, fact.consent_reference)
         if not consent or not consent.granted:
             raise ValueError(f"Consent {fact.consent_reference} not found or denied")
+
+        if consent.purpose != "profile_facts":
+            raise ValueError(
+                f"Consent {fact.consent_reference} does not cover profile_facts"
+            )
 
         if consent.expires_at <= datetime.now():
             raise ValueError(f"Consent {fact.consent_reference} has expired")
@@ -215,7 +225,12 @@ class InMemoryMemoryService(MemoryService):
             if ref.expires_at > now:
                 # Verify consent is still valid
                 consent = self._consent_for(scope, ref.consent_reference)
-                if consent and consent.granted and consent.expires_at > now:
+                if (
+                    consent
+                    and consent.granted
+                    and consent.purpose == "application_references"
+                    and consent.expires_at > now
+                ):
                     result.append(ref)
 
         return result
@@ -231,6 +246,12 @@ class InMemoryMemoryService(MemoryService):
         if not consent or not consent.granted:
             raise ValueError(
                 f"Consent {reference.consent_reference} not found or denied"
+            )
+
+        if consent.purpose != "application_references":
+            raise ValueError(
+                f"Consent {reference.consent_reference} does not cover "
+                "application_references"
             )
 
         if consent.expires_at <= datetime.now():
