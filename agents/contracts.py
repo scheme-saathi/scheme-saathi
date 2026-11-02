@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
 Language = Literal["en", "hi", "mr", "unknown"]
 Intent = Literal["discover", "eligibility", "documents", "application", "follow_up", "other"]
-Route = Literal["eligibility", "document_checker", "application", "respond"]
+Route = Literal["intake", "eligibility", "document_checker", "application", "respond"]
 FactMap = dict[str, JsonValue]
 
 

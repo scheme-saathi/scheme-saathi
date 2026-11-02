@@ -264,3 +264,73 @@ class SchemaValidator:
             extra = set(obj.keys()) - expected_fields
             if extra:
                 raise PersonaValidationError(f"Response has extra fields: {extra}")
+
+
+class SensitivePatternDetector:
+    """Detects sensitive patterns in text."""
+
+    # Sensitive patterns
+    AADHAR_PATTERN = r"\b\d{4}[\s\-]?\d{4}[\s\-]?\d{4}\b"
+    PAN_PATTERN = r"\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b"
+    BANK_ACCOUNT_PATTERN = r"\b\d{9,18}\b"
+    PHONE_PATTERN = r"\b[6-9]\d{9}\b"  # Indian phone numbers
+
+    @classmethod
+    def detect_sensitive_type(cls, text: str) -> str | None:
+        """Detect if text contains sensitive data.
+        
+        Returns:
+            Type of sensitive data found (aadhar, pan, bank_account, phone) or None
+        """
+        import re
+
+        if not isinstance(text, str):
+            return None
+
+        if re.search(cls.AADHAR_PATTERN, text):
+            return "aadhar"
+        if re.search(cls.PAN_PATTERN, text):
+            return "pan"
+        if re.search(cls.BANK_ACCOUNT_PATTERN, text):
+            return "bank_account"
+        if re.search(cls.PHONE_PATTERN, text):
+            return "phone"
+        return None
+
+
+class SensitiveDataMasker:
+    """Masks sensitive data in text."""
+
+    @staticmethod
+    def mask_aadhar(text: str) -> str:
+        """Mask Aadhar numbers."""
+        import re
+        return re.sub(r"\d{4}[\s\-]?\d{4}[\s\-]?\d{4}", "XXXX-XXXX-XXXX", text)
+
+    @staticmethod
+    def mask_pan(text: str) -> str:
+        """Mask PAN numbers."""
+        import re
+        return re.sub(r"[A-Z]{5}[0-9]{4}[A-Z]{1}", "XXXXX0000X", text)
+
+    @staticmethod
+    def mask_bank_account(text: str) -> str:
+        """Mask bank account numbers."""
+        import re
+        return re.sub(r"\b(\d{2})\d{7,14}(\d{2})\b", r"\1XXXXXX\2", text)
+
+    @staticmethod
+    def mask_phone(text: str) -> str:
+        """Mask phone numbers."""
+        import re
+        return re.sub(r"\b[6-9]\d{4}\d{5}\b", "XXXXXX9999", text)
+
+    @classmethod
+    def mask_all_sensitive(cls, text: str) -> str:
+        """Apply all masking rules."""
+        text = cls.mask_aadhar(text)
+        text = cls.mask_pan(text)
+        text = cls.mask_bank_account(text)
+        text = cls.mask_phone(text)
+        return text
+
