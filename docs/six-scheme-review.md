@@ -61,6 +61,10 @@ On 25 October 2026, the project owner approved C09. The JSON review_status is ap
 
 On 25 October 2026, the project owner instructed that records with unverified availability be marked available. C08, C09, C10 and C12 now use availability_status: open (the schema value for Available). This supersedes their earlier unverified availability notes and records owner confirmation, not an independent new source check. C10 and C12 remain draft; C11 remains closed.
 
+On 1 November 2026, the project owner checked every approved scheme's myScheme page and recorded its availability. 55 schemes were marked open, including C11. M14 is closed. M11 and M21 stay unverified because their pages were unclear. The JSON records and the review workbook were updated together, and ChromaDB was re-imported.
+
+On 2 November 2026, the project owner rechecked C11 and M14 on their official pages and confirmed both closed. C11 is closed again, so 54 schemes are open, 2 closed (C11, M14) and 2 unverified (M11, M21).
+
 ## C11 review and display decisions
 
 The project owner approved C11's source-information record and confirmed it closed on 25 October 2026. This is not certification of executable eligibility rules. The collected metadata also contains a source close date of 31 March 2025; no independent closure-date verification was performed when recording the owner's confirmation.
