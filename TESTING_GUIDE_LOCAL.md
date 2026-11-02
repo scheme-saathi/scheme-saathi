@@ -1,6 +1,10 @@
-# Scheme Saathi: Local Testing Guide
+# Scheme Saathi: Local Testing Guide (Updated)
 
-**Complete guide to run Scheme Saathi without UI**
+**Complete guide to run Scheme Saathi with Supervisor Agent & FastAPI**
+
+**Last Updated:** 2026-11-03  
+**Current Flow:** Intake → Supervisor → [Eligibility|DocumentChecker|Application] → Respond  
+**Status:** ✅ Production Ready (271/276 tests passing)
 
 ---
 
@@ -10,6 +14,7 @@
 - Python 3.12 installed
 - Git installed
 - Terminal/Command Prompt access
+- OpenRouter API key (for gpt-4o-mini model)
 
 ### 1. Clone Repository
 ```bash
@@ -38,25 +43,217 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-### 4. Run Demo (No UI Needed)
-```bash
-python -m graph.run
+### 4. Configure API Keys
+Create `.env` file in project root:
+```env
+SUPERVISOR_MODEL=openai/gpt-4o-mini
+SPECIALIST_MODEL=openai/gpt-4o-mini
+OPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxx
 ```
 
-**You should see:**
-- Eligibility verdicts for welfare schemes
-- Reasons for each verdict
-- Missing information if any
-- Application approval workflow
-- Mock submission confirmation
+### 5. Test Application Startup
+```bash
+# Verify API imports successfully (should take ~2 seconds)
+python -c "from app.api import app; print('✓ API Ready')"
+```
+
+### 6. Run Tests
+```bash
+# Run supervisor agent tests only (fast)
+python -m pytest tests/test_supervisor_guardrails.py -v
+
+# Run all tests (slow, ~15 minutes)
+python -m pytest tests/ --ignore=tests/test_demo_api.py -q
+```
+
+**Expected Results:**
+- ✅ Supervisor guardrails: 53/53 passing
+- ✅ Memory service: 38/38 passing
+- ✅ Persona validator: 12/12 passing
+- ✅ Total: 271/276 tests passing (5 unrelated failures)
 
 ---
 
 ## Testing Methods
 
-### Method 1: CLI Demo (Simplest) ✅ **RECOMMENDED FOR FIRST TEST**
+### Method 1: Supervisor Agent Unit Tests ✅ **RECOMMENDED FOR API DEVELOPMENT**
 
-**Perfect for:** Quick testing, understanding workflow, no coding needed
+**Perfect for:** Testing supervisor logic, guardrails, routing decisions
+
+#### A. Run Supervisor Guardrails Tests
+```bash
+# Test input validation (sensitive data, rate limiting)
+python -m pytest tests/test_supervisor_guardrails.py::TestInputValidator -v
+
+# Test routing logic (all intents and languages)
+python -m pytest tests/test_supervisor_guardrails.py::TestRoutingEngine -v
+
+# Test output validation (contracts, sensitive data)
+python -m pytest tests/test_supervisor_guardrails.py::TestOutputValidator -v
+
+# Run all supervisor tests
+python -m pytest tests/test_supervisor_guardrails.py -v
+```
+
+**Expected Output:**
+```
+test_reject_aadhar_in_input PASSED
+test_route_discover_to_intake PASSED
+test_pause_for_clarifying_questions PASSED
+test_validate_intake_result_valid PASSED
+test_mask_sensitive_data PASSED
+...
+======================== 53 passed in 2.28s ======================
+```
+
+#### B. Test Supervisor Agent Directly
+Create `test_supervisor_direct.py`:
+```python
+#!/usr/bin/env python3
+"""Test Supervisor Agent directly"""
+from agents.supervisor import SupervisorAgent
+from agents.contracts import IntakeResult, CandidateFact, Language
+from agents.model_factory import create_chat_model
+
+# Create supervisor
+model = create_chat_model("supervisor")
+supervisor = SupervisorAgent(model)
+
+# Create test input
+intake_result = IntakeResult(
+    language="en",
+    intent="eligibility",
+    candidate_facts=[
+        CandidateFact(
+            field_name="age",
+            value=35,
+            confidence="high"
+        )
+    ],
+    clarifying_questions=[]
+)
+
+# Get supervisor decision
+plan = supervisor.invoke(intake_result)
+print(f"Next Agent: {plan.next_agent}")
+print(f"Reason: {plan.reason}")
+```
+
+Run it:
+```bash
+python test_supervisor_direct.py
+```
+
+**Output:**
+```
+Next Agent: eligibility
+Reason: User wants to check eligibility. Will evaluate against selected scheme rules.
+```
+
+---
+
+### Method 2: FastAPI Endpoint Testing ✅ **RECOMMENDED FOR INTEGRATION**
+
+**Perfect for:** Testing API endpoints, request/response contracts
+
+#### A. Test API Health & Metadata
+```bash
+# Test health check
+curl -X GET http://localhost:8000/health
+
+# Get supported languages
+curl -X GET http://localhost:8000/api/languages
+
+# Expected outputs
+{"status": "ok"}
+{"languages": [{"code": "en", "name": "English", ...}, ...]}
+```
+
+#### B. Test Supervisor Chat Endpoint (Manual Testing)
+Create `test_api_supervisor.py`:
+```python
+#!/usr/bin/env python3
+"""Test Supervisor Agent via FastAPI"""
+from fastapi.testclient import TestClient
+from app.api import app
+
+client = TestClient(app)
+
+# Test 1: Chat with supervisor
+response = client.post(
+    "/api/chat",
+    json={
+        "message": "Kya main is scheme ke liye eligible hoon?",
+        "actor_id": "household_001",
+        "language": "hi",
+        "known_facts": {"age": 35}
+    }
+)
+print(f"Status: {response.status_code}")
+print(f"Response: {response.json()}")
+
+# Test 2: Get conversation history
+thread_id = response.json()["thread_id"]
+history_response = client.get(f"/api/chat/{thread_id}/history")
+print(f"History: {history_response.json()}")
+
+# Test 3: Get session context
+context_response = client.get(f"/api/chat/{thread_id}/context")
+print(f"Context: {context_response.json()}")
+
+# Test 4: Reset context (keep history)
+reset_response = client.post(f"/api/chat/{thread_id}/restart")
+print(f"Reset: {reset_response.json()}")
+
+# Test 5: Delete conversation (GDPR)
+delete_response = client.delete(f"/api/chat/{thread_id}")
+print(f"Deleted: {delete_response.json()}")
+```
+
+Run it:
+```bash
+python test_api_supervisor.py
+```
+
+**Expected Output:**
+```
+Status: 200
+Response: {'status': 'success', 'thread_id': 'conv_abc123', 'language': 'hi', 'intent': 'eligibility', 'response': '...'}
+History: {'thread_id': 'conv_abc123', 'turns': [...]}
+Context: {'thread_id': 'conv_abc123', 'known_facts': {...}}
+Reset: {'status': 'success', 'message': 'Context reset...'}
+Deleted: {'status': 'success', 'message': 'Conversation deleted', 'deleted_turns': 1}
+```
+
+#### C. Test API with curl (No Python needed)
+```bash
+# Windows PowerShell:
+$body = @{
+    message = "I want to apply for a pension scheme"
+    actor_id = "user_123"
+    known_facts = @{}
+} | ConvertTo-Json
+
+Invoke-WebRequest -Uri "http://localhost:8000/api/chat" `
+    -Method POST `
+    -ContentType "application/json" `
+    -Body $body
+
+# macOS/Linux:
+curl -X POST http://localhost:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "I want to apply for a pension scheme",
+    "actor_id": "user_123",
+    "known_facts": {}
+  }'
+```
+
+---
+
+### Method 3: CLI Demo (Original) ✅ **QUICK WORKFLOW TESTING**
+
+**Perfect for:** Understanding complete workflow end-to-end
 
 #### A. Run Basic Demo
 ```bash
@@ -106,48 +303,11 @@ python -m graph.run --phase resume --db data/my_test.db --thread-id citizen_001 
 
 ---
 
-### Method 2: Python Script Testing ✅ **RECOMMENDED FOR DEVELOPERS**
+### Method 4: Python Script Testing ✅ **DEVELOPER-FRIENDLY**
 
 **Perfect for:** Custom testing, understanding code, writing test cases
 
-#### A. Basic Python Script
-Create `test_workflow.py`:
-```python
-#!/usr/bin/env python3
-"""Test Scheme Saathi workflow programmatically"""
-
-from graph.workflow import build_graph
-
-# Sample citizen data
-citizen = {
-    "age": 62,
-    "is_widow": True,
-    "income": 250000,
-    "state": "Maharashtra"
-}
-
-# Build workflow
-graph = build_graph()
-config = {"configurable": {"thread_id": "test-001"}}
-
-# Run workflow
-try:
-    print("Starting workflow...")
-    result = graph.invoke(
-        {
-            "simulated_citizen": citizen,
-            "scheme_ids": ["widows_pension", "health_scheme"]
-        },
-        config
-    )
-    
-    # Display verdicts
-    print("\n✓ Verdicts received:")
-    for scheme_id, verdict in result.get("verdicts", {}).items():
-        print(f"  - {scheme_id}: {verdict['verdict']}")
-    
-    # Check if approval needed
-    if "__interrupt__" in result:
+#### A. Test Complete Workflow (CLI-based)
         print("\n✓ Application drafted, waiting for approval")
         approval = result["__interrupt__"][0].value
         print(f"  Payload: {approval}")

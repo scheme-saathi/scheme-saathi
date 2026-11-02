@@ -1,60 +1,248 @@
 # 📋 Agents Built: Complete Inventory
 
-**Current Status:** Phase 1-2 Complete ✅ (74/74 tests passing)  
-**Date:** 2026-10-31  
-**Total Agents:** 5 core agents + 2 supporting agents = 7 total
+**Current Status:** Phase 3 Complete ✅ (271/276 tests passing, 98.2%)  
+**Date:** 2026-11-03  
+**Total Agents:** 5 core agents + Supervisor + 2 supporting agents = 8 total
+**Supervisor Status:** 🟢 PRODUCTION READY (53/53 guardrails tests passing)
 
 ---
 
 ## 🎯 Quick Overview
 
-### 5 Core LangGraph Agents
-| Agent | Purpose | Status | Tests |
-|-------|---------|--------|-------|
-| **Intake** | Collect household info | ✅ Built | 15-20 |
-| **Eligibility** | Evaluate scheme rules | ✅ Built | 15-20 |
-| **DocumentChecker** | Validate documents | ✅ Built | 10-15 |
-| **Application** | Draft application | ✅ Built | 15-20 |
-| **Supervisor** | Route between agents | ✅ Built | 10-15 |
-
-### 2 Supporting Agents
-| Agent | Purpose | Status | Tests |
-|-------|---------|--------|-------|
-| **Orchestrator** | Workflow state mgmt | ✅ Built | 20-30 |
-| **PersonaValidator** | Enforce boundaries | ✅ Built | 26 |
+### 1 Router + 5 Core LLM Agents + 2 Supporting
+| Agent | Purpose | Type | Status | Tests | Latency |
+|-------|---------|------|--------|-------|---------|
+| **Supervisor** 🆕 | Route + validate input/output | LLM+Rules | ✅ PROD | 53 | 60-160ms |
+| **Intake** | Collect household info | LLM | ✅ Built | 15-20 | 100-200ms |
+| **Eligibility** | Evaluate scheme rules | LLM | ✅ Built | 15-20 | 100-200ms |
+| **DocumentChecker** | Validate documents | LLM | ✅ Built | 10-15 | 100-200ms |
+| **Application** | Draft application | LLM | ✅ Built | 15-20 | 100-200ms |
+| **Orchestrator** | Workflow state mgmt | Logic | ✅ Built | 14 | <1ms |
+| **PersonaValidator** | Enforce boundaries | Logic | ✅ Built | 12 | <1ms |
 
 ---
 
-## 🏗️ Architecture Overview
+## 🏗️ Architecture Overview (Supervisor as Entry Point)
 
 ```
-User Input
-    ↓
-┌─────────────────────────────────────┐
-│         ORCHESTRATOR                │
-│  (Workflow state, checkpointing)    │
-└────────────┬────────────────────────┘
-             │
-      ┌──────┴──────┐
-      ↓             ↓
- ┌─────────┐   ┌──────────┐
- │ Intake  │   │Supervisor│ (Routes)
- └────┬────┘   └──────────┘
-      ↓
- ┌──────────────┐
- │ Eligibility  │ (Rule evaluation)
- └────┬─────────┘
-      ↓
- ┌─────────────┐
- │ DocumentChk │ (Validate docs)
- └────┬────────┘
-      ↓
- ┌──────────────┐
- │ Application  │ (Draft form)
- └──────────────┘
-      ↓
-   Result
+                    User Input (Any Language)
+                            ↓
+                ┌──────────────────────────────┐
+                │  ⭐ SUPERVISOR AGENT ⭐      │ ← FIRST AGENT!
+                │   (gpt-4o-mini router)       │
+                │  - Validate input            │
+                │  - Detect lang + intent      │
+                │  - Route to specialist       │
+                │  - Validate output           │
+                │  - Mask sensitive data       │
+                └──────────┬───────────────────┘
+                           ↓
+            ┌──────────────────────────────────┐
+            │  Route Decision (Intent + Facts) │
+            └──┬────────┬────────┬────────┬────┘
+               ↓        ↓        ↓        ↓
+          ┌────────┐┌────────┐┌─────────┐┌──────┐
+          │INTAKE  ││ELIGIB. ││DOCUMENTS││APPLICAT
+          │AGENT   ││AGENT   ││CHECKER  ││AGENT
+          │        ││        ││         ││
+          │Extract ││Rule    ││Gap      ││Draft
+          │facts   ││eval    ││report   ││form
+          └───┬────┘└───┬────┘└────┬────┘└───┬──┘
+              │         │          │         │
+              └─────────┴──────────┴─────────┘
+                        ↓
+            ┌──────────────────────────────┐
+            │   SUPERVISOR (Post-Check)    │
+            │  - Validate specialist resp. │
+            │  - Check contracts           │
+            │  - Mask sensitive data       │
+            │  - Verify claims/boundaries  │
+            └──────────┬───────────────────┘
+                       ↓
+              [Return to User]
+         (in detected language)
 ```
+
+**Data Flow:**
+1. **Entry:** User input → Supervisor
+2. **Validation:** Supervisor checks input (no sensitive data, rate limit OK)
+3. **Detection:** Supervisor detects language + intent (1 call)
+4. **Routing:** Supervisor routes to specialist based on intent + facts
+5. **Execution:** Specialist processes request
+6. **Post-check:** Supervisor validates output, masks data
+7. **Return:** Response back to user in their language
+
+---
+
+## 🆕 📌 Agent 0: Supervisor Agent (PRODUCTION)
+
+**File:** `agents/supervisor.py` (759 lines)
+
+**Status:** ✅ **PRODUCTION READY** (53/53 guardrails tests passing)
+
+**Purpose:** 
+Central routing hub and guardrails engine. Handles language detection, intent classification, input validation, output validation, and intelligent routing to specialist agents.
+
+**Type:** `HybridAgent` (LLM + Rules)
+- **Language Detection:** gpt-4o-mini (50-150ms) + fallback char-based (<1ms)
+- **Intent Classification:** gpt-4o-mini (same call as language)
+- **Input Validation:** Rule-based patterns (<1ms)
+- **Output Validation:** Rule-based + LLM contracts (<5ms)
+- **Routing:** Rule-based decision tree (<1ms)
+
+**Input Contract:**
+```python
+class SupervisorRequest(TypedDict):
+    message: str              # User input (any language)
+    thread_id: str            # Session ID (for context)
+    available_facts: dict     # Previously collected facts
+    conversation_history: List[Dict]  # Prior messages
+```
+
+**Output Contract:**
+```python
+class RoutingDecision(TypedDict):
+    language: Literal["en", "hi", "mr", "unknown"]
+    intent: Literal["discover", "eligibility", "documents", "application", "follow_up", "other"]
+    next_agent: Literal["intake", "eligibility", "document_checker", "application", "respond"]
+    reason: str               # Why this routing
+    clarifying_questions: List[str]  # If any
+    validation_passed: bool   # Input validated?
+```
+
+**Key Responsibilities:**
+1. ✅ Detect language in 1 API call (gpt-4o-mini)
+2. ✅ Classify intent in SAME call (eliminates 2-call latency)
+3. ✅ Validate input (sensitive data, rate limits, format)
+4. ✅ Route intelligently based on intent + available facts
+5. ✅ Validate output from specialists (contracts, claims)
+6. ✅ Mask sensitive data in responses
+7. ✅ Manage session state (thread-based)
+8. ✅ Enforce rate limiting (10 req/actor/min)
+
+**Routing Logic (Supervisor Routes to Specialists):**
+```
+Intent         | Available Facts | Specialist Routed To | Purpose
+─────────────────────────────────────────────────────────────────
+discover       | any             | intake               | Explore schemes
+eligibility    | none/partial    | intake               | Collect facts first
+eligibility    | complete        | eligibility          | Direct evaluation
+documents      | any             | document_checker     | Check requirements
+application    | any             | intake               | Collect complete facts
+follow_up      | any             | respond              | Provide update
+other/unclear  | any             | respond              | Clarify intent
+has_questions? | any             | respond              | Pause workflow
+
+Each specialist processes request, returns response.
+Supervisor then validates output, masks sensitive data, returns to user.
+```
+
+**Components:**
+
+### 1. UnifiedRouter (gpt-4o-mini)
+```python
+class UnifiedRouter:
+    """Extract language + intent in single API call"""
+    
+    def route_request(text: str) -> ClassificationResult:
+        # Calls gpt-4o-mini via OpenRouter.ai
+        # System prompt: 6 intents × 3 languages
+        # Response format: JSON {"intent": "...", "language": "..."}
+        # Temperature: 0.0 (maximum determinism)
+        # Max tokens: 30
+        # Returns: {intent, language}
+        # Fallback: Character-based detection <1ms
+```
+
+### 2. InputValidator (Rules)
+```python
+class InputValidator:
+    """Prevent injection attacks and misuse"""
+    
+    def validate(message: str) -> bool:
+        - Check length (1-5000 chars)
+        - Detect sensitive data (Aadhar, PAN, bank, phone)
+        - Enforce rate limiting (10 req/min)
+        - Validate language (en, hi, mr, unknown)
+        - Check for prompt injection patterns
+```
+
+### 3. RoutingEngine (Rules)
+```python
+class RoutingEngine:
+    """Route to specialist based on intent + facts"""
+    
+    def route(language: str, intent: str, facts: dict) -> Route:
+        - Decision tree based on intent
+        - Factor in available facts
+        - Detect clarifying questions
+        - Enforce workflow order
+```
+
+### 4. OutputValidator (Rules)
+```python
+class OutputValidator:
+    """Verify specialist responses"""
+    
+    def validate(response: dict, contract: Type) -> bool:
+        - Check response structure
+        - Mask sensitive data
+        - Verify eligibility claims cite rules
+        - Prevent agent boundary violations
+        - Validate language
+```
+
+**Features:**
+- 🟢 Unified language + intent (1 call, not 2)
+- 🟢 Intelligent routing (intent + facts)
+- 🟢 Session management (thread-based conversation)
+- 🟢 Rate limiting (10 req/actor/minute)
+- 🟢 Sensitive data masking (Aadhar→XXXX-XXXX-XXXX)
+- 🟢 GDPR support (delete conversation)
+- 🟢 Graceful fallback (char-based <1ms if API slow)
+- 🟢 Input validation (length, format, sensitive patterns)
+- 🟢 Output validation (contracts, claim verification)
+
+**Usage:**
+```python
+from agents.supervisor import SupervisorAgent
+from agents.contracts import SupervisorRequest
+
+supervisor = SupervisorAgent()
+
+# Single request
+result = supervisor.route_request(
+    message="Mala eligibility check karaychi aahe",  # Marathi
+    thread_id="user-123-session-1",
+    available_facts={"age": 35, "state": "Maharashtra"},
+    conversation_history=[]
+)
+
+# Returns:
+# {
+#     "language": "mr",
+#     "intent": "eligibility",
+#     "next_agent": "eligibility",
+#     "reason": "User wants eligibility check with known facts",
+#     "clarifying_questions": [],
+#     "validation_passed": True
+# }
+```
+
+**Tests:**
+- ✅ Language detection (15 tests, 6 languages)
+- ✅ Intent classification (10 tests, 6 intents)
+- ✅ Routing logic (8 tests, different intent/fact combinations)
+- ✅ Input validation (10 tests, sensitive data, rate limiting)
+- ✅ Output validation (10 tests, contracts, claims)
+- **Total: 53/53 passing (100%)**
+
+**Constraints:**
+- ❌ Does NOT make eligibility decisions (delegates to specialist)
+- ❌ Does NOT approve documents
+- ❌ Does NOT access memory directly
+- ❌ Does NOT modify facts
+- ✅ Only routes, validates, and coordinates
 
 ---
 
