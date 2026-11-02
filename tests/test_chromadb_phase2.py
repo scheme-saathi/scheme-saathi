@@ -18,6 +18,22 @@ from agents.memory import MemoryFact, MemoryScope, MemoryConsent, ApplicationRef
 from graph.chromadb_checkpointer import ChromaDBCheckpointer
 
 
+def grant(service, scope, purpose="profile_facts"):
+    """Record an active consent (consent_001) for the scope's household."""
+    decided_at = datetime.utcnow()
+    service.record_consent(
+        scope=scope,
+        consent=MemoryConsent(
+            purpose=purpose,
+            granted=True,
+            notice_version="v1.0",
+            decided_at=decided_at,
+            expires_at=decided_at + timedelta(days=30),
+            consent_reference="consent_001",
+        ),
+    )
+
+
 class TestChromaDBMemoryServiceBasics:
     """Test ChromaDB memory service basic operations."""
 
@@ -83,6 +99,7 @@ class TestChromaDBMemoryServiceBasics:
             consent_reference="consent_001",
         )
 
+        grant(service, scope_1)
         service.save_confirmed_fact(scope=scope_1, fact=fact)
 
         # Read back
@@ -119,6 +136,7 @@ class TestChromaDBMemoryServiceBasics:
             consent_reference="consent_001",
         )
 
+        grant(service, scope_1)
         service.save_confirmed_fact(scope=scope_1, fact=fact)
 
         # Read should not return expired fact
@@ -136,6 +154,7 @@ class TestChromaDBMemoryServiceBasics:
         reconfirm_by = confirmed_at + timedelta(days=90)
         expires_at = confirmed_at + timedelta(days=365)
 
+        grant(service, scope_1)
         for field in ["state_code", "district_code"]:
             fact = MemoryFact(
                 field=field,
@@ -172,6 +191,7 @@ class TestChromaDBMemoryServiceBasics:
             consent_reference="consent_001",
         )
 
+        grant(service, scope_1, "application_references")
         service.save_application_reference(scope=scope_1, reference=app_ref)
 
         # Verify stored
@@ -208,6 +228,7 @@ class TestConcurrentAccess:
                 actor_role="operator",
             )
 
+            grant(service, scope)
             for i in range(5):
                 fact = MemoryFact(
                     field="state_code",
@@ -258,6 +279,8 @@ class TestConcurrentAccess:
         confirmed_at = datetime.utcnow()
         reconfirm_by = confirmed_at + timedelta(days=90)
         expires_at = confirmed_at + timedelta(days=365)
+
+        grant(service, scope)
 
         def save_fact(value):
             fact = MemoryFact(
@@ -329,6 +352,7 @@ class TestScopeIsolation:
             consent_reference="consent_001",
         )
 
+        grant(service, scope_1)
         service.save_confirmed_fact(scope=scope_1, fact=fact)
 
         # Actor 2 (different role) reads same household data
@@ -368,6 +392,7 @@ class TestScopeIsolation:
             consent_reference="consent_001",
         )
 
+        grant(service, scope_1)
         service.save_confirmed_fact(scope=scope_1, fact=fact)
 
         # Actor tries to read different household
