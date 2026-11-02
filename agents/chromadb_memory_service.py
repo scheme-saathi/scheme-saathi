@@ -97,8 +97,10 @@ class ChromaDBMemoryService:
                 "household_id": scope.household_id,
                 "actor_id": scope.actor_id,
                 "actor_role": scope.actor_role,
+                "consent_reference": consent.consent_reference,
                 "purpose": consent.purpose,
                 "granted": str(consent.granted),
+                "withdrawn": "False",
                 "decided_at": consent.decided_at.isoformat(),
                 "expires_at": consent.expires_at.isoformat(),
                 "timestamp": datetime.utcnow().isoformat(),
@@ -127,10 +129,37 @@ class ChromaDBMemoryService:
                 "household_id": scope.household_id,
                 "actor_id": scope.actor_id,
                 "consent_reference": consent_reference,
+                "withdrawn": "True",
                 "withdrawn_at": datetime.utcnow().isoformat(),
             },
             documents=["{}"],
         )
+
+    def _has_active_consent(
+        self, scope: MemoryScope, consent_reference: str, purpose: str
+    ) -> bool:
+        """True if the household holds a granted, unexpired, unwithdrawn consent."""
+        rows = self.consent_collection.get(
+            where={
+                "$and": [
+                    {"household_id": {"$eq": scope.household_id}},
+                    {"consent_reference": {"$eq": consent_reference}},
+                ]
+            }
+        )
+        metas = rows.get("metadatas") or []
+        if any(m.get("withdrawn") == "True" or "withdrawn_at" in m for m in metas):
+            return False
+        now = datetime.utcnow()
+        for meta in metas:
+            if meta.get("purpose") != purpose or meta.get("granted") != "True":
+                continue
+            expires_at = datetime.fromisoformat(meta["expires_at"])
+            if expires_at.tzinfo is not None:
+                expires_at = expires_at.replace(tzinfo=None)
+            if expires_at > now:
+                return True
+        return False
 
     def read_facts(
         self,
@@ -175,6 +204,10 @@ class ChromaDBMemoryService:
                 if fact.reconfirm_by < now:
                     continue
 
+                if not self._has_active_consent(
+                    scope, fact.consent_reference, "profile_facts"
+                ):
+                    continue
                 facts[fact.field] = fact.value
 
             except (json.JSONDecodeError, ValueError):
@@ -195,6 +228,14 @@ class ChromaDBMemoryService:
             fact: MemoryFact to store
         """
         self._validate_scope(scope)
+
+        if not self._has_active_consent(
+            scope, fact.consent_reference, "profile_facts"
+        ):
+            raise ValueError(
+                f"No active profile_facts consent {fact.consent_reference} "
+                "for this household"
+            )
 
         # Store in facts collection
         fact_id = f"{scope.household_id}:{fact.field}:{fact.consent_reference}"
@@ -241,7 +282,9 @@ class ChromaDBMemoryService:
                 app = ApplicationReference(**app_dict)
 
                 # Check expiry
-                if app.expires_at >= now:
+                if app.expires_at >= now and self._has_active_consent(
+                    scope, app.consent_reference, "application_references"
+                ):
                     apps.append(app)
 
             except (json.JSONDecodeError, ValueError):
@@ -262,6 +305,14 @@ class ChromaDBMemoryService:
             reference: ApplicationReference to store
         """
         self._validate_scope(scope)
+
+        if not self._has_active_consent(
+            scope, reference.consent_reference, "application_references"
+        ):
+            raise ValueError(
+                f"No active application_references consent "
+                f"{reference.consent_reference} for this household"
+            )
 
         app_id = f"{scope.household_id}:{reference.application_id}:{reference.consent_reference}"
         
