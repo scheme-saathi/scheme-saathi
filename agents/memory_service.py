@@ -125,6 +125,8 @@ class InMemoryMemoryService(MemoryService):
                 continue
 
             # Find facts for this field in this household
+            # Newest valid fact wins
+            newest = None
             for fact in self.households[scope.household_id].get("facts", []):
                 fact_obj = self.facts.get(fact)
                 if not fact_obj:
@@ -134,8 +136,11 @@ class InMemoryMemoryService(MemoryService):
                     # Verify consent is still valid
                     consent = self.consents.get(fact_obj.consent_reference)
                     if consent and consent.granted and consent.expires_at > now:
-                        result[field] = fact_obj.value
-                        break
+                        if newest is None or fact_obj.confirmed_at >= newest.confirmed_at:
+                            newest = fact_obj
+
+            if newest is not None:
+                result[field] = newest.value
 
         return result
 
