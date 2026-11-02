@@ -1,9 +1,49 @@
-# 🚀 Quick Start: Demo UI/API Build Plan
+# Quick Start: Scheme Saathi Demo
 
-**For:** Developers ready to build the demo  
-**Timeline:** 2 weeks  
-**Effort:** 2-3 developers (1 backend, 1 frontend, 1 QA optional)  
-**Goal:** Working demo by end of Week 2  
+**For:** Developers running the local Streamlit and FastAPI demo
+**Goal:** Start the citizen workflow locally with one command
+
+## Run the current demo
+
+The runnable demo uses Streamlit for the citizen portal and FastAPI for its API.
+FastAPI starts automatically with Streamlit unless `SCHEME_SAATHI_API_URL` points
+to an already-running API.
+
+```powershell
+# From the repository root, after installing the project dependencies
+streamlit run app/app.py
+```
+
+For the conversational UI with the complete step-by-step workflow, run:
+
+```powershell
+streamlit run app/app_new.py
+```
+
+It uses the same FastAPI service and reviewed rules, asks for missing facts
+before evaluating eligibility, and streams progress to the chat. After an
+eligible result, choose a scheme to continue through document upload, draft
+review, profile edits, rejection or approval, and mock submission confirmation.
+Attach each requested PDF or image from the chat input's paperclip; the UI
+matches attachments to the next required document in order.
+The local API starts on port `8766`; override it with
+`SCHEME_SAATHI_CHAT_API_PORT` or point `SCHEME_SAATHI_API_URL` at a running API.
+Uploads are validated and tracked as metadata only; file contents are discarded.
+The final submission is a local mock and is not sent to a government service.
+
+To run the API separately:
+
+```powershell
+uvicorn app.api:app --reload --port 8000
+```
+
+Then set `SCHEME_SAATHI_API_URL=http://127.0.0.1:8000` before starting Streamlit.
+The API also exposes `/health` and `/docs`. Profile and document metadata stay
+in process memory for this demo. Uploads are validated, then file contents are
+discarded rather than persisted.
+
+The sections below retain the original React-based implementation checklist as
+historical planning notes. They are not required to run the current Streamlit demo.
 
 ---
 
