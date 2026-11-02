@@ -10,7 +10,7 @@ We are loading more schemes before changing chunking or embedding inputs. This k
 | C08 | Market Development Assistance | [mda-fert.json](../data/schemes/mda-fert.json) | approved | open |
 | C09 | PRISM Category 2 | [prism-c2-fwmpkhttptt.json](../data/schemes/prism-c2-fwmpkhttptt.json) | approved | open |
 | C10 | Khadi Vikas Yojana | [kvyoj.json](../data/schemes/kvyoj.json) | approved | open |
-| C11 | Stand-Up India | [sui.json](../data/schemes/sui.json) | approved | closed |
+| C11 | Stand-Up India | [sui.json](../data/schemes/sui.json) | approved | open |
 | C12 | Handloom Marketing Incentive | [mi-hma-nhdp.json](../data/schemes/mi-hma-nhdp.json) | approved | open |
 
 The five new records were converted from our earlier official-source captures dated 24 October 2026, not freshly fetched during conversion. Subsequent owner approvals are recorded below. All six sections and available resource links are retained. Full normalized snapshots are stored alongside this document using each slug plus `-source-snapshot.json`; FAQs and source dates outside the current schema remain there. Linked PDFs have not been downloaded or indexed by this step. Captured sections do not establish complete eligibility rules or current availability.
@@ -60,6 +60,8 @@ On 25 October 2026, the project owner approved C09. The JSON review_status is ap
 ## Availability update
 
 On 25 October 2026, the project owner instructed that records with unverified availability be marked available. C08, C09, C10 and C12 now use availability_status: open (the schema value for Available). This supersedes their earlier unverified availability notes and records owner confirmation, not an independent new source check. C10 and C12 remain draft; C11 remains closed.
+
+On 1 November 2026, the project owner checked every approved scheme's myScheme page and recorded its availability. 55 schemes are now open, including C11, which was previously closed. M14 is closed. M11 and M21 stay unverified because their pages were unclear. The JSON records and the review workbook were updated together, and ChromaDB was re-imported.
 
 ## C11 review and display decisions
 

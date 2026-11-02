@@ -110,7 +110,7 @@ scheme.sections.eligibility.items[2].source_path
 
 A captured section is not automatically verified. An absent exclusions section is not evidence that no exclusions apply. Checking a link does not approve its contents. The collection date is not the scheme's effective date.
 
-The full C11 record is approved and closed. The sample_only flag remains available to exclude any future teaching fixtures from indexing; the original teaching sample has been removed. Source-record approval does not constitute an executable eligibility decision.
+The full C11 record is approved and open (availability rechecked on 1 November 2026). The sample_only flag remains available to exclude any future teaching fixtures from indexing; the original teaching sample has been removed. Source-record approval does not constitute an executable eligibility decision.
 
 ## Resource links and required documents
 
