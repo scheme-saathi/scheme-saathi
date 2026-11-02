@@ -6,33 +6,40 @@
 
 ## ⚡ 30-Second Overview
 
-| Agent | What It Does | Input | Output | Status |
-|-------|--------------|-------|--------|--------|
-| 🔵 **Intake** | Collect user info | Text/Voice | Facts extracted | ✅ Built |
-| 🟢 **Eligibility** | Check scheme eligibility | Facts | Verdict (✅/❌) | ✅ Built |
-| 🟡 **DocumentChecker** | List required docs | Scheme ID | Missing docs list | ✅ Built |
-| 🔴 **Application** | Draft application | Facts + Scheme | Form draft | ✅ Built |
-| 🟣 **Supervisor** | Route workflow | Intent | Next agent | ✅ Built |
-| ⚙️ **Orchestrator** | Manage state | Events | State updated | ✅ Built |
-| 🛡️ **PersonaValidator** | Enforce rules | Action | Approved/Blocked | ✅ Built |
+| Agent | What It Does | Input | Output | Status | Order |
+|-------|--------------|-------|--------|--------|-------|
+| 🟣 **Supervisor** | Route workflow, validate I/O | Intent | Next agent | ✅ Built | **1st** |
+| 🔵 **Intake** | Collect user info | Text/Voice | Facts extracted | ✅ Built | 2nd |
+| 🟢 **Eligibility** | Check scheme eligibility | Facts | Verdict (✅/❌) | ✅ Built | 3rd |
+| 🟡 **DocumentChecker** | List required docs | Scheme ID | Missing docs list | ✅ Built | 4th |
+| 🔴 **Application** | Draft application | Facts + Scheme | Form draft | ✅ Built | 5th |
+| ⚙️ **Orchestrator** | Manage state | Events | State updated | ✅ Built | Support |
+| 🛡️ **PersonaValidator** | Enforce rules | Action | Approved/Blocked | ✅ Built | Support |
 
 ---
 
 ## 🎯 Usage Patterns
 
-### Pattern 1: Single Question
+### Pattern 1: Direct Response (No Specialist)
 ```
-User → Intake → Question for next round
-```
-
-### Pattern 2: Check Eligibility
-```
-User → Supervisor → Eligibility → Verdict
+User → Supervisor → Respond (direct answer)
 ```
 
-### Pattern 3: Apply for Scheme
+### Pattern 2: Single Question with Clarification
 ```
-Intake → Eligibility → DocumentChecker → Application 
+User → Supervisor → Intake → Respond (clarifying question needed)
+```
+
+### Pattern 3: Check Eligibility
+```
+User → Supervisor → Eligibility → Response (verdict)
+  OR
+User → Supervisor → Intake → Eligibility → Response
+```
+
+### Pattern 4: Full Application
+```
+User → Supervisor → Intake → Eligibility → DocumentChecker → Application 
 → ⏸ INTERRUPT (user reviews)
 → SUBMIT (reference #)
 ```
@@ -68,20 +75,38 @@ Intake → Eligibility → DocumentChecker → Application
 
 ---
 
-## 🔄 Workflow State Machine
+## 🔄 Workflow State Machine (Supervisor-First Architecture)
 
 ```
 START
   ↓
-INTAKE (collect info)
-  ↓
-ELIGIBILITY (evaluate rules)
-  ↓
-DOCUMENTS (check requirements)
-  ↓
-APPLICATION (draft form)
-  ↓
-⏸ WAIT FOR APPROVAL
+⭐ SUPERVISOR (validate, detect language/intent, route)
+  ├─ Intent=discover/eligibility/docs/application
+  │  ↓
+  │  INTAKE (collect info)
+  │  ↓
+  │  (branching based on facts)
+  │  ├→ ELIGIBILITY
+  │  ├→ DOCUMENTCHECKER
+  │  └→ RESPOND (clarification needed)
+  │
+  ├─ Intent=eligibility + has_facts
+  │  ↓
+  │  ELIGIBILITY (evaluate rules)
+  │  ↓
+  │  DOCUMENTCHECKER (if needed)
+  │  ↓
+  │  APPLICATION (if needed)
+  │
+  ├─ Intent=documents
+  │  ↓
+  │  DOCUMENTCHECKER
+  │
+  └─ Intent=follow_up/other
+     ↓
+     RESPOND (direct response)
+
+⏸ INTERRUPT (if application)
   ├─ User approves → SUBMIT
   └─ User rejects → back to INTAKE
        ↓
@@ -94,11 +119,22 @@ END
 
 ## 💬 Example Conversations
 
-### Conversation 1: Single Intake
+### Conversation 1: Direct Response (No Specialist)
+```
+User: "What are your operating hours?"
+Supervisor: Detect language=en, intent=follow_up
+            Route to Respond
+Respond Agent: "We're available 24/7 for scheme queries"
+```
+
+### Conversation 2: Intake with Clarification
 ```
 User: "My name is Priya, I'm 35"
+Supervisor: Detect intent=discover/eligibility (unclear)
+            Route to Intake
 Intake Agent: Extract name=Priya, age=35
-              Ask: "What's your monthly income?"
+              Has clarifying_questions
+Respond Agent: "What's your monthly income?"
 User: "I earn ₹25,000/month"
 Intake Agent: Extract income=300000
               Ask: "What state are you from?"
@@ -106,29 +142,36 @@ User: "Maharashtra"
 Intake Agent: All facts collected. Ready for next step.
 ```
 
-### Conversation 2: Check Eligibility
+### Conversation 3: Check Eligibility (Direct)
 ```
-User: "What schemes can I apply for?"
-Supervisor: Route to Eligibility Agent
-Eligibility: Evaluate {age, income, state}
-            ELIGIBLE: PMJDY, Ujjwala
-            NOT ELIGIBLE: JSY
-            Explain why for each
+User: "Am I eligible for widows pension?"
+Supervisor: Detect intent=eligibility, has previous facts
+            Route to Eligibility
+Eligibility: Evaluate {age, income, state, widow_status}
+            ELIGIBLE: ✅ (all conditions met)
+            Explain why with rule citations
 ```
 
-### Conversation 3: Full Application
+### Conversation 4: Full Application
 ```
 User: "I want to apply for PMJDY"
+Supervisor: Detect intent=application
+            Route to Intake (collect complete facts first)
 ↓
-Intake: Collect {name, age, income, state}
+Intake: Collect {name, age, income, state, documents}
 ↓
+Supervisor: Route to Eligibility
 Eligibility: Verify PMJDY eligibility ✅
 ↓
+Supervisor: Route to DocumentChecker
 DocumentChecker: PMJDY requires [Aadhar, Income proof]
                  Missing: [Income proof]
 ↓
 User: Upload income proof
+Supervisor: Route to DocumentChecker again
+DocumentChecker: All docs valid ✅
 ↓
+Supervisor: Route to Application
 Application: Draft form with all facts
              Show for review
 ↓
@@ -300,22 +343,25 @@ For Phase 3:
 ## 🎯 Remember
 
 ```
-INTAKE collects info
-↓
-ELIGIBILITY evaluates
-↓
-DOCUMENTCHECKER validates
-↓
-APPLICATION drafts
-↓
-USER approves
-↓
+⭐ SUPERVISOR (validate, route) - ALWAYS FIRST!
+  ↓
+INTAKE (if needed - collect info)
+  ↓
+ELIGIBILITY (if needed - evaluate)
+  ↓
+DOCUMENTCHECKER (if needed - validate)
+  ↓
+APPLICATION (if needed - draft)
+  ↓
+USER REVIEWS & APPROVES
+  ↓
 SUBMIT application
 ```
 
-**All 7 agents** = 1 complete system  
-**74 tests** = ✅ all passing  
-**Ready for** Phase 3 & Demo  
+**Supervisor-First Guarantee:** No specialist executes without Supervisor routing  
+**8 agents total** = 1 complete system  
+**271 tests** = ✅ 98.2% passing  
+**Ready for** Production & API Integration
 
 ---
 

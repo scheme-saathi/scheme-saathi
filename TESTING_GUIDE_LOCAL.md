@@ -3,8 +3,8 @@
 **Complete guide to run Scheme Saathi with Supervisor Agent & FastAPI**
 
 **Last Updated:** 2026-11-03  
-**Current Flow:** Intake → Supervisor → [Eligibility|DocumentChecker|Application] → Respond  
-**Status:** ✅ Production Ready (271/276 tests passing)
+**Current Flow:** Supervisor (Entry) → [Intake|Eligibility|DocumentChecker|Application|Respond] → Supervisor (Post-Check)  
+**Status:** ✅ Production Ready (271/276 tests passing, 15/15 workflow tests)
 
 ---
 
@@ -811,6 +811,130 @@ git status  # should show .env in gitignore
   - Unit tests (agents, memory, persona)
   - Integration tests (workflow, orchestrator)
   - Evaluation tests (eligibility rules)
+
+### Supervisor Agent
+- **Location:** `agents/supervisor.py` (759 lines)
+- **Purpose:** Entry point, input/output validation, routing
+- **Key features:**
+  - Validates input (sensitive data, rate limiting)
+  - Detects language & intent (1 gpt-4o-mini call)
+  - Routes to specialist agent OR respond node
+  - Validates specialist output (contracts, masking)
+  - Masks sensitive data (Aadhar→XXXX)
+
+### API Server
+- **Location:** `app/api.py` (~600 lines)
+- **Purpose:** FastAPI endpoints for chat interactions
+- **Key endpoints:**
+  - `POST /api/chat` - Send message to supervisor
+  - `GET /api/chat/{thread_id}` - Get conversation
+  - `GET /api/chat/{thread_id}/history` - Get full history
+  - `POST /api/chat/{thread_id}/restart` - Reset context
+  - `DELETE /api/chat/{thread_id}` - Delete conversation (GDPR)
+
+---
+
+## ⭐ Workflow Execution Order (Supervisor-First Architecture)
+
+**CRITICAL:** All user requests flow through Supervisor FIRST. Intake and other specialists are called conditionally based on Supervisor's routing decision.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ 1. USER INPUT (Any Language)                                 │
+│    - Text in English, Hindi, Marathi, or mixed                │
+│    - Via: Chat API, Web UI, Voice Interface                  │
+└────────────────────┬─────────────────────────────────────────┘
+                     ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 2. ⭐ SUPERVISOR VALIDATES INPUT (ALWAYS FIRST)              │
+│    - Check for sensitive data (Aadhar, PAN, phone, bank)     │
+│    - Enforce rate limiting (10 requests/actor/minute)        │
+│    - Validate message length (1-5000 chars)                  │
+│    - Status: input_validated ✓                               │
+└────────────────────┬─────────────────────────────────────────┘
+                     ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 3. ⭐ SUPERVISOR DETECTS LANGUAGE & INTENT (1 call)          │
+│    - Language: English, Hindi, Marathi, Unknown               │
+│    - Intent: discover, eligibility, documents, application,  │
+│              follow_up, other                                 │
+│    - Uses gpt-4o-mini via OpenRouter (50-150ms)              │
+│    - Fallback: Character-based detection (<1ms)              │
+│    - Status: language_detected ✓                             │
+└────────────────────┬─────────────────────────────────────────┘
+                     ↓
+         ┌───────────────────────────────────────┐
+         │ 4. SUPERVISOR ROUTING DECISION         │
+         │    Based on: Intent + Available Facts │
+         └──┬────────────────────────────────────┘
+            │
+    ┌───────┴───────────────────────────────────────┐
+    │                                               │
+    ↓                                               ↓
+┌─────────────────────────────┐        ┌──────────────────────────┐
+│ 5A. SPECIALIST AGENT(s)     │        │ 5B. RESPOND NODE         │
+│     (if needed)              │        │     (if no specialist)    │
+│                              │        │                          │
+│ Routing Logic:               │        │ Conditions:              │
+│  • discover → Intake         │        │  • follow_up → Respond   │
+│  • eligibility +             │        │  • other → Respond       │
+│    no_facts → Intake         │        │  • clarifying_questions  │
+│  • eligibility +             │        │    from Intake → Respond │
+│    has_facts → Eligibility   │        │                          │
+│  • documents →               │        │ Returns:                 │
+│    DocumentChecker           │        │  • status: needs_clarif. │
+│  • application → Intake      │        │  • response text         │
+│                              │        │  • clarifying questions  │
+│ Specialists execute:         │        └──────────────────────────┘
+│  ✓ Intake → collects facts   │
+│  ✓ Eligibility → evaluates   │
+│  ✓ DocumentChecker → gaps    │
+│  ✓ Application → draft form  │
+└───┬────────────────────────────┘
+    │
+    └──────────────────────────────────┐
+                                       ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 6. ⭐ SUPERVISOR POST-CHECK (validates specialist output)    │
+│    - Verify response structure (contracts)                   │
+│    - Check eligibility claims cite rules                     │
+│    - Mask sensitive data (Aadhar→XXXX, PAN→XXXX)             │
+│    - Enforce agent boundaries (no oversteps)                 │
+│    - Format in user's language                               │
+│    - Status: output_validated ✓                              │
+└────────────────────┬─────────────────────────────────────────┘
+                     ↓
+┌──────────────────────────────────────────────────────────────┐
+│ 7. RETURN TO USER                                            │
+│    - JSON Response with:                                     │
+│      • status (success, needs_clarification, error)          │
+│      • response (in user's language)                         │
+│      • language (detected)                                   │
+│      • intent (detected)                                     │
+│      • collected_facts (if any)                              │
+│      • next_action (recommended next step)                   │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Key Points:**
+1. ✅ **Supervisor is mandatory entry point** - Never bypass it
+2. ✅ **Specialist agents execute conditionally** - Based on Supervisor routing
+3. ✅ **Respond node handles clarifications** - Without specialist processing
+4. ✅ **Supervisor validates all output** - Before returning to user
+5. ✅ **All responses masked** - Sensitive data replaced
+6. ✅ **Language-aware** - Responses in user's detected language
+
+**Verification in Tests:**
+```bash
+# Test Supervisor-first flow
+pytest tests/test_agent_workflow.py::test_supervisor_validates_input_first -v
+
+# Test intake clarifying questions (respond node, no specialist)
+pytest tests/test_agent_workflow.py::test_intake_questions_pause_before_supervisor_or_specialists -v
+
+# Test routing decisions
+pytest tests/test_supervisor_guardrails.py::TestRoutingEngine -v
+```
 
 ---
 
