@@ -3,7 +3,14 @@
 import sys
 from pathlib import Path
 
-from graph.agent_workflow import build_agent_graph
+from graph.agent_workflow import AgentSet, build_agent_graph
+from agents.contracts import (
+    IntakeResult,
+    SupervisorPlan,
+    EligibilityNarrative,
+    DocumentCheckResult,
+    ApplicationDraft,
+)
 
 DOC_PATH = Path(__file__).resolve().parents[1] / "docs" / "workflow-graph.md"
 HEADER = """# Workflow graph
@@ -16,8 +23,30 @@ Dashed arrows are conditional edges based on Supervisor's routing decision.
 """
 
 
+class StubAgent:
+    """Stub agent for diagram generation (no model needed)."""
+    def __init__(self, result):
+        self.result = result
+
+    def invoke(self, value):
+        return self.result
+
+
 def render() -> str:
-    return HEADER + "```mermaid\n" + build_agent_graph().get_graph().draw_mermaid().rstrip() + "\n```\n"
+    # Create mock agents for diagram generation (no models needed)
+    mock_agents = AgentSet(
+        intake=StubAgent(IntakeResult(language="en", intent="eligibility")),
+        supervisor=StubAgent(SupervisorPlan(next_agent="eligibility", reason="Check eligibility.")),
+        eligibility=StubAgent(EligibilityNarrative(explanation="Reviewed result.")),
+        document_checker=StubAgent(DocumentCheckResult()),
+        application=StubAgent(ApplicationDraft(
+            scheme_id="test-scheme",
+            fields={},
+            missing_fields=[],
+            review_summary="Application review.",
+        )),
+    )
+    return HEADER + "```mermaid\n" + build_agent_graph(mock_agents).get_graph().draw_mermaid().rstrip() + "\n```\n"
 
 
 def main(argv: list[str]) -> int:
