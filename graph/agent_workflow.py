@@ -64,7 +64,41 @@ class AgentSet:
         )
 
 
+def _supervisor_node(
+    agents: AgentSet, state: AgentWorkflowState
+) -> dict[str, Any]:
+    """Entry point: Validate input, detect language & intent, route intelligently.
+    
+    Supervisor runs FIRST on all requests to:
+    1. Validate input (no sensitive data, rate limiting, format)
+    2. Detect language (en, hi, mr) and intent in single gpt-4o-mini call
+    3. Route to appropriate specialist or pause for clarification
+    """
+    # Supervisor validates input and decides routing
+    # Note: intake parameter is None because Intake hasn't run yet
+    plan = agents.supervisor.invoke(
+        SupervisorInput(
+            request=state["request"],
+            intake=state.get("intake"),  # None on first call
+            selected_scheme_id=state.get("selected_scheme_id"),
+        )
+    )
+    return {"plan": plan.model_dump(mode="json")}
+
+
+def _route_after_supervisor(state: AgentWorkflowState) -> str:
+    """Route based on Supervisor's decision.
+    
+    Returns:
+    - "intake" if need to collect facts
+    - "eligibility", "document_checker", "application" if direct routing
+    - "finish" if responding without specialist
+    """
+    return state["plan"]["next_agent"]
+
+
 def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
+    """Collect household information (only called if Supervisor routes here)."""
     result = agents.intake.invoke(
         IntakeInput(
             request=state["request"],
@@ -75,34 +109,23 @@ def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
 
 
 def _route_after_intake(state: AgentWorkflowState) -> str:
+    """After Intake, check if clarification needed or ready to route to specialist."""
     if state["intake"].clarifying_questions:
-        return "clarification"
-    return "supervisor"
+        return "respond"  # Pause and ask clarifying questions
+    # If supervisor already decided next step, go there
+    next_agent = state["plan"]["next_agent"]
+    if next_agent in ["eligibility", "document_checker", "application"]:
+        return next_agent
+    return "finish"
 
 
 def _clarification_node(state: AgentWorkflowState) -> dict[str, str]:
+    """Respond with clarifying questions from Intake."""
     questions = state["intake"].clarifying_questions
     return {
         "status": "needs_clarification",
         "response": "\n".join(questions),
     }
-
-
-def _supervisor_node(
-    agents: AgentSet, state: AgentWorkflowState
-) -> dict[str, Any]:
-    plan = agents.supervisor.invoke(
-        SupervisorInput(
-            request=state["request"],
-            intake=state["intake"],
-            selected_scheme_id=state.get("selected_scheme_id"),
-        )
-    )
-    return {"plan": plan.model_dump(mode="json")}
-
-
-def _route_after_supervisor(state: AgentWorkflowState) -> str:
-    return state["plan"]["next_agent"]
 
 
 def _eligibility_node(
@@ -207,45 +230,103 @@ def build_agent_graph(
     agents: AgentSet | None = None,
     checkpointer: BaseCheckpointSaver | None = None,
 ):
-    """Build the agent skeleton; no durable checkpointer is selected by default."""
+    """Build agent workflow with Supervisor as entry point.
+    
+    Graph Flow:
+    START → Supervisor (validate, detect language/intent, route)
+            ├→ intake (collect facts if needed)
+            │   └→ eligibility/document_checker/application/respond
+            ├→ eligibility (direct routing if Supervisor decides)
+            ├→ document_checker
+            ├→ application
+            └→ respond (direct response without specialist)
+    → finish (format response)
+    → END
+    """
     runtime = agents or AgentSet.from_environment()
     builder = StateGraph(AgentWorkflowState)
-    builder.add_node("intake", lambda state: _intake_node(runtime, state))
-    builder.add_node("clarification", _clarification_node)
+    
+    # Add all nodes
     builder.add_node("supervisor", lambda state: _supervisor_node(runtime, state))
+    builder.add_node("intake", lambda state: _intake_node(runtime, state))
     builder.add_node("eligibility", lambda state: _eligibility_node(runtime, state))
     builder.add_node(
         "document_checker", lambda state: _document_checker_node(runtime, state)
     )
     builder.add_node("application", lambda state: _application_node(runtime, state))
     builder.add_node("finish", _finish_node)
-    builder.add_edge(START, "intake")
-    builder.add_conditional_edges(
-        "intake",
-        _route_after_intake,
-        {"clarification": "clarification", "supervisor": "supervisor"},
-    )
-    builder.add_edge("clarification", END)
+    # Respond node handles: direct responses and clarifying questions from Intake
+    def _respond_node_impl(state: AgentWorkflowState) -> dict[str, str]:
+        # If Intake has clarifying questions, return those
+        intake_data = state.get("intake")
+        if intake_data:
+            if hasattr(intake_data, "clarifying_questions"):
+                clarifying_qs = intake_data.clarifying_questions
+            elif isinstance(intake_data, dict):
+                clarifying_qs = intake_data.get("clarifying_questions", [])
+            else:
+                clarifying_qs = []
+            
+            if clarifying_qs:
+                return {
+                    "status": "needs_clarification",
+                    "response": "\n".join(clarifying_qs),
+                }
+        # Otherwise return the plan reason (direct response)
+        return {"status": "responded", "response": state["plan"]["reason"]}
+    
+    builder.add_node("respond", _respond_node_impl)
+    
+    # Entry point: Supervisor ALWAYS first
+    builder.add_edge(START, "supervisor")
+    
+    # After Supervisor routes to: intake, eligibility, document_checker, application, or finish
     builder.add_conditional_edges(
         "supervisor",
         _route_after_supervisor,
         {
+            "intake": "intake",
+            "eligibility": "eligibility",
+            "document_checker": "document_checker",
+            "application": "eligibility",  # application flow starts with eligibility eval
+            "respond": "respond",  # direct response without specialist
+        },
+    )
+    
+    # After Intake, route to specialist or respond with clarification
+    builder.add_conditional_edges(
+        "intake",
+        _route_after_intake,
+        {
             "eligibility": "eligibility",
             "document_checker": "document_checker",
             "application": "eligibility",
-            "respond": "finish",
+            "respond": "respond",
+            "finish": "finish",
         },
     )
+    
+    # Eligibility → Document Checker (if application) → Finish
     builder.add_conditional_edges(
         "eligibility",
         _route_after_eligibility,
         {"document_checker": "document_checker", "finish": "finish"},
     )
+    
+    # Document Checker → Application (if needed) → Finish
     builder.add_conditional_edges(
         "document_checker",
         _route_after_documents,
         {"application": "application", "finish": "finish"},
     )
+    
+    # Application → Finish
     builder.add_edge("application", "finish")
+    
+    # Respond → END (respond node handles its own final output)
+    builder.add_edge("respond", END)
+    
+    # Finish → END
     builder.add_edge("finish", END)
+    
     return builder.compile(checkpointer=checkpointer)

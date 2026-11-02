@@ -35,7 +35,7 @@ class IntakeResult(Contract):
 
 class SupervisorInput(Contract):
     request: str = Field(min_length=1)
-    intake: IntakeResult
+    intake: IntakeResult | None = None  # Optional: None on first call, populated after Intake runs
     selected_scheme_id: str | None = None
 
 

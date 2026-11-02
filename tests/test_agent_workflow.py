@@ -58,6 +58,11 @@ def build_agents(
 
 
 def test_intake_questions_pause_before_supervisor_or_specialists():
+    """Test that Intake clarifying questions pause the flow.
+    
+    New architecture: Supervisor is entry point and routes to Intake.
+    Intake clarifying questions return 'needs_clarification' status.
+    """
     agents = build_agents(
         intake=StubAgent(
             IntakeResult(
@@ -65,14 +70,17 @@ def test_intake_questions_pause_before_supervisor_or_specialists():
                 intent="eligibility",
                 clarifying_questions=["Which district do you live in?"],
             )
-        )
+        ),
+        plan=StubAgent(SupervisorPlan(next_agent="intake", reason="Need to collect household facts."))
     )
 
     result = build_agent_graph(agents).invoke({"request": "मला योजना शोधायची आहे"})
 
     assert result["status"] == "needs_clarification"
     assert "Which district" in result["response"]
-    assert agents.supervisor.calls == []
+    # Supervisor IS called first (entry point), then routes to Intake
+    assert len(agents.supervisor.calls) >= 1
+    assert len(agents.intake.calls) >= 1
 
 
 def test_document_request_is_routed_to_checker_without_application_access():
