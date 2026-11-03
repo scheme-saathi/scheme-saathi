@@ -6,6 +6,9 @@ errors are exactly what an out-of-process client would see. Failed tools raise T
 
 import asyncio
 import concurrent.futures
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from typing import Any
 
 from fastmcp import Client
@@ -19,6 +22,27 @@ RULE_ENGINE = "rule-engine"
 SCHEMES_KB = "schemes-kb"
 MOCK_PORTAL = "mock-portal"
 _SERVERS = {RULE_ENGINE: rule_server, SCHEMES_KB: kb_server, MOCK_PORTAL: portal_server}
+
+# Pre-tool hook: only these agents may call a write tool. "baseline" is the single-agent
+# comparison run, which is deliberately given every tool.
+WRITE_TOOLS = {(MOCK_PORTAL, "create_application"), (MOCK_PORTAL, "submit_draft")}
+WRITE_ALLOWED = {"application", "baseline"}
+_actor: ContextVar[str | None] = ContextVar("tool_actor", default=None)
+
+
+@contextmanager
+def acting_as(agent: str) -> Iterator[None]:
+    """Name the agent making the tool calls inside this block."""
+    token = _actor.set(agent)
+    try:
+        yield
+    finally:
+        _actor.reset(token)
+
+
+def _authorize(server: str, tool: str) -> None:
+    if (server, tool) in WRITE_TOOLS and _actor.get() not in WRITE_ALLOWED:
+        raise ToolCallError(server, tool, "forbidden", f"'{_actor.get() or 'unknown caller'}' may not use a write tool.")
 
 
 class ToolCallError(RuntimeError):
@@ -41,6 +65,7 @@ async def _call(server: str, tool: str, arguments: dict[str, Any]) -> dict[str, 
 
 def call_tool(server: str, tool: str, **arguments: Any) -> Any:
     """Call one MCP tool and return its ``data``. Safe inside or outside a running event loop."""
+    _authorize(server, tool)
     try:
         asyncio.get_running_loop()
     except RuntimeError:
@@ -75,9 +100,28 @@ def draft_application(profile: dict, scheme_id: str) -> dict:
     return {"scheme_id": scheme_id, "applicant": profile}
 
 
-def submit_application(form: dict) -> dict:
-    """The only write call. The workflow reaches it only after the exact form is approved."""
+def application_form_spec(scheme_id: str) -> tuple[list[str], dict[str, str]]:
+    """Required form fields and their fact names, from the scheme's reviewed rule fields."""
+    fields = required_fields([scheme_id])
+    return fields, {field: field for field in fields}
+
+
+def create_portal_draft(form: dict) -> dict:
+    """Write: store the form on the mock portal as a draft. Nothing is submitted."""
     record = call_tool(MOCK_PORTAL, "create_application", scheme_id=form["scheme_id"],
-                       applicant=form["applicant"], submit=True)
+                       applicant=form["applicant"], submit=False)
+    return {"application_id": record["application_id"], "status": f"{record['status']} (mock)"}
+
+
+def submit_application(form: dict, application_id: str | None = None) -> dict:
+    """The only submit. The workflow reaches it only after the exact form is approved.
+
+    With ``application_id`` it submits the draft already on the portal; without, it creates and submits.
+    """
+    if application_id:
+        record = call_tool(MOCK_PORTAL, "submit_draft", application_id=application_id)
+    else:
+        record = call_tool(MOCK_PORTAL, "create_application", scheme_id=form["scheme_id"],
+                           applicant=form["applicant"], submit=True)
     return {"status": f"{record['status']} (mock)", "scheme_id": record["scheme_id"],
             "application_id": record["application_id"]}

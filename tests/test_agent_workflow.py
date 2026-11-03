@@ -235,32 +235,124 @@ def test_application_route_stops_when_deterministic_result_is_not_eligible():
     assert application.calls == []
 
 
-def test_application_route_requires_eligibility_and_returns_review_only_draft():
-    agents = build_agents(
+def _eligible_application_request():
+    return {
+        "request": "Help me apply",
+        "selected_scheme_id": "C01",
+        "known_facts": {"age": 30},
+        "confirmed_facts": {"age": 30},
+        "deterministic_evaluation": {
+            "verdict": "eligible",
+            "reason": "All reviewed conditions are satisfied.",
+            "missing_fields": [],
+            "unresolved_fields": [],
+            "conditions": [],
+            "citations": [],
+        },
+    }
+
+
+def _application_agents(missing=None):
+    return build_agents(
         plan=StubAgent(SupervisorPlan(next_agent="application", reason="Prepare draft.")),
         documents=StubAgent(DocumentCheckResult()),
+        application=StubAgent(
+            ApplicationDraft(
+                scheme_id="C01",
+                fields={"age": 30},
+                missing_fields=missing or [],
+                review_summary="Draft is ready for human review.",
+            )
+        ),
     )
 
-    result = build_agent_graph(agents).invoke(
-        {
-            "request": "Help me apply",
-            "selected_scheme_id": "C01",
-            "known_facts": {"age": 30},
-            "deterministic_evaluation": {
-                "verdict": "eligible",
-                "reason": "All reviewed conditions are satisfied.",
-                "missing_fields": [],
-                "unresolved_fields": [],
-                "conditions": [],
-                "citations": [],
-            },
-        }
-    )
 
-    assert result["status"] == "draft_ready_for_review"
-    assert result["application_draft"]["review_summary"] == "Draft is ready for human review."
+def _run_to_approval(monkeypatch, thread="t1"):
+    from langgraph.checkpoint.memory import MemorySaver
+
+    submitted = []
+    monkeypatch.setattr(
+        "graph.agent_workflow.tools.submit_application",
+        lambda form, application_id=None: submitted.append(form) or {"application_id": "APP-1", "status": "submitted (mock)"},
+    )
+    graph = build_agent_graph(_application_agents(), checkpointer=MemorySaver())
+    config = {"configurable": {"thread_id": thread}}
+    result = graph.invoke(_eligible_application_request(), config)
+    return graph, config, result, submitted
+
+
+def test_application_draft_pauses_for_approval_and_does_not_submit(monkeypatch):
+    graph, config, result, submitted = _run_to_approval(monkeypatch)
+
+    pending = result["__interrupt__"][0].value
+    assert pending["form"] == {"scheme_id": "C01", "applicant": {"age": 30}}
+    assert len(pending["payload_hash"]) == 64
+    assert pending["options"] == ["approve", "edit", "reject"]
+    assert submitted == []
+
+
+def test_approval_with_the_exact_hash_submits_once(monkeypatch):
+    from langgraph.types import Command
+
+    graph, config, result, submitted = _run_to_approval(monkeypatch)
+    digest = result["__interrupt__"][0].value["payload_hash"]
+
+    final = graph.invoke(Command(resume={"action": "approve", "payload_hash": digest}), config)
+
+    assert final["status"] == "submitted"
+    assert final["submission"]["application_id"] == "APP-1"
+    assert submitted == [{"scheme_id": "C01", "applicant": {"age": 30}}]
+
+
+def test_approval_with_a_wrong_hash_is_refused(monkeypatch):
+    from langgraph.types import Command
+
+    graph, config, result, submitted = _run_to_approval(monkeypatch)
+
+    final = graph.invoke(Command(resume={"action": "approve", "payload_hash": "0" * 64}), config)
+
+    assert final["status"] == "approval_invalid"
+    assert submitted == []
+
+
+def test_reject_does_not_submit(monkeypatch):
+    from langgraph.types import Command
+
+    graph, config, result, submitted = _run_to_approval(monkeypatch)
+
+    final = graph.invoke(Command(resume={"action": "reject"}), config)
+
+    assert final["status"] == "approval_rejected"
+    assert submitted == []
+
+
+def test_edit_updates_facts_and_never_submits(monkeypatch):
+    from langgraph.types import Command
+
+    graph, config, result, submitted = _run_to_approval(monkeypatch)
+
+    final = graph.invoke(Command(resume={"action": "edit", "changes": {"age": 31}}), config)
+
+    assert final["status"] == "draft_edited"
+    assert final["confirmed_facts"]["age"] == 31
+    assert submitted == []
+
+
+def test_incomplete_draft_skips_approval_and_asks_for_information():
+    agents = _application_agents(missing=["income"])
+
+    result = build_agent_graph(agents).invoke(_eligible_application_request())
+
+    assert result["status"] == "draft_needs_information"
+    assert "__interrupt__" not in result
     assert "submission" not in result
-    assert agents.application.calls[0].confirmed_facts == {}
+
+
+def test_application_route_requires_eligibility_and_returns_review_only_draft(monkeypatch):
+    _, _, result, submitted = _run_to_approval(monkeypatch)
+
+    assert "submission" not in result
+    assert submitted == []
 
 
 def test_existing_household_persona_fixtures_validate_as_agent_context():
@@ -446,3 +538,110 @@ def test_model_factory_uses_configured_gpt_provider_and_model(
     assert captured["base_url"] == expected_base_url
     assert captured["temperature"] == 0
     assert captured["max_retries"] == 2
+
+
+def test_application_agent_falls_back_to_a_summary_without_values(monkeypatch):
+    class BrokenNarrative:
+        def __init__(self, *args):
+            pass
+
+        def invoke(self, value):
+            raise RuntimeError("model unavailable")
+
+    monkeypatch.setattr("agents.application.StructuredGPTAgent", BrokenNarrative)
+    draft = ApplicationAgent(model=None).invoke(
+        ApplicationInput(
+            scheme_id="C01",
+            confirmed_facts={"age": 42},
+            required_fields=["age", "income"],
+            field_mapping={"age": "age", "income": "income"},
+        )
+    )
+
+    assert draft.missing_fields == ["income"]
+    assert "Missing required: income" in draft.review_summary
+    assert "42" not in draft.review_summary
+
+
+def test_form_fields_come_from_the_reviewed_rule_fields():
+    from graph import tools
+
+    required, mapping = tools.application_form_spec("SYNTH-PENSION-001")
+
+    assert required == ["age", "is_widow", "income"]
+    assert mapping == {field: field for field in required}
+
+
+def test_application_node_fills_required_fields_when_state_has_none(monkeypatch):
+    request = _eligible_application_request()
+    request["selected_scheme_id"] = "SYNTH-PENSION-001"
+    request["confirmed_facts"] = {"age": 70, "is_widow": True, "income": 1000}
+    agents = _application_agents()
+
+    build_agent_graph(agents).invoke(request)
+
+    sent = agents.application.calls[0]
+    assert sent.required_fields == ["age", "is_widow", "income"]
+    assert sent.field_mapping == {"age": "age", "is_widow": "is_widow", "income": "income"}
+
+
+def test_portal_draft_exists_before_approval_and_submit_uses_it():
+    from langgraph.checkpoint.memory import MemorySaver
+    from langgraph.types import Command
+
+    from servers.mock_portal.server import APPLICATIONS
+
+    graph = build_agent_graph(_application_agents(), checkpointer=MemorySaver())
+    config = {"configurable": {"thread_id": "portal-1"}}
+    pending = graph.invoke(_eligible_application_request(), config)["__interrupt__"][0].value
+
+    draft_id = pending["portal_draft_id"]
+    assert APPLICATIONS[draft_id]["status"] == "draft"
+    assert APPLICATIONS[draft_id]["applicant"] == {"age": 30}
+
+    final = graph.invoke(Command(resume={"action": "approve", "payload_hash": pending["payload_hash"]}), config)
+
+    assert final["submission"]["application_id"] == draft_id
+    assert APPLICATIONS[draft_id]["status"] == "submitted"
+
+
+def test_incomplete_draft_creates_no_portal_draft():
+    from servers.mock_portal.server import APPLICATIONS
+
+    before = len(APPLICATIONS)
+    build_agent_graph(_application_agents(missing=["income"])).invoke(_eligible_application_request())
+
+    assert len(APPLICATIONS) == before
+
+
+def test_only_the_application_agent_may_call_write_tools():
+    from graph import tools
+
+    for caller in (None, "intake", "eligibility", "document_checker", "supervisor"):
+        with pytest.raises(tools.ToolCallError, match="may not use a write tool"):
+            if caller is None:
+                tools.call_tool(tools.MOCK_PORTAL, "create_application", scheme_id="C01", applicant={})
+            else:
+                with tools.acting_as(caller):
+                    tools.call_tool(tools.MOCK_PORTAL, "create_application", scheme_id="C01", applicant={})
+
+    with tools.acting_as("application"):
+        assert tools.create_portal_draft({"scheme_id": "C01", "applicant": {}})["application_id"]
+
+
+def test_read_tools_need_no_special_caller():
+    from graph import tools
+
+    assert tools.list_documents("C01") is not None
+
+
+def test_submit_draft_rejects_unknown_and_already_submitted_drafts():
+    from graph import tools
+
+    with tools.acting_as("application"):
+        with pytest.raises(tools.ToolCallError, match="application_not_found"):
+            tools.submit_application({"scheme_id": "C01", "applicant": {}}, application_id="missing")
+        draft = tools.create_portal_draft({"scheme_id": "C01", "applicant": {}})
+        tools.submit_application({"scheme_id": "C01", "applicant": {}}, application_id=draft["application_id"])
+        with pytest.raises(tools.ToolCallError, match="not_a_draft"):
+            tools.submit_application({"scheme_id": "C01", "applicant": {}}, application_id=draft["application_id"])

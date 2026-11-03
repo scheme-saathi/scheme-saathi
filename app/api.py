@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 from graph.tools import ToolCallError
 from graph.agent_workflow import build_agent_graph, AgentSet, AgentWorkflowState
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.types import Command
 
 from agents.supervisor import SupervisorAgent
 from agents.contracts import Language
@@ -69,8 +70,18 @@ class SupervisorChatRequest(BaseModel):
     known_facts: dict[str, Any] = Field(
         default_factory=dict, description="Previously collected facts"
     )
+    confirmed_facts: dict[str, Any] = Field(
+        default_factory=dict, description="Facts the person has confirmed; only these fill the application form"
+    )
     selected_scheme_id: str | None = Field(None, description="Selected scheme ID")
     include_draft: bool = Field(False, description="Include draft rules")
+
+
+class ApprovalDecisionRequest(BaseModel):
+    """A person's decision on the exact form that is waiting for approval."""
+    action: Literal["approve", "edit", "reject"]
+    payload_hash: str | None = Field(None, description="Hash of the form being approved")
+    changes: dict[str, Any] = Field(default_factory=dict, description="Fact changes for an edit")
 
 
 class Plan(BaseModel):
@@ -161,6 +172,22 @@ def get_service() -> DemoService:
 # AGENT WORKFLOW SERVICE
 # ============================================================================
 
+class ThreadNotFoundError(LookupError):
+    """The conversation thread does not exist."""
+
+
+class ThreadAccessError(PermissionError):
+    """The caller does not own this conversation thread."""
+
+
+class NoPendingApprovalError(RuntimeError):
+    """A decision was sent but no draft is waiting for approval."""
+
+
+class ApprovalPendingError(RuntimeError):
+    """A new message was sent while a draft is waiting for approval."""
+
+
 class AgentWorkflowService:
     """Service to manage agent workflow execution."""
     
@@ -178,9 +205,9 @@ class AgentWorkflowService:
             logger.info("Agent graph initialized successfully")
         return self._agent_graph
         
-    def create_thread(self, actor_id: str) -> str:
+    def create_thread(self, actor_id: str, thread_id: str | None = None) -> str:
         """Create new conversation thread."""
-        thread_id = f"conv_{uuid4().hex[:12]}"
+        thread_id = thread_id or f"conv_{uuid4().hex[:12]}"
         self.conversations[thread_id] = {
             "thread_id": thread_id,
             "actor_id": actor_id,
@@ -202,31 +229,78 @@ class AgentWorkflowService:
         thread_id: str | None = None,
         known_facts: dict[str, Any] | None = None,
         selected_scheme_id: str | None = None,
+        confirmed_facts: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Execute agent workflow."""
         if thread_id is None:
             thread_id = self.create_thread(actor_id)
-        
-        # Initialize workflow state
-        state = AgentWorkflowState(
-            request=request,
-            known_facts=known_facts or {},
-            selected_scheme_id=selected_scheme_id,
-        )
-        
-        # Execute workflow
-        result = self.agent_graph.invoke(state)
-        
-        # Store result in conversation history
-        self._store_turn(thread_id, request, result)
-        
-        return {
-            "thread_id": thread_id,
-            "status": result.get("status", "completed"),
-            "response": result.get("response", ""),
-            "data": result,
-        }
-    
+        elif thread_id not in self.conversations:
+            self.create_thread(actor_id, thread_id)
+        self._check_owner(thread_id, actor_id)
+
+        config = self._config(thread_id)
+        if self._pending_approval(config) is not None:
+            raise ApprovalPendingError(
+                "This conversation is waiting for approval of a draft. Approve, edit or reject it first."
+            )
+
+        # Keep facts and the chosen scheme from earlier turns unless this turn supplies new ones.
+        state = AgentWorkflowState(request=request, known_facts=known_facts or {})
+        if confirmed_facts:
+            state["confirmed_facts"] = confirmed_facts
+        if selected_scheme_id:
+            state["selected_scheme_id"] = selected_scheme_id
+
+        return self._finish_run(thread_id, request, self.agent_graph.invoke(state, config))
+
+    def _check_owner(self, thread_id: str, actor_id: str) -> None:
+        if self.conversations[thread_id].get("actor_id") != actor_id:
+            raise ThreadAccessError(thread_id)
+
+    def submit_decision(
+        self,
+        thread_id: str,
+        actor_id: str,
+        action: str,
+        payload_hash: str | None,
+        changes: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Resume the paused graph with the person's decision on the exact form."""
+        if thread_id not in self.conversations:
+            raise ThreadNotFoundError(thread_id)
+        self._check_owner(thread_id, actor_id)
+        config = self._config(thread_id)
+        if self._pending_approval(config) is None:
+            raise NoPendingApprovalError("There is no draft waiting for approval in this conversation.")
+
+        decision = {"action": action, "payload_hash": payload_hash, "changes": changes}
+        result = self.agent_graph.invoke(Command(resume=decision), config)
+        return self._finish_run(thread_id, f"[decision: {action}]", result)
+
+    def _config(self, thread_id: str) -> dict[str, Any]:
+        return {"configurable": {"thread_id": thread_id}}
+
+    def _pending_approval(self, config: dict[str, Any]) -> dict[str, Any] | None:
+        """The form waiting for a person, or None when the graph is not paused."""
+        for task in self.agent_graph.get_state(config).tasks:
+            for pending in task.interrupts:
+                return pending.value
+        return None
+
+    def _finish_run(self, thread_id: str, request: str, result: dict[str, Any]) -> dict[str, Any]:
+        pending = self._pending_approval(self._config(thread_id))
+        data = {key: value for key, value in result.items() if key != "__interrupt__"}
+        if pending is not None:
+            data["approval"] = pending
+            status = "awaiting_approval"
+            response = "Please review the draft application. Nothing is submitted until you approve."
+        else:
+            status = result.get("status", "completed")
+            response = result.get("response", "")
+
+        self._store_turn(thread_id, request, {**data, "status": status, "response": response})
+        return {"thread_id": thread_id, "status": status, "response": response, "data": data}
+
     def _store_turn(
         self, thread_id: str, user_message: str, result: dict[str, Any]
     ) -> None:
@@ -360,6 +434,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 thread_id=thread_id,
                 known_facts=request.known_facts,
                 selected_scheme_id=request.selected_scheme_id,
+                confirmed_facts=request.confirmed_facts,
             )
             
             return SupervisorChatResponse(
@@ -372,9 +447,49 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 data=result.get("data", {}),
                 rate_limit=RateLimit(remaining_requests=9, reset_in_seconds=60),
             )
-        except Exception as e:
-            logger.exception(f"Error in chat endpoint: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
+        except ThreadAccessError:
+            raise HTTPException(status_code=403, detail="This conversation belongs to another user.")
+        except ApprovalPendingError as e:
+            raise HTTPException(status_code=409, detail=str(e))
+        except Exception:
+            logger.exception("Error in chat endpoint")
+            raise HTTPException(status_code=500, detail="The request could not be processed.")
+
+    @application.post(
+        "/api/chat/{thread_id}/decision",
+        response_model=SupervisorChatResponse,
+        responses={403: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 409: {"model": ErrorResponse}},
+        tags=["Agent Workflow"],
+    )
+    def decide_on_draft(
+        thread_id: str,
+        decision: ApprovalDecisionRequest,
+        x_actor_id: str = Header(...),
+    ) -> SupervisorChatResponse:
+        """Approve, edit or reject the exact form the graph is waiting on."""
+        try:
+            result = get_workflow_service().submit_decision(
+                thread_id, x_actor_id, decision.action, decision.payload_hash, decision.changes
+            )
+        except ThreadNotFoundError:
+            raise HTTPException(status_code=404, detail="Thread not found")
+        except ThreadAccessError:
+            raise HTTPException(status_code=403, detail="This conversation belongs to another user.")
+        except NoPendingApprovalError as e:
+            raise HTTPException(status_code=409, detail=str(e))
+        except Exception:
+            logger.exception("Error resuming approval")
+            raise HTTPException(status_code=500, detail="The decision could not be processed.")
+        return SupervisorChatResponse(
+            status="success",
+            thread_id=result["thread_id"],
+            language="unknown",
+            intent="other",
+            next_step=result["status"],
+            response=result["response"],
+            data=result["data"],
+            rate_limit=RateLimit(remaining_requests=9, reset_in_seconds=60),
+        )
 
     @application.get(
         "/api/chat/{thread_id}",

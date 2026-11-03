@@ -68,6 +68,26 @@ def create_application(
 
 
 @mcp.tool()
+def submit_draft(application_id: str) -> dict[str, Any]:
+    """Write-enabled: move an existing draft application to the submitted stage.
+
+    Args:
+        application_id: The draft created earlier by create_application.
+
+    Returns:
+        A JSON object with the updated application, or an error if it is missing or not a draft.
+    """
+    application = APPLICATIONS.get(application_id)
+    if application is None:
+        return _error("application_not_found", f"Application '{application_id}' was not found.")
+    if application["status"] != "draft":
+        return _error("not_a_draft", f"Application '{application_id}' is already {application['status']}.")
+    now = datetime.now(timezone.utc).isoformat()
+    application.update(status="submitted", submitted_at=now, updated_at=now)
+    return {"ok": True, "access": "write", "data": application}
+
+
+@mcp.tool()
 def get_application_status(application_id: str) -> dict[str, Any]:
     """Read-only lookup of a submitted or draft application status.
 

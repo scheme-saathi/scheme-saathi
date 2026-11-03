@@ -18,11 +18,17 @@ graph TD;
 	eligibility(eligibility)
 	document_checker(document_checker)
 	application(application)
+	approval(approval)
+	approval_end(approval_end)
+	submit(submit)
 	finish(finish)
 	respond(respond)
 	__end__([<p>__end__</p>]):::last
 	__start__ --> supervisor;
-	application --> finish;
+	application -.-> approval;
+	application -.-> finish;
+	approval -.-> approval_end;
+	approval -.-> submit;
 	document_checker -.-> application;
 	document_checker -.-> finish;
 	eligibility -.-> document_checker;
@@ -35,8 +41,10 @@ graph TD;
 	supervisor -. &nbsp;application&nbsp; .-> eligibility;
 	supervisor -.-> intake;
 	supervisor -.-> respond;
+	approval_end --> __end__;
 	finish --> __end__;
 	respond --> __end__;
+	submit --> __end__;
 	classDef default fill:#f2f0ff,line-height:1.2
 	classDef first fill-opacity:0
 	classDef last fill:#bfb6fc

@@ -329,20 +329,41 @@ python -m pytest -q tests/test_scheme.py tests/test_rule_engine.py
 
 The current evaluator supports reviewed scalar comparisons and membership checks. A scheme's flat rules are combined with either `all` or `any`; nested mixed expressions are not supported. The synthetic pension fixture is the current executable example. Other scheme records contain source material and have not yet been converted into reviewed machine-readable eligibility rules, so the evaluator does not provide verified eligibility decisions for them.
 
-### GPT agent skeleton
+### GPT agent workflow
 
-The GPT-backed orchestrator is separate from the deterministic demo workflow:
+The GPT-backed orchestrator is separate from the deterministic demo workflow. It needs a checkpointer and a `thread_id` so it can pause for approval:
 
 ```python
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.types import Command
 from graph.agent_workflow import build_agent_graph
 
-agent_graph = build_agent_graph()
-result = agent_graph.invoke({"request": "Which schemes should I check?"})
+graph = build_agent_graph(checkpointer=MemorySaver())
+config = {"configurable": {"thread_id": "household-1-thread-1"}}
+result = graph.invoke({"request": "Help me apply", "selected_scheme_id": "SYNTH-PENSION-001",
+                       "confirmed_facts": {"age": 70, "is_widow": True, "income": 1000}}, config)
+
+pending = result["__interrupt__"][0].value        # the exact form, its hash and the portal draft ID
+graph.invoke(Command(resume={"action": "approve", "payload_hash": pending["payload_hash"]}), config)
 ```
 
 Set `SUPERVISOR_MODEL` and `SPECIALIST_MODEL` in `.env`, plus either `OPENROUTER_API_KEY` (with an OpenRouter model ID such as `openai/gpt-4o-mini`) or `OPENAI_API_KEY` (with an OpenAI model ID). `OPENAI_BASE_URL` can be set for an OpenAI-compatible endpoint. The model IDs are configuration, not code defaults.
 
-This is a scaffold: scheme retrieval, authenticated household scoping, memory storage, document extraction, and application submission are not wired into this graph. Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. Application fields are copied only from caller-supplied confirmed facts and reviewed field mappings; the GPT agent cannot approve or submit. No persistent checkpoint is enabled by default.
+How an application is drafted, approved and submitted:
+
+1. The Application agent fills the form only from confirmed facts. The required fields come from the scheme's reviewed rule fields (`tools.application_form_spec`). If the model fails, the review summary falls back to a deterministic one that lists field names only. A draft with missing fields skips approval and asks for the missing information.
+2. A complete draft is stored on the mock portal as a `draft` before approval.
+3. The graph pauses with `interrupt()` and shows the exact form, its SHA-256 hash and the portal draft ID. The person can `approve`, `edit` or `reject`.
+4. `submit` runs only after an approval that names the same hash. It checks the hash again, then moves the existing portal draft to `submitted` (`submit_draft`). A wrong hash, a reject or an edit never submits.
+5. Write tools (`create_application`, `submit_draft`) are checked in `call_tool`. Only the application agent, and the baseline comparison run, may call them. Callers name themselves with `with tools.acting_as("application")`. This stops accidental misuse by other agents. It is not a security boundary against malicious code.
+
+HTTP API (`app/api.py`):
+
+- `POST /api/chat` runs the graph on a `thread_id`. When a draft is waiting it returns `next_step: "awaiting_approval"` and `data.approval` (form, `payload_hash`, `portal_draft_id`). A new message on a waiting thread returns 409.
+- `POST /api/chat/{thread_id}/decision` takes `{"action": "approve" | "edit" | "reject", "payload_hash": "...", "changes": {}}` and resumes the graph. It returns 404 for an unknown thread, 403 for another household, and 409 when nothing is waiting.
+- The `x-actor-id` header is trusted as sent. Real authentication is not built yet.
+
+Not wired in yet: authenticated household scoping, memory storage, document extraction, and persistent checkpoints (the API uses an in-memory checkpointer). Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
 
 ## Guides
 
