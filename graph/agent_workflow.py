@@ -21,6 +21,7 @@ from agents.eligibility import EligibilityAgent
 from agents.intake import IntakeAgent
 from agents.model_factory import create_chat_model
 from agents.supervisor import SupervisorAgent
+from graph.tools import evaluate_scheme
 from servers.rule_engine.rules import Evaluation
 
 
@@ -128,21 +129,53 @@ def _clarification_node(state: AgentWorkflowState) -> dict[str, str]:
     }
 
 
+def _resolve_deterministic_evaluation(state: AgentWorkflowState) -> dict[str, Any] | None:
+    """Use the project rule engine as the source of truth when a scheme and facts are known."""
+    scheme_id = state.get("selected_scheme_id")
+    if not scheme_id:
+        return None
+
+    facts = state.get("confirmed_facts") or state.get("known_facts") or {}
+    if not isinstance(facts, dict) or not facts:
+        return None
+
+    try:
+        return evaluate_scheme(facts, scheme_id)
+    except Exception:
+        return {
+            "verdict": "cant_tell",
+            "reason": "The deterministic rule engine could not evaluate this scheme with the current facts.",
+            "missing_fields": [],
+            "unresolved_fields": [],
+            "conditions": [],
+            "citations": [],
+        }
+
+
 def _eligibility_node(
     agents: AgentSet, state: AgentWorkflowState
 ) -> dict[str, Any]:
     scheme_id = state.get("selected_scheme_id")
     raw_evaluation = state.get("deterministic_evaluation")
-    if not scheme_id or raw_evaluation is None:
-        return {
-            "eligibility": {
-                "verdict": "cant_tell",
-                "reason": "A deterministic rule evaluation was not provided.",
-                "missing_fields": [],
-                "unresolved_fields": [],
-                "citations": [],
-            }
+    facts = state.get("confirmed_facts") or state.get("known_facts") or {}
+
+    if raw_evaluation is None:
+        raw_evaluation = _resolve_deterministic_evaluation(state)
+
+    if raw_evaluation is None:
+        failed = {
+            "verdict": "cant_tell",
+            "reason": "A deterministic rule evaluation was not provided.",
+            "missing_fields": [],
+            "unresolved_fields": [],
+            "conditions": [],
+            "citations": [],
         }
+        if not scheme_id:
+            failed["reason"] = "A scheme was not selected for eligibility evaluation."
+        elif not facts:
+            failed["reason"] = "There is no complete, fully reviewed rule set for this scheme."
+        return {"eligibility": failed}
 
     evaluation = Evaluation.model_validate(raw_evaluation)
     evaluation_data = evaluation.model_dump(mode="json")
@@ -150,11 +183,12 @@ def _eligibility_node(
         EligibilityInput(scheme_id=scheme_id, evaluation=evaluation_data)
     )
     return {
+        "deterministic_evaluation": evaluation_data,
         "eligibility": {
             **evaluation_data,
             "explanation": narrative.explanation,
             "clarifying_questions": narrative.clarifying_questions,
-        }
+        },
     }
 
 
