@@ -6,7 +6,7 @@ errors are exactly what an out-of-process client would see. Failed tools raise T
 
 import asyncio
 import concurrent.futures
-from collections.abc import Iterator
+from collections.abc import Collection, Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Any
@@ -89,6 +89,26 @@ def required_fields(scheme_ids: list[str] | None = None, include_draft: bool = F
 def evaluate_scheme(profile: dict, scheme_id: str, include_draft: bool = False) -> dict:
     return call_tool(RULE_ENGINE, "evaluate_profile", profile=profile, scheme_id=scheme_id,
                      include_draft=include_draft)
+
+
+def field_specs(scheme_ids: list[str], include_draft: bool = False) -> dict[str, dict]:
+    return call_tool(RULE_ENGINE, "get_field_specs", scheme_ids=scheme_ids, include_draft=include_draft)
+
+
+def next_question(verdicts: dict[str, dict], declined: Collection[str] = ()) -> str | None:
+    """The field missing or invalid in the most cant_tell verdicts; None once no answer can settle one.
+
+    ``verdicts`` maps scheme IDs to rule-engine evaluations, as the eligibility step writes them.
+    Only cant_tell verdicts count: a decided scheme can't be changed by another answer.
+    Ties go to the alphabetically first field, as the rule engine sorts unresolved fields.
+    """
+    counts: dict[str, int] = {}
+    for evaluation in verdicts.values():
+        if evaluation["verdict"] == "cant_tell":
+            for field in evaluation["unresolved_fields"]:
+                if field not in declined:
+                    counts[field] = counts.get(field, 0) + 1
+    return max(counts, key=counts.get, default=None)
 
 
 def list_documents(scheme_id: str) -> list[str]:

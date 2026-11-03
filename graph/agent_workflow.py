@@ -1,7 +1,7 @@
 """GPT agent orchestration skeleton, separate from the deterministic demo graph."""
 
 from dataclasses import dataclass
-from typing import Any, TypedDict
+from typing import Annotated, Any, TypedDict
 
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
@@ -13,13 +13,14 @@ from agents.contracts import (
     DocumentCheckInput,
     EligibilityInput,
     FactMap,
-    IntakeInput,
-    IntakeResult,
+    IntakeAskInput,
+    IntakeExtractInput,
+    Language,
     SupervisorInput,
 )
 from agents.document_checker import DocumentCheckerAgent
 from agents.eligibility import EligibilityAgent
-from agents.intake import IntakeAgent
+from agents.intake import IntakeAgent, income_period
 from agents.model_factory import create_chat_model
 from agents.supervisor import SupervisorAgent
 from graph import tools
@@ -28,18 +29,28 @@ from graph.workflow import application_hash
 from servers.rule_engine.rules import Evaluation
 
 
+def merge_facts(old: FactMap | None, new: FactMap | None) -> FactMap:
+    """Each turn adds to the facts from earlier turns; a newer value for a field wins."""
+    return {**(old or {}), **(new or {})}
+
+
 class AgentWorkflowState(TypedDict, total=False):
     request: str
-    known_facts: FactMap
-    confirmed_facts: FactMap
+    known_facts: Annotated[FactMap, merge_facts]
+    confirmed_facts: Annotated[FactMap, merge_facts]
     selected_scheme_id: str
     deterministic_evaluation: dict[str, Any]
     required_documents: list[str]
     available_documents: list[str]
     application_required_fields: list[str]
     application_field_mapping: dict[str, str]
-    intake: IntakeResult
     plan: dict[str, str]
+    language: Language
+    pending_field: str | None  # the field intake's last question asked for
+    pending_question: str | None  # that question's wording
+    intake_request: str  # the message that started intake; later turns are short answers
+    declined_fields: list[str]  # fields the user said they don't know
+    verdicts: dict[str, dict[str, Any]]  # candidate scheme -> rule-engine evaluation
     eligibility: dict[str, Any]
     document_check: dict[str, Any]
     application_draft: dict[str, Any]
@@ -82,57 +93,76 @@ def _supervisor_node(
     2. Detect language (en, hi, mr) and intent in single gpt-4o-mini call
     3. Route to appropriate specialist or pause for clarification
     """
-    # Supervisor validates input and decides routing
-    # Note: intake parameter is None because Intake hasn't run yet
+    if state.get("pending_field"):
+        # A reply to intake's question ("yes", "1 lakh") means nothing without that question,
+        # so the plan from the earlier turn stands and the model is not asked to re-route it.
+        return {}
     plan = agents.supervisor.invoke(
         SupervisorInput(
             request=state["request"],
-            intake=state.get("intake"),  # None on first call
             selected_scheme_id=state.get("selected_scheme_id"),
         )
     )
-    return {"plan": plan.model_dump(mode="json")}
+    update: dict[str, Any] = {"plan": plan.model_dump(mode="json")}
+    if plan.language != "unknown":
+        update["language"] = plan.language
+    return update
 
 
 def _route_after_supervisor(state: AgentWorkflowState) -> str:
-    """Route based on Supervisor's decision.
-    
-    Returns:
-    - "intake" if need to collect facts
-    - "eligibility", "document_checker", "application" if direct routing
-    - "finish" if responding without specialist
-    """
+    """The Supervisor's next step. Any goal that needs a profile starts with intake."""
+    if state.get("pending_field"):
+        return "intake"
     return state["plan"]["next_agent"]
 
 
+def _candidate_schemes(state: AgentWorkflowState) -> list[str]:
+    """The selected scheme, or every scheme whose rules are fully reviewed."""
+    scheme_id = state.get("selected_scheme_id")
+    return [scheme_id] if scheme_id else tools.search_schemes({})
+
+
 def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
-    """Collect household information (only called if Supervisor routes here)."""
-    result = agents.intake.invoke(
-        IntakeInput(
+    """Read typed facts from the message into known_facts. They stay unconfirmed."""
+    specs = tools.field_specs(_candidate_schemes(state))
+    if not specs:  # no reviewed rule fields, so nothing the profile could hold
+        return {"pending_field": None}
+    pending = state.get("pending_field")
+    result = agents.intake.extract(
+        IntakeExtractInput(
             request=state["request"],
-            known_facts=state.get("known_facts", {}),
+            pending_field=pending,
+            pending_question=state.get("pending_question") if pending else None,
+        ),
+        specs,
+    )
+    update: dict[str, Any] = {"known_facts": result.facts, "pending_field": None, "pending_question": None}
+    if pending is None:
+        update["intake_request"] = state["request"]
+    if result.dont_know:
+        update["declined_fields"] = [*state.get("declined_fields", []), pending]
+    return update
+
+
+def _intake_question_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
+    """Ask for the one field that settles the most open verdicts, then wait for the reply."""
+    field = tools.next_question(state["verdicts"], state.get("declined_fields", []))
+    spec = tools.field_specs(_candidate_schemes(state))[field]
+    question = agents.intake.ask(
+        IntakeAskInput(
+            field=field,
+            field_type=spec["type"],
+            known_values=spec["known_values"],
+            period=income_period(field),
+            language=state.get("language", "unknown"),
+            request=state.get("intake_request", state["request"]),
         )
     )
-    return {"intake": result}
-
-
-def _route_after_intake(state: AgentWorkflowState) -> str:
-    """After Intake, check if clarification needed or ready to route to specialist."""
-    if state["intake"].clarifying_questions:
-        return "respond"  # Pause and ask clarifying questions
-    # If supervisor already decided next step, go there
-    next_agent = state["plan"]["next_agent"]
-    if next_agent in ["eligibility", "document_checker", "application"]:
-        return next_agent
-    return "finish"
-
-
-def _clarification_node(state: AgentWorkflowState) -> dict[str, str]:
-    """Respond with clarifying questions from Intake."""
-    questions = state["intake"].clarifying_questions
     return {
-        "status": "needs_clarification",
-        "response": "\n".join(questions),
+        "pending_field": field,
+        "pending_question": question.question,
+        "status": "needs_information",
+        "response": question.question,
     }
 
 
@@ -162,6 +192,15 @@ def _resolve_deterministic_evaluation(state: AgentWorkflowState) -> dict[str, An
 def _eligibility_node(
     agents: AgentSet, state: AgentWorkflowState
 ) -> dict[str, Any]:
+    """Evaluate every candidate scheme on the facts so far, then explain the selected one."""
+    facts = {**state.get("known_facts", {}), **state.get("confirmed_facts", {})}
+    verdicts = {s: evaluate_scheme(facts, s) for s in _candidate_schemes(state)}
+    return {"verdicts": verdicts, **_selected_scheme_eligibility(agents, state)}
+
+
+def _selected_scheme_eligibility(
+    agents: AgentSet, state: AgentWorkflowState
+) -> dict[str, Any]:
     scheme_id = state.get("selected_scheme_id")
     raw_evaluation = state.get("deterministic_evaluation")
     facts = state.get("confirmed_facts") or state.get("known_facts") or {}
@@ -189,8 +228,8 @@ def _eligibility_node(
     narrative = agents.eligibility.invoke(
         EligibilityInput(scheme_id=scheme_id, evaluation=evaluation_data)
     )
+    # Not written back to state: a later turn with new facts must be evaluated afresh.
     return {
-        "deterministic_evaluation": evaluation_data,
         "eligibility": {
             **evaluation_data,
             "explanation": narrative.explanation,
@@ -200,6 +239,8 @@ def _eligibility_node(
 
 
 def _route_after_eligibility(state: AgentWorkflowState) -> str:
+    if tools.next_question(state["verdicts"], state.get("declined_fields", [])):
+        return "intake_question"
     is_application = state["plan"]["next_agent"] == "application"
     eligible = state["eligibility"]["verdict"] == "eligible"
     return "document_checker" if is_application and eligible else "finish"
@@ -373,12 +414,11 @@ def build_agent_graph(
     """Build agent workflow with Supervisor as entry point.
     
     Graph Flow:
-    START → Supervisor (validate, detect language/intent, route)
-            ├→ intake (collect facts if needed)
-            │   └→ eligibility/document_checker/application/respond
-            ├→ eligibility (direct routing if Supervisor decides)
+    START → Supervisor (detect language/intent and route; a pending question skips the model)
+            ├→ intake (message → typed known_facts) → eligibility (verdicts for candidate schemes)
+            │       ├→ intake_question (one question that settles the most open verdicts) → END
+            │       └→ document_checker → application → approval → submit, or finish
             ├→ document_checker
-            ├→ application
             └→ respond (direct response without specialist)
     → finish (format response)
     → END
@@ -389,6 +429,7 @@ def build_agent_graph(
     # Add all nodes
     builder.add_node("supervisor", lambda state: _supervisor_node(runtime, state))
     builder.add_node("intake", lambda state: _intake_node(runtime, state))
+    builder.add_node("intake_question", lambda state: _intake_question_node(runtime, state))
     builder.add_node("eligibility", lambda state: _eligibility_node(runtime, state))
     builder.add_node(
         "document_checker", lambda state: _document_checker_node(runtime, state)
@@ -398,27 +439,9 @@ def build_agent_graph(
     builder.add_node("approval_end", _approval_end_node)
     builder.add_node("submit", _submit_node)
     builder.add_node("finish", _finish_node)
-    # Respond node handles: direct responses and clarifying questions from Intake
-    def _respond_node_impl(state: AgentWorkflowState) -> dict[str, str]:
-        # If Intake has clarifying questions, return those
-        intake_data = state.get("intake")
-        if intake_data:
-            if hasattr(intake_data, "clarifying_questions"):
-                clarifying_qs = intake_data.clarifying_questions
-            elif isinstance(intake_data, dict):
-                clarifying_qs = intake_data.get("clarifying_questions", [])
-            else:
-                clarifying_qs = []
-            
-            if clarifying_qs:
-                return {
-                    "status": "needs_clarification",
-                    "response": "\n".join(clarifying_qs),
-                }
-        # Otherwise return the plan reason (direct response)
-        return {"status": "responded", "response": state["plan"]["reason"]}
-    
-    builder.add_node("respond", _respond_node_impl)
+    builder.add_node(
+        "respond", lambda state: {"status": "responded", "response": state["plan"]["reason"]}
+    )
     
     # Entry point: Supervisor ALWAYS first
     builder.add_edge(START, "supervisor")
@@ -429,32 +452,26 @@ def build_agent_graph(
         _route_after_supervisor,
         {
             "intake": "intake",
-            "eligibility": "eligibility",
+            "eligibility": "intake",  # facts in the message come first
             "document_checker": "document_checker",
-            "application": "eligibility",  # application flow starts with eligibility eval
+            "application": "intake",
             "respond": "respond",  # direct response without specialist
         },
     )
-    
-    # After Intake, route to specialist or respond with clarification
-    builder.add_conditional_edges(
-        "intake",
-        _route_after_intake,
-        {
-            "eligibility": "eligibility",
-            "document_checker": "document_checker",
-            "application": "eligibility",
-            "respond": "respond",
-            "finish": "finish",
-        },
-    )
-    
-    # Eligibility → Document Checker (if application) → Finish
+
+    builder.add_edge("intake", "eligibility")
+
+    # Eligibility → one intake question while a verdict is open, else Document Checker → Finish
     builder.add_conditional_edges(
         "eligibility",
         _route_after_eligibility,
-        {"document_checker": "document_checker", "finish": "finish"},
+        {
+            "intake_question": "intake_question",
+            "document_checker": "document_checker",
+            "finish": "finish",
+        },
     )
+    builder.add_edge("intake_question", END)
     
     # Document Checker → Application (if needed) → Finish
     builder.add_conditional_edges(

@@ -33,6 +33,38 @@ class IntakeResult(Contract):
     clarifying_questions: list[str] = Field(default_factory=list)
 
 
+class IntakeExtractInput(Contract):
+    # No earlier facts: given them, the model restates them and re-applies conversions
+    # (monthly income x12 a second time). The graph merges new facts into known_facts.
+    request: str = Field(min_length=1)
+    pending_field: str | None = None  # the field the last question asked for
+    pending_question: str | None = None  # its wording, so "8000" is read in the period it asked
+
+
+class IntakeExtraction(Contract):
+    facts: FactMap = Field(default_factory=dict)  # typed rule-field values; unconfirmed
+    rejected_fields: list[str] = Field(default_factory=list)
+    dont_know: bool = False  # the user can't or won't answer pending_field
+
+
+class IntakeAskInput(Contract):
+    field: str = Field(min_length=1)
+    field_type: Literal["number", "bool", "str"]
+    known_values: list[str] = Field(default_factory=list)
+    period: Literal["month", "year"] | None = None  # for income fields: ask per this period
+    language: Language = "unknown"
+    request: str = Field(min_length=1)  # the message that started intake, so "she" stays "she"
+
+
+class IntakeQuestionText(Contract):
+    question: str = Field(min_length=1)
+
+
+class IntakeQuestion(Contract):
+    field: str = Field(min_length=1)
+    question: str = Field(min_length=1)
+
+
 class SupervisorInput(Contract):
     request: str = Field(min_length=1)
     intake: IntakeResult | None = None  # Optional: None on first call, populated after Intake runs
@@ -42,6 +74,11 @@ class SupervisorInput(Contract):
 class SupervisorPlan(Contract):
     next_agent: Route
     reason: str = Field(min_length=1)
+    language: Language = Field(
+        "unknown",
+        description="Language of the user's message; replies use it. Hindi and Marathi both use "
+        "Devanagari: Marathi has words like आहे, माझी, आणि, काय; Hindi has है, मेरी, और, क्या.",
+    )
 
 
 class EligibilityInput(Contract):

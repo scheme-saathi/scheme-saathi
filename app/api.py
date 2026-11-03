@@ -245,7 +245,9 @@ class AgentWorkflowService:
             )
 
         # Keep facts and the chosen scheme from earlier turns unless this turn supplies new ones.
-        state = AgentWorkflowState(request=request, known_facts=known_facts or {})
+        state = AgentWorkflowState(request=request)
+        if known_facts:
+            state["known_facts"] = known_facts
         if confirmed_facts:
             state["confirmed_facts"] = confirmed_facts
         if selected_scheme_id:
