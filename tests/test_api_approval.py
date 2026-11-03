@@ -175,3 +175,23 @@ def test_errors_do_not_leak_internal_details(client, monkeypatch):
 
     assert response.status_code == 500
     assert "secret" not in response.text
+
+
+def test_confirmed_facts_sent_to_the_api_reach_the_draft(client, monkeypatch):
+    seen = {}
+    original = api.AgentWorkflowService.execute_workflow
+
+    def spy(self, **kwargs):
+        seen.update(kwargs)
+        return original(self, **kwargs)
+
+    monkeypatch.setattr(api.AgentWorkflowService, "execute_workflow", spy)
+    body = {
+        "message": "Help me apply",
+        "actor_id": "household-1",
+        "confirmed_facts": {"age": 30},
+        "selected_scheme_id": "C01",
+    }
+
+    assert client.post("/api/chat", json=body, headers={"x-actor-id": "household-1"}).status_code == 200
+    assert seen["confirmed_facts"] == {"age": 30}

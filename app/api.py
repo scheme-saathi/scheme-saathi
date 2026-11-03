@@ -70,6 +70,9 @@ class SupervisorChatRequest(BaseModel):
     known_facts: dict[str, Any] = Field(
         default_factory=dict, description="Previously collected facts"
     )
+    confirmed_facts: dict[str, Any] = Field(
+        default_factory=dict, description="Facts the person has confirmed; only these fill the application form"
+    )
     selected_scheme_id: str | None = Field(None, description="Selected scheme ID")
     include_draft: bool = Field(False, description="Include draft rules")
 
@@ -226,6 +229,7 @@ class AgentWorkflowService:
         thread_id: str | None = None,
         known_facts: dict[str, Any] | None = None,
         selected_scheme_id: str | None = None,
+        confirmed_facts: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Execute agent workflow."""
         if thread_id is None:
@@ -242,6 +246,8 @@ class AgentWorkflowService:
 
         # Keep facts and the chosen scheme from earlier turns unless this turn supplies new ones.
         state = AgentWorkflowState(request=request, known_facts=known_facts or {})
+        if confirmed_facts:
+            state["confirmed_facts"] = confirmed_facts
         if selected_scheme_id:
             state["selected_scheme_id"] = selected_scheme_id
 
@@ -428,6 +434,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 thread_id=thread_id,
                 known_facts=request.known_facts,
                 selected_scheme_id=request.selected_scheme_id,
+                confirmed_facts=request.confirmed_facts,
             )
             
             return SupervisorChatResponse(
