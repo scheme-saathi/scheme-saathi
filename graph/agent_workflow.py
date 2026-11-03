@@ -5,6 +5,7 @@ from typing import Any, TypedDict
 
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
+from langgraph.types import interrupt
 
 from agents.application import ApplicationAgent
 from agents.contracts import (
@@ -21,7 +22,9 @@ from agents.eligibility import EligibilityAgent
 from agents.intake import IntakeAgent
 from agents.model_factory import create_chat_model
 from agents.supervisor import SupervisorAgent
+from graph import tools
 from graph.tools import evaluate_scheme
+from graph.workflow import application_hash
 from servers.rule_engine.rules import Evaluation
 
 
@@ -40,6 +43,10 @@ class AgentWorkflowState(TypedDict, total=False):
     eligibility: dict[str, Any]
     document_check: dict[str, Any]
     application_draft: dict[str, Any]
+    approval_status: str
+    portal_draft: dict[str, Any]
+    approved_hash: str
+    submission: dict[str, Any]
     status: str
     response: str
 
@@ -224,15 +231,114 @@ def _application_node(
         raise ValueError("Application drafting requires an eligible rule-engine result.")
     if not state.get("selected_scheme_id"):
         raise ValueError("Application drafting requires a selected scheme.")
+    scheme_id = state["selected_scheme_id"]
+    required = state.get("application_required_fields")
+    mapping = state.get("application_field_mapping")
+    if not required:
+        required, derived_mapping = tools.application_form_spec(scheme_id)
+        mapping = mapping or derived_mapping
     draft = agents.application.invoke(
         ApplicationInput(
-            scheme_id=state["selected_scheme_id"],
+            scheme_id=scheme_id,
             confirmed_facts=state.get("confirmed_facts", {}),
-            required_fields=state.get("application_required_fields", []),
-            field_mapping=state.get("application_field_mapping", {}),
+            required_fields=required,
+            field_mapping=mapping or {field: field for field in required},
         )
     )
-    return {"application_draft": draft.model_dump(mode="json")}
+    update: dict[str, Any] = {
+        "application_draft": draft.model_dump(mode="json"),
+        "application_required_fields": required,
+        "application_field_mapping": mapping or {field: field for field in required},
+    }
+    if not draft.missing_fields:
+        form = {"scheme_id": draft.scheme_id, "applicant": draft.fields}
+        with tools.acting_as("application"):
+            portal_draft = tools.create_portal_draft(form)
+        update["portal_draft"] = {**portal_draft, "form_hash": application_hash(form)}
+    return update
+
+
+def _application_form(state: AgentWorkflowState) -> dict[str, Any]:
+    """The exact form a person approves and the portal receives."""
+    draft = state["application_draft"]
+    return {"scheme_id": draft["scheme_id"], "applicant": draft["fields"]}
+
+
+def _route_after_application(state: AgentWorkflowState) -> str:
+    # An incomplete draft goes back to the person for more facts, not to approval.
+    return "finish" if state["application_draft"]["missing_fields"] else "approval"
+
+
+def _approval_node(state: AgentWorkflowState) -> dict[str, Any]:
+    """Pause for a person. Approval counts only if it names the hash of this exact form."""
+    form = _application_form(state)
+    current = application_hash(form)
+    decision = interrupt(
+        {
+            "form": form,
+            "portal_draft_id": (state.get("portal_draft") or {}).get("application_id"),
+            "payload_hash": current,
+            "options": ["approve", "edit", "reject"],
+        }
+    )
+    action = decision.get("action") if isinstance(decision, dict) else None
+    if action == "approve":
+        if decision.get("payload_hash") == current:
+            return {"approval_status": "approved", "approved_hash": current}
+        return {"approval_status": "invalid", "approved_hash": ""}
+    if action == "edit" and isinstance(decision.get("changes"), dict):
+        facts = {**state.get("confirmed_facts", {}), **decision["changes"]}
+        return {
+            "confirmed_facts": facts,
+            "approval_status": "edited",
+            "approved_hash": "",
+            "status": "draft_edited",
+            "response": "Facts were edited. Prepare a new draft to review again.",
+        }
+    return {
+        "approval_status": "rejected" if action == "reject" else "invalid",
+        "approved_hash": "",
+    }
+
+
+def _route_after_approval(state: AgentWorkflowState) -> str:
+    return "submit" if state["approval_status"] == "approved" else "approval_end"
+
+
+def _approval_end_node(state: AgentWorkflowState) -> dict[str, str]:
+    status = state["approval_status"]
+    if status == "edited":
+        return {}
+    messages = {
+        "rejected": "The draft was rejected. Nothing was submitted.",
+        "invalid": "The approval did not match this exact form. Nothing was submitted.",
+    }
+    return {"status": f"approval_{status}", "response": messages[status]}
+
+
+def _submit_node(state: AgentWorkflowState) -> dict[str, Any]:
+    """The only write. Refuses unless the approved hash still matches the form."""
+    form = _application_form(state)
+    if application_hash(form) != state.get("approved_hash"):
+        return {
+            "approval_status": "invalid",
+            "status": "approval_invalid",
+            "response": "The form changed after approval. Nothing was submitted.",
+        }
+    portal_draft = state.get("portal_draft") or {}
+    if portal_draft.get("form_hash") != state.get("approved_hash") or not portal_draft.get("application_id"):
+        return {
+            "approval_status": "invalid",
+            "status": "approval_invalid",
+            "response": "There is no portal draft for the approved form. Nothing was submitted.",
+        }
+    with tools.acting_as("application"):
+        submission = tools.submit_application(form, application_id=portal_draft["application_id"])
+    return {
+        "submission": submission,
+        "status": "submitted",
+        "response": f"Application submitted (mock). Reference: {submission['application_id']}",
+    }
 
 
 def _finish_node(state: AgentWorkflowState) -> dict[str, str]:
@@ -288,6 +394,9 @@ def build_agent_graph(
         "document_checker", lambda state: _document_checker_node(runtime, state)
     )
     builder.add_node("application", lambda state: _application_node(runtime, state))
+    builder.add_node("approval", _approval_node)
+    builder.add_node("approval_end", _approval_end_node)
+    builder.add_node("submit", _submit_node)
     builder.add_node("finish", _finish_node)
     # Respond node handles: direct responses and clarifying questions from Intake
     def _respond_node_impl(state: AgentWorkflowState) -> dict[str, str]:
@@ -354,8 +463,19 @@ def build_agent_graph(
         {"application": "application", "finish": "finish"},
     )
     
-    # Application → Finish
-    builder.add_edge("application", "finish")
+    # Application → human approval of the exact form → submit (the only write)
+    builder.add_conditional_edges(
+        "application",
+        _route_after_application,
+        {"approval": "approval", "finish": "finish"},
+    )
+    builder.add_conditional_edges(
+        "approval",
+        _route_after_approval,
+        {"submit": "submit", "approval_end": "approval_end"},
+    )
+    builder.add_edge("approval_end", END)
+    builder.add_edge("submit", END)
     
     # Respond → END (respond node handles its own final output)
     builder.add_edge("respond", END)

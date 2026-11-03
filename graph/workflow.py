@@ -155,7 +155,8 @@ def route_after_approval(state: GraphState) -> str:
 def submit_node(state: GraphState) -> dict[str, Any]:
     if application_hash(state["application"]) != state.get("approved_hash"):
         return {"approved": False, "approval_status": "invalid"}
-    return {"submission": tools.submit_application(state["application"])}
+    with tools.acting_as("application"):
+        return {"submission": tools.submit_application(state["application"])}
 
 
 def build_graph(checkpointer=None):
