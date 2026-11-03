@@ -10,11 +10,13 @@ from agents.contracts import (
     ApplicationInput,
     ApplicationNarrative,
     DocumentCheckResult,
+    EligibilityInput,
     EligibilityNarrative,
     IntakeInput,
     IntakeResult,
     SupervisorPlan,
 )
+from agents.eligibility import EligibilityAgent
 from graph.agent_workflow import AgentSet, build_agent_graph
 from graph.persona import HOUSEHOLD_TEST_CASES, profile_facts_to_rule_fields
 from agents.memory import ApplicationReference, MemoryConsent, MemoryFact
@@ -143,6 +145,34 @@ def test_missing_deterministic_evaluation_fails_closed():
 
     assert result["eligibility"]["verdict"] == "cant_tell"
     assert agents.eligibility.calls == []
+
+
+def test_eligibility_agent_explains_deterministic_result_without_model_call():
+    class NoModel:
+        def with_structured_output(self, output_type):
+            raise AssertionError("Eligibility analysis should not call the model when a deterministic evaluation is supplied.")
+
+    agent = EligibilityAgent(NoModel())
+    evaluation = {
+        "verdict": "not_eligible",
+        "reason": "A reviewed condition is not satisfied.",
+        "missing_fields": ["landholding_hectares"],
+        "unresolved_fields": ["landholding_hectares"],
+        "conditions": [],
+        "citations": [
+            {
+                "scheme_id": "C01",
+                "clause_id": "c01.eligibility.2",
+                "quote": "Landholding must not exceed 2 hectares.",
+            }
+        ],
+    }
+
+    result = agent.invoke(EligibilityInput(scheme_id="C01", evaluation=evaluation))
+
+    assert result.explanation.startswith("not_eligible") or "not_eligible" in result.explanation.lower()
+    assert "landholding_hectares" in "\n".join(result.clarifying_questions)
+    assert result.explanation
 
 
 def test_gpt_explanation_cannot_change_deterministic_verdict_or_citations():

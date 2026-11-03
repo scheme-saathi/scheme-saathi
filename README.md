@@ -181,39 +181,107 @@ endpoints, plus `GET /health`.
 
 ## Eligibility rule engine (prototype)
 
-Run the workflow demo from the project root:
+The Eligibility Analyst is a small sub-agent whose job is simple:
+
+1. take the selected scheme and household facts
+2. ask the deterministic rule engine for the final verdict
+3. explain the verdict in plain language for the user
+4. never change the verdict using the LLM
+
+In short: the rules decide, the agent explains.
+
+```text
+User request
+    ↓
+Supervisor / workflow router
+    ↓
+Eligibility Analyst sub-agent
+    ├─ Step 1: read scheme + facts
+    ├─ Step 2: call deterministic rule engine
+    │      └─ returns: eligible | not_eligible | cant_tell
+    ├─ Step 3: keep the verdict exactly as returned
+    └─ Step 4: produce a human-readable explanation
+
+Rule engine is the source of truth.
+LLM is only for explanation and follow-up questions.
+```
+
+### How it works
+
+The workflow is intentionally fail-closed:
+
+- If a scheme is selected and the facts are complete, the rule engine evaluates it.
+- If the engine cannot decide, the result is `cant_tell` rather than guessing.
+- The Eligibility Analyst cannot override the verdict, missing fields, or citations.
+- The model can only explain the result and ask a short clarifying question when needed.
+
+This is what the flow looks like in the actual project:
+
+```mermaid
+flowchart TD
+    A[User asks about eligibility] --> B[Supervisor routes to eligibility]
+    B --> C[Eligibility Analyst sub-agent]
+    C --> D[Deterministic rule engine]
+    D --> E{Verdict?}
+    E -->|eligible| F[Explain result in user language]
+    E -->|not_eligible| F
+    E -->|cant_tell| G[Explain uncertainty + missing fields]
+    F --> H[Continue to document check or finish]
+    G --> H
+```
+
+### Why this design is safe
+
+The policy is intentionally strict:
+
+- No LLM may invent a rule outcome.
+- Only reviewed rules affect a final verdict.
+- Draft rules fail closed, which means `cant_tell` instead of a risky decision.
+- The approval gate is separate and only happens after a valid application is drafted.
+
+### Quick test commands
+
+Run the demo workflow from the project root:
 
 ```bash
 python -m graph.run
 ```
 
-The demo evaluates the synthetic pension scheme against a sample profile and prints the verdict, condition results, and supporting clauses. It then displays the application approval checkpoint and automatically resumes with approval to demonstrate a mock submission; this is not a real citizen approval or portal submission.
+This evaluates a sample scheme/profile and prints the verdict and supporting clauses.
 
-### Persistent checkpoint and resume
-
-The workflow uses a SQLite checkpointer, so a run can be stopped at the approval gate and resumed from a new process:
+Run the focused workflow tests:
 
 ```bash
-python -m graph.run --phase start --thread-id demo-1
-python -m graph.run --phase resume --thread-id demo-1 --decision approve
+source .venv/bin/activate
+pytest -q tests/test_agent_workflow.py
 ```
 
-`--decision reject` resumes without submitting. State is stored in `data/checkpoints.sqlite3` (git-ignored); use `--db` to choose another file. A thread ID can be started only once, and `resume` only works for a thread waiting at approval. Running `python -m graph.run` without `--phase` keeps the earlier in-memory demo. This checkpoints the workflow only. All graph tool calls go through the FastMCP servers in `servers/` via `graph/tools.py`; only `submit` writes to the mock portal, after approval.
+The important checks are:
 
-### Approval, edit and self-correction
+- deterministic evaluation stays authoritative
+- missing evaluation falls back to `cant_tell`
+- the Eligibility Analyst does not change the verdict from the rule engine
+- the explanation is only a narrative layer on top of the rule result
 
-Approval is bound to the exact application. The approval prompt shows the form, its `payload_hash` (SHA-256) and the options `approve`, `edit`, `reject`. Submission happens only if the approved hash matches the form being submitted.
+### Example behavior
 
-```bash
-python -m graph.run --phase resume --thread-id demo-1 --decision approve [--payload-hash <hash>]
-python -m graph.run --phase resume --thread-id demo-1 --decision edit --changes '{"income": 200000}'
+A valid flow looks like this:
+
+```text
+Input: household facts + selected scheme
+Output: verdict + explanation + missing fields, if any
 ```
 
-`approve` without `--payload-hash` approves the form currently pending; a stale or wrong hash is refused and nothing is submitted. `edit` merges the changes into the profile, re-runs eligibility and drafting, and asks for a new approval, so an earlier approval never carries over. The legacy `{"approved": true}` decision is no longer accepted.
+For example:
 
-After drafting, a deterministic `validate` step checks eligibility, required fields and consistency with the profile. A failed draft is redrafted up to 3 times, then escalated to a person (`needs_human`) without submitting. The current drafter is deterministic, so the loop is exercised in tests with an injected faulty drafter; it is ready for LLM drafting.
+```text
+scheme_id = C01
+facts = {...}
+rule_engine -> not_eligible
+Eligibility Analyst -> "not_eligible: one or more reviewed conditions are not satisfied. Missing or unresolved fields: ..."
+```
 
-Print the graph as Mermaid with `python -m graph.diagram`, or refresh [docs/workflow-graph.md](docs/workflow-graph.md) with `python -m graph.diagram --write`.
+The final message is human readable, but the underlying decision is still the rule-engine result.
 
 ### Choosing schemes
 
