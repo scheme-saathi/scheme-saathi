@@ -1,5 +1,3 @@
-import hashlib
-import json
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, TypedDict
@@ -10,6 +8,7 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import interrupt
 
 from graph import tools
+from servers.mock_portal.authorization import application_payload_hash
 
 MAX_DRAFT_ATTEMPTS = 3
 
@@ -123,8 +122,7 @@ def escalate_node(state: GraphState) -> dict[str, Any]:
 
 
 def application_hash(application: dict[str, Any]) -> str:
-    canonical = json.dumps(application, sort_keys=True, separators=(",", ":"), ensure_ascii=False, default=str)
-    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    return application_payload_hash(application["scheme_id"], application["applicant"])
 
 
 def approval_node(state: GraphState) -> dict[str, Any]:
@@ -138,7 +136,11 @@ def approval_node(state: GraphState) -> dict[str, Any]:
     action = decision.get("action") if isinstance(decision, dict) else None
     if action == "approve":
         if decision.get("payload_hash") == current:
-            return {"approved": True, "approved_hash": current, "approval_status": "approved"}
+            return {
+                "approved": True,
+                "approved_hash": current,
+                "approval_status": "approved",
+            }
         return {"approved": False, "approval_status": "invalid"}
     if action == "edit" and isinstance(decision.get("changes"), dict):
         return {"profile": {**state["profile"], **decision["changes"]}, "approved": False,
@@ -156,7 +158,15 @@ def submit_node(state: GraphState) -> dict[str, Any]:
     if application_hash(state["application"]) != state.get("approved_hash"):
         return {"approved": False, "approval_status": "invalid"}
     with tools.acting_as("application"):
-        return {"submission": tools.submit_application(state["application"])}
+        return {
+            "submission": tools.submit_application(
+                state["application"],
+                write_capability=tools.issue_submission_capability(
+                    state["application"],
+                    state["approved_hash"],
+                ),
+            )
+        }
 
 
 def build_graph(checkpointer=None):
