@@ -147,6 +147,30 @@ def test_missing_deterministic_evaluation_fails_closed():
     assert agents.eligibility.calls == []
 
 
+def test_real_rule_engine_evaluation_is_used_for_eligibility_workflow():
+    class NoModel:
+        def with_structured_output(self, output_type):
+            raise AssertionError("The workflow should use the deterministic rule engine before any model call.")
+
+    agents = build_agents(
+        plan=StubAgent(SupervisorPlan(next_agent="eligibility", reason="Check eligibility.")),
+        eligibility=EligibilityAgent(NoModel()),
+    )
+
+    result = build_agent_graph(agents).invoke(
+        {
+            "request": "Am I eligible?",
+            "selected_scheme_id": "SYNTH-PENSION-001",
+            "confirmed_facts": {"age": 62, "is_widow": True, "income": 250000},
+        }
+    )
+
+    assert result["eligibility"]["verdict"] == "eligible"
+    assert result["eligibility"]["reason"] == "All required reviewed conditions are satisfied."
+    assert result["eligibility"]["conditions"]
+    assert result["eligibility"]["citations"]
+
+
 def test_eligibility_agent_explains_deterministic_result_without_model_call():
     class NoModel:
         def with_structured_output(self, output_type):
