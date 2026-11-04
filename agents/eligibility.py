@@ -38,7 +38,7 @@ class EligibilityAgent(StructuredGPTAgent[EligibilityInput, EligibilityNarrative
 
         if citations:
             citation_summary = "; ".join(
-                str(c.get("quote") or c.get("clause_id") or "citation")
+                str(c.get("quote") or c.get("text") or c.get("clause_id") or "citation")
                 for c in citations
                 if isinstance(c, Mapping)
             )

@@ -9,14 +9,18 @@ def test_diagram_shows_the_correction_loop_and_edit_path():
     """Test that diagram shows Supervisor-first routing and specialist flows."""
     text = render()
     # Supervisor routes to specialists (conditional edges may have labels)
-    assert "supervisor -.-> intake;" in text
+    # eligibility and application goals share this edge, so Mermaid labels it
+    assert "supervisor -. &nbsp;application&nbsp; .-> intake;" in text
     assert ("supervisor -.-> eligibility;" in text or "supervisor" in text and "eligibility" in text)
     assert "supervisor -.-> document_checker;" in text
     assert "supervisor -.-> respond;" in text
     
     # Specialists can route to each other (conditional paths)
     assert "intake -.-> eligibility;" in text or "intake" in text and "eligibility" in text
-    assert "intake -.-> respond;" in text
+    assert "intake -.-> eligibility;" in text
+    assert "intake -.-> reroute;" in text  # an empty reply goes back to the Supervisor
+    assert "eligibility -.-> intake_question;" in text
+    assert "intake_question --> __end__;" in text
     
     # All paths eventually reach END
     assert "finish --> __end__;" in text
