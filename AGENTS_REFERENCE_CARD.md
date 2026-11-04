@@ -9,7 +9,7 @@
 | Agent | What It Does | Input | Output | Status | Order |
 |-------|--------------|-------|--------|--------|-------|
 | 🟣 **Supervisor** | Route workflow, validate I/O | Intent | Next agent | ✅ Built | **1st** |
-| 🔵 **Intake** | Collect user info | Text/Voice | Facts extracted | ✅ Built | 2nd |
+| 🔵 **Intake** | Typed profile; one question that settles the most verdicts | Text | Unconfirmed facts + one question | ✅ Built | 2nd |
 | 🟢 **Eligibility** | Check scheme eligibility | Facts | Verdict (✅/❌) | ✅ Built | 3rd |
 | 🟡 **DocumentChecker** | List required docs | Scheme ID | Missing docs list | ✅ Built | 4th |
 | 🔴 **Application** | Draft application | Facts + Scheme | Form draft | ✅ Built | 5th |
@@ -25,22 +25,23 @@
 User → Supervisor → Respond (direct answer)
 ```
 
-### Pattern 2: Single Question with Clarification
+### Pattern 2: One Question per Turn
 ```
-User → Supervisor → Intake → Respond (clarifying question needed)
+User → Supervisor → Intake → Eligibility → Intake asks ONE question
+Reply → Supervisor (no model call) → Intake → Eligibility → next question, or stop
 ```
 
 ### Pattern 3: Check Eligibility
 ```
-User → Supervisor → Eligibility → Response (verdict)
-  OR
-User → Supervisor → Intake → Eligibility → Response
+User → Supervisor → Intake → Eligibility → ⏸ CONFIRM facts (approve / edit / reject)
+→ Eligibility on confirmed facts → Response (cited verdict)
 ```
 
 ### Pattern 4: Full Application
 ```
-User → Supervisor → Intake → Eligibility → DocumentChecker → Application 
-→ ⏸ INTERRUPT (user reviews)
+User → Supervisor → Intake → Eligibility → ⏸ CONFIRM facts → Eligibility
+→ DocumentChecker → Application
+→ ⏸ INTERRUPT (user reviews the exact form)
 → SUBMIT (reference #)
 ```
 
@@ -49,9 +50,10 @@ User → Supervisor → Intake → Eligibility → DocumentChecker → Applicati
 ## 📋 Agent Boundaries
 
 **Intake CANNOT:**
-- ❌ Store facts
-- ❌ Check eligibility
-- ❌ Submit forms
+- ❌ Choose which question to ask (code picks the field)
+- ❌ Fill fields the scheme rules don't use, or store an untyped value
+- ❌ Confirm facts for the person, or store them in long-term memory
+- ❌ Check eligibility or submit forms
 
 **Eligibility CANNOT:**
 - ❌ Change verdicts
@@ -81,22 +83,16 @@ User → Supervisor → Intake → Eligibility → DocumentChecker → Applicati
 START
   ↓
 ⭐ SUPERVISOR (validate, detect language/intent, route)
-  ├─ Intent=discover/eligibility/docs/application
+  ├─ Intent=discover/eligibility/application (or a reply to intake's question)
   │  ↓
-  │  INTAKE (collect info)
+  │  INTAKE (message → typed, unconfirmed facts)
   │  ↓
-  │  (branching based on facts)
-  │  ├→ ELIGIBILITY
-  │  ├→ DOCUMENTCHECKER
-  │  └→ RESPOND (clarification needed)
-  │
-  ├─ Intent=eligibility + has_facts
-  │  ↓
-  │  ELIGIBILITY (evaluate rules)
-  │  ↓
-  │  DOCUMENTCHECKER (if needed)
-  │  ↓
-  │  APPLICATION (if needed)
+  │  ELIGIBILITY (verdicts for candidate schemes)
+  │  ├→ INTAKE QUESTION (one per turn) → END, wait for the reply
+  │  ├→ STOP ("don't know" / no usable answer twice / 8 questions) → END
+  │  └→ ⏸ CONFIRM facts → ELIGIBILITY on confirmed facts
+  │       ↓
+  │       DOCUMENTCHECKER → APPLICATION (if applying)
   │
   ├─ Intent=documents
   │  ↓
@@ -127,19 +123,21 @@ Supervisor: Detect language=en, intent=follow_up
 Respond Agent: "We're available 24/7 for scheme queries"
 ```
 
-### Conversation 2: Intake with Clarification
+### Conversation 2: Intake, One Question per Turn
 ```
-User: "My name is Priya, I'm 35"
-Supervisor: Detect intent=discover/eligibility (unclear)
-            Route to Intake
-Intake Agent: Extract name=Priya, age=35
-              Has clarifying_questions
-Respond Agent: "What's your monthly income?"
-User: "I earn ₹25,000/month"
-Intake Agent: Extract income=300000
-              Ask: "What state are you from?"
-User: "Maharashtra"
-Intake Agent: All facts collected. Ready for next step.
+User: "My mother is 67 years old. Can she get a pension?"
+Supervisor: Detect language=en, intent=eligibility → Route to Intake
+Intake: Extract age=67 (unconfirmed)
+Eligibility: SYNTH-PENSION-001 cant_tell (income, is_widow open)
+Intake: "What is your mother's annual income?"
+User: "8000 rupees a month"
+Supervisor: Pending question → Intake (no model call)
+Intake: Extract 8000 per month → code stores income=96000
+        "Is she a widow?"
+User: "Yes"
+Intake: Extract is_widow=true → verdicts settled
+⏸ CONFIRM: age 67, income 96000, is_widow true → person approves
+Eligibility: ELIGIBLE, citing "Widow aged 60 or above; Annual income not above Rs 300000"
 ```
 
 ### Conversation 3: Check Eligibility (Direct)
@@ -184,20 +182,19 @@ SUBMITTED: Ref# SS-2026-11-001234
 
 ## 🔧 Code Integration
 
-### FastAPI Endpoint
+### Intake Agent
 ```python
 from agents.intake import IntakeAgent
-from contracts import IntakeInput
+from agents.model_factory import create_chat_model
+from graph import tools
 
-@app.post("/intake")
-async def intake(message: str, household_id: str):
-    agent = IntakeAgent(model="gpt-4")
-    result = agent.invoke(IntakeInput(
-        message=message,
-        household_id=household_id
-    ))
-    return result
+agent = IntakeAgent(create_chat_model("specialist"))
+specs = tools.field_specs(["SYNTH-PENSION-001"])
+facts = agent.extract({"request": "My mother is 67"}, specs).facts      # {"age": 67}
+question = agent.ask({"field": "income", "field_type": "number", "period": "year",
+                      "language": "en", "request": "My mother is 67"})  # one question
 ```
+In the API, intake runs inside the graph behind `POST /api/chat`; see the README's Intake agent section.
 
 ### Full Workflow
 ```python
@@ -247,12 +244,15 @@ Backend uses "household_id" not "user_id". Multiple family members share one hou
 **Fix:** Scope all queries by household_id.
 
 ### ⚠️ Gotcha 3: Language Early
-Language (EN/HI/MR) must be set at intake start. Affects all subsequent responses.
-**Fix:** Ask language preference in first message.
+The Supervisor detects the language (EN/HI/MR) from the first message and intake asks in it.
+Hindi and Marathi both use Devanagari, so detection relies on words like आहे vs है.
+**Fix:** Nothing to ask; check `data.language` in the API response if replies look wrong.
 
 ### ⚠️ Gotcha 4: Multi-Turn Intake
-Intake may need multiple rounds to collect all facts. Not all info in first submission.
-**Fix:** Expect "clarifying_questions" in response, repeat until all facts collected.
+Intake asks one question per turn (`next_step: "needs_information"`) and then pauses for
+confirmation (`"awaiting_confirmation"`) before any final verdict.
+**Fix:** Send the person's reply as the next `/api/chat` message; send the confirmation to
+`/api/chat/{thread_id}/decision` with the shown `payload_hash`.
 
 ### ⚠️ Gotcha 5: Orchestrator State
 Workflow state managed by Orchestrator. Direct database writes bypass checkpointing.

@@ -42,6 +42,92 @@ Scheme search uses a ChromaDB database in `data/chroma/`. It is ignored by Git, 
 - **Option A, download the shared database (recommended):** about 4 MB, ready in a minute, no import needed.
 - **Option B, build it yourself:** needed only if you change scheme data and want to search the change before a new release exists.
 
+### How the data fits together
+
+Where each piece of data lives and which command moves it. Folders marked "ignored" are not in Git.
+
+```mermaid
+flowchart LR
+    subgraph CHROMA["data/chroma/ (ChromaDB, ignored)"]
+        PAGES["schemes_bge_m3_body_v1<br/>scheme-page chunks"]
+        PDFC["scheme_pdf_review_v1<br/>PDF page and table chunks"]
+    end
+    XLSX["docs/Scheme-Saathi-60-Schemes-<br/>Schema-Review.xlsx<br/>review workbook"] -- "import_schemes --from-excel" --> JSON["data/schemes/&lt;slug&gt;.json<br/>one scheme per file"]
+    PDF["data/pdfs/&lt;scheme_id&gt;/*.pdf<br/>registered in the scheme's links"] -- "extract_documents" --> EXT["data/extracted/&lt;scheme_id&gt;/&lt;sha256&gt;.json<br/>draft until reviewed (ignored)"]
+    MODEL["BGE-M3 model<br/>~/.cache/huggingface (Step 1)"] -. "embeds" .-> CHROMA
+    JSON -- "import_schemes<br/>approved schemes only" --> CHROMA
+    EXT -- "import_schemes<br/>approved extractions only" --> CHROMA
+    CHROMA -- "package_db" --> ZIP["dist/chroma-YYYY-MM-DD.zip<br/>+ MANIFEST.json"]
+    ZIP -- "gh release create" --> REL["GitHub Release<br/>chroma-YYYY-MM-DD"]
+    REL -- "Option A: download and unzip" --> CHROMA
+    CHROMA --> KB["schemes-kb server<br/>search, check_retrieval"]
+    RULES["data/rules/&lt;scheme_id&gt;.json<br/>eligibility rules"] --> ENGINE["rule-engine server<br/>verdicts"]
+```
+
+The records and how they connect. Everything joins on `scheme_id`; these are JSON files and ChromaDB metadata, not database tables with foreign keys.
+
+```mermaid
+erDiagram
+    SCHEME ||--o{ PAGE_CHUNK : "split into"
+    SCHEME ||--o{ PDF_DOCUMENT : "links to"
+    PDF_DOCUMENT ||--o{ PDF_CHUNK : "pages and tables"
+    SCHEME ||--o| RULE_RECORD : "same scheme_id"
+    RULE_RECORD ||--|{ CLAUSE : "quotes"
+    RULE_RECORD ||--|{ RULE : "has"
+    RULE }o--|| CLAUSE : "cites"
+
+    SCHEME {
+        string scheme_id PK "one JSON file per scheme in data/schemes"
+        string name
+        string review_status "draft or approved"
+        string availability_status "open, closed or unverified"
+        string source_url
+        date collected_on
+        object sections "details, benefits, eligibility, ..."
+        list links "forms, portals, PDFs"
+    }
+    PAGE_CHUNK {
+        string scheme_id FK "collection schemes_bge_m3_body_v1"
+        string section
+        string availability_status
+        string citations_json "where the text came from"
+        vector embedding "BGE-M3"
+    }
+    PDF_DOCUMENT {
+        string document_id PK "one JSON file per PDF in data/extracted"
+        string scheme_id FK
+        string file_sha256
+        string source_url
+        string review_status "draft until reviewed"
+    }
+    PDF_CHUNK {
+        string document_id FK "collection scheme_pdf_review_v1"
+        string scheme_id FK
+        int page
+        string kind "text or table"
+        vector embedding "BGE-M3"
+    }
+    RULE_RECORD {
+        string scheme_id FK "one JSON file per scheme in data/rules"
+        string rule_logic "all or any"
+        list documents_required
+    }
+    RULE {
+        string field "profile field, e.g. age"
+        string op "eq, gte, in, ..."
+        any value
+        string clause_id FK
+        string status "draft or reviewed"
+    }
+    CLAUSE {
+        string clause_id PK
+        string text "quoted from the source"
+        int page
+    }
+```
+
+The field-by-field structure of one scheme record is in [docs/scheme-data-relationships.md](docs/scheme-data-relationships.md). Only rule records whose rules are all `reviewed` give live verdicts; today that is the synthetic `SYNTH-PENSION-001`, whose record sits in `data/schemes/`.
+
 ### Step 1: Download the embedding model (once per machine)
 
 Vector and hybrid search turn your question into numbers with the BGE-M3 model, which runs on your computer. Download it once:
@@ -162,7 +248,7 @@ The local API/UI entry point is described below; Docker setup has not been imple
 Start the Scheme Saathi interface from the project root:
 
 ```bash
-streamlit run app/app.py
+streamlit run app/app_new.py
 ```
 
 The UI starts a local FastAPI service on `127.0.0.1:8765` and consumes its
@@ -175,9 +261,118 @@ The approval and rejection button colors are set by `approvedButtonColor` and
 `config.toml` does not support per-button theme colors.
 
 The API can also be run separately with
-`uvicorn app.app:create_api --factory --host 127.0.0.1 --port 8765`. It exposes
+`uvicorn app.api:create_api --factory --host 127.0.0.1 --port 8765`. It exposes
 `POST /api/analyze` and `POST /api/threads/{thread_id}/decision` as streaming
 endpoints, plus `GET /health`.
+
+## Intake agent
+
+The Intake agent turns what a person says into a typed household profile and asks for the
+rest one question at a time:
+
+1. read typed facts from the message, only for fields the scheme rules use
+2. let the rule engine evaluate every candidate scheme on those facts
+3. ask the one question that settles the most open (`cant_tell`) verdicts
+4. stop when the verdicts are settled or the person does not know the answer
+5. show the facts for confirmation; only confirmed facts produce the final verdict
+
+In short: code picks the question, the model only reads facts and words the question.
+
+```text
+User message
+    ↓
+Supervisor (intent + language; a reply to a pending question skips the model)
+    ↓
+Intake: message → typed facts → known_facts (unconfirmed)
+    ↓
+Eligibility: candidate schemes → rule engine → verdicts
+    ↓
+A cant_tell verdict that an answer could settle?
+    ├─ yes → Intake asks ONE question → the reply goes back to Intake
+    ├─ "don't know", no usable answer twice, or 8 questions → stop and list what is missing
+    └─ no  → Confirm step: the person approves, edits or rejects the exact facts
+                ↓
+             Eligibility on confirmed facts → cited verdict → documents / application
+```
+
+### How it works
+
+- **Typed profile.** Field names and types come from the candidate schemes' reviewed rules
+  (`get_field_specs`). The model gets that schema, and code validates each returned field on
+  its own: `"67"` for a number, `"yes"` for a bool or an unknown field is dropped, not stored.
+  Candidate schemes are the selected scheme, or else every scheme whose rules are fully
+  reviewed (today only `SYNTH-PENSION-001`, so live mode asks about age, income and widowhood).
+- **Choosing the question.** `tools.next_question(verdicts, declined)` counts each field in the
+  `missing_fields`/`unresolved_fields` of the `cant_tell` verdicts and picks the highest count
+  (ties go alphabetically). A field from an already decided scheme is never asked. The model
+  only words the question, in the language the Supervisor detected (`en`, `hi` or `mr`).
+- **Replies.** The turn after a question goes straight to Intake with the field and the
+  question's wording; the Supervisor model is not asked to re-route "yes" or "1 lakh". Earlier
+  facts are not sent to the model: given them, it restated them and converted income twice.
+- **Income.** The model returns the amount as said and its period (`month`, `year` or
+  `unstated`); code converts it to the field's period (×12 for annual `income`, ÷12 for
+  `monthly_income`). Questions ask in the field's own period, so a bare amount answering one is
+  read in that period. With no question to anchor it, the amount is rejected and asked again.
+  Income fields are recognised by name (a `shortcut:` in `agents/intake.py`).
+- **Stop rules.** The model classifies each reply as `answer`, `dont_know` or `other`.
+  "Don't know" stops intake, a field asked twice without a usable answer counts as "don't
+  know", and at most 8 questions are asked (`MAX_QUESTIONS`). A reply with no facts at all
+  goes back to the Supervisor, so a new request ("what documents do I need?") is routed rather
+  than the question repeated. A new intake resets these counters.
+- **Confirm step.** Once the verdicts settle, the graph pauses with `interrupt()` and shows the
+  exact facts and their SHA-256 hash. `approve` with that hash confirms them. `edit` changes
+  are type-checked and confirmed; unknown or wrongly typed fields are shown again in
+  `rejected_edits`. `reject` or a wrong hash confirms nothing. A later correction ("she is
+  68") has to be confirmed again.
+
+### Why this design is safe
+
+- The model never decides what to ask: a question exists only if its answer can change a verdict.
+- Facts the model reads stay unconfirmed (`known_facts`) and only steer the questions. Final
+  verdicts and the application form use `confirmed_facts` only.
+- Values must match the rule types and are never coerced; unit conversion is code, not the model.
+- Replies reach the model as untrusted data, and it can only fill rule fields. It never asks
+  for Aadhaar, bank-account numbers or other identifiers.
+
+### Quick test commands
+
+```bash
+python3 -m pytest -q tests/test_intake_flow.py
+```
+
+The tests use stub models and cover each step: facts merging across turns, field types,
+question choice, the typed profile, extraction and wording, the multi-turn loop, the stop
+rules and the confirm step. To see the question choice without a model:
+
+```python
+from graph import tools
+
+verdicts = {s: tools.evaluate_scheme({"age": 67}, s) for s in ["SYNTH-PENSION-001"]}
+tools.next_question(verdicts)   # 'income'; with {"age": 40} it is None: already not eligible
+```
+
+### Example behavior
+
+A run with `openai/gpt-4o-mini` through `POST /api/chat`:
+
+```text
+User: My mother is 67 years old. Can she get a pension?
+Bot:  What is your mother's annual income?          known_facts: age 67
+User: 8000 rupees a month
+Bot:  Is she a widow?                               known_facts: + income 96000
+User: Yes, she is a widow
+Bot:  Please check these details. The final answer uses only the details you confirm.
+      awaiting_confirmation: age 67, income 96000, is_widow true
+[approve with the shown payload_hash]
+Bot:  SYNTH-PENSION-001: eligible: All required reviewed conditions are satisfied.
+      Rule citations: Widow aged 60 or above; Annual income not above Rs 300000
+```
+
+A Marathi message gets a Marathi question ("माझी आई 65 वर्षांची विधवा आहे" → "तुमची आई
+वर्षाला किती उत्पन्न मिळवते?"), and facts already given are never asked again.
+
+Not done yet: the confirmation, verdict and stop messages are English only and show raw field
+names (`is widow`), and the Streamlit chat does not use this flow yet.
 
 ## Eligibility rule engine (prototype)
 
@@ -359,8 +554,15 @@ How an application is drafted, approved and submitted:
 
 HTTP API (`app/api.py`):
 
-- `POST /api/chat` runs the graph on a `thread_id`. When a draft is waiting it returns `next_step: "awaiting_approval"` and `data.approval` (form, `payload_hash`, `portal_draft_id`). A new message on a waiting thread returns 409.
-- `POST /api/chat/{thread_id}/decision` takes `{"action": "approve" | "edit" | "reject", "payload_hash": "...", "changes": {}}` and resumes the graph. It returns 404 for an unknown thread, 403 for another household, and 409 when nothing is waiting.
+- `POST /api/chat` runs the graph on a `thread_id`. `known_facts` and `confirmed_facts` sent on a turn are merged with earlier turns. `next_step` tells the client what to show:
+  - `needs_information`: one intake question in `response`; the field is `data.pending_field`.
+  - `awaiting_confirmation`: `data.confirmation` holds the `facts` to confirm, their `payload_hash` and any `rejected_edits`.
+  - `intake_stopped`: the person did not know an answer; `response` lists the missing details.
+  - `eligibility_checked`: the final, cited verdict for each candidate scheme.
+  - `awaiting_approval`: a draft is waiting; `data.approval` holds the form, `payload_hash` and `portal_draft_id`.
+
+  A new message on a thread waiting for a confirmation or approval returns 409.
+- `POST /api/chat/{thread_id}/decision` takes `{"action": "approve" | "edit" | "reject", "payload_hash": "...", "changes": {}}` and resumes the graph, for the confirm step and the approval gate alike. It returns 404 for an unknown thread, 403 for another household, and 409 when nothing is waiting.
 - The `x-actor-id` header is trusted as sent. Real authentication is not built yet.
 
 Not wired in yet: authenticated household scoping, memory storage, document extraction, and persistent checkpoints (the API uses an in-memory checkpointer). Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
