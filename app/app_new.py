@@ -8,6 +8,7 @@ import os
 import threading
 import time
 from collections.abc import Iterator
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -24,6 +25,14 @@ else:
     from api import create_api
 
 CSS_PATH = Path(__file__).with_name("style.css")
+JOURNEY_STEPS = (
+    "Consent",
+    "Your details",
+    "Eligibility",
+    "Documents",
+    "Review",
+    "Confirmation",
+)
 
 
 @st.cache_resource
@@ -238,7 +247,7 @@ def _send_chat(
     """Send one conversational intake turn and return its reply and eligibility data."""
     payload = {"user_input": user_input, "session_id": session_id}
     request = Request(
-        f"{api_base}/api/chat",
+        f"{api_base}/api/chat/legacy",
         data=json.dumps(payload).encode("utf-8"),
         headers={
             "Content-Type": "application/json",
@@ -822,14 +831,315 @@ def _handle_chat_submission(
             )
 
 
-def main() -> None:
-    """Run the chat intake and render later application steps from session state."""
-    st.set_page_config(
-        page_title="Scheme Saathi | Eligibility chat",
-        page_icon=":material/account_balance:",
-        layout="centered",
+def _initialize_portal_state() -> None:
+    """Set up session-only access, consent, and workflow state."""
+    defaults = {
+        "portal_stage": "access",
+        "access_error": None,
+        "show_password_help": False,
+        "citizen_name": "",
+        "consent_given": False,
+        "consent_recorded_at": None,
+        "consent_error": None,
+        "chat_session_id": None,
+        "chat_messages": [],
+        "chat_eligibility_result": None,
+        "application_result": None,
+        "application_uploads": {},
+        "application_outcome": None,
+        "application_editing": False,
+        "application_edit_revision": 0,
+    }
+    for key, value in defaults.items():
+        st.session_state.setdefault(key, value)
+
+
+def _complete_access(mode: str) -> None:
+    """Advance the UI prototype without sending or retaining credentials."""
+    contact = str(st.session_state.get("access-contact", "")).strip()
+    password = str(st.session_state.get("access-password", ""))
+    name = str(st.session_state.get("access-name", "")).strip()
+
+    if not contact or not password:
+        st.session_state["access_error"] = "Enter your phone or email and password."
+        return
+    if mode == "Create account":
+        confirmation = str(st.session_state.get("access-confirm-password", ""))
+        if not name:
+            st.session_state["access_error"] = "Enter your name to create an account."
+            return
+        if password != confirmation:
+            st.session_state["access_error"] = "The passwords do not match."
+            return
+        if not st.session_state.get("access-terms", False):
+            st.session_state["access_error"] = "Accept the demo terms to continue."
+            return
+
+    st.session_state["citizen_name"] = name or "there"
+    st.session_state["access_error"] = None
+    st.session_state["show_password_help"] = False
+    st.session_state["portal_stage"] = "consent"
+    st.session_state["access-password"] = ""
+    st.session_state["access-confirm-password"] = ""
+    st.session_state["access-contact"] = ""
+
+
+def _render_access_page() -> None:
+    """Render the login and registration entry screens for the UI prototype."""
+    with st.container(key="auth-page"):
+        with st.container(border=True, key="auth-shell"):
+            with st.container(key="auth-brand"):
+                st.markdown("### :material/account_balance: Scheme Saathi")
+            st.caption("PUBLIC SUPPORT, MADE SIMPLE")
+            mode = st.segmented_control(
+                "Account access",
+                options=["Sign in", "Create account"],
+                default="Sign in",
+                key="access-mode",
+                label_visibility="collapsed",
+            )
+            if mode is None:
+                mode = "Sign in"
+
+            st.title("Welcome back" if mode == "Sign in" else "Create your account")
+            st.write(
+                "Sign in to explore support schemes for your household."
+                if mode == "Sign in"
+                else "A few details to start your guided scheme search."
+            )
+
+            with st.form(f"access-form-{mode.lower().replace(' ', '-')}"):
+                if mode == "Create account":
+                    st.text_input(
+                        "Full name",
+                        key="access-name",
+                        max_chars=120,
+                        placeholder="Enter your name",
+                    )
+                st.text_input(
+                    "Phone or email",
+                    key="access-contact",
+                    max_chars=254,
+                    placeholder="you@example.com or phone number",
+                )
+                st.text_input(
+                    "Password",
+                    type="password",
+                    key="access-password",
+                    max_chars=256,
+                    placeholder="Enter your password",
+                )
+                if mode == "Create account":
+                    st.text_input(
+                        "Confirm password",
+                        type="password",
+                        key="access-confirm-password",
+                        max_chars=256,
+                        placeholder="Re-enter your password",
+                    )
+                    st.checkbox(
+                        "I agree to the demo terms and privacy notice",
+                        key="access-terms",
+                    )
+                st.form_submit_button(
+                    "Sign in" if mode == "Sign in" else "Create account",
+                    type="primary",
+                    width="stretch",
+                    on_click=_complete_access,
+                    args=(mode,),
+                )
+
+            if mode == "Sign in":
+                if st.button("Forgot password?", key="forgot-password"):
+                    st.session_state["show_password_help"] = True
+                if st.session_state["show_password_help"]:
+                    st.info(
+                        "Password recovery is not available in this UI prototype."
+                    )
+            if st.session_state["access_error"]:
+                st.error(st.session_state["access_error"])
+            st.caption(
+                "Demo only. Do not use a real password. This is not an official "
+                "government portal."
+            )
+
+
+def _complete_consent() -> None:
+    """Record an in-session consent decision and open the chat only on acceptance."""
+    if not st.session_state.get("session-consent", False):
+        st.session_state["consent_error"] = (
+            "Please confirm consent before continuing to the chat."
+        )
+        return
+
+    st.session_state["consent_given"] = True
+    st.session_state["consent_recorded_at"] = datetime.now(timezone.utc).isoformat()
+    st.session_state["consent_error"] = None
+    st.session_state["portal_stage"] = "chat"
+
+
+def _decline_consent() -> None:
+    """Return to the access screen without enabling chat."""
+    st.session_state["portal_stage"] = "access"
+    st.session_state["consent_given"] = False
+    st.session_state["session-consent"] = False
+
+
+def _render_consent_page() -> None:
+    """Present a clear privacy notice before opening the guided chat."""
+    with st.container(key="consent-page"):
+        with st.container(key="consent-header"):
+            brand_col, step_col = st.columns([3, 1], vertical_alignment="center")
+            brand_col.markdown("### :material/account_balance: Scheme Saathi")
+            brand_col.caption("PUBLIC SUPPORT, MADE SIMPLE")
+            step_col.markdown("**BEFORE YOU BEGIN**")
+            step_col.caption("Step 1 of 6")
+
+        with st.container(border=True, key="consent-shell"):
+            st.markdown(":material/verified_user: PRIVACY & CONSENT")
+            st.title("Your information. Your choice.")
+            st.write(
+                "Please review how information is used before continuing to "
+                "your scheme search."
+            )
+
+            use_col, handling_col = st.columns(2, gap="medium")
+            with use_col:
+                with st.container(border=True, key="consent-use-card"):
+                    st.markdown("**How your information is used**")
+                    st.write(
+                        "Details you choose to share help the service ask relevant "
+                        "follow-up questions and check reviewed scheme rules."
+                    )
+            with handling_col:
+                with st.container(border=True, key="consent-handling-card"):
+                    st.markdown("**How it is handled**")
+                    st.write(
+                        "Your responses are processed by this application to provide "
+                        "the current workflow. This screen does not submit information "
+                        "to a government portal."
+                    )
+
+            with st.container(key="consent-sensitive-notice"):
+                st.warning(
+                    "For your safety, do not enter Aadhaar numbers, bank-account "
+                    "details, passwords, OTPs, or other sensitive identifiers."
+                )
+
+            st.caption(
+                "Your consent choice applies to this active application session. "
+                "You may withdraw it later; doing so clears the conversation shown "
+                "in this interface."
+            )
+
+            with st.form("session-consent-form"):
+                st.checkbox(
+                    "I have read this notice and agree to use my information "
+                    "for this session.",
+                    key="session-consent",
+                )
+                st.form_submit_button(
+                    "Agree and continue",
+                    type="primary",
+                    width="stretch",
+                    on_click=_complete_consent,
+                )
+            if st.session_state["consent_error"]:
+                st.error(st.session_state["consent_error"])
+
+            st.button(
+                "I do not agree — return to sign in",
+                key="decline-consent",
+                on_click=_decline_consent,
+                width="stretch",
+            )
+
+
+def _withdraw_consent() -> None:
+    """Clear the current workflow and return to the consent screen."""
+    _reset_chat()
+    st.session_state["portal_stage"] = "consent"
+    st.session_state["consent_given"] = False
+    st.session_state["consent_recorded_at"] = None
+    st.session_state["session-consent"] = False
+
+
+def _render_wizard(current_step: int) -> None:
+    """Show the six-stage citizen journey immediately above the chat composer."""
+    st.caption("YOUR JOURNEY")
+    step_columns = st.columns(len(JOURNEY_STEPS))
+    for index, (column, label) in enumerate(zip(step_columns, JOURNEY_STEPS), start=1):
+        if index < current_step:
+            marker = ":material/check_circle:"
+        elif index == current_step:
+            marker = ":material/radio_button_checked:"
+        else:
+            marker = ":material/radio_button_unchecked:"
+        column.markdown(f"{marker} **{label}**")
+    st.progress(
+        current_step / len(JOURNEY_STEPS),
+        text=f"Step {current_step} of {len(JOURNEY_STEPS)} · "
+        f"{JOURNEY_STEPS[current_step - 1]}",
     )
-    st.html(CSS_PATH)
+
+
+def _render_api_reference() -> None:
+    """Show the API reference independently from the citizen-facing workflow."""
+    st.title("API reference")
+    st.write(
+        "The endpoints below are generated from the running FastAPI OpenAPI "
+        "schema and document the service contract separately from the citizen flow."
+    )
+    try:
+        api_base = _api_base_url()
+        with urlopen(f"{api_base}/openapi.json", timeout=5) as response:
+            schema = json.loads(response.read().decode("utf-8"))
+    except (RuntimeError, ValueError, OSError, URLError) as error:
+        st.error(str(error), title="API reference is unavailable")
+        return
+
+    if not isinstance(schema, dict) or not isinstance(schema.get("paths"), dict):
+        st.error("FastAPI returned an invalid OpenAPI document.")
+        return
+
+    st.caption(f"API base URL: `{api_base}`")
+    st.link_button(
+        "Open interactive API docs",
+        f"{api_base}/docs",
+        icon=":material/open_in_new:",
+    )
+    grouped: dict[str, list[tuple[str, str, dict[str, Any]]]] = {}
+    for path, methods in schema["paths"].items():
+        if not isinstance(methods, dict):
+            continue
+        for method, operation in methods.items():
+            if method.lower() not in {
+                "get",
+                "post",
+                "put",
+                "patch",
+                "delete",
+            } or not isinstance(operation, dict):
+                continue
+            tags = operation.get("tags") or ["Other"]
+            grouped.setdefault(str(tags[0]), []).append(
+                (method.upper(), path, operation)
+            )
+
+    for tag, operations in grouped.items():
+        with st.expander(f"{tag} · {len(operations)} endpoints", expanded=True):
+            for method, path, operation in operations:
+                with st.container(border=True):
+                    method_col, path_col = st.columns([1, 4])
+                    method_col.markdown(f"**{method}**")
+                    path_col.code(path, language=None)
+                    summary = operation.get("summary")
+                    if summary:
+                        st.write(summary)
+
+
+def _render_chat_page() -> None:
+    """Run the consented chat intake and later application workflow."""
     st.session_state.setdefault("chat_session_id", None)
     st.session_state.setdefault("chat_messages", [])
     st.session_state.setdefault("chat_eligibility_result", None)
@@ -841,16 +1151,28 @@ def main() -> None:
 
     title_col, action_col = st.columns([4, 1], vertical_alignment="center")
     title_col.markdown("### :material/account_balance: Scheme Saathi")
-    title_col.caption("A guided way to explore public support")
-    if action_col.button(
-        "New chat",
-        icon=":material/add:",
-        disabled=not st.session_state["chat_messages"],
-        key="new-chat",
-        width="stretch",
-    ):
-        _reset_chat()
-        st.rerun()
+    title_col.caption(
+        "A guided way to explore public support · "
+        f"{st.session_state['citizen_name']}"
+    )
+    with action_col:
+        if st.button(
+            "New chat",
+            icon=":material/add:",
+            disabled=not st.session_state["chat_messages"],
+            key="new-chat",
+            width="stretch",
+        ):
+            _reset_chat()
+            st.rerun()
+        if st.button(
+            "Withdraw consent",
+            icon=":material/lock:",
+            key="withdraw-consent",
+            width="stretch",
+        ):
+            _withdraw_consent()
+            st.rerun()
 
     try:
         api_base = _api_base_url()
@@ -863,8 +1185,6 @@ def main() -> None:
         st.error(str(error), title="FastAPI is unavailable")
         st.stop()
 
-    step, label = _journey_step()
-    st.progress(step / 5, text=f"Step {step} of 5 · {label}")
     _render_welcome()
 
     if st.session_state["chat_messages"]:
@@ -884,6 +1204,8 @@ def main() -> None:
     # Pin the prompt and its always-visible starter guidance to the bottom of
     # the app viewport while keeping workflow output in the main content above.
     with st.bottom:
+        chat_step, _ = _journey_step()
+        _render_wizard(chat_step + 1)
         st.caption("Tell us what you need. We’ll ask only for missing details.")
         prompt = st.chat_input(
             "Ask about eligibility or share a requested detail...",
@@ -898,6 +1220,54 @@ def main() -> None:
     if prompt:       
         _handle_chat_submission(api_base, prompt, response_slot)
         st.rerun()
+
+
+def _render_citizen_portal() -> None:
+    """Route the citizen through access, consent, then the chat workflow."""
+    stage = st.session_state["portal_stage"]
+    if stage == "access":
+        _render_access_page()
+    elif stage == "consent":
+        _render_consent_page()
+    elif stage == "chat" and st.session_state["consent_given"]:
+        _render_chat_page()
+    else:
+        st.session_state["portal_stage"] = "consent"
+        _render_consent_page()
+
+
+def main() -> None:
+    """Run the citizen experience and API reference as separate Streamlit pages."""
+    st.set_page_config(
+        page_title="Scheme Saathi",
+        page_icon=":material/account_balance:",
+        layout="wide",
+        initial_sidebar_state="collapsed",
+    )
+    st.html(CSS_PATH)
+    _initialize_portal_state()
+    page = st.navigation(
+        {
+            "Experience": [
+                st.Page(
+                    _render_citizen_portal,
+                    title="Citizen portal",
+                    icon=":material/volunteer_activism:",
+                    default=True,
+                )
+            ],
+            "Developer": [
+                st.Page(
+                    _render_api_reference,
+                    title="API reference",
+                    icon=":material/api:",
+                )
+            ],
+        },
+        position="top",
+    )
+    page.run()
+
 
 if __name__ == "__main__":
     main()

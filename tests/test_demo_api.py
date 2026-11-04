@@ -3,9 +3,8 @@ import json
 from fastapi.testclient import TestClient
 
 from agents.contracts import CandidateFact, IntakeResult
-from app import app_new, business_logic
-from app.api import create_api
-from app.business_logic import ChatIntakeInput, DemoService
+from app import api, app_new
+from app.api import ChatIntakeInput, DemoService, create_api
 
 
 def test_local_api_url_reuses_an_existing_demo_api(monkeypatch):
@@ -20,6 +19,56 @@ def test_local_api_url_reuses_an_existing_demo_api(monkeypatch):
     monkeypatch.setattr(app_new, "_start_local_api", fail_if_started)
 
     assert app_new._api_base_url() == api_base
+
+
+def test_streamlit_chat_client_uses_legacy_sse_endpoint(monkeypatch):
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def __iter__(self):
+            return iter(
+                [
+                    b"event: session\n",
+                    b'data: {"session_id": "demo-session"}\n',
+                    b"\n",
+                    b"event: assistant\n",
+                    b'data: {"content": "Please share your annual income."}\n',
+                    b"\n",
+                    b"event: result\n",
+                    b'data: {"status": "needs_details"}\n',
+                    b"\n",
+                ]
+            )
+
+    requests = []
+
+    def fake_urlopen(request, timeout):
+        requests.append(request)
+        assert timeout == 300
+        return FakeResponse()
+
+    monkeypatch.setattr(app_new, "urlopen", fake_urlopen)
+    progress = type("Progress", (), {"write": lambda self, _message: None})()
+
+    session_id, reply, result = app_new._send_chat(
+        "http://127.0.0.1:8766",
+        "I am 62 and a widow.",
+        None,
+        progress,
+    )
+
+    assert requests[0].full_url == "http://127.0.0.1:8766/api/chat/legacy"
+    assert json.loads(requests[0].data) == {
+        "user_input": "I am 62 and a widow.",
+        "session_id": None,
+    }
+    assert session_id == "demo-session"
+    assert reply == "Please share your annual income."
+    assert result == {"status": "needs_details"}
 
 
 def parse_events(body):
@@ -136,13 +185,13 @@ class FakeChatIntakeAgent:
 
 def test_chat_requests_missing_details_before_checking_eligibility(monkeypatch):
     evaluated_schemes = []
-    evaluate_scheme = business_logic.tools.evaluate_scheme
+    evaluate_scheme = api.tools.evaluate_scheme
 
     def track_evaluation(profile, scheme_id):
         evaluated_schemes.append(scheme_id)
         return evaluate_scheme(profile, scheme_id)
 
-    monkeypatch.setattr(business_logic.tools, "evaluate_scheme", track_evaluation)
+    monkeypatch.setattr(api.tools, "evaluate_scheme", track_evaluation)
     client = TestClient(create_api(DemoService(FakeChatIntakeAgent())))
 
     first_response = client.post(
