@@ -959,12 +959,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
     # SUPERVISOR AGENT ENDPOINTS
     # ========================================================================
 
-    @application.post(
-        "/api/chat",
-        response_model=SupervisorChatResponse,
-        responses={400: {"model": ErrorResponse}, 429: {"model": ErrorResponse}},
-        tags=["Agent Workflow"],
-    )
+    @application.post("/api/chat", response_model=SupervisorChatResponse, responses={400: {"model": ErrorResponse}, 429: {"model": ErrorResponse}}, tags=["Agent Workflow"],)
     def chat_with_supervisor(
         request: SupervisorChatRequest,
         x_actor_id: str | None = Header(None),
@@ -1042,11 +1037,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             rate_limit=RateLimit(remaining_requests=9, reset_in_seconds=60),
         )
 
-    @application.get(
-        "/api/chat/{thread_id}",
-        response_model=SupervisorChatResponse,
-        tags=["Agent Workflow"],
-    )
+    @application.get("/api/chat/{thread_id}", response_model=SupervisorChatResponse, tags=["Agent Workflow"], )
     def get_chat_response(thread_id: str) -> dict[str, Any]:
         """Get latest response from conversation thread."""
         workflow = get_workflow_service()
@@ -1065,11 +1056,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             "timestamp": latest_turn["timestamp"],
         }
 
-    @application.get(
-        "/api/chat/{thread_id}/history",
-        response_model=ConversationHistory,
-        tags=["Agent Workflow"],
-    )
+    @application.get("/api/chat/{thread_id}/history", response_model=ConversationHistory, tags=["Agent Workflow"], )
     def get_conversation_history(
         thread_id: str,
         limit: int = 50,
@@ -1106,11 +1093,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             else datetime.now(),
         )
 
-    @application.get(
-        "/api/chat/{thread_id}/context",
-        response_model=SessionContext,
-        tags=["Agent Workflow"],
-    )
+    @application.get("/api/chat/{thread_id}/context", response_model=SessionContext, tags=["Agent Workflow"],)
     def get_session_context(thread_id: str) -> SessionContext:
         """Get current session context and collected facts."""
         workflow = get_workflow_service()
@@ -1126,10 +1109,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             last_interaction=datetime.now(),
         )
 
-    @application.post(
-        "/api/chat/{thread_id}/restart",
-        tags=["Agent Workflow"],
-    )
+    @application.post("/api/chat/{thread_id}/restart", tags=["Agent Workflow"], )
     def restart_session_context(thread_id: str) -> dict[str, Any]:
         """Reset session context but keep conversation history."""
         workflow = get_workflow_service()
@@ -1145,10 +1125,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             "facts_cleared": list(context.get("known_facts", {}).keys()),
         }
 
-    @application.delete(
-        "/api/chat/{thread_id}",
-        tags=["Agent Workflow"],
-    )
+    @application.delete("/api/chat/{thread_id}", tags=["Agent Workflow"],)
     def delete_chat_conversation(thread_id: str) -> dict[str, Any]:
         """Delete entire conversation (GDPR compliance)."""
         workflow = get_workflow_service()
@@ -1227,10 +1204,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         finally:
             await file.close()
 
-    @application.get(
-        "/api/threads/{thread_id}/documents/{scheme_id}/{document_type}",
-        tags=["Demo"],
-    )
+    @application.get("/api/threads/{thread_id}/documents/{scheme_id}/{document_type}", tags=["Demo"],)
     def download_document(
         thread_id: str, scheme_id: str, document_type: str
     ) -> Response:
@@ -1260,9 +1234,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             headers={"Content-Disposition": content_disposition},
         )
 
-    @application.delete(
-        "/api/threads/{thread_id}/documents", tags=["Demo"]
-    )
+    @application.delete("/api/threads/{thread_id}/documents", tags=["Demo"])
     def delete_documents(thread_id: str) -> dict[str, Any]:
         try:
             deleted = demo.delete_uploaded_documents(thread_id)

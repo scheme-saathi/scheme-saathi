@@ -254,54 +254,35 @@ def _send_chat(
     api_base: str,
     user_input: str,
     session_id: str | None,
+    actor_id: str,
     progress: Any,
 ) -> tuple[str | None, str | None, dict[str, Any] | None]:
-    """Send one conversational intake turn and return its reply and eligibility data."""
-    payload = {"user_input": user_input, "session_id": session_id}
-    request = Request(
-        f"{api_base}/api/chat/legacy",
-        data=json.dumps(payload).encode("utf-8"),
+    """Send one supervisor chat turn and return its reply and workflow data."""
+    payload = {"message": user_input, "actor_id": actor_id, "thread_id": session_id}
+    progress.write("Sending your message")
+    response = _api_request(
+        f"{api_base}/api/chat",
+        method="POST",
+        body=json.dumps(payload).encode("utf-8"),
         headers={
             "Content-Type": "application/json",
-            "Accept": "text/event-stream",
         },
-        method="POST",
     )
-    assistant_reply = None
-    received_session_id = session_id
-    result = None
-    try:
-        with urlopen(request, timeout=300) as response:
-            for event_name, event_payload in _parse_sse(response):
-                if event_name == "progress":
-                    progress.write(event_payload.get("label", "Working..."))
-                elif event_name == "session":
-                    received_session_id = event_payload.get("session_id")
-                elif event_name == "assistant":
-                    assistant_reply = event_payload.get("content", "")
-                elif event_name == "result":
-                    result = event_payload
-                elif event_name == "error":
-                    raise RuntimeError(
-                        event_payload.get("detail", "The intake agent could not respond.")
-                    )
-    except HTTPError as error:
-        message = error.read().decode("utf-8", errors="replace")
-        try:
-            detail = json.loads(message).get("detail", message)
-        except json.JSONDecodeError:
-            detail = message
-        raise RuntimeError(
-            str(detail) or f"FastAPI request failed ({error.code})."
-        ) from error
-    except URLError as error:
-        raise RuntimeError(f"Could not connect to FastAPI: {error}") from error
-    except (OSError, http.client.HTTPException) as error:
-        raise RuntimeError(f"The FastAPI stream ended unexpectedly: {error}") from error
+    if not isinstance(response, dict):
+        raise RuntimeError("FastAPI returned an invalid chat response.")
 
-    if assistant_reply is None:
-        raise RuntimeError("The FastAPI stream ended before returning a response.")
-    return received_session_id, assistant_reply, result
+    thread_id = response.get("thread_id")
+    assistant_reply = response.get("response")
+    data = response.get("data", {})
+    if not isinstance(thread_id, str) or not thread_id:
+        raise RuntimeError("FastAPI did not return a conversation thread.")
+    if not isinstance(assistant_reply, str) or not assistant_reply.strip():
+        raise RuntimeError("FastAPI did not return a chat response.")
+    if not isinstance(data, dict):
+        raise RuntimeError("FastAPI returned invalid workflow data.")
+
+    result = {"status": response.get("next_step"), "data": data}
+    return thread_id, assistant_reply, result
 
 
 def _render_eligibility(result: dict[str, Any]) -> None:
@@ -1100,6 +1081,7 @@ def _handle_chat_submission(
                                 api_base,
                                 user_text,
                                 st.session_state["chat_session_id"],
+                                st.session_state["chat_actor_id"],
                                 progress,
                             )
                             st.session_state["chat_session_id"] = session_id
@@ -1109,6 +1091,7 @@ def _handle_chat_submission(
                                     if assistant_result
                                     and assistant_result.get("status")
                                     == "eligibility_checked"
+                                    and assistant_result.get("verdicts")
                                     else "Waiting for your details"
                                 ),
                                 state="complete",
@@ -1128,6 +1111,7 @@ def _handle_chat_submission(
             if (
                 assistant_result
                 and assistant_result.get("status") == "eligibility_checked"
+                and assistant_result.get("verdicts")
             ):
                 st.session_state["chat_eligibility_result"] = assistant_result
             st.session_state["chat_messages"].append(
@@ -1153,6 +1137,7 @@ def _initialize_portal_state() -> None:
         "consent_given": False,
         "consent_recorded_at": None,
         "consent_error": None,
+        "chat_actor_id": f"citizen-{uuid4().hex}",
         "chat_session_id": None,
         "chat_messages": [],
         "chat_eligibility_result": None,
@@ -1466,6 +1451,7 @@ def _render_api_reference() -> None:
 
 def _render_chat_page() -> None:
     """Run the consented chat intake and later application workflow."""
+    st.session_state.setdefault("chat_actor_id", f"citizen-{uuid4().hex}")
     st.session_state.setdefault("chat_session_id", None)
     st.session_state.setdefault("chat_messages", [])
     st.session_state.setdefault("chat_eligibility_result", None)

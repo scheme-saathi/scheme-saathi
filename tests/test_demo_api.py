@@ -22,54 +22,66 @@ def test_local_api_url_reuses_an_existing_demo_api(monkeypatch):
     assert app_new._api_base_url() == api_base
 
 
-def test_streamlit_chat_client_uses_legacy_sse_endpoint(monkeypatch):
+def test_streamlit_chat_client_uses_supervisor_chat_endpoint(monkeypatch):
     class FakeResponse:
+        def __init__(self, body):
+            self.body = body
+
         def __enter__(self):
             return self
 
         def __exit__(self, *_args):
             return False
 
-        def __iter__(self):
-            return iter(
-                [
-                    b"event: session\n",
-                    b'data: {"session_id": "demo-session"}\n',
-                    b"\n",
-                    b"event: assistant\n",
-                    b'data: {"content": "Please share your annual income."}\n',
-                    b"\n",
-                    b"event: result\n",
-                    b'data: {"status": "needs_details"}\n',
-                    b"\n",
-                ]
-            )
+        def read(self):
+            return self.body
 
     requests = []
 
     def fake_urlopen(request, timeout):
         requests.append(request)
         assert timeout == 300
-        return FakeResponse()
+        return FakeResponse(
+            json.dumps(
+                {
+                    "status": "success",
+                    "thread_id": "conversation-1",
+                    "next_step": "needs_clarification",
+                    "response": "Please share your annual income.",
+                    "data": {"status": "needs_clarification"},
+                }
+            ).encode("utf-8")
+        )
 
     monkeypatch.setattr(app_new, "urlopen", fake_urlopen)
-    progress = type("Progress", (), {"write": lambda self, _message: None})()
+    progress_messages = []
+    progress = type(
+        "Progress",
+        (),
+        {"write": lambda self, message: progress_messages.append(message)},
+    )()
 
     session_id, reply, result = app_new._send_chat(
         "http://127.0.0.1:8766",
         "I am 62 and a widow.",
         None,
+        "citizen-session",
         progress,
     )
 
-    assert requests[0].full_url == "http://127.0.0.1:8766/api/chat/legacy"
+    assert requests[0].full_url == "http://127.0.0.1:8766/api/chat"
     assert json.loads(requests[0].data) == {
-        "user_input": "I am 62 and a widow.",
-        "session_id": None,
+        "message": "I am 62 and a widow.",
+        "actor_id": "citizen-session",
+        "thread_id": None,
     }
-    assert session_id == "demo-session"
+    assert session_id == "conversation-1"
     assert reply == "Please share your annual income."
-    assert result == {"status": "needs_details"}
+    assert result == {
+        "status": "needs_clarification",
+        "data": {"status": "needs_clarification"},
+    }
+    assert progress_messages == ["Sending your message"]
 
 
 def parse_events(body):
