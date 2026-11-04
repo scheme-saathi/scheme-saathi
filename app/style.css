@@ -16,7 +16,7 @@
 }
 
 .block-container {
-    max-width: 1240px;
+    max-width: 1480px;
     padding-top: 1.15rem;
     padding-bottom: 1.4rem;
 }
@@ -366,9 +366,108 @@ div.stFormSubmitButton > button:disabled {
     border-right: 1px solid var(--ss-line);
 }
 
+.st-key-application-workflow [data-testid="stVerticalBlock"] {
+    gap: 0.45rem;
+}
+
+.st-key-application-workflow [data-testid="stHorizontalBlock"] {
+    gap: 0.75rem;
+}
+
+.st-key-application-workflow h3,
+.st-key-application-workflow h4 {
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+}
+
+.st-key-application-workflow [data-testid="stTable"] {
+    font-size: 0.84rem;
+}
+
+.st-key-workflow-wizard {
+    margin: 0.25rem 0 0.85rem;
+    border: 1px solid var(--ss-line);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 8px 26px rgba(25, 62, 49, 0.045);
+    padding: 0.7rem 0.9rem 0.55rem;
+}
+
+.st-key-workflow-wizard [data-testid="stVerticalBlock"] {
+    gap: 0.45rem;
+}
+
+.st-key-workflow-wizard [data-testid="stHorizontalBlock"] {
+    gap: 0.45rem;
+}
+
+.st-key-workflow-wizard [class*="st-key-wizard-step-"] {
+    min-height: 2.7rem;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    padding: 0.5rem 0.65rem;
+}
+
+.st-key-workflow-wizard [class*="st-key-wizard-step-complete-"] {
+    border-color: #d7e9dd;
+    background: #f2f8f4;
+}
+
+.st-key-workflow-wizard [class*="st-key-wizard-step-current-"] {
+    border-color: #b7d5e9;
+    background: #edf6fc;
+    box-shadow: inset 0 -2px 0 var(--ss-blue);
+}
+
+.st-key-workflow-wizard [class*="st-key-wizard-step-upcoming-"] {
+    border-color: #e7ece9;
+    background: #f8faf9;
+}
+
+.st-key-workflow-wizard [class*="st-key-wizard-step-"] p {
+    margin: 0;
+    color: var(--ss-ink);
+    font-size: 0.88rem;
+    white-space: nowrap;
+}
+
+.st-key-workflow-wizard [data-testid="stProgressBar"] {
+    height: 0.28rem;
+}
+
+.st-key-workflow-screen {
+    min-height: calc(100vh - 19rem);
+}
+
+.st-key-workflow-screen > [data-testid="stVerticalBlock"] {
+    gap: 0.7rem;
+}
+
+.st-key-eligibility-screen [data-testid="stVerticalBlock"],
+.st-key-application-workflow [data-testid="stVerticalBlock"] {
+    gap: 0.55rem;
+}
+
+.st-key-eligibility-screen [data-testid="stTable"],
+.st-key-application-workflow [data-testid="stTable"] {
+    font-size: 0.82rem;
+}
+
 @media (max-width: 800px) {
     .block-container {
         padding: 1rem 1rem 2rem;
+    }
+
+    .st-key-workflow-wizard [class*="st-key-wizard-step-"] {
+        padding: 0.45rem 0.3rem;
+    }
+
+    .st-key-workflow-wizard [class*="st-key-wizard-step-"] p {
+        font-size: 0.75rem;
+    }
+
+    .st-key-workflow-screen {
+        min-height: 0;
     }
 
     .st-key-auth-page {

@@ -26,7 +26,6 @@ else:
 
 CSS_PATH = Path(__file__).with_name("style.css")
 JOURNEY_STEPS = (
-    "Consent",
     "Your details",
     "Eligibility",
     "Documents",
@@ -378,8 +377,7 @@ def _render_application_start(
         for scheme_id, verdict in eligibility_result.get("verdicts", {}).items()
         if verdict.get("verdict") == "eligible"
     ]
-    st.divider()
-    st.subheader("Continue through the full workflow")
+    st.markdown("#### Continue to application")
     st.caption(
         "Eligibility guidance is informational. The remaining steps prepare "
         "and record a mock application; nothing is sent to a government service."
@@ -416,14 +414,20 @@ def _render_document_step(result: dict[str, Any]) -> bool:
         "upload metadata. Use redacted test files; maximum size is 10 MB."
     )
     missing = []
+    document_rows = []
     for document_type in required_documents:
-        with st.container(border=True):
-            st.markdown(f"**{document_type}**")
-            existing = uploads.get(document_type)
-            if existing:
-                st.success(f"Uploaded: {existing['filename']}")
-            else:
-                missing.append(document_type)
+        existing = uploads.get(document_type)
+        if existing:
+            status = f"Uploaded: {existing['filename']}"
+        else:
+            missing.append(document_type)
+            status = "Required"
+        document_rows.append({"Document": document_type, "Status": status})
+
+    if document_rows:
+        st.table(document_rows)
+    else:
+        st.caption("No documents are required for this application.")
 
     if missing:
         st.info(
@@ -436,15 +440,49 @@ def _render_document_step(result: dict[str, Any]) -> bool:
     return not missing
 
 
+def _render_workflow_fields(fields: dict[str, Any]) -> None:
+    """Display every profile or draft field without a collapsed JSON viewer."""
+
+    def field_rows(values: dict[str, Any], parent: str = "") -> list[dict[str, str]]:
+        rows = []
+        for field, value in values.items():
+            label = str(field).replace("_", " ").title()
+            label = f"{parent} - {label}" if parent else label
+            if isinstance(value, dict) and value:
+                rows.extend(field_rows(value, label))
+                continue
+            rows.append(
+                {
+                    "Field": label,
+                    "Value": (
+                        json.dumps(value, ensure_ascii=False, default=str)
+                        if isinstance(value, (dict, list, tuple))
+                        else str(value)
+                    ),
+                }
+            )
+        return rows
+
+    rows = field_rows(fields)
+    if rows:
+        st.table(rows)
+    else:
+        st.caption("No fields are available.")
+
+
 def _render_review_step(
     api_base: str, result: dict[str, Any], documents_complete: bool
 ) -> None:
     """Let the user approve, edit, or reject the reviewed application draft."""
-    st.markdown("#### Step 4 — Review the application draft")
-    st.write("Check the profile and exact draft below before making a decision.")
-    st.json(result.get("profile", {}), expanded=False)
-    st.markdown("**Application draft**")
-    st.json(result.get("application", {}), expanded=True)
+    st.markdown("#### Step 4 — Review and decide")
+    st.caption("Check your profile and exact application draft before deciding.")
+    profile_col, application_col = st.columns(2, gap="small")
+    with profile_col:
+        st.markdown("**Profile**")
+        _render_workflow_fields(result.get("profile", {}))
+    with application_col:
+        st.markdown("**Application draft**")
+        _render_workflow_fields(result.get("application", {}))
     st.caption(
         "Approval is tied to this exact draft. Editing rechecks eligibility "
         "and creates a new draft for you to review."
@@ -493,36 +531,38 @@ def _render_review_step(
         edit_revision = st.session_state["application_edit_revision"]
         with st.form("edit-application-profile"):
             changes: dict[str, Any] = {}
-            for field, value in profile.items():
-                if isinstance(value, bool):
-                    updated = st.checkbox(
-                        field.replace("_", " ").title(),
-                        value=value,
-                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
-                    )
-                elif isinstance(value, int):
-                    updated = st.number_input(
-                        field.replace("_", " ").title(),
-                        value=value,
-                        step=1,
-                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
-                    )
-                elif isinstance(value, float):
-                    updated = st.number_input(
-                        field.replace("_", " ").title(),
-                        value=value,
-                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
-                    )
-                elif isinstance(value, str):
-                    updated = st.text_input(
-                        field.replace("_", " ").title(),
-                        value=value,
-                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
-                    )
-                else:
-                    continue
-                if updated != value:
-                    changes[field] = updated
+            edit_columns = st.columns(2, gap="small")
+            for index, (field, value) in enumerate(profile.items()):
+                with edit_columns[index % len(edit_columns)]:
+                    if isinstance(value, bool):
+                        updated = st.checkbox(
+                            field.replace("_", " ").title(),
+                            value=value,
+                            key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
+                        )
+                    elif isinstance(value, int):
+                        updated = st.number_input(
+                            field.replace("_", " ").title(),
+                            value=value,
+                            step=1,
+                            key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
+                        )
+                    elif isinstance(value, float):
+                        updated = st.number_input(
+                            field.replace("_", " ").title(),
+                            value=value,
+                            key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
+                        )
+                    elif isinstance(value, str):
+                        updated = st.text_input(
+                            field.replace("_", " ").title(),
+                            value=value,
+                            key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
+                        )
+                    else:
+                        continue
+                    if updated != value:
+                        changes[field] = updated
             edit_submitted = st.form_submit_button(
                 "Save changes and recheck eligibility",
                 disabled=not changes,
@@ -601,6 +641,60 @@ def _journey_step() -> tuple[int, str]:
     return 3, "Documents"
 
 
+def _render_eligibility_screen(
+    eligibility_result: dict[str, Any], api_base: str
+) -> None:
+    """Present profile facts and reviewed eligibility results as one workflow stage."""
+    with st.container(key="eligibility-screen"):
+        st.subheader("Eligibility results")
+        st.caption(
+            "Results are determined by reviewed scheme rules. The assistant explains "
+            "the findings but does not decide eligibility."
+        )
+        assistant_explanation = next(
+            (
+                message["content"]
+                for message in reversed(st.session_state["chat_messages"])
+                if message.get("result")
+            ),
+            None,
+        )
+        if assistant_explanation:
+            with st.container(border=True):
+                st.markdown(assistant_explanation)
+        profile_column, results_column = st.columns([0.85, 1.5], gap="medium")
+        with profile_column:
+            with st.container(border=True):
+                st.markdown("**Details checked**")
+                _render_workflow_fields(eligibility_result.get("profile", {}))
+        with results_column:
+            verdicts = eligibility_result.get("verdicts", {})
+            if not verdicts:
+                st.info("No reviewed eligibility rules were available to check.")
+            for scheme_id, verdict in verdicts.items():
+                with st.container(border=True):
+                    name = eligibility_result.get("scheme_names", {}).get(
+                        scheme_id, scheme_id
+                    )
+                    st.markdown(f"**{name}**")
+                    status = verdict.get("verdict", "cant_tell")
+                    if status == "eligible":
+                        st.success("May be eligible", icon=":material/check_circle:")
+                    elif status == "not_eligible":
+                        st.warning(
+                            "Does not currently match", icon=":material/info:"
+                        )
+                    else:
+                        st.info("Could not determine", icon=":material/help:")
+                    st.write(verdict.get("reason", "No explanation was returned."))
+                    for citation in verdict.get("citations", []):
+                        st.caption(
+                            f"{citation.get('clause_id', 'Reviewed source')}: "
+                            f"{citation.get('text', '')}"
+                        )
+    _render_application_start(api_base, eligibility_result)
+
+
 def _render_welcome() -> None:
     """Explain the demo journey and safe-data expectations before chat starts."""
     if st.session_state["chat_messages"]:
@@ -613,9 +707,8 @@ def _render_welcome() -> None:
             "will ask for missing details before checking reviewed scheme rules."
         )
         st.caption(
-            "1. Share your details  →  2. Check eligibility  →  "
-            "3. Add requested documents  →  4. Review the draft and "
-            "approve, edit, or reject"
+            "1. Your details  →  2. Eligibility  →  3. Documents  →  "
+            "4. Review  →  5. Confirmation"
         )
         st.info(
             "This is a local demo. Uploads keep metadata only, and approval "
@@ -628,61 +721,109 @@ def _render_welcome() -> None:
         )
 
 
-def _render_application_workflow(api_base: str) -> None:
-    """Render the documents, review, and confirmation steps for the selected scheme."""
+def _render_application_workflow(api_base: str, current_step: int) -> None:
+    """Render the active documents, review, or confirmation workflow screen."""
     result = st.session_state["application_result"]
     if not result:
         return
 
-    st.divider()
-    st.subheader("Your application journey")
-    scheme_id = result.get("application", {}).get("scheme_id", "Selected scheme")
-    st.caption(f"Selected scheme: {scheme_id}")
+    with st.container(key="application-workflow"):
+        scheme_id = result.get("application", {}).get(
+            "scheme_id", "Selected scheme"
+        )
 
-    outcome = st.session_state["application_outcome"]
-    if outcome == "submitted" or result.get("submission"):
-        submission = result.get("submission") or {}
-        st.success("Your mock application was submitted.")
-        st.write(f"**Reference:** {submission.get('application_id', 'Unavailable')}")
-        st.write(f"**Status:** {submission.get('status', 'submitted (mock)')}")
-        st.info(
-            "This is a local demonstration only. It is not a government "
-            "application and does not guarantee a benefit."
-        )
-        if st.button("Start a new chat", type="primary", key="new-chat-after-submit"):
-            _reset_chat()
-            st.rerun()
-        return
-    if outcome == "rejected" or result.get("approval_status") == "rejected":
-        st.info("The draft was rejected. Nothing was submitted.")
-        if st.button("Start a new chat", type="primary", key="new-chat-after-reject"):
-            _reset_chat()
-            st.rerun()
-        return
-    if outcome == "not_submitted":
-        st.error(
-            "The application was not submitted. Review the result and start a "
-            "new chat if you want to prepare another draft."
-        )
-        if st.button(
-            "Start a new chat",
-            type="primary",
-            key="new-chat-after-not-submitted",
+        outcome = st.session_state["application_outcome"]
+        if current_step == 5 and (
+            outcome == "submitted" or result.get("submission")
         ):
-            _reset_chat()
-            st.rerun()
-        return
+            submission = result.get("submission") or {}
+            with st.container(border=True):
+                st.markdown(":material/task_alt: **Application complete**")
+                st.title("Your application has been recorded")
+                st.write(
+                    f"**Reference:** "
+                    f"{submission.get('application_id', 'Unavailable')}"
+                )
+                st.write(
+                    f"**Status:** {submission.get('status', 'submitted (mock)')}"
+                )
+                st.caption(f"Scheme: {scheme_id}")
+                st.info(
+                    "This is a local demonstration only. It is not a government "
+                    "application and does not guarantee a benefit."
+                )
+                if st.button(
+                    "Start a new chat",
+                    type="primary",
+                    key="new-chat-after-submit",
+                ):
+                    _reset_chat()
+                    st.rerun()
+            return
+        if current_step == 5 and (
+            outcome == "rejected" or result.get("approval_status") == "rejected"
+        ):
+            with st.container(border=True):
+                st.markdown(":material/do_not_disturb_on: **Application closed**")
+                st.title("The draft was rejected")
+                st.write("Nothing was submitted.")
+                st.caption(f"Scheme: {scheme_id}")
+                if st.button(
+                    "Start a new chat",
+                    type="primary",
+                    key="new-chat-after-reject",
+                ):
+                    _reset_chat()
+                    st.rerun()
+            return
+        if current_step == 5 and outcome == "not_submitted":
+            with st.container(border=True):
+                st.error(
+                    "The application was not submitted. Review the result and start "
+                    "a new chat if you want to prepare another draft."
+                )
+                if st.button(
+                    "Start a new chat",
+                    type="primary",
+                    key="new-chat-after-not-submitted",
+                ):
+                    _reset_chat()
+                    st.rerun()
+            return
 
-    if not result.get("application"):
-        st.warning(
-            "The application draft could not be prepared for this profile. "
-            "Review the eligibility result or start a new chat."
-        )
-        return
+        if not result.get("application"):
+            st.warning(
+                "The application draft could not be prepared for this profile. "
+                "Review the eligibility result or start a new chat."
+            )
+            return
 
-    documents_complete = _render_document_step(result)
-    st.markdown("#### Step 4 — Review and decide")
-    _render_review_step(api_base, result, documents_complete)
+        if current_step == 3:
+            st.caption(f"Selected scheme: {scheme_id}")
+            with st.container(border=True):
+                _render_document_step(result)
+                latest_upload_message = next(
+                    (
+                        message["content"]
+                        for message in reversed(st.session_state["chat_messages"])
+                        if message["role"] == "assistant"
+                        and message["content"].startswith("Document upload failed:")
+                    ),
+                    None,
+                )
+                if latest_upload_message:
+                    st.error(latest_upload_message)
+        elif current_step == 4:
+            st.caption(f"Selected scheme: {scheme_id}")
+            document_column, review_column = st.columns(
+                [0.8, 2.2], gap="medium", vertical_alignment="top"
+            )
+            with document_column:
+                with st.container(border=True):
+                    _render_document_step(result)
+            with review_column:
+                with st.container(border=True):
+                    _render_review_step(api_base, result, documents_complete=True)
 
 
 def _handle_chat_submission(
@@ -993,7 +1134,7 @@ def _render_consent_page() -> None:
             brand_col.markdown("### :material/account_balance: Scheme Saathi")
             brand_col.caption("PUBLIC SUPPORT, MADE SIMPLE")
             step_col.markdown("**BEFORE YOU BEGIN**")
-            step_col.caption("Step 1 of 6")
+            step_col.caption("Privacy and consent")
 
         with st.container(border=True, key="consent-shell"):
             st.markdown(":material/verified_user: PRIVACY & CONSENT")
@@ -1065,22 +1206,29 @@ def _withdraw_consent() -> None:
 
 
 def _render_wizard(current_step: int) -> None:
-    """Show the six-stage citizen journey immediately above the chat composer."""
-    st.caption("YOUR JOURNEY")
-    step_columns = st.columns(len(JOURNEY_STEPS))
-    for index, (column, label) in enumerate(zip(step_columns, JOURNEY_STEPS), start=1):
-        if index < current_step:
-            marker = ":material/check_circle:"
-        elif index == current_step:
-            marker = ":material/radio_button_checked:"
-        else:
-            marker = ":material/radio_button_unchecked:"
-        column.markdown(f"{marker} **{label}**")
-    st.progress(
-        current_step / len(JOURNEY_STEPS),
-        text=f"Step {current_step} of {len(JOURNEY_STEPS)} · "
-        f"{JOURNEY_STEPS[current_step - 1]}",
-    )
+    """Keep the five-step workflow tracker visible above each active screen."""
+    with st.container(key="workflow-wizard"):
+        st.caption("APPLICATION WORKFLOW")
+        step_columns = st.columns(len(JOURNEY_STEPS), gap="small")
+        for index, (column, label) in enumerate(
+            zip(step_columns, JOURNEY_STEPS), start=1
+        ):
+            if index < current_step:
+                state = "complete"
+                marker = ":material/check_circle:"
+            elif index == current_step:
+                state = "current"
+                marker = ":material/radio_button_checked:"
+            else:
+                state = "upcoming"
+                marker = ":material/radio_button_unchecked:"
+            with column:
+                with st.container(key=f"wizard-step-{state}-{index}"):
+                    st.markdown(f"{marker} **{label}**")
+        st.progress(
+            current_step / len(JOURNEY_STEPS),
+            text=f"Step {current_step} of {len(JOURNEY_STEPS)}",
+        )
 
 
 def _render_api_reference() -> None:
@@ -1185,18 +1333,19 @@ def _render_chat_page() -> None:
         st.error(str(error), title="FastAPI is unavailable")
         st.stop()
 
-    _render_welcome()
-
-    if st.session_state["chat_messages"]:
-        for message in st.session_state["chat_messages"]:
-            _render_message(message)
-
-    # Keep the application continuation and its current step above the chat
-    # composer so the next action is always visible before the input.
-    eligibility_result = st.session_state["chat_eligibility_result"]
-    if eligibility_result and not st.session_state["application_result"]:
-        _render_application_start(api_base, eligibility_result)
-    _render_application_workflow(api_base)
+    current_step, _ = _journey_step()
+    _render_wizard(current_step)
+    with st.container(key="workflow-screen"):
+        if current_step == 1:
+            _render_welcome()
+            for message in st.session_state["chat_messages"]:
+                _render_message(message)
+        elif current_step == 2:
+            eligibility_result = st.session_state["chat_eligibility_result"]
+            if eligibility_result:
+                _render_eligibility_screen(eligibility_result, api_base)
+        else:
+            _render_application_workflow(api_base, current_step)
 
     # Reserve this location before the composer so submitted messages and streamed
     # workflow updates render above the input even though the submission is handled later.
@@ -1204,8 +1353,6 @@ def _render_chat_page() -> None:
     # Pin the prompt and its always-visible starter guidance to the bottom of
     # the app viewport while keeping workflow output in the main content above.
     with st.bottom:
-        chat_step, _ = _journey_step()
-        _render_wizard(chat_step + 1)
         st.caption("Tell us what you need. We’ll ask only for missing details.")
         prompt = st.chat_input(
             "Ask about eligibility or share a requested detail...",
