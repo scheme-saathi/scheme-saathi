@@ -13,8 +13,9 @@ from typing import Any, Iterator, Literal
 from uuid import uuid4
 
 from fastapi import FastAPI, File, Form, HTTPException, Header, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from urllib.parse import quote
 
 from agents.base import StructuredGPTAgent
 from agents.contracts import IntakeResult
@@ -29,6 +30,10 @@ from langgraph.types import Command
 
 from agents.supervisor import SupervisorAgent
 from agents.contracts import Language
+from app.document_storage import (
+    DocumentStorageError,
+    LocalDocumentStore,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -100,10 +105,16 @@ class WorkflowConflictError(RuntimeError):
 class DemoService:
     """Run reviewed rules and mock application workflows for the local demo."""
 
-    def __init__(self, intake_agent: Any | None = None) -> None:
+    def __init__(
+        self,
+        intake_agent: Any | None = None,
+        document_store: LocalDocumentStore | None = None,
+    ) -> None:
         self.workflow = build_graph()
         self._uploads: dict[str, dict[str, dict[str, dict[str, Any]]]] = {}
         self._uploads_lock = Lock()
+        self._document_store = document_store
+        self._document_store_lock = Lock()
         self._intake_agent = intake_agent
         self._intake_agent_lock = Lock()
         self._chat_sessions: dict[str, ChatSession] = {}
@@ -410,12 +421,22 @@ class DemoService:
         filename: str,
         content_type: str | None,
         content: bytes,
+        sensitive_ids_masked: bool,
     ) -> dict[str, Any]:
-        """Validate a required document and retain upload metadata only."""
+        """Validate and retain a required document in local storage."""
+        if not sensitive_ids_masked:
+            raise ValueError(
+                "Mask full Aadhaar, bank-account, and other ID numbers before upload."
+            )
         if not content or len(content) > MAX_DOCUMENT_SIZE:
             raise ValueError("Choose a non-empty document smaller than 10 MB.")
 
         safe_filename = Path(filename.replace("\\", "/")).name
+        safe_filename = (
+            safe_filename.replace('"', "_")
+            .replace("\r", "_")
+            .replace("\n", "_")
+        )
         extension = Path(safe_filename).suffix.lower()
         expected = ALLOWED_DOCUMENTS.get(extension)
         mime_type = (content_type or "").split(";", maxsplit=1)[0].strip().lower()
@@ -437,11 +458,14 @@ class DemoService:
         if document_type not in required_documents:
             raise ValueError("That document is not required for the selected scheme.")
 
-        upload = {
-            "document_type": document_type,
-            "filename": safe_filename,
-            "file_size": len(content),
-        }
+        upload = self._get_document_store().store(
+            thread_id=thread_id,
+            scheme_id=scheme_id,
+            document_type=document_type,
+            filename=safe_filename,
+            content_type=mime_type or expected[0],
+            content=content,
+        )
         with self._uploads_lock:
             self._uploads.setdefault(thread_id, {}).setdefault(scheme_id, {})[
                 document_type
@@ -460,9 +484,54 @@ class DemoService:
             return []
         snapshot = self._get_snapshot(thread_id)
         required = snapshot.values.get("documents", {}).get(scheme_id, [])
+        uploaded_documents = self._list_uploaded_documents(thread_id, scheme_id)
+        uploaded = {item["document_type"] for item in uploaded_documents}
+        return [document for document in required if document not in uploaded]
+
+    def get_uploaded_document(
+        self, thread_id: str, scheme_id: str, document_type: str
+    ) -> tuple[bytes, dict[str, Any]]:
+        """Retrieve an upload by its unguessable workflow thread ID."""
+        return self._get_document_store().get_document(
+            thread_id, scheme_id, document_type
+        )
+
+    def delete_uploaded_documents(self, thread_id: str) -> int:
+        """Delete every retained upload belonging to one workflow thread."""
+        manifest_path = (
+            LocalDocumentStore.configured_directory() / "manifest.json"
+        )
+        if self._document_store is None and not manifest_path.exists():
+            with self._uploads_lock:
+                self._uploads.pop(thread_id, None)
+            return 0
+        deleted = self._get_document_store().delete_thread(thread_id)
         with self._uploads_lock:
-            uploaded = self._uploads.get(thread_id, {}).get(scheme_id, {})
-            return [document for document in required if document not in uploaded]
+            self._uploads.pop(thread_id, None)
+        return deleted
+
+    def _list_uploaded_documents(
+        self, thread_id: str, scheme_id: str
+    ) -> list[dict[str, Any]]:
+        if self._document_store is not None:
+            return self._document_store.list_documents(thread_id, scheme_id)
+
+        manifest_path = (
+            LocalDocumentStore.configured_directory() / "manifest.json"
+        )
+        if manifest_path.exists():
+            return self._get_document_store().list_documents(thread_id, scheme_id)
+
+        with self._uploads_lock:
+            uploads = self._uploads.get(thread_id, {}).get(scheme_id, {})
+            return list(uploads.values())
+
+    def _get_document_store(self) -> LocalDocumentStore:
+        if self._document_store is None:
+            with self._document_store_lock:
+                if self._document_store is None:
+                    self._document_store = LocalDocumentStore.from_environment()
+        return self._document_store
 
     def _get_snapshot(self, thread_id: str) -> Any:
         snapshot = self.workflow.get_state(
@@ -1127,6 +1196,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         thread_id: str,
         scheme_id: str = Form(...),
         document_type: str = Form(...),
+        sensitive_ids_masked: bool = Form(False),
         file: UploadFile = File(...),
     ) -> dict[str, Any]:
         filename = file.filename or ""
@@ -1141,6 +1211,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 filename,
                 file.content_type,
                 content,
+                sensitive_ids_masked,
             )
         except ValueError as error:
             raise HTTPException(status_code=422, detail=str(error)) from error
@@ -1148,8 +1219,60 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail=str(error)) from error
         except WorkflowConflictError as error:
             raise HTTPException(status_code=409, detail=str(error)) from error
+        except DocumentStorageError as error:
+            logger.exception("Could not store a supporting document.")
+            raise HTTPException(
+                status_code=500, detail="Could not securely store the document."
+            ) from error
         finally:
             await file.close()
+
+    @application.get(
+        "/api/threads/{thread_id}/documents/{scheme_id}/{document_type}",
+        tags=["Demo"],
+    )
+    def download_document(
+        thread_id: str, scheme_id: str, document_type: str
+    ) -> Response:
+        try:
+            content, metadata = demo.get_uploaded_document(
+                thread_id, scheme_id, document_type
+            )
+        except FileNotFoundError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except DocumentStorageError as error:
+            logger.exception("Could not retrieve a supporting document.")
+            raise HTTPException(
+                status_code=500,
+                detail="Could not securely retrieve the document.",
+            ) from error
+
+        filename = metadata["filename"]
+        ascii_filename = filename.encode("ascii", "ignore").decode("ascii")
+        ascii_filename = ascii_filename.replace('"', "_").replace("\\", "_")
+        content_disposition = (
+            f'attachment; filename="{ascii_filename or "document"}"; '
+            f"filename*=UTF-8''{quote(filename)}"
+        )
+        return Response(
+            content=content,
+            media_type=metadata["content_type"],
+            headers={"Content-Disposition": content_disposition},
+        )
+
+    @application.delete(
+        "/api/threads/{thread_id}/documents", tags=["Demo"]
+    )
+    def delete_documents(thread_id: str) -> dict[str, Any]:
+        try:
+            deleted = demo.delete_uploaded_documents(thread_id)
+        except DocumentStorageError as error:
+            logger.exception("Could not delete supporting documents.")
+            raise HTTPException(
+                status_code=500,
+                detail="Could not securely delete supporting documents.",
+            ) from error
+        return {"status": "success", "deleted_documents": deleted}
 
     @application.post("/api/threads/{thread_id}/decision", tags=["Demo"])
     def decide(thread_id: str, payload: DecisionRequest) -> StreamingResponse:
@@ -1166,6 +1289,11 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             raise HTTPException(status_code=409, detail=str(error)) from error
         except ValueError as error:
             raise HTTPException(status_code=422, detail=str(error)) from error
+        except DocumentStorageError as error:
+            logger.exception("Could not check stored supporting documents.")
+            raise HTTPException(
+                status_code=500, detail="Could not check stored documents."
+            ) from error
         return _event_stream(events)
 
     return application

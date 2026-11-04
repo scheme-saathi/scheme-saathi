@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from agents.contracts import CandidateFact, IntakeResult
 from app import api, app_new
 from app.api import ChatIntakeInput, DemoService, create_api
+from app.document_storage import LocalDocumentStore
 
 
 def test_local_api_url_reuses_an_existing_demo_api(monkeypatch):
@@ -88,8 +89,11 @@ def parse_events(body):
     return events
 
 
-def test_streamed_demo_workflow_requires_documents_before_approval():
-    client = TestClient(create_api(DemoService()))
+def test_streamed_demo_workflow_requires_documents_before_approval(tmp_path):
+    document_store = LocalDocumentStore(tmp_path, start_maintenance=False)
+    client = TestClient(
+        create_api(DemoService(document_store=document_store))
+    )
     scheme_id = "SYNTH-PENSION-001"
     response = client.post(
         "/api/analyze",
@@ -115,13 +119,39 @@ def test_streamed_demo_workflow_requires_documents_before_approval():
     assert blocked.status_code == 409
     assert "required documents" in blocked.json()["detail"]
 
-    for document_type in result["documents"][scheme_id]:
+    for index, document_type in enumerate(result["documents"][scheme_id]):
+        if index == 0:
+            unredacted = client.post(
+                f"/api/threads/{thread_id}/documents/upload",
+                data={"scheme_id": scheme_id, "document_type": document_type},
+                files={
+                    "file": (
+                        "sample.pdf",
+                        b"%PDF-1.4\n%%EOF",
+                        "application/pdf",
+                    )
+                },
+            )
+            assert unredacted.status_code == 422
+
         uploaded = client.post(
             f"/api/threads/{thread_id}/documents/upload",
-            data={"scheme_id": scheme_id, "document_type": document_type},
+            data={
+                "scheme_id": scheme_id,
+                "document_type": document_type,
+                "sensitive_ids_masked": "true",
+            },
             files={"file": ("sample.pdf", b"%PDF-1.4\n%%EOF", "application/pdf")},
         )
         assert uploaded.status_code == 200
+        assert uploaded.json()["expires_at"]
+
+        downloaded = client.get(
+            f"/api/threads/{thread_id}/documents/{scheme_id}/{document_type}"
+        )
+        assert downloaded.status_code == 200
+        assert downloaded.content == b"%PDF-1.4\n%%EOF"
+        assert downloaded.headers["content-type"] == "application/pdf"
 
     submitted = client.post(
         f"/api/threads/{thread_id}/decision",
@@ -131,6 +161,18 @@ def test_streamed_demo_workflow_requires_documents_before_approval():
     final_events = parse_events(submitted.content)
     final_result = next(payload for name, payload in final_events if name == "result")
     assert final_result["submission"]["status"].startswith("submitted")
+
+    forgotten = client.delete(f"/api/threads/{thread_id}/documents")
+    assert forgotten.status_code == 200
+    assert forgotten.json()["deleted_documents"] == len(
+        result["documents"][scheme_id]
+    )
+    unavailable = client.get(
+        f"/api/threads/{thread_id}/documents/"
+        f"{scheme_id}/{result['documents'][scheme_id][0]}"
+    )
+    assert unavailable.status_code == 404
+    document_store.close()
 
 
 def test_unknown_scheme_is_rejected_before_streaming():

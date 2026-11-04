@@ -198,7 +198,7 @@ def _upload_document(
     document_type: str,
     uploaded_file: Any,
 ) -> dict[str, Any]:
-    """Upload a required PDF/image; the API validates it and retains metadata only."""
+    """Upload a required PDF/image for time-limited local storage."""
     boundary = f"----SchemeSaathi{uuid4().hex}"
     filename = Path(uploaded_file.name.replace("\\", "/")).name
     filename = filename.replace('"', "_").replace("\r", "_").replace("\n", "_")
@@ -207,6 +207,7 @@ def _upload_document(
     for name, value in (
         ("scheme_id", scheme_id),
         ("document_type", document_type),
+        ("sensitive_ids_masked", "true"),
     ):
         parts.extend(
             [
@@ -333,8 +334,35 @@ def _render_message(message: dict[str, Any]) -> None:
             _render_eligibility(message["result"])
 
 
-def _reset_chat() -> None:
+def _delete_uploaded_documents(
+    thread_id: str | None, api_base: str | None = None
+) -> bool:
+    """Delete retained supporting files before clearing their workflow context."""
+    if not thread_id:
+        return True
+    try:
+        base_url = api_base or _api_base_url()
+        _api_request(
+            f"{base_url}/api/threads/{quote(thread_id, safe='')}/documents",
+            method="DELETE",
+        )
+    except RuntimeError as error:
+        st.error(str(error), title="Could not delete uploaded documents")
+        return False
+    return True
+
+
+def _reset_chat() -> bool:
     """Clear chat/application data and widget values before another profile is checked."""
+    application_result = st.session_state.get("application_result")
+    thread_id = (
+        application_result.get("thread_id")
+        if isinstance(application_result, dict)
+        else None
+    )
+    if not _delete_uploaded_documents(thread_id):
+        return False
+
     st.session_state["chat_session_id"] = None
     st.session_state["chat_messages"] = []
     st.session_state["chat_eligibility_result"] = None
@@ -348,6 +376,7 @@ def _reset_chat() -> None:
             ("edit-field-", "confirm-application-submission-")
         ):
             del st.session_state[key]
+    return True
 
 
 def _start_application(
@@ -411,8 +440,12 @@ def _render_document_step(result: dict[str, Any]) -> bool:
     uploads = st.session_state["application_uploads"]
     st.markdown("#### Step 3 — Upload required documents")
     st.caption(
-        "The demo validates each file, then discards its contents and keeps only "
-        "upload metadata. Use redacted test files; maximum size is 10 MB."
+        "Upload a redacted copy only. Mask Aadhaar, bank-account, and other full "
+        "ID numbers before upload. Copies are stored unencrypted and deleted after 30 days."
+    )
+    st.checkbox(
+        "I confirm this document has no unmasked Aadhaar, bank-account, or other ID numbers.",
+        key=f"document-sensitive-ids-masked-{result.get('thread_id', '')}",
     )
     missing = []
     document_rows = []
@@ -712,9 +745,11 @@ def _render_welcome() -> None:
             "4. Review  →  5. Confirmation"
         )
         st.info(
-            "This is a local demo. Uploads keep metadata only, and approval "
-            "creates a mock submission—not a government application. Never "
-            "share Aadhaar, bank-account numbers, OTPs, or passwords."
+            "This is a local demo. Supporting documents are stored unencrypted "
+            "and automatically deleted after 30 days; you can also delete them sooner. "
+            "Upload redacted files only. "
+            "Approval creates a mock submission—not a government application. "
+            "Never share Aadhaar, bank-account numbers, OTPs, or passwords."
         )
         st.markdown(
             "**Try:** “I’m 62, a widow, and our household earns ₹20,000 a month. "
@@ -822,6 +857,44 @@ def _render_application_workflow(api_base: str, current_step: int) -> None:
                             "Both files include the reference barcode and masked ID "
                             "numbers. The barcode represents this demo reference only."
                         )
+                        uploads = st.session_state["application_uploads"]
+                        if uploads:
+                            st.markdown("#### Supporting documents")
+                            document_columns = st.columns(2, gap="small")
+                            for index, (document_type, metadata) in enumerate(
+                                uploads.items()
+                            ):
+                                document_url = (
+                                    f"{api_base}/api/threads/"
+                                    f"{quote(result['thread_id'], safe='')}/documents/"
+                                    f"{quote(str(metadata.get('scheme_id', scheme_id)), safe='')}/"
+                                    f"{quote(document_type, safe='')}"
+                                )
+                                with document_columns[
+                                    index % len(document_columns)
+                                ]:
+                                    st.link_button(
+                                        f"Download {document_type}",
+                                        document_url,
+                                        icon=":material/download:",
+                                        width="stretch",
+                                    )
+                                    st.caption(
+                                        f"{metadata.get('filename', document_type)} · "
+                                        f"expires {metadata.get('expires_at', 'in 30 days')}"
+                                    )
+                            if st.button(
+                                "Forget uploaded documents",
+                                key="forget-uploaded-documents",
+                                icon=":material/delete:",
+                            ):
+                                if _delete_uploaded_documents(
+                                    result.get("thread_id"), api_base
+                                ):
+                                    st.session_state["application_uploads"] = {}
+                                    st.success(
+                                        "Uploaded document copies were deleted."
+                                    )
                 else:
                     st.error(
                         "A reference number is missing, so a downloadable "
@@ -832,8 +905,8 @@ def _render_application_workflow(api_base: str, current_step: int) -> None:
                     type="primary",
                     key="new-chat-after-submit",
                 ):
-                    _reset_chat()
-                    st.rerun()
+                    if _reset_chat():
+                        st.rerun()
             return
         if current_step == 5 and (
             outcome == "rejected" or result.get("approval_status") == "rejected"
@@ -848,8 +921,8 @@ def _render_application_workflow(api_base: str, current_step: int) -> None:
                     type="primary",
                     key="new-chat-after-reject",
                 ):
-                    _reset_chat()
-                    st.rerun()
+                    if _reset_chat():
+                        st.rerun()
             return
         if current_step == 5 and outcome == "not_submitted":
             with st.container(border=True):
@@ -862,8 +935,8 @@ def _render_application_workflow(api_base: str, current_step: int) -> None:
                     type="primary",
                     key="new-chat-after-not-submitted",
                 ):
-                    _reset_chat()
-                    st.rerun()
+                    if _reset_chat():
+                        st.rerun()
             return
 
         if not result.get("application"):
@@ -937,46 +1010,58 @@ def _handle_chat_submission(
                     )
                 else:
                     scheme_id = application_result["application"]["scheme_id"]
-                    required = application_result.get("documents", {}).get(
-                        scheme_id, []
+                    mask_confirmation_key = (
+                        f"document-sensitive-ids-masked-"
+                        f"{application_result.get('thread_id', '')}"
                     )
-                    uploaded = st.session_state["application_uploads"]
-                    next_document = next(
-                        (name for name in required if name not in uploaded), None
-                    )
-                    if next_document is None:
+                    if not st.session_state.get(mask_confirmation_key, False):
                         assistant_reply = (
-                            "All required documents have already been uploaded."
+                            "Before uploading, mask any full Aadhaar, bank-account, "
+                            "or other ID numbers in the document, then confirm this "
+                            "on the Documents screen."
                         )
+                        st.warning(assistant_reply)
                     else:
-                        try:
-                            with st.status(
-                                f"Validating {next_document}...", expanded=True
-                            ) as progress:
-                                progress.write(
-                                    "Checking the file and recording upload metadata."
-                                )
-                                upload_result = _upload_document(
-                                    api_base,
-                                    application_result,
-                                    scheme_id,
-                                    next_document,
-                                    files[0],
-                                )
-                                st.session_state["application_uploads"][
-                                    next_document
-                                ] = upload_result
-                                progress.update(
-                                    label=f"{next_document} uploaded",
-                                    state="complete",
-                                )
+                        required = application_result.get("documents", {}).get(
+                            scheme_id, []
+                        )
+                        uploaded = st.session_state["application_uploads"]
+                        next_document = next(
+                            (name for name in required if name not in uploaded), None
+                        )
+                        if next_document is None:
                             assistant_reply = (
-                                f"Uploaded **{next_document}** "
-                                f"({upload_result['filename']})."
+                                "All required documents have already been uploaded."
                             )
-                        except (RuntimeError, ValueError) as error:
-                            assistant_reply = f"Document upload failed: {error}"
-                            st.error(str(error), title="Upload failed")
+                        else:
+                            try:
+                                with st.status(
+                                    f"Validating {next_document}...", expanded=True
+                                ) as progress:
+                                    progress.write(
+                                        "Validating and saving the document."
+                                    )
+                                    upload_result = _upload_document(
+                                        api_base,
+                                        application_result,
+                                        scheme_id,
+                                        next_document,
+                                        files[0],
+                                    )
+                                    st.session_state["application_uploads"][
+                                        next_document
+                                    ] = upload_result
+                                    progress.update(
+                                        label=f"{next_document} uploaded",
+                                        state="complete",
+                                    )
+                                assistant_reply = (
+                                    f"Uploaded **{next_document}** "
+                                    f"({upload_result['filename']})."
+                                )
+                            except (RuntimeError, ValueError) as error:
+                                assistant_reply = f"Document upload failed: {error}"
+                                st.error(str(error), title="Upload failed")
                 st.markdown(assistant_reply)
             st.session_state["chat_messages"].append(
                 {"role": "assistant", "content": assistant_reply}
@@ -1232,8 +1317,9 @@ def _render_consent_page() -> None:
                     st.markdown("**How it is handled**")
                     st.write(
                         "Your responses are processed by this application to provide "
-                        "the current workflow. This screen does not submit information "
-                        "to a government portal."
+                        "the current workflow. Redacted supporting documents are "
+                        "stored locally without encryption for up to 30 days. This screen "
+                        "does not submit information to a government portal."
                     )
 
             with st.container(key="consent-sensitive-notice"):
@@ -1244,8 +1330,8 @@ def _render_consent_page() -> None:
 
             st.caption(
                 "Your consent choice applies to this active application session. "
-                "You may withdraw it later; doing so clears the conversation shown "
-                "in this interface."
+                "You may withdraw it later; doing so clears the conversation and "
+                "deletes supporting documents for the active application."
             )
 
             with st.form("session-consent-form"):
@@ -1271,13 +1357,15 @@ def _render_consent_page() -> None:
             )
 
 
-def _withdraw_consent() -> None:
+def _withdraw_consent() -> bool:
     """Clear the current workflow and return to the consent screen."""
-    _reset_chat()
+    if not _reset_chat():
+        return False
     st.session_state["portal_stage"] = "consent"
     st.session_state["consent_given"] = False
     st.session_state["consent_recorded_at"] = None
     st.session_state["session-consent"] = False
+    return True
 
 
 def _render_wizard(current_step: int) -> None:
@@ -1386,16 +1474,16 @@ def _render_chat_page() -> None:
             key="new-chat",
             width="stretch",
         ):
-            _reset_chat()
-            st.rerun()
+            if _reset_chat():
+                st.rerun()
         if st.button(
             "Withdraw consent",
             icon=":material/lock:",
             key="withdraw-consent",
             width="stretch",
         ):
-            _withdraw_consent()
-            st.rerun()
+            if _withdraw_consent():
+                st.rerun()
 
     try:
         api_base = _api_base_url()

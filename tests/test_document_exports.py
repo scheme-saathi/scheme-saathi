@@ -57,7 +57,14 @@ def test_docx_export_has_reference_masked_ids_and_barcode():
         images = [name for name in archive.namelist() if name.startswith("word/media/")]
 
     assert "MOCK-APP-2048" in body
-    assert "Asha Patil" in body
+    assert "Asha" in body
+    assert "Patil" in body
+    assert "First name" in body
+    assert "Asha" in body
+    assert "Middle name" in body
+    assert "Not provided" in body
+    assert "Last name" in body
+    assert "Patil" in body
     assert "Senior Support" in body
     assert "Age proof" in body
     assert "****1234" in body
@@ -68,6 +75,43 @@ def test_docx_export_has_reference_masked_ids_and_barcode():
     assert "9876543210" not in body
     assert "ABCDE1234F" not in body
     assert images
+
+
+def test_docx_preserves_middle_names_from_full_name():
+    data = _export_data()
+    data["profile"]["name"] = "Asha Rani Patil"
+    document = create_application_docx(**data)
+
+    with ZipFile(BytesIO(document)) as archive:
+        body = archive.read("word/document.xml").decode("utf-8")
+
+    assert "First name" in body
+    assert "Asha" in body
+    assert "Middle name" in body
+    assert "Rani" in body
+    assert "Last name" in body
+    assert "Patil" in body
+
+
+def test_docx_uses_explicit_name_parts_when_available():
+    data = _export_data()
+    data["profile"] = {
+        "first_name": "Asha",
+        "middle_name": "Rani",
+        "last_name": "Patil",
+    }
+    data["application"]["applicant"] = data["profile"]
+    document = create_application_docx(**data)
+
+    with ZipFile(BytesIO(document)) as archive:
+        body = archive.read("word/document.xml").decode("utf-8")
+
+    assert "First name" in body
+    assert "Middle name" in body
+    assert "Last name" in body
+    assert "Asha" in body
+    assert "Rani" in body
+    assert "Patil" in body
 
 
 def test_download_filename_sanitizes_reference():

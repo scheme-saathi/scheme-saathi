@@ -87,6 +87,47 @@ def _flatten_fields(
     return rows
 
 
+def _applicant_name_rows(profile: dict[str, Any]) -> list[tuple[str, str]]:
+    aliases = {
+        "first": {"firstname", "givenname"},
+        "middle": {"middlename"},
+        "last": {"lastname", "surname", "familyname"},
+    }
+    name_fields = {
+        part: next(
+            (key for key in profile if re.sub(r"[^a-z]", "", key.casefold()) in names),
+            None,
+        )
+        for part, names in aliases.items()
+    }
+    if any(name_fields.values()):
+        names = {
+            part: _display_value(
+                field, profile[field]
+            ) if field else "Not provided"
+            for part, field in name_fields.items()
+        }
+    else:
+        full_name_key = next(
+            (
+                key
+                for key in profile
+                if re.sub(r"[^a-z]", "", key.casefold())
+                in {"name", "fullname", "applicantname", "legalname"}
+            ),
+            None,
+        )
+        parts = str(profile.get(full_name_key, "") if full_name_key else "").split()
+        names = {
+            "first": parts[0] if parts else "Not provided",
+            "middle": " ".join(parts[1:-1]) if len(parts) > 2 else "Not provided",
+            "last": parts[-1] if len(parts) > 1 else "Not provided",
+        }
+
+    labels = {"first": "First name", "middle": "Middle name", "last": "Last name"}
+    return [(labels[part], names[part]) for part in ("first", "middle", "last")]
+
+
 def _barcode_png(reference: str) -> BytesIO:
     barcode_class = barcode.get_barcode_class("code128")
     image = BytesIO()
@@ -149,6 +190,23 @@ def _export_sections(
         if key != "applicant"
     }
 
+    profile_fields = {
+        field: value
+        for field, value in profile.items()
+        if re.sub(r"[^a-z]", "", field.casefold())
+        not in {
+            "name",
+            "fullname",
+            "applicantname",
+            "legalname",
+            "firstname",
+            "givenname",
+            "middlename",
+            "lastname",
+            "surname",
+            "familyname",
+        }
+    }
     return [
         (
             "Submission record",
@@ -159,7 +217,10 @@ def _export_sections(
                 ("Generated", datetime.now().astimezone().strftime("%Y-%m-%d %H:%M %Z")),
             ],
         ),
-        ("Applicant details", _flatten_fields(profile)),
+        (
+            "Applicant details",
+            _applicant_name_rows(profile) + _flatten_fields(profile_fields),
+        ),
         ("Eligibility assessment", eligibility_rows),
         ("Application form details", _flatten_fields(application_details)),
         ("Required documents", documents),
