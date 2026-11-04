@@ -5,6 +5,7 @@ from __future__ import annotations
 import http.client
 import json
 import os
+import sys
 import threading
 import time
 from collections.abc import Iterator
@@ -752,6 +753,80 @@ def _render_application_workflow(api_base: str, current_step: int) -> None:
                     "This is a local demonstration only. It is not a government "
                     "application and does not guarantee a benefit."
                 )
+                reference = str(submission.get("application_id", "")).strip()
+                if reference:
+                    try:
+                        if __package__:
+                            from .document_exports import (
+                                application_filename,
+                                create_application_docx,
+                                create_application_pdf,
+                            )
+                        else:
+                            from document_exports import (
+                                application_filename,
+                                create_application_docx,
+                                create_application_pdf,
+                            )
+                    except ModuleNotFoundError as error:
+                        if error.name not in {"barcode", "docx", "reportlab"}:
+                            raise
+                        st.error(
+                            "Application downloads need the project's declared "
+                            "document packages. Install them for this Streamlit "
+                            f"Python with `{sys.executable} -m pip install -e .`."
+                        )
+                    else:
+                        export_data = {
+                            "reference": reference,
+                            "scheme_id": str(
+                                submission.get("scheme_id", scheme_id)
+                            ),
+                            "status": str(
+                                submission.get("status", "submitted (mock)")
+                            ),
+                            "profile": result.get("profile", {}),
+                            "application": result.get("application", {}),
+                            "eligibility": st.session_state[
+                                "chat_eligibility_result"
+                            ]
+                            or {},
+                            "required_documents": result.get("documents", {}).get(
+                                scheme_id, []
+                            ),
+                            "uploads": st.session_state["application_uploads"],
+                        }
+                        pdf_column, docx_column = st.columns(2, gap="small")
+                        pdf_column.download_button(
+                            "Download PDF",
+                            data=create_application_pdf(**export_data),
+                            file_name=application_filename(reference, "pdf"),
+                            mime="application/pdf",
+                            icon=":material/picture_as_pdf:",
+                            key="download-application-pdf",
+                            width="stretch",
+                        )
+                        docx_column.download_button(
+                            "Download Word document",
+                            data=create_application_docx(**export_data),
+                            file_name=application_filename(reference, "docx"),
+                            mime=(
+                                "application/vnd.openxmlformats-officedocument."
+                                "wordprocessingml.document"
+                            ),
+                            icon=":material/description:",
+                            key="download-application-docx",
+                            width="stretch",
+                        )
+                        st.caption(
+                            "Both files include the reference barcode and masked ID "
+                            "numbers. The barcode represents this demo reference only."
+                        )
+                else:
+                    st.error(
+                        "A reference number is missing, so a downloadable "
+                        "application record cannot be generated."
+                    )
                 if st.button(
                     "Start a new chat",
                     type="primary",

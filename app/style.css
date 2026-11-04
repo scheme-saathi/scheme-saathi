@@ -71,6 +71,14 @@ div.stFormSubmitButton > button {
     transition: transform 140ms ease, box-shadow 140ms ease;
 }
 
+div.stDownloadButton > button {
+    background: #245f49 !important;
+    border: 1px solid #245f49 !important;
+    box-shadow: 0 4px 12px rgba(36, 95, 73, 0.18);
+    transition: background 140ms ease, transform 140ms ease,
+        box-shadow 140ms ease;
+}
+
 div.stButton > button[kind="primary"],
 div.stFormSubmitButton > button[kind="primary"] {
     box-shadow: 0 5px 14px rgba(52, 127, 185, 0.2);
@@ -84,8 +92,21 @@ div.stFormSubmitButton > button:hover {
     transform: translateY(-1px);
 }
 
+div.stDownloadButton > button:hover {
+    background: #194a38 !important;
+    border-color: #194a38 !important;
+    box-shadow: 0 6px 16px rgba(25, 74, 56, 0.24);
+    transform: translateY(-1px);
+}
+
+div.stDownloadButton > button:focus-visible {
+    outline: 3px solid #8cc4a5 !important;
+    outline-offset: 2px;
+}
+
 div.stButton > button:disabled,
-div.stFormSubmitButton > button:disabled {
+div.stFormSubmitButton > button:disabled,
+div.stDownloadButton > button:disabled {
     color: #ffffff !important;
     opacity: 0.62;
 }
