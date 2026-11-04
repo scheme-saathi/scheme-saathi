@@ -1,8 +1,8 @@
 ## Supervisor Agent: User Guide & Integration Documentation
 
-**Version:** 1.0  
-**Date:** November 2024  
-**Status:** Production Ready
+**Version:** 1.1  
+**Date:** November 2026  
+**Status:** Integrated in `graph/agent_workflow.py`
 
 ---
 
@@ -26,6 +26,14 @@ The **Supervisor Agent** acts as a gatekeeper and orchestrator for the Scheme Sa
 1. **Input Validation** - Validates user requests before they reach specialist agents
 2. **Intelligent Routing** - Determines which specialist agent should handle the request
 3. **Output Validation** - Ensures specialist responses are safe and correct before returning to user
+
+The supervisor is the **first node** of the live graph (`START -> supervisor`). Its input and output validators run inside the graph; they are not optional helpers. See [Integration with LangGraph Workflow](#integration-with-langgraph-workflow).
+
+### What the supervisor does not decide
+
+- **Eligibility verdicts** come from the deterministic rule engine (`graph.tools.evaluate_scheme`), never from a model. The Eligibility agent only explains the result and preserves the verdict, missing fields and citations. When an evaluation is supplied it builds the explanation without calling a model.
+- **Authenticity of documents** is never verified. The Document Checker compares the checklist with the supplied document descriptions, flags reported mismatches (for example an Aadhaar and bank passbook name difference) and always returns `authenticity_verified = False`.
+- **Submission** is never done by the supervisor. Only the Application agent path can write, and only after a person approves the exact form (see below).
 
 ### Key Benefits
 
@@ -194,7 +202,58 @@ else:
 
 ### Integration with LangGraph Workflow
 
-#### In `graph/workflow.py`:
+The live integration is in `graph/agent_workflow.py` (`build_agent_graph`). The older example below it is a generic illustration only.
+
+#### Live graph flow
+
+```
+START -> supervisor
+supervisor -> intake | eligibility | document_checker | respond
+              (a routed "application" goes to eligibility first)
+intake -> respond (clarifying questions) | eligibility | document_checker | finish
+eligibility -> document_checker (application and verdict == eligible) | finish
+document_checker -> application (application route) | finish
+application -> approval (draft complete) | finish (missing fields)
+approval (interrupt) -> submit (exact hash approved) | approval_end
+respond / finish / approval_end / submit -> END
+```
+
+#### Supervisor node (input guardrails)
+
+`_supervisor_node` first calls `supervisor.validate_input(request, actor_id)`:
+
+- If validation fails (sensitive data, length, rate limit), the plan becomes `respond`, `validation_errors` is stored in state, and neither the supervisor model nor any specialist runs. The `respond` node returns status `validation_error`; the message never echoes the sensitive value.
+- If it passes, the supervisor model runs and `language`, `intent` and the plan are stored in state. `validation_errors` is reset to `[]` every turn, so an earlier failure on the same thread cannot block a later request.
+- `actor_id` must come from the session or request context (`AgentWorkflowService.execute_workflow` in `app/api.py` passes it). The rate limiter keys on it.
+
+#### Output guardrails
+
+`_guard_output` calls `supervisor.validate_output(response, agent_name, language)` on the final user-facing text in the `finish` and `respond` nodes, using the producing agent's name (`intake`, `eligibility`, `document_checker`, `application`, or `supervisor`). If validation fails, the response is replaced by the localized safe message from `handle_validation_error` and the status is `output_blocked`.
+
+Not covered by output validation: the `approval`, `approval_end` and `submit` nodes. Those are protected by the approval gate instead.
+
+#### Approval gate (Application path)
+
+1. The Application agent maps only confirmed facts to the reviewed form fields; unmapped fields are rejected.
+2. A complete draft creates a portal draft and the `approval` node calls `interrupt()` with the form and its `payload_hash`.
+3. `approve` counts only if it carries the hash of the exact current form; `edit` invalidates approval and returns to the person; `reject` ends the flow.
+4. `submit` re-checks the hash against the approved hash and the portal draft before the single write. Write tools are available only to the `application` caller.
+
+#### Graph state fields added for the supervisor
+
+| Field | Purpose |
+|-------|---------|
+| `actor_id` | Rate-limit key and thread ownership |
+| `language` | Detected `en`, `hi`, `mr` or `unknown` |
+| `intent` | Detected intent |
+| `validation_errors` | Input validation errors for the current turn |
+| `plan` | Supervisor routing plan (`next_agent`, `reason`) |
+
+#### API response fields
+
+`/api/chat` and `/api/chat/{thread_id}/decision` return `language` and `intent` taken from the graph state, so they are the supervisor's detected values. The optional client `language` field is only a hint: it is never used as `intent`, and it is used as `language` only if the graph returns none. Missing values fall back to `unknown` and `other`.
+
+#### Generic illustration
 
 ```python
 from agents.supervisor import SupervisorAgent
@@ -545,9 +604,11 @@ print(masked)  # "Aadhar XXXX-XXXX-XXXX"
 Create `.env` file in project root:
 
 ```bash
-# OpenRouter API Configuration
-SUPERVISOR_MODEL=openai/gpt-5-mini
-OPENROUTER_API_KEY=sk-or-v1-YOUR_KEY_HERE
+# Model IDs are read from the environment; never hard-code them
+SUPERVISOR_MODEL=
+SPECIALIST_MODEL=
+# Use OPENAI_API_KEY or OPENROUTER_API_KEY (optional OPENAI_BASE_URL / OPENROUTER_BASE_URL)
+OPENROUTER_API_KEY=
 
 # Optional: Logging
 SUPERVISOR_LOG_LEVEL=INFO
@@ -568,12 +629,14 @@ validator = InputValidator(rate_limiter)
 
 ### Intent & Language Configuration
 
-Intent and language detection are hardcoded keyword-based for speed. To customize:
+Language and intent come from `UnifiedRouter` in `agents/supervisor.py`:
 
-```python
-# In supervisor.py, modify InputValidator._classify_intent()
-# Add keywords or modify existing ones for your domain
-```
+1. **Primary:** one OpenRouter chat-completion call (needs `OPENROUTER_API_KEY`) returning JSON `{intent, language}`. Invalid values fall back to `other` / `en`.
+2. **Fallback** (no key, timeout, error, or unparsable reply): Devanagari/Latin character ratios for language and keyword matching for intent.
+
+To customize the fallback, edit `UnifiedRouter._classify_intent_fallback()` and `_detect_language_fallback()`. The primary model is the `UNIFIED_ROUTER_MODEL` constant in `agents/supervisor.py`, separate from `SUPERVISOR_MODEL`, which drives `SupervisorAgent.invoke()` routing.
+
+In tests, set `router.api_available = False` on the `UnifiedRouter` so no network call is made.
 
 ---
 
@@ -698,7 +761,10 @@ print(f"Language: {mr_result.language}")  # mr
    - Document Checker cannot verify authenticity
    - Intake cannot collect sensitive data
 3. **Sensitive Data Masking**: Any sensitive data in response is masked
-4. **Citation Verification**: Eligibility claims must reference specific rules
+4. **Citation Verification**: Eligibility claims without a clause/rule reference produce a warning
+5. **Blocked output**: In the live graph a failed output check returns status `output_blocked` with a localized safe message
+
+Note: the eligibility check rejects text containing "override", "approve", "granted" or "exception". A legitimate rule citation containing one of those words would be blocked.
 
 ### Logging Safety
 
@@ -805,10 +871,12 @@ print(f"Warnings: {result.warnings}")
 
 ## See Also
 
-- [Supervisor Agent Tests](../tests/test_supervisor_guardrails.py) - 53 test cases
-- [Contracts](./contracts.py) - Data models used by supervisor
-- [Persona Validator](./persona_validator.py) - Utility classes for sensitive data
-- [Workflow Integration](../graph/workflow.py) - How supervisor fits into workflow
+- [Supervisor Agent Tests](../tests/test_supervisor_guardrails.py) - validator, router and routing tests
+- [Workflow Tests](../tests/test_agent_workflow.py) - graph-level enforcement (sensitive input, rate limit, blocked output, approval gate)
+- [Contracts](../agents/contracts.py) - Data models used by supervisor
+- [Persona Validator](../agents/persona_validator.py) - Utility classes for sensitive data
+- [Workflow Integration](../graph/agent_workflow.py) - How supervisor fits into the live graph
+- [Workflow graph diagram](./workflow-graph.md) - Generated from the compiled graph
 
 ---
 

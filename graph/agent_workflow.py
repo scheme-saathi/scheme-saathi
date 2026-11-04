@@ -30,6 +30,10 @@ from servers.rule_engine.rules import Evaluation
 
 class AgentWorkflowState(TypedDict, total=False):
     request: str
+    actor_id: str
+    language: str
+    intent: str
+    validation_errors: list[str]
     known_facts: FactMap
     confirmed_facts: FactMap
     selected_scheme_id: str
@@ -82,7 +86,15 @@ def _supervisor_node(
     2. Detect language (en, hi, mr) and intent in single gpt-4o-mini call
     3. Route to appropriate specialist or pause for clarification
     """
-    # Supervisor validates input and decides routing
+    validation = agents.supervisor.validate_input(state["request"], state.get("actor_id"))
+    if not validation.passed:
+        return {
+            "language": validation.language,
+            "intent": validation.intent,
+            "validation_errors": validation.errors,
+            "plan": {"next_agent": "respond", "reason": "The request did not pass input validation."},
+        }
+
     # Note: intake parameter is None because Intake hasn't run yet
     plan = agents.supervisor.invoke(
         SupervisorInput(
@@ -91,7 +103,24 @@ def _supervisor_node(
             selected_scheme_id=state.get("selected_scheme_id"),
         )
     )
-    return {"plan": plan.model_dump(mode="json")}
+    return {
+        "language": validation.language,
+        "intent": validation.intent,
+        "validation_errors": [],
+        "plan": plan.model_dump(mode="json"),
+    }
+
+
+def _guard_output(
+    agents: AgentSet, state: AgentWorkflowState, update: dict[str, str], agent_name: str
+) -> dict[str, str]:
+    """Supervisor output check: nothing leaves the graph unless it passes."""
+    language = state.get("language", "unknown")
+    result = agents.supervisor.validate_output(update["response"], agent_name, language)
+    if result.passed:
+        return update
+    blocked = agents.supervisor.handle_validation_error(result, language)
+    return {"status": "output_blocked", "response": blocked["user_message"]}
 
 
 def _route_after_supervisor(state: AgentWorkflowState) -> str:
@@ -341,7 +370,20 @@ def _submit_node(state: AgentWorkflowState) -> dict[str, Any]:
     }
 
 
-def _finish_node(state: AgentWorkflowState) -> dict[str, str]:
+def _finish_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]:
+    update = _finish_update(state)
+    if state.get("application_draft") is not None:
+        agent_name = "application"
+    elif state.get("document_check") is not None:
+        agent_name = "document_checker"
+    elif state.get("eligibility") is not None:
+        agent_name = "eligibility"
+    else:
+        agent_name = "supervisor"
+    return _guard_output(agents, state, update, agent_name)
+
+
+def _finish_update(state: AgentWorkflowState) -> dict[str, str]:
     if state.get("application_draft") is not None:
         incomplete = bool(state["application_draft"]["missing_fields"])
         return {
@@ -397,9 +439,14 @@ def build_agent_graph(
     builder.add_node("approval", _approval_node)
     builder.add_node("approval_end", _approval_end_node)
     builder.add_node("submit", _submit_node)
-    builder.add_node("finish", _finish_node)
+    builder.add_node("finish", lambda state: _finish_node(runtime, state))
     # Respond node handles: direct responses and clarifying questions from Intake
     def _respond_node_impl(state: AgentWorkflowState) -> dict[str, str]:
+        if state.get("validation_errors"):
+            return {
+                "status": "validation_error",
+                "response": " ".join(state["validation_errors"]),
+            }
         # If Intake has clarifying questions, return those
         intake_data = state.get("intake")
         if intake_data:
@@ -411,13 +458,19 @@ def build_agent_graph(
                 clarifying_qs = []
             
             if clarifying_qs:
-                return {
-                    "status": "needs_clarification",
-                    "response": "\n".join(clarifying_qs),
-                }
+                return _guard_output(
+                    runtime,
+                    state,
+                    {"status": "needs_clarification", "response": "\n".join(clarifying_qs)},
+                    "intake",
+                )
         # Otherwise return the plan reason (direct response)
-        return {"status": "responded", "response": state["plan"]["reason"]}
-    
+        return _guard_output(
+            runtime,
+            state,
+            {"status": "responded", "response": state["plan"]["reason"]},
+            "supervisor",
+        )
     builder.add_node("respond", _respond_node_impl)
     
     # Entry point: Supervisor ALWAYS first
