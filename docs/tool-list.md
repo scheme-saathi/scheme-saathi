@@ -15,6 +15,7 @@ content, so read access does not make their data safe to trust as instructions.
 | `schemes-kb` | `get_required_documents` | Read | Returns a scheme's required-document checklist. |
 | `rule-engine` | `list_rule_schemes` | Read | Lists rule records. By default, only fully reviewed rule sets are ready for live evaluation; `include_draft` is for preview only. |
 | `rule-engine` | `get_rule_fields` | Read | Returns profile fields used by the selected rule records. |
+| `rule-engine` | `get_field_specs` | Read | Returns the type (`number`, `bool` or `str`) of each profile field the selected rule records use, plus the string values those rules compare against. Intake uses it to build the typed profile the model fills and to type-check edits at the confirm step. Returns `field_type_conflict` if two rules disagree on a field's type. |
 | `rule-engine` | `evaluate_profile` | Read | Deterministically evaluates a profile against one scheme's rules and returns a verdict and citations. Draft evaluation is explicitly preview-only. |
 | `doc-check` | `compare_document_fields` | Read | Compares supplied structured fields and returns match information. It does not inspect uploaded files or verify document authenticity. This server is registered as an MCP server, but is not currently included in `graph.tools._SERVERS` and therefore is not callable through `graph.tools.call_tool`. |
 | `mock-portal` | `get_application_status` | Read | Returns the status for a portal application ID. |
@@ -26,9 +27,10 @@ content, so read access does not make their data safe to trust as instructions.
 `graph/tools.py` is the current graph call boundary. It routes calls through
 in-memory FastMCP clients, raises `ToolCallError` for tool errors, and applies a
 pre-call check to the two portal write tools. `search_schemes`,
-`evaluate_scheme`, `list_documents`, and `application_form_spec` are helper
-functions around those read tools. `draft_application` only builds an in-memory
-form and does not write to the portal.
+`evaluate_scheme`, `field_specs`, `list_documents`, and `application_form_spec` are
+helper functions around those read tools. `next_question` calls no tool: it picks
+intake's next question from verdicts the eligibility step already produced.
+`draft_application` only builds an in-memory form and does not write to the portal.
 
 The current write check permits calls made inside `tools.acting_as("application")`
 or `tools.acting_as("baseline")`. This is a safeguard against accidental calls

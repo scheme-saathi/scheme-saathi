@@ -26,15 +26,20 @@ demo, not a production security certification.
 3. The rule engine evaluates only complete reviewed rules for live decisions.
    Draft rules are available only in explicit preview mode and must not drive
    citizen advice or application submission.
-4. Graph calls go through `graph.tools.call_tool` and in-memory MCP servers. The
+4. Intake sends the person's message, and the last question asked, to the model.
+   The model can only fill the reviewed rule fields; code type-checks each value
+   and stores it as unconfirmed `known_facts`. Final verdicts and application
+   forms use only facts the person confirmed at the confirm step, which is bound
+   to a hash of the exact facts shown.
+5. Graph calls go through `graph.tools.call_tool` and in-memory MCP servers. The
    current pre-tool write check is implemented in Python and relies on a
    caller-controlled `acting_as` context.
-5. Application drafting creates a mock-portal draft before pausing for a human
+6. Application drafting creates a mock-portal draft before pausing for a human
    decision. Submission is intended to occur only after the exact form hash is
    approved and rechecked.
-6. The mock portal also exposes direct FastAPI routes. Those routes bypass the
+7. The mock portal also exposes direct FastAPI routes. Those routes bypass the
    graph-level write check and currently have no authentication.
-7. The API uses an in-memory checkpointer and trusts the caller-supplied
+8. The API uses an in-memory checkpointer and trusts the caller-supplied
    `x-actor-id` value for thread ownership. This is not authentication.
 
 ## Threats and current controls
@@ -42,6 +47,8 @@ demo, not a production security certification.
 | Threat | Current control | Remaining risk / required follow-up |
 |---|---|---|
 | An LLM invents or changes an eligibility verdict | The deterministic rule engine supplies the verdict; the eligibility agent explains it. Incomplete or unreviewed rules fail closed. | Add workflow-level input/output validation and tests. Never promote rules without source review. |
+| The model invents, misreads or mis-converts a household fact | Intake's model fills a schema built from the reviewed rule fields, and code validates each value on its own. Income period conversion is done in code. Earlier facts are not sent back to the model. Facts stay unconfirmed until the person approves the exact set at the confirm step. | A person can still confirm a wrong value. The confirm view is English only with raw field names; show clear labels in the person's language. Real-model regression tests for extraction are not in CI yet. |
+| A reply steers intake (prompt injection) | Replies reach the model as untrusted data. It can only fill rule fields and classify the reply; code chooses which field to ask about. A reply with no facts is routed again by the Supervisor. | The wording of each question is model output shown without output guardrails. |
 | Draft rules are mistaken for live eligibility | Rule engine defaults to fully reviewed rules; draft use is explicitly requested as preview. | Keep preview results clearly labeled and prevent preview results from reaching application or submission paths. |
 | Prompt injection in scheme text or tool output | Agent prompts describe external text as untrusted task data. | Validate outputs and constrain tool parameters; prompt wording alone is not a security boundary. |
 | Unauthorized agent invokes a portal write through the graph | `graph.tools.call_tool` checks the caller context for `create_application` and `submit_draft`. | `acting_as` is caller-controlled Python state, so it only prevents accidental misuse. Enforce authorization at a trusted server boundary and test bypass attempts. |
@@ -57,6 +64,7 @@ demo, not a production security certification.
 
 - Code—not an LLM—decides eligibility.
 - Only complete reviewed rules can produce live eligibility verdicts.
+- Final verdicts and application forms use only facts the person confirmed.
 - No world-changing application action occurs without a human approving the
   exact current payload.
 - Any form edit invalidates prior approval.
