@@ -367,6 +367,8 @@ Not wired in yet: authenticated household scoping, memory storage, document extr
 
 ## Guides
 
+- [Tool inventory](docs/tool-list.md) — current MCP tools, access types, and graph write checks.
+- [Threat model](docs/threat-model.md) — security boundaries, current controls, and deployment follow-ups.
 - [60-scheme review workbook](docs/Scheme-Saathi-60-Schemes-Schema-Review.xlsx) — manual review of scheme details and source information. Excel edits do not automatically update scheme JSON or ChromaDB.
 
 - [Scheme relationships](docs/scheme-data-relationships.md)
