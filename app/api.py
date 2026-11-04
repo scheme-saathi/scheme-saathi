@@ -241,7 +241,7 @@ class AgentWorkflowService:
         config = self._config(thread_id)
         if self._pending_approval(config) is not None:
             raise ApprovalPendingError(
-                "This conversation is waiting for approval of a draft. Approve, edit or reject it first."
+                "This conversation is waiting for you to approve, edit or reject what was shown."
             )
 
         # Keep facts and the chosen scheme from earlier turns unless this turn supplies new ones.
@@ -292,7 +292,11 @@ class AgentWorkflowService:
     def _finish_run(self, thread_id: str, request: str, result: dict[str, Any]) -> dict[str, Any]:
         pending = self._pending_approval(self._config(thread_id))
         data = {key: value for key, value in result.items() if key != "__interrupt__"}
-        if pending is not None:
+        if pending is not None and pending.get("kind") == "confirm_facts":
+            data["confirmation"] = pending
+            status = "awaiting_confirmation"
+            response = "Please check these details. The final answer uses only the details you confirm."
+        elif pending is not None:
             data["approval"] = pending
             status = "awaiting_approval"
             response = "Please review the draft application. Nothing is submitted until you approve."

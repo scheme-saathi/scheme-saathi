@@ -29,6 +29,11 @@ from graph.workflow import application_hash
 from servers.rule_engine.rules import Evaluation
 
 
+MAX_QUESTIONS = 8  # per intake, so a long tail of open schemes can't turn into an interview
+MAX_ATTEMPTS_PER_FIELD = 2  # a field asked twice without a usable answer counts as "don't know"
+PROFILE_GOALS = {"intake", "eligibility", "application"}
+
+
 def merge_facts(old: FactMap | None, new: FactMap | None) -> FactMap:
     """Each turn adds to the facts from earlier turns; a newer value for a field wins."""
     return {**(old or {}), **(new or {})}
@@ -50,6 +55,13 @@ class AgentWorkflowState(TypedDict, total=False):
     pending_question: str | None  # that question's wording
     intake_request: str  # the message that started intake; later turns are short answers
     declined_fields: list[str]  # fields the user said they don't know
+    question_attempts: dict[str, int]  # field -> times asked in this intake
+    questions_asked: int
+    intake_stopped: str | None  # "dont_know", "no_answer" or "question_cap"
+    reply_unanswered: bool  # the reply to a question held no facts at all
+    confirm_status: str  # "confirmed", "edit_rejected", "rejected" or "invalid"
+    rejected_edits: list[str]  # edited fields that were unknown or the wrong type
+    explanations: dict[str, str]  # candidate scheme -> cited explanation, once facts are confirmed
     verdicts: dict[str, dict[str, Any]]  # candidate scheme -> rule-engine evaluation
     eligibility: dict[str, Any]
     document_check: dict[str, Any]
@@ -122,6 +134,16 @@ def _candidate_schemes(state: AgentWorkflowState) -> list[str]:
     return [scheme_id] if scheme_id else tools.search_schemes({})
 
 
+def _facts_so_far(state: AgentWorkflowState) -> FactMap:
+    """Confirmed facts, overridden by anything said since: known_facts holds the latest values."""
+    return {**state.get("confirmed_facts", {}), **state.get("known_facts", {})}
+
+
+def _unconfirmed(state: AgentWorkflowState) -> FactMap:
+    confirmed = state.get("confirmed_facts", {})
+    return {f: v for f, v in state.get("known_facts", {}).items() if f not in confirmed or confirmed[f] != v}
+
+
 def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
     """Read typed facts from the message into known_facts. They stay unconfirmed."""
     specs = tools.field_specs(_candidate_schemes(state))
@@ -136,17 +158,71 @@ def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
         ),
         specs,
     )
-    update: dict[str, Any] = {"known_facts": result.facts, "pending_field": None, "pending_question": None}
-    if pending is None:
-        update["intake_request"] = state["request"]
+    update: dict[str, Any] = {
+        "known_facts": result.facts,
+        "pending_field": None,
+        "pending_question": None,
+        "reply_unanswered": pending is not None and not result.facts and not result.dont_know,
+    }
+    if pending is None:  # a fresh intake: earlier "don't know"s and counts no longer apply
+        update |= {
+            "intake_request": state["request"],
+            "declined_fields": [],
+            "question_attempts": {},
+            "questions_asked": 0,
+            "intake_stopped": None,
+        }
     if result.dont_know:
         update["declined_fields"] = [*state.get("declined_fields", []), pending]
+        update["intake_stopped"] = "dont_know"
     return update
 
 
+def _route_after_intake(state: AgentWorkflowState) -> str:
+    # A reply with nothing in it may be a new request ("what documents do I need?"),
+    # so the Supervisor routes it instead of intake repeating its question.
+    return "reroute" if state.get("reply_unanswered") else "eligibility"
+
+
+def _route_after_reroute(state: AgentWorkflowState) -> str:
+    """The message was already read by intake, so a profile goal goes straight to eligibility."""
+    goal = state["plan"]["next_agent"]
+    return "eligibility" if goal in PROFILE_GOALS else goal
+
+
+def _open_fields(state: AgentWorkflowState) -> list[str]:
+    """Fields an answer could still settle a verdict with, including declined ones."""
+    return sorted(
+        {f for v in state["verdicts"].values() if v["verdict"] == "cant_tell" for f in v["unresolved_fields"]}
+    )
+
+
+def _stop_intake(state: AgentWorkflowState, reason: str, declined: list[str]) -> dict[str, Any]:
+    open_fields = _open_fields(state)
+    return {
+        "intake_stopped": reason,
+        "declined_fields": declined,
+        "status": "intake_stopped",
+        "response": "I can't finish the eligibility check without these details: "
+        + ", ".join(f.replace("_", " ") for f in open_fields)
+        + ". Tell me if you find out, and I'll check again.",
+    }
+
+
 def _intake_question_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
-    """Ask for the one field that settles the most open verdicts, then wait for the reply."""
-    field = tools.next_question(state["verdicts"], state.get("declined_fields", []))
+    """Ask for the one field that settles the most open verdicts, then wait for the reply.
+
+    Stops instead when that field has had its attempts or the question cap is reached.
+    """
+    declined = state.get("declined_fields", [])
+    if state.get("intake_stopped"):
+        return _stop_intake(state, state["intake_stopped"], declined)
+    field = tools.next_question(state["verdicts"], declined)
+    attempts = state.get("question_attempts", {})
+    if attempts.get(field, 0) >= MAX_ATTEMPTS_PER_FIELD:
+        return _stop_intake(state, "no_answer", [*declined, field])
+    if state.get("questions_asked", 0) >= MAX_QUESTIONS:
+        return _stop_intake(state, "question_cap", declined)
     spec = tools.field_specs(_candidate_schemes(state))[field]
     question = agents.intake.ask(
         IntakeAskInput(
@@ -161,6 +237,8 @@ def _intake_question_node(agents: AgentSet, state: AgentWorkflowState) -> dict[s
     return {
         "pending_field": field,
         "pending_question": question.question,
+        "question_attempts": {**attempts, field: attempts.get(field, 0) + 1},
+        "questions_asked": state.get("questions_asked", 0) + 1,
         "status": "needs_information",
         "response": question.question,
     }
@@ -172,7 +250,7 @@ def _resolve_deterministic_evaluation(state: AgentWorkflowState) -> dict[str, An
     if not scheme_id:
         return None
 
-    facts = state.get("confirmed_facts") or state.get("known_facts") or {}
+    facts = state.get("confirmed_facts") or {}  # a verdict only ever rests on confirmed facts
     if not isinstance(facts, dict) or not facts:
         return None
 
@@ -192,10 +270,19 @@ def _resolve_deterministic_evaluation(state: AgentWorkflowState) -> dict[str, An
 def _eligibility_node(
     agents: AgentSet, state: AgentWorkflowState
 ) -> dict[str, Any]:
-    """Evaluate every candidate scheme on the facts so far, then explain the selected one."""
-    facts = {**state.get("known_facts", {}), **state.get("confirmed_facts", {})}
-    verdicts = {s: evaluate_scheme(facts, s) for s in _candidate_schemes(state)}
-    return {"verdicts": verdicts, **_selected_scheme_eligibility(agents, state)}
+    """Evaluate every candidate scheme on the facts so far, then explain the selected one.
+
+    While some facts are unconfirmed the verdicts only steer intake's questions; once all are
+    confirmed they are final and, without a selected scheme, each gets a cited explanation.
+    """
+    verdicts = {s: evaluate_scheme(_facts_so_far(state), s) for s in _candidate_schemes(state)}
+    explanations = {}
+    if not state.get("selected_scheme_id") and not _unconfirmed(state):
+        explanations = {
+            s: agents.eligibility.invoke(EligibilityInput(scheme_id=s, evaluation=v)).explanation
+            for s, v in verdicts.items()
+        }
+    return {"verdicts": verdicts, "explanations": explanations, **_selected_scheme_eligibility(agents, state)}
 
 
 def _selected_scheme_eligibility(
@@ -203,7 +290,7 @@ def _selected_scheme_eligibility(
 ) -> dict[str, Any]:
     scheme_id = state.get("selected_scheme_id")
     raw_evaluation = state.get("deterministic_evaluation")
-    facts = state.get("confirmed_facts") or state.get("known_facts") or {}
+    facts = state.get("confirmed_facts") or {}
 
     if raw_evaluation is None:
         raw_evaluation = _resolve_deterministic_evaluation(state)
@@ -220,7 +307,7 @@ def _selected_scheme_eligibility(
         if not scheme_id:
             failed["reason"] = "A scheme was not selected for eligibility evaluation."
         elif not facts:
-            failed["reason"] = "There is no complete, fully reviewed rule set for this scheme."
+            failed["reason"] = "No facts have been confirmed yet."
         return {"eligibility": failed}
 
     evaluation = Evaluation.model_validate(raw_evaluation)
@@ -239,11 +326,73 @@ def _selected_scheme_eligibility(
 
 
 def _route_after_eligibility(state: AgentWorkflowState) -> str:
-    if tools.next_question(state["verdicts"], state.get("declined_fields", [])):
+    # Still open: ask the next question, or, once intake has stopped, say what is missing.
+    if _open_fields(state) and (
+        state.get("intake_stopped") or tools.next_question(state["verdicts"], state.get("declined_fields", []))
+    ):
         return "intake_question"
+    if _unconfirmed(state):
+        return "confirm"
     is_application = state["plan"]["next_agent"] == "application"
     eligible = state["eligibility"]["verdict"] == "eligible"
     return "document_checker" if is_application and eligible else "finish"
+
+
+def _fits(kind: str, value: Any) -> bool:
+    """The rule engine's types: it never coerces, so neither may an edit."""
+    if kind == "bool":
+        return isinstance(value, bool)
+    if kind == "number":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return isinstance(value, str)
+
+
+def _confirm_node(state: AgentWorkflowState) -> dict[str, Any]:
+    """Pause until the person confirms the exact facts the final verdicts will rest on."""
+    facts = _facts_so_far(state)
+    shown = application_hash(facts)
+    decision = interrupt(
+        {
+            "kind": "confirm_facts",
+            "facts": facts,
+            "payload_hash": shown,
+            "rejected_edits": state.get("rejected_edits", []),
+            "options": ["approve", "edit", "reject"],
+        }
+    )
+    action = decision.get("action") if isinstance(decision, dict) else None
+    if action == "approve":
+        if decision.get("payload_hash") == shown:
+            return {"confirmed_facts": facts, "confirm_status": "confirmed", "rejected_edits": []}
+        return {
+            "confirm_status": "invalid",
+            "status": "confirmation_invalid",
+            "response": "The confirmation did not match the facts shown. Nothing was confirmed.",
+        }
+    if action == "edit" and isinstance(decision.get("changes"), dict):
+        specs = tools.field_specs(_candidate_schemes(state))
+        changes = decision["changes"]
+        valid = {f: v for f, v in changes.items() if f in specs and _fits(specs[f]["type"], v)}
+        rejected = sorted(set(changes) - set(valid))
+        if rejected:  # show the facts again, with what could not be used
+            return {"known_facts": valid, "rejected_edits": rejected, "confirm_status": "edit_rejected"}
+        # Editing the facts shown, and sending them back, confirms them.
+        return {
+            "known_facts": valid,
+            "confirmed_facts": {**facts, **valid},
+            "confirm_status": "confirmed",
+            "rejected_edits": [],
+        }
+    return {
+        "confirm_status": "rejected",
+        "status": "facts_rejected",
+        "response": "Nothing was confirmed. Tell me what to correct and I'll check again.",
+    }
+
+
+def _route_after_confirm(state: AgentWorkflowState) -> str:
+    # Confirmed or edited facts are evaluated again: an edit can reopen a verdict.
+    return "eligibility" if state["confirm_status"] in {"confirmed", "edit_rejected"} else END
 
 
 def _document_checker_node(
@@ -397,6 +546,11 @@ def _finish_node(state: AgentWorkflowState) -> dict[str, str]:
             else "Document checklist complete; authenticity is not verified."
         )
         return {"status": "documents_checked", "response": response}
+    if state.get("explanations") and not state.get("selected_scheme_id"):
+        return {
+            "status": "eligibility_checked",
+            "response": "\n".join(f"{s}: {text}" for s, text in state["explanations"].items()),
+        }
     if state.get("eligibility") is not None:
         return {
             "status": "eligibility_checked",
@@ -430,6 +584,8 @@ def build_agent_graph(
     builder.add_node("supervisor", lambda state: _supervisor_node(runtime, state))
     builder.add_node("intake", lambda state: _intake_node(runtime, state))
     builder.add_node("intake_question", lambda state: _intake_question_node(runtime, state))
+    builder.add_node("reroute", lambda state: _supervisor_node(runtime, state))
+    builder.add_node("confirm", _confirm_node)
     builder.add_node("eligibility", lambda state: _eligibility_node(runtime, state))
     builder.add_node(
         "document_checker", lambda state: _document_checker_node(runtime, state)
@@ -459,7 +615,14 @@ def build_agent_graph(
         },
     )
 
-    builder.add_edge("intake", "eligibility")
+    builder.add_conditional_edges(
+        "intake", _route_after_intake, {"eligibility": "eligibility", "reroute": "reroute"}
+    )
+    builder.add_conditional_edges(
+        "reroute",
+        _route_after_reroute,
+        {"eligibility": "eligibility", "document_checker": "document_checker", "respond": "respond"},
+    )
 
     # Eligibility → one intake question while a verdict is open, else Document Checker → Finish
     builder.add_conditional_edges(
@@ -467,10 +630,12 @@ def build_agent_graph(
         _route_after_eligibility,
         {
             "intake_question": "intake_question",
+            "confirm": "confirm",
             "document_checker": "document_checker",
             "finish": "finish",
         },
     )
+    builder.add_conditional_edges("confirm", _route_after_confirm, {"eligibility": "eligibility", END: END})
     builder.add_edge("intake_question", END)
     
     # Document Checker → Application (if needed) → Finish

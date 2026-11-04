@@ -13,7 +13,10 @@ from agents.contracts import (
     IntakeResult,
     SupervisorPlan,
 )
+from agents.eligibility import EligibilityAgent
 from agents.intake import IntakeAgent, profile_model
+from langgraph.types import Command
+
 from app import api
 from graph import tools
 from graph.agent_workflow import AgentSet, build_agent_graph
@@ -197,9 +200,10 @@ def test_dont_know_counts_only_for_an_unanswered_pending_field(pension_specs):
     def run(reply, pending):
         return IntakeAgent(FakeModel(reply)).extract({"request": "pata nahi", "pending_field": pending}, pension_specs)
 
-    assert run({"facts": {}, "dont_know": True}, "income").dont_know
-    assert not run({"facts": {}, "dont_know": True}, None).dont_know
-    answered = {"facts": {"income": {"amount": 100000, "period": "year"}}, "dont_know": True}
+    assert run({"facts": {}, "reply_kind": "dont_know"}, "income").dont_know
+    assert not run({"facts": {}, "reply_kind": "other"}, "income").dont_know
+    assert not run({"facts": {}, "reply_kind": "dont_know"}, None).dont_know
+    answered = {"facts": {"income": {"amount": 100000, "period": "year"}}, "reply_kind": "dont_know"}
     assert not run(answered, "income").dont_know
 
 
@@ -253,21 +257,24 @@ class ScriptedIntake:
 
 
 class CountingSupervisor:
-    def __init__(self, plan):
-        self.plan = plan
+    """Returns its plans in order, repeating the last one."""
+
+    def __init__(self, *plans):
+        self.plans = plans
         self.calls = 0
 
     def invoke(self, value):
         self.calls += 1
-        return self.plan
+        return self.plans[min(self.calls, len(self.plans)) - 1]
 
 
-def intake_graph(intake, language="en", next_agent="eligibility"):
-    supervisor = CountingSupervisor(SupervisorPlan(next_agent=next_agent, reason="Check.", language=language))
+def intake_graph(intake, language="en", next_agent="eligibility", later_plan=None):
+    plans = [SupervisorPlan(next_agent=next_agent, reason="Check.", language=language)]
+    supervisor = CountingSupervisor(*plans, *([later_plan] if later_plan else []))
     agents = AgentSet(
         intake=intake,
         supervisor=supervisor,
-        eligibility=StubAgent(EligibilityNarrative(explanation="-")),
+        eligibility=EligibilityAgent(model=None),  # explains rule-engine results without a model
         document_checker=StubAgent(DocumentCheckResult()),
         application=StubAgent(ApplicationDraft(scheme_id="s", fields={}, missing_fields=[], review_summary="-")),
     )
@@ -296,7 +303,7 @@ def test_one_question_per_turn_until_the_verdict_is_settled():
     assert third["verdicts"][PENSION]["verdict"] == "eligible"
     assert third["known_facts"] == {"age": 67, "income": 100000, "is_widow": True}
     assert third["pending_field"] is None
-    assert third["status"] != "needs_information"
+    assert third["__interrupt__"][0].value["kind"] == "confirm_facts"  # settled: confirm next
     assert [q.field for q in intake.ask_calls] == ["income", "is_widow"]
     # Later questions are worded from the first message, so "she" stays the mother.
     assert {q.request for q in intake.ask_calls} == {"My mother is 67, can she get a pension?"}
@@ -320,28 +327,177 @@ def test_a_settled_no_asks_nothing_more():
     assert intake.ask_calls == []
 
 
-def test_dont_know_is_never_asked_again():
+# T8: when intake stops asking
+
+
+def test_dont_know_stops_intake():
     intake = ScriptedIntake(IntakeExtraction(facts={"age": 67}), IntakeExtraction(dont_know=True))
     _, _, send = intake_graph(intake)
 
     send("My mother is 67")
     result = send("I don't know")
+    assert result["status"] == "intake_stopped"
+    assert result["intake_stopped"] == "dont_know"
     assert result["declined_fields"] == ["income"]
-    assert "income" not in [q.field for q in intake.ask_calls[1:]]
+    assert "income" in result["response"] and "is widow" in result["response"]
+    assert result["pending_field"] is None
+    assert len(intake.ask_calls) == 1  # is_widow is not asked after "don't know"
 
 
-def test_question_uses_the_language_the_supervisor_detected():
-    intake = ScriptedIntake(IntakeExtraction(facts={"age": 67}))
-    _, _, send = intake_graph(intake, language="hi")
+def test_two_unusable_replies_to_one_question_stop_intake():
+    intake = ScriptedIntake(
+        IntakeExtraction(facts={"age": 67}), IntakeExtraction(), IntakeExtraction()
+    )
+    _, supervisor, send = intake_graph(intake)
 
-    send("मेरी माँ 67 साल की हैं")
-    assert intake.ask_calls[0].language == "hi"
-    assert intake.ask_calls[0].period == "year"  # income is annual, so the question asks per year
+    send("My mother is 67")
+    again = send("hmm")
+    assert again["response"] == "Q:income"  # asked a second time
+    stopped = send("hmm")
+    assert (stopped["status"], stopped["intake_stopped"]) == ("intake_stopped", "no_answer")
+    assert stopped["declined_fields"] == ["income"]
+    assert [q.field for q in intake.ask_calls] == ["income", "income"]
+    assert supervisor.calls == 3  # each empty reply was re-routed by the Supervisor
 
 
-def test_scheme_without_reviewed_fields_skips_extraction():
-    intake = ScriptedIntake()
-    graph = intake_graph(intake)[0]
+def test_question_cap(monkeypatch):
+    monkeypatch.setattr("graph.agent_workflow.MAX_QUESTIONS", 1)
+    intake = ScriptedIntake(IntakeExtraction(facts={"age": 67}), IntakeExtraction(facts={"income": 100000}))
+    _, _, send = intake_graph(intake)
 
-    graph.invoke({"request": "Am I eligible?", "selected_scheme_id": "C01"}, {"configurable": {"thread_id": "c01"}})
-    assert intake.extract_calls == []
+    send("My mother is 67")
+    result = send("1 lakh a year")
+    assert result["intake_stopped"] == "question_cap"
+    assert [q.field for q in intake.ask_calls] == ["income"]
+
+
+def test_new_request_while_a_question_is_pending_reaches_the_supervisor():
+    intake = ScriptedIntake(IntakeExtraction(facts={"age": 67}), IntakeExtraction())
+    later = SupervisorPlan(next_agent="respond", reason="Here is what I can help with.")
+    _, supervisor, send = intake_graph(intake, later_plan=later)
+
+    send("My mother is 67")
+    result = send("What can you do?")
+    assert (result["status"], result["response"]) == ("responded", "Here is what I can help with.")
+    assert supervisor.calls == 2
+    assert len(intake.ask_calls) == 1
+
+
+def test_a_fresh_intake_resets_the_stop():
+    intake = ScriptedIntake(
+        IntakeExtraction(facts={"age": 67}),
+        IntakeExtraction(dont_know=True),
+        IntakeExtraction(facts={"income": 100000}),
+    )
+    _, _, send = intake_graph(intake)
+
+    send("My mother is 67")
+    assert send("I don't know")["status"] == "intake_stopped"
+    result = send("I found out: her income is 1 lakh a year")
+    assert result["intake_stopped"] is None and result["declined_fields"] == []
+    assert result["response"] == "Q:is_widow"
+
+
+def test_a_dont_know_that_no_longer_matters_does_not_block_the_verdict():
+    intake = ScriptedIntake(
+        IntakeExtraction(facts={"age": 67}),
+        # "I don't know her income, and she isn't a widow": the second fact settles it.
+        IntakeExtraction(facts={"is_widow": False}, dont_know=True),
+    )
+    _, _, send = intake_graph(intake)
+
+    send("My mother is 67")
+    result = send("I don't know her income, and she isn't a widow")
+    assert result["verdicts"][PENSION]["verdict"] == "not_eligible"
+    assert result["__interrupt__"][0].value["kind"] == "confirm_facts"
+
+
+# T9: confirm the facts, then a final, cited verdict from confirmed facts only
+
+WIDOW_67 = {"age": 67, "income": 100000, "is_widow": True}
+
+
+def settled(facts=WIDOW_67):
+    """A conversation paused at the confirm step after one message with every fact in it."""
+    intake = ScriptedIntake(IntakeExtraction(facts=facts))
+    graph, _, send = intake_graph(intake)
+    first = send("My mother is a 67 year old widow, income 1 lakh a year")
+    config = {"configurable": {"thread_id": "t"}}
+    return graph, config, first["__interrupt__"][0].value
+
+
+def resume(graph, config, **decision):
+    return graph.invoke(Command(resume=decision), config)
+
+
+def test_settled_verdict_waits_for_confirmation_before_any_answer():
+    graph, config, pending = settled()
+    assert pending["kind"] == "confirm_facts"
+    assert pending["facts"] == WIDOW_67
+    state = graph.get_state(config).values
+    assert state.get("confirmed_facts", {}) == {}
+    assert state["explanations"] == {}  # no final answer from unconfirmed facts
+
+
+def test_approving_the_exact_facts_gives_a_cited_final_verdict():
+    graph, config, pending = settled()
+    result = resume(graph, config, action="approve", payload_hash=pending["payload_hash"])
+    assert result["confirmed_facts"] == WIDOW_67
+    assert result["status"] == "eligibility_checked"
+    assert result["response"].startswith(f"{PENSION}: eligible")
+    assert "Widow aged 60 or above" in result["response"]  # the clause text is cited
+
+
+def test_approval_with_another_hash_confirms_nothing():
+    graph, config, _ = settled()
+    result = resume(graph, config, action="approve", payload_hash="0" * 64)
+    assert result["status"] == "confirmation_invalid"
+    assert result.get("confirmed_facts", {}) == {}
+
+
+def test_an_edit_is_confirmed_and_can_change_the_verdict():
+    graph, config, _ = settled()
+    result = resume(graph, config, action="edit", changes={"is_widow": False})
+    assert result["confirmed_facts"] == {**WIDOW_67, "is_widow": False}
+    assert result["verdicts"][PENSION]["verdict"] == "not_eligible"
+    assert result["response"].startswith(f"{PENSION}: not_eligible")
+
+
+def test_a_wrongly_typed_edit_is_shown_again_not_used():
+    graph, config, _ = settled()
+    result = resume(graph, config, action="edit", changes={"age": "67", "caste": "x"})
+    again = result["__interrupt__"][0].value
+    assert again["rejected_edits"] == ["age", "caste"]
+    assert again["facts"] == WIDOW_67
+    assert graph.get_state(config).values.get("confirmed_facts", {}) == {}
+
+
+def test_reject_confirms_nothing():
+    graph, config, _ = settled()
+    result = resume(graph, config, action="reject")
+    assert result["status"] == "facts_rejected"
+    assert result.get("confirmed_facts", {}) == {}
+
+
+def test_a_later_correction_needs_confirming_again():
+    intake = ScriptedIntake(IntakeExtraction(facts=WIDOW_67), IntakeExtraction(facts={"age": 68}))
+    graph, _, send = intake_graph(intake)
+    config = {"configurable": {"thread_id": "t"}}
+    pending = send("My mother is a 67 year old widow, income 1 lakh a year")["__interrupt__"][0].value
+    resume(graph, config, action="approve", payload_hash=pending["payload_hash"])
+
+    again = send("Sorry, she is 68")["__interrupt__"][0].value
+    assert again["facts"] == {**WIDOW_67, "age": 68}
+
+
+def test_api_reports_the_confirm_step_and_accepts_the_decision():
+    service = api.AgentWorkflowService()
+    intake = ScriptedIntake(IntakeExtraction(facts=WIDOW_67))
+    service._agent_graph = intake_graph(intake)[0]
+    paused = service.execute_workflow("My mother is a 67 year old widow, income 1 lakh", "a1", thread_id="t")
+    assert paused["status"] == "awaiting_confirmation"
+    confirmation = paused["data"]["confirmation"]
+    assert confirmation["facts"] == WIDOW_67
+
+    done = service.submit_decision("t", "a1", "approve", confirmation["payload_hash"], {})
+    assert done["status"] == "eligibility_checked"

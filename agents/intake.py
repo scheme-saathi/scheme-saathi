@@ -5,7 +5,7 @@ open verdicts (graph.tools.next_question). The model only reads facts from the m
 and words the question.
 """
 
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
@@ -35,9 +35,9 @@ null and never guess. When pending_field is set, read a short reply such as "yes
 each field's type. For an income field, give the amount in rupees exactly as the user said
 it (1 lakh = 100000, 15 hazaar = 15000, 10k = 10000) and its period: "month" or "year" when
 the user says so or pending_question asked for that period, otherwise "unstated". Never
-convert between periods or multiply by 12; that is done for you. Set dont_know to true only when the user says they do not know, or will
-not say, the answer to pending_field. Never record Aadhaar, bank-account numbers or other
-sensitive identifiers. Never decide eligibility or claim that a fact has been saved."""
+convert between periods or multiply by 12; that is done for you. Classify the reply to
+pending_question in reply_kind. Never record Aadhaar, bank-account numbers or other sensitive
+identifiers. Never decide eligibility or claim that a fact has been saved."""
 
 ASK_INSTRUCTIONS = """You write the next question for Scheme Saathi's intake. Ask exactly
 one short, polite question that collects only the given field. Write it in the given
@@ -49,6 +49,17 @@ field names, and never ask for Aadhaar, bank-account numbers or other sensitive
 identifiers."""
 
 _FIELD_TYPES = {"number": int | float, "bool": bool, "str": str}
+
+# A forced choice with examples: as a plain dont_know flag, the model set it for "hmm" and "hello".
+ReplyKind = Annotated[
+    Literal["answer", "dont_know", "other"],
+    Field(
+        description='"answer": the request gives a value for pending_field. "dont_know": the user '
+        'says they do not know it or will not say it ("I don\'t know", "pata nahi", "not sure"). '
+        '"other": anything else, such as "hmm", "ok", a greeting or a different question; '
+        'also use "other" when there is no pending_field.'
+    ),
+]
 
 
 class Amount(BaseModel):
@@ -104,7 +115,7 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
         is dropped without losing the rest."""
         request = IntakeExtractInput.model_validate(value)
         profile = profile_model(specs)
-        output = create_model("IntakeExtractionOutput", facts=(profile, ...), dont_know=(bool, False))
+        output = create_model("IntakeExtractionOutput", facts=(profile, ...), reply_kind=(ReplyKind, "other"))
         # A JSON schema, not the model class: the reply comes back as a dict and is validated below.
         chain = untrusted_prompt(EXTRACT_INSTRUCTIONS) | self._model.with_structured_output(
             output.model_json_schema()
@@ -128,7 +139,7 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
                     rejected.append(field)
                     continue
             facts[field] = value
-        dont_know = bool(raw.get("dont_know")) and pending is not None and pending not in facts
+        dont_know = raw.get("reply_kind") == "dont_know" and pending is not None and pending not in facts
         return IntakeExtraction(facts=facts, rejected_fields=rejected, dont_know=dont_know)
 
     def ask(self, value: IntakeAskInput | dict) -> IntakeQuestion:

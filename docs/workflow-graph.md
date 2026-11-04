@@ -16,6 +16,8 @@ graph TD;
 	supervisor(supervisor)
 	intake(intake)
 	intake_question(intake_question)
+	reroute(reroute)
+	confirm(confirm)
 	eligibility(eligibility)
 	document_checker(document_checker)
 	application(application)
@@ -30,12 +32,19 @@ graph TD;
 	application -.-> finish;
 	approval -.-> approval_end;
 	approval -.-> submit;
+	confirm -.-> __end__;
+	confirm -.-> eligibility;
 	document_checker -.-> application;
 	document_checker -.-> finish;
+	eligibility -.-> confirm;
 	eligibility -.-> document_checker;
 	eligibility -.-> finish;
 	eligibility -.-> intake_question;
-	intake --> eligibility;
+	intake -.-> eligibility;
+	intake -.-> reroute;
+	reroute -.-> document_checker;
+	reroute -.-> eligibility;
+	reroute -.-> respond;
 	supervisor -.-> document_checker;
 	supervisor -. &nbsp;application&nbsp; .-> intake;
 	supervisor -.-> respond;

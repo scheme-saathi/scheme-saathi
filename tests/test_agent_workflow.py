@@ -606,6 +606,7 @@ def test_application_node_fills_required_fields_when_state_has_none(monkeypatch)
     request = _eligible_application_request()
     request["selected_scheme_id"] = "SYNTH-PENSION-001"
     request["confirmed_facts"] = {"age": 70, "is_widow": True, "income": 1000}
+    request["known_facts"] = request["confirmed_facts"]  # all confirmed, so no confirm step
     agents = _application_agents()
 
     build_agent_graph(agents).invoke(request)

@@ -17,7 +17,8 @@ def test_diagram_shows_the_correction_loop_and_edit_path():
     
     # Specialists can route to each other (conditional paths)
     assert "intake -.-> eligibility;" in text or "intake" in text and "eligibility" in text
-    assert "intake --> eligibility;" in text
+    assert "intake -.-> eligibility;" in text
+    assert "intake -.-> reroute;" in text  # an empty reply goes back to the Supervisor
     assert "eligibility -.-> intake_question;" in text
     assert "intake_question --> __end__;" in text
     
