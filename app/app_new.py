@@ -26,6 +26,7 @@ else:
     from api import create_api
 
 CSS_PATH = Path(__file__).with_name("style.css")
+BRAND_IMAGE_PATH = Path(__file__).with_name("images") / "main_image.png"
 JOURNEY_STEPS = (
     "Your details",
     "Eligibility",
@@ -33,6 +34,16 @@ JOURNEY_STEPS = (
     "Review",
     "Confirmation",
 )
+
+
+def _render_brand_image(width: int = 313) -> None:
+    """Render the official Scheme Saathi image at a consistent header size."""
+    with st.container(key="page-brand"):
+        st.image(
+            BRAND_IMAGE_PATH,
+            width=width,
+            alt="Government of India, MyGov, and Scheme Saathi",
+        )
 
 
 @st.cache_resource
@@ -1190,7 +1201,7 @@ def _render_access_page() -> None:
     with st.container(key="auth-page"):
         with st.container(border=True, key="auth-shell"):
             with st.container(key="auth-brand"):
-                st.markdown("### :material/account_balance: Scheme Saathi")
+                _render_brand_image()
             st.caption("PUBLIC SUPPORT, MADE SIMPLE")
             mode = st.segmented_control(
                 "Account access",
@@ -1290,11 +1301,15 @@ def _render_consent_page() -> None:
     """Present a clear privacy notice before opening the guided chat."""
     with st.container(key="consent-page"):
         with st.container(key="consent-header"):
-            brand_col, step_col = st.columns([3, 1], vertical_alignment="center")
-            brand_col.markdown("### :material/account_balance: Scheme Saathi")
-            brand_col.caption("PUBLIC SUPPORT, MADE SIMPLE")
-            step_col.markdown("**BEFORE YOU BEGIN**")
-            step_col.caption("Privacy and consent")
+            image_col, tagline_col, step_col = st.columns(
+                [1.5, 1.1, 1.1], vertical_alignment="center"
+            )
+            with image_col:
+                _render_brand_image()
+            tagline_col.caption("PUBLIC SUPPORT, MADE SIMPLE")
+            with step_col:
+                st.markdown("**BEFORE YOU BEGIN**")
+                st.caption("Privacy and consent")
 
         with st.container(border=True, key="consent-shell"):
             st.markdown(":material/verified_user: PRIVACY & CONSENT")
@@ -1460,30 +1475,34 @@ def _render_chat_page() -> None:
     st.session_state.setdefault("application_editing", False)
     st.session_state.setdefault("application_edit_revision", 0)
 
-    title_col, action_col = st.columns([4, 1], vertical_alignment="center")
-    title_col.markdown("### :material/account_balance: Scheme Saathi")
-    title_col.caption(
-        "A guided way to explore public support · "
-        f"{st.session_state['citizen_name']}"
-    )
-    with action_col:
-        if st.button(
-            "New chat",
-            icon=":material/add:",
-            disabled=not st.session_state["chat_messages"],
-            key="new-chat",
-            width="stretch",
-        ):
-            if _reset_chat():
-                st.rerun()
-        if st.button(
-            "Withdraw consent",
-            icon=":material/lock:",
-            key="withdraw-consent",
-            width="stretch",
-        ):
-            if _withdraw_consent():
-                st.rerun()
+    with st.container(key="chat-header"):
+        image_col, title_col, action_col = st.columns(
+            [1.6, 1.9, 1.35], gap="small", vertical_alignment="center"
+        )
+        with image_col:
+            _render_brand_image()
+        title_col.caption(
+            "A guided way to explore public support · "
+            f"{st.session_state['citizen_name']}"
+        )
+        with action_col:
+            if st.button(
+                "New chat",
+                icon=":material/add:",
+                disabled=not st.session_state["chat_messages"],
+                key="new-chat",
+                width="stretch",
+            ):
+                if _reset_chat():
+                    st.rerun()
+            if st.button(
+                "Withdraw consent",
+                icon=":material/lock:",
+                key="withdraw-consent",
+                width="stretch",
+            ):
+                if _withdraw_consent():
+                    st.rerun()
 
     try:
         api_base = _api_base_url()
