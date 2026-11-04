@@ -179,7 +179,7 @@ The API can also be run separately with
 `POST /api/analyze` and `POST /api/threads/{thread_id}/decision` as streaming
 endpoints, plus `GET /health`.
 
-## Eligibility rule engine (prototype)
+## Eligibility Check
 
 The Eligibility Analyst is a small sub-agent whose job is simple:
 
