@@ -26,11 +26,9 @@ def application_payload_hash(
     applicant: dict[str, Any],
     documents: dict[str, Any] | None = None,
 ) -> str:
-    payload = {
-        "scheme_id": scheme_id,
-        "applicant": applicant,
-        "documents": documents or {},
-    }
+    payload: dict[str, Any] = {"scheme_id": scheme_id, "applicant": applicant}
+    if documents:
+        payload["documents"] = documents
     canonical = json.dumps(
         payload,
         sort_keys=True,
