@@ -267,13 +267,17 @@ def _intake_question_node(agents: AgentSet, state: AgentWorkflowState) -> dict[s
             request=state.get("intake_request", state["request"]),
         )
     )
+    guarded = _guard_output(
+        agents, state, {"status": "needs_information", "response": question.question}, "intake"
+    )
+    if guarded["status"] == "output_blocked":
+        return guarded
     return {
         "pending_field": field,
         "pending_question": question.question,
         "question_attempts": {**attempts, field: attempts.get(field, 0) + 1},
         "questions_asked": state.get("questions_asked", 0) + 1,
-        "status": "needs_information",
-        "response": question.question,
+        **guarded,
     }
 
 

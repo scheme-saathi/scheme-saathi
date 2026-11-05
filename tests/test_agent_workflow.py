@@ -112,6 +112,23 @@ def test_intake_question_pauses_before_other_specialists():
     assert agents.document_checker.calls == agents.application.calls == []
 
 
+def test_intake_question_leaking_an_id_is_blocked_and_not_pending():
+    class LeakyIntake(StubIntake):
+        def ask(self, value):
+            return IntakeQuestion(field=value.field, question="Is your Aadhaar 1234 5678 9012?")
+
+    agents = build_agents(
+        intake=LeakyIntake(),
+        plan=StubSupervisor(SupervisorPlan(next_agent="intake", reason="Collect facts.", language="en")),
+    )
+
+    result = build_agent_graph(agents).invoke({"request": "Help me find a scheme"})
+
+    assert result["status"] == "output_blocked"
+    assert "1234 5678 9012" not in result["response"]
+    assert not result.get("pending_field")
+
+
 def test_document_request_is_routed_to_checker_without_application_access():
     documents = StubAgent(
         DocumentCheckResult(

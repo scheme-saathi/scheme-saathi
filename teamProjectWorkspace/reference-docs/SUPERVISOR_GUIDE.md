@@ -224,13 +224,15 @@ respond / finish / approval_end / submit -> END
 
 - If validation fails (sensitive data, length, rate limit), the plan becomes `respond`, `validation_errors` is stored in state, and neither the supervisor model nor any specialist runs. The `respond` node returns status `validation_error`; the message never echoes the sensitive value.
 - If it passes, the supervisor model runs and `language`, `intent` and the plan are stored in state. `validation_errors` is reset to `[]` every turn, so an earlier failure on the same thread cannot block a later request.
+- While intake is waiting for an answer (`pending_field` is set), the text is a reply to its question. It is validated with `is_reply=True`: the 5-character minimum and classification are skipped so short answers like "yes" work, but the sensitive-data, maximum-length and rate-limit checks still apply. The supervisor model is not called, and the earlier plan stands.
+- The `reroute` node (used when a reply held no facts) calls the supervisor without re-validating, so one turn counts once against the rate limit.
 - `actor_id` must come from the session or request context (`AgentWorkflowService.execute_workflow` in `app/api.py` passes it). The rate limiter keys on it.
 
 #### Output guardrails
 
-`_guard_output` calls `supervisor.validate_output(response, agent_name, language)` on the final user-facing text in the `finish` and `respond` nodes, using the producing agent's name (`intake`, `eligibility`, `document_checker`, `application`, or `supervisor`). If validation fails, the response is replaced by the localized safe message from `handle_validation_error` and the status is `output_blocked`.
+`_guard_output` calls `supervisor.validate_output(response, agent_name, language)` on the user-facing text in the `finish` and `respond` nodes, and on the question written by the intake agent in `intake_question` (agent name `intake`). The agent name is that of the producing agent (`intake`, `eligibility`, `document_checker`, `application`, or `supervisor`). If validation fails, the response is replaced by the localized safe message from `handle_validation_error` and the status is `output_blocked`. A blocked intake question sets no `pending_field`, so the next message is treated as a new request, not as an answer.
 
-Not covered by output validation: the `approval`, `approval_end` and `submit` nodes. Those are protected by the approval gate instead.
+Not covered by output validation: the fixed system messages in the `confirm`, `approval`, `approval_end`, `submit` and stop-intake paths. They are not model-written text; the approval gate protects the write.
 
 #### Approval gate (Application path)
 
@@ -363,13 +365,14 @@ def after_specialist_node(state: GraphState) -> dict[str, Any]:
 
 #### Methods
 
-##### `validate_input(request: str, actor_id: str | None = None) -> ValidationResult`
+##### `validate_input(request: str, actor_id: str | None = None, is_reply: bool = False) -> ValidationResult`
 
 Validates user input comprehensively.
 
 **Parameters:**
 - `request` (str): User request text (5-5000 characters)
 - `actor_id` (str, optional): Household ID for rate limiting
+- `is_reply` (bool, optional): The text answers a pending intake question. Skips the 5-character minimum and classification (language `unknown`, intent `other`); all other checks still apply.
 
 **Returns:** `ValidationResult` with:
 - `passed` (bool): Whether input is valid
@@ -477,9 +480,9 @@ if not validation.passed:
 
 #### Methods
 
-##### `validate_request(request: str, actor_id: str | None = None) -> ValidationResult`
+##### `validate_request(request: str, actor_id: str | None = None, is_reply: bool = False) -> ValidationResult`
 
-Standalone input validation without supervisor context.
+Standalone input validation without supervisor context. `is_reply` behaves as in `validate_input()`.
 
 **Validates:**
 1. **Empty/Null**: Request must be 5-5000 characters
