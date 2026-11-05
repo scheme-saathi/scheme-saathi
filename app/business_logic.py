@@ -480,7 +480,7 @@ class DemoService:
                 thread_id, self.workflow.get_state(config)
             )
         except ToolCallError as error:
-            logger.exception("A Scheme Saathi workflow tool failed.")
+            logger.warning("A Scheme Saathi workflow tool failed.")
             yield "error", {"detail": str(error)}
 
     @staticmethod

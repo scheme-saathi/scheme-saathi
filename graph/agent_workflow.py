@@ -735,4 +735,4 @@ def build_agent_graph(
     # Finish → END
     builder.add_edge("finish", END)
     
-    return builder.compile(checkpointer=checkpointer)
+    return tools.budget_graph(builder.compile(checkpointer=checkpointer))

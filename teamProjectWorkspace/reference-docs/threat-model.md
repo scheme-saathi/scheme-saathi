@@ -18,8 +18,8 @@ demo, not a production security certification.
 ## Trust boundaries and data flow
 
 1. User input enters through the API and is passed into a supervisor/specialist
-   graph. The supervisor's separate input/output guardrail methods are not
-   currently wired into the live graph path.
+   graph. The supervisor validates inputs before routing and validates final
+   specialist responses before they leave the graph.
 2. Scheme pages, retrieved text, tool outputs, and model outputs are untrusted
    data. They must not be interpreted as instructions or as authority to change
    eligibility rules.
@@ -31,14 +31,18 @@ demo, not a production security certification.
    and stores it as unconfirmed `known_facts`. Final verdicts and application
    forms use only facts the person confirmed at the confirm step, which is bound
    to a hash of the exact facts shown.
-5. Graph calls go through `graph.tools.call_tool` and in-memory MCP servers. The
-   current pre-tool write check is implemented in Python and relies on a
-   caller-controlled `acting_as` context.
+5. Graph calls go through `graph.tools.call_tool` and in-memory MCP servers.
+   The boundary enforces an allow-list, a 40-call budget per compiled graph
+   invocation, and a caller-context check for portal writes. The write check
+   relies on `acting_as` and prevents accidental misuse; it is not an
+   authorization boundary against malicious code.
 6. Application drafting creates a mock-portal draft before pausing for a human
    decision. Submission is intended to occur only after the exact form hash is
    approved and rechecked.
-7. The mock portal also exposes direct FastAPI routes. Those routes bypass the
-   graph-level write check and currently have no authentication.
+7. The mock portal also exposes direct FastAPI routes. `POST /applications`
+   requires a short-lived write capability, but bypasses the graph-level
+   allow-list and has no user authentication. `GET /applications/{id}` has no
+   authentication.
 8. The API uses an in-memory checkpointer and trusts the caller-supplied
    `x-actor-id` value for thread ownership. This is not authentication.
 
@@ -52,10 +56,12 @@ demo, not a production security certification.
 | Draft rules are mistaken for live eligibility | Rule engine defaults to fully reviewed rules; draft use is explicitly requested as preview. | Keep preview results clearly labeled and prevent preview results from reaching application or submission paths. |
 | Prompt injection in scheme text or tool output | Agent prompts describe external text as untrusted task data. | Validate outputs and constrain tool parameters; prompt wording alone is not a security boundary. |
 | Unauthorized agent invokes a portal write through the graph | `graph.tools.call_tool` checks the caller context for `create_application` and `submit_draft`. | `acting_as` is caller-controlled Python state, so it only prevents accidental misuse. Enforce authorization at a trusted server boundary and test bypass attempts. |
-| Direct request creates or submits an application without approval | Workflow uses draft creation and exact-payload approval before submission. | Direct `POST /applications` bypasses the graph and accepts `submit`; restrict or remove this route before exposing the portal server. |
+| An agent makes excessive MCP calls in one workflow run | Compiled graphs stop before exceeding their fixed per-invocation budget and emit metadata-only audit events. Agent and baseline graphs allow 40 calls; the legacy full-corpus graph allows 1,200. | The budget is process-local to each invocation; it is not a household rate limit or a distributed quota. The legacy limit is high to accommodate its current full-corpus evaluation and must be revisited if corpus or field counts grow. |
+| Direct request creates or submits an application without approval | Workflow uses draft creation and exact-payload approval before submission. Direct `POST /applications` requires a short-lived capability. | The direct route bypasses the graph's approval flow; possession of a valid capability is not proof of user approval. Restrict or remove this route before exposing the portal server. |
 | Approval is replayed after form changes | Approval is bound to a canonical form hash; the submit node rechecks the approved hash and portal draft hash. | Keep tests for changed forms, wrong hashes, rejection, and edits; persistent storage must preserve these invariants. |
 | Caller accesses another household's thread | API compares the supplied actor ID with the thread owner. | Actor ID comes from a request header/body and can be spoofed. Add real authentication and derive household identity from the authenticated session. |
-| Full Aadhaar, bank-account, or other identifier is exposed | Input guard has sensitive-pattern detection and masking utilities. | The guard is not integrated into the live graph path. Apply validation before model/tool calls and ensure logs, errors, traces, and test fixtures use masked synthetic values. |
+| Full Aadhaar, bank-account, or other identifier is exposed | The live supervisor rejects recognized sensitive input before routing and logs only a masked copy; output validation also rejects recognized sensitive output. MCP audit events omit tool payloads. | Detection is pattern-based and does not guarantee identification of every sensitive value. Review non-MCP logs, provider traces, and errors separately; use masked synthetic values in tests. |
+| Household data is copied into tool audit logs | MCP audit events record only actor/tool labels, outcome, safe error category and duration; arguments, results and exception text are excluded. | Other application, model-provider and server logs require their own review; this control covers the graph MCP boundary only. |
 | Document contents are treated as verified | Document checker and field comparison tool disclaim authenticity verification. | Document extraction/storage is not wired into the workflow. Do not present checklist matching as authenticity or legal validity verification. |
 | Model/API credential leaks | Model IDs and credentials are configured through environment variables; `.env` is intended to remain local. | Keep secrets out of source, logs, screenshots, and examples; use empty values in `.env.example` and rotate any exposed key. |
 | Draft or household data persists unexpectedly | Current mock portal and API state are in memory. | Persistence, retention, consent, expiry, and household deletion need end-to-end policy and tests before production use. |
@@ -76,13 +82,12 @@ demo, not a production security certification.
 
 ## Before deployment
 
-- Wire the supervisor's input and output checks into the actual graph execution
-  path and test rejection behavior.
+- Keep tests for supervisor input/output checks and the MCP budget/audit boundary.
 - Replace caller-named write access with authorization enforced at the server
   boundary; secure or disable direct portal write routes.
 - Add authentication and bind thread ownership to the authenticated household.
-- Add privacy-safe audit events for approvals and writes without recording full
-  form data or identity numbers.
+- Add privacy-safe audit events for approvals without recording full form data
+  or identity numbers.
 - Decide and implement consent, retention/expiry, and household-wide deletion
   before persisting memory or application data.
 - Test unauthorized writes, direct-route bypass, invalid/replayed approvals,
