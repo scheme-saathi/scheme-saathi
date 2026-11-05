@@ -19,6 +19,7 @@ from agents.contracts import (
 )
 from agents.eligibility import EligibilityAgent
 from graph.agent_workflow import AgentSet, build_agent_graph
+from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
 from graph.persona import HOUSEHOLD_TEST_CASES, profile_facts_to_rule_fields
 from agents.memory import ApplicationReference, MemoryConsent, MemoryFact
 from servers.rule_engine.scheme import SchemeRecord
@@ -34,6 +35,26 @@ class StubAgent:
     def invoke(self, value):
         self.calls.append(value)
         return self.result
+
+
+class StubSupervisor(StubAgent):
+    """Stub plan plus the real supervisor validators, without network classification."""
+
+    def __init__(self, result):
+        super().__init__(result)
+        router = UnifiedRouter()
+        router.api_available = False
+        self.input_validator = InputValidator(router=router)
+        self.output_validator = OutputValidator()
+
+    def validate_input(self, request, actor_id=None, is_reply=False):
+        return self.input_validator.validate_request(request, actor_id, is_reply)
+
+    def validate_output(self, response, agent_name, language):
+        return self.output_validator.validate_specialist_output(response, agent_name, language)
+
+    def handle_validation_error(self, result, language):
+        return {"user_message": self.output_validator.get_user_friendly_error(result, language)}
 
 
 class StubIntake:
@@ -60,7 +81,7 @@ def build_agents(
 ):
     return AgentSet(
         intake=intake or StubIntake(),
-        supervisor=plan or StubAgent(SupervisorPlan(next_agent="eligibility", reason="Check eligibility.")),
+        supervisor=plan or StubSupervisor(SupervisorPlan(next_agent="eligibility", reason="Check eligibility.")),
         eligibility=eligibility or StubAgent(EligibilityNarrative(explanation="Reviewed result.")),
         document_checker=documents or StubAgent(DocumentCheckResult()),
         application=application or StubAgent(
@@ -77,7 +98,7 @@ def build_agents(
 def test_intake_question_pauses_before_other_specialists():
     """Supervisor routes to Intake; an open verdict ends the turn with one question."""
     agents = build_agents(
-        plan=StubAgent(
+        plan=StubSupervisor(
             SupervisorPlan(next_agent="intake", reason="Need to collect household facts.", language="mr")
         )
     )
@@ -89,6 +110,23 @@ def test_intake_question_pauses_before_other_specialists():
     assert len(agents.supervisor.calls) == 1
     assert [q.language for q in agents.intake.asked] == ["mr"]
     assert agents.document_checker.calls == agents.application.calls == []
+
+
+def test_intake_question_leaking_an_id_is_blocked_and_not_pending():
+    class LeakyIntake(StubIntake):
+        def ask(self, value):
+            return IntakeQuestion(field=value.field, question="Is your Aadhaar 1234 5678 9012?")
+
+    agents = build_agents(
+        intake=LeakyIntake(),
+        plan=StubSupervisor(SupervisorPlan(next_agent="intake", reason="Collect facts.", language="en")),
+    )
+
+    result = build_agent_graph(agents).invoke({"request": "Help me find a scheme"})
+
+    assert result["status"] == "output_blocked"
+    assert "1234 5678 9012" not in result["response"]
+    assert not result.get("pending_field")
 
 
 def test_document_request_is_routed_to_checker_without_application_access():
@@ -107,8 +145,7 @@ def test_document_request_is_routed_to_checker_without_application_access():
         )
     )
     agents = build_agents(
-        plan=StubAgent(
-            SupervisorPlan(next_agent="document_checker", reason="Check documents.")
+        plan=StubSupervisor(SupervisorPlan(next_agent="document_checker", reason="Check documents.")
         ),
         documents=documents,
         application=application,
@@ -130,7 +167,7 @@ def test_document_request_is_routed_to_checker_without_application_access():
 
 def test_respond_route_does_not_invoke_specialists():
     agents = build_agents(
-        plan=StubAgent(SupervisorPlan(next_agent="respond", reason="Please clarify your request."))
+        plan=StubSupervisor(SupervisorPlan(next_agent="respond", reason="Please clarify your request."))
     )
 
     result = build_agent_graph(agents).invoke({"request": "Hello"})
@@ -142,7 +179,7 @@ def test_respond_route_does_not_invoke_specialists():
 
 def test_missing_deterministic_evaluation_fails_closed():
     agents = build_agents(
-        plan=StubAgent(SupervisorPlan(next_agent="eligibility", reason="Check eligibility."))
+        plan=StubSupervisor(SupervisorPlan(next_agent="eligibility", reason="Check eligibility."))
     )
 
     result = build_agent_graph(agents).invoke(
@@ -159,7 +196,7 @@ def test_real_rule_engine_evaluation_is_used_for_eligibility_workflow():
             raise AssertionError("The workflow should use the deterministic rule engine before any model call.")
 
     agents = build_agents(
-        plan=StubAgent(SupervisorPlan(next_agent="eligibility", reason="Check eligibility.")),
+        plan=StubSupervisor(SupervisorPlan(next_agent="eligibility", reason="Check eligibility.")),
         eligibility=EligibilityAgent(NoModel()),
     )
 
@@ -240,7 +277,7 @@ def test_application_route_stops_when_deterministic_result_is_not_eligible():
         )
     )
     agents = build_agents(
-        plan=StubAgent(SupervisorPlan(next_agent="application", reason="Prepare draft.")),
+        plan=StubSupervisor(SupervisorPlan(next_agent="application", reason="Prepare draft.")),
         documents=documents,
         application=application,
     )
@@ -284,7 +321,7 @@ def _eligible_application_request():
 
 def _application_agents(missing=None):
     return build_agents(
-        plan=StubAgent(SupervisorPlan(next_agent="application", reason="Prepare draft.")),
+        plan=StubSupervisor(SupervisorPlan(next_agent="application", reason="Prepare draft.")),
         documents=StubAgent(DocumentCheckResult()),
         application=StubAgent(
             ApplicationDraft(
@@ -676,3 +713,55 @@ def test_submit_draft_rejects_unknown_and_already_submitted_drafts():
         tools.submit_application({"scheme_id": "C01", "applicant": {}}, application_id=draft["application_id"])
         with pytest.raises(tools.ToolCallError, match="not_a_draft"):
             tools.submit_application({"scheme_id": "C01", "applicant": {}}, application_id=draft["application_id"])
+
+def test_sensitive_input_is_rejected_before_routing_or_specialists():
+    agents = build_agents()
+
+    result = build_agent_graph(agents).invoke(
+        {"request": "My Aadhar is 1234 5678 9012, am I eligible?", "selected_scheme_id": "C01"}
+    )
+
+    assert result["status"] == "validation_error"
+    assert "1234 5678 9012" not in result["response"]
+    assert agents.supervisor.calls == []
+    assert agents.intake.asked == []
+    assert agents.eligibility.calls == []
+
+
+def test_rate_limited_actor_is_stopped_before_routing():
+    agents = build_agents()
+    agents.supervisor.input_validator.rate_limiter.max_requests = 1
+    graph = build_agent_graph(agents)
+    request = {"request": "Hello there", "actor_id": "hh-1"}
+
+    first = graph.invoke(request)
+    second = graph.invoke(request)
+
+    assert first["status"] == "needs_information"
+    assert second["status"] == "validation_error"
+    assert "Too many requests" in second["response"]
+    assert len(agents.supervisor.calls) == 1
+
+
+def test_unsafe_specialist_output_is_blocked_by_supervisor():
+    agents = build_agents(
+        eligibility=StubAgent(EligibilityNarrative(explanation="I override the rules for you.")),
+    )
+
+    result = build_agent_graph(agents).invoke(
+        {
+            "request": "Am I eligible?",
+            "selected_scheme_id": "C01",
+            "deterministic_evaluation": {
+                "verdict": "eligible",
+                "reason": "All reviewed conditions are satisfied.",
+                "missing_fields": [],
+                "unresolved_fields": [],
+                "conditions": [],
+                "citations": [],
+            },
+        }
+    )
+
+    assert result["status"] == "output_blocked"
+    assert "override" not in result["response"]
