@@ -31,8 +31,8 @@ class StubSupervisor(StubAgent):
         self.input_validator = InputValidator(router=router)
         self.output_validator = OutputValidator()
 
-    def validate_input(self, request, actor_id=None):
-        return self.input_validator.validate_request(request, actor_id)
+    def validate_input(self, request, actor_id=None, is_reply=False):
+        return self.input_validator.validate_request(request, actor_id, is_reply)
 
     def validate_output(self, response, agent_name, language):
         return self.output_validator.validate_specialist_output(response, agent_name, language)

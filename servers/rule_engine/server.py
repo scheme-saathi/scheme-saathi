@@ -87,6 +87,30 @@ def get_rule_fields(scheme_ids: list[str], include_draft: bool = False) -> dict[
 
 
 @mcp.tool()
+def get_field_specs(scheme_ids: list[str], include_draft: bool = False) -> dict[str, Any]:
+    """Read-only type of each profile field used by the given schemes' rules, in rule order.
+
+    Returns:
+        ``{field: {"type": "number" | "bool" | "str", "known_values": [...]}}``. ``known_values``
+        lists the strings the rules compare against; other strings are still valid answers.
+    """
+    records = _rule_records()
+    specs: dict[str, dict[str, Any]] = {}
+    for scheme_id in scheme_ids:
+        if scheme_id not in records:
+            return _error("scheme_not_found", f"No rule record for scheme '{scheme_id}'.")
+        for rule in _conditions(records[scheme_id], include_draft).rules:
+            values = rule.value if rule.op in {"in", "not_in"} else [rule.value]
+            kind = "bool" if isinstance(values[0], bool) else "str" if isinstance(values[0], str) else "number"
+            spec = specs.setdefault(rule.field, {"type": kind, "known_values": []})
+            if spec["type"] != kind:
+                return _error("field_type_conflict", f"Rules use '{rule.field}' as both {spec['type']} and {kind}.")
+            if kind == "str":
+                spec["known_values"] += [v for v in values if v not in spec["known_values"]]
+    return {"ok": True, "access": "read", "data": specs}
+
+
+@mcp.tool()
 def evaluate_profile(profile: dict[str, object], scheme_id: str, include_draft: bool = False) -> dict[str, Any]:
     """Read-only evaluation of a household profile against a reviewed scheme ruleset.
 

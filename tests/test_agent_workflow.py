@@ -12,8 +12,9 @@ from agents.contracts import (
     DocumentCheckResult,
     EligibilityInput,
     EligibilityNarrative,
+    IntakeExtraction,
     IntakeInput,
-    IntakeResult,
+    IntakeQuestion,
     SupervisorPlan,
 )
 from agents.eligibility import EligibilityAgent
@@ -46,14 +47,28 @@ class StubSupervisor(StubAgent):
         self.input_validator = InputValidator(router=router)
         self.output_validator = OutputValidator()
 
-    def validate_input(self, request, actor_id=None):
-        return self.input_validator.validate_request(request, actor_id)
+    def validate_input(self, request, actor_id=None, is_reply=False):
+        return self.input_validator.validate_request(request, actor_id, is_reply)
 
     def validate_output(self, response, agent_name, language):
         return self.output_validator.validate_specialist_output(response, agent_name, language)
 
     def handle_validation_error(self, result, language):
         return {"user_message": self.output_validator.get_user_friendly_error(result, language)}
+
+
+class StubIntake:
+    """Reads no facts from the message and words each question as its field name."""
+
+    def __init__(self):
+        self.asked = []
+
+    def extract(self, value, specs):
+        return IntakeExtraction()
+
+    def ask(self, value):
+        self.asked.append(value)
+        return IntakeQuestion(field=value.field, question=f"What is your {value.field}?")
 
 
 def build_agents(
@@ -65,7 +80,7 @@ def build_agents(
     application=None,
 ):
     return AgentSet(
-        intake=intake or StubAgent(IntakeResult(language="en", intent="eligibility")),
+        intake=intake or StubIntake(),
         supervisor=plan or StubSupervisor(SupervisorPlan(next_agent="eligibility", reason="Check eligibility.")),
         eligibility=eligibility or StubAgent(EligibilityNarrative(explanation="Reviewed result.")),
         document_checker=documents or StubAgent(DocumentCheckResult()),
@@ -80,30 +95,21 @@ def build_agents(
     )
 
 
-def test_intake_questions_pause_before_supervisor_or_specialists():
-    """Test that Intake clarifying questions pause the flow.
-    
-    New architecture: Supervisor is entry point and routes to Intake.
-    Intake clarifying questions return 'needs_clarification' status.
-    """
+def test_intake_question_pauses_before_other_specialists():
+    """Supervisor routes to Intake; an open verdict ends the turn with one question."""
     agents = build_agents(
-        intake=StubAgent(
-            IntakeResult(
-                language="mr",
-                intent="eligibility",
-                clarifying_questions=["Which district do you live in?"],
-            )
-        ),
-        plan=StubSupervisor(SupervisorPlan(next_agent="intake", reason="Need to collect household facts."))
+        plan=StubSupervisor(
+            SupervisorPlan(next_agent="intake", reason="Need to collect household facts.", language="mr")
+        )
     )
 
     result = build_agent_graph(agents).invoke({"request": "मला योजना शोधायची आहे"})
 
-    assert result["status"] == "needs_clarification"
-    assert "Which district" in result["response"]
-    # Supervisor IS called first (entry point), then routes to Intake
-    assert len(agents.supervisor.calls) >= 1
-    assert len(agents.intake.calls) >= 1
+    assert result["status"] == "needs_information"
+    assert result["response"] == f"What is your {result['pending_field']}?"
+    assert len(agents.supervisor.calls) == 1
+    assert [q.language for q in agents.intake.asked] == ["mr"]
+    assert agents.document_checker.calls == agents.application.calls == []
 
 
 def test_document_request_is_routed_to_checker_without_application_access():
@@ -620,6 +626,7 @@ def test_application_node_fills_required_fields_when_state_has_none(monkeypatch)
     request = _eligible_application_request()
     request["selected_scheme_id"] = "SYNTH-PENSION-001"
     request["confirmed_facts"] = {"age": 70, "is_widow": True, "income": 1000}
+    request["known_facts"] = request["confirmed_facts"]  # all confirmed, so no confirm step
     agents = _application_agents()
 
     build_agent_graph(agents).invoke(request)
@@ -700,7 +707,7 @@ def test_sensitive_input_is_rejected_before_routing_or_specialists():
     assert result["status"] == "validation_error"
     assert "1234 5678 9012" not in result["response"]
     assert agents.supervisor.calls == []
-    assert agents.intake.calls == []
+    assert agents.intake.asked == []
     assert agents.eligibility.calls == []
 
 
@@ -713,7 +720,7 @@ def test_rate_limited_actor_is_stopped_before_routing():
     first = graph.invoke(request)
     second = graph.invoke(request)
 
-    assert first["status"] == "eligibility_checked"
+    assert first["status"] == "needs_information"
     assert second["status"] == "validation_error"
     assert "Too many requests" in second["response"]
     assert len(agents.supervisor.calls) == 1

@@ -418,7 +418,7 @@ class InputValidator:
         self.router = router or UnifiedRouter()
 
     def validate_request(
-        self, request: str, actor_id: str | None = None
+        self, request: str, actor_id: str | None = None, is_reply: bool = False
     ) -> ValidationResult:
         """Validate user request comprehensively.
         
@@ -431,6 +431,8 @@ class InputValidator:
         Args:
             request: User input text
             actor_id: Optional identifier for rate limiting
+            is_reply: The text answers a pending question, so a short answer is allowed
+                and it is not classified
             
         Returns:
             ValidationResult with all checks and classifications
@@ -446,7 +448,7 @@ class InputValidator:
         # 2. Length check
         if len(request) > 5000:
             errors.append("Request too long (max 5000 characters)")
-        if len(request) < 5:
+        if len(request) < 5 and not is_reply:
             errors.append("Request too short (min 5 characters)")
 
         # 3. Detect sensitive patterns
@@ -461,11 +463,14 @@ class InputValidator:
             logger.warning(f"Sensitive data rejected in request from {actor_id}: {masked}")
 
         # 4. Unified classification (language + intent in single call)
-        classification = self.router.classify(request)
+        if is_reply:
+            classification = {"language": "unknown", "intent": "other"}
+        else:
+            classification = self.router.classify(request)
         language = classification["language"]
         intent = classification["intent"]
 
-        if language == "unknown":
+        if language == "unknown" and not is_reply:
             warnings.append("Language could not be detected with confidence")
 
         # 5. Rate limiting (if actor_id provided)
@@ -720,10 +725,10 @@ class SupervisorAgent(StructuredGPTAgent[SupervisorInput, SupervisorPlan]):
         self.output_validator = OutputValidator()
 
     def validate_input(
-        self, request: str, actor_id: str | None = None
+        self, request: str, actor_id: str | None = None, is_reply: bool = False
     ) -> ValidationResult:
         """Step 1: Validate user input."""
-        return self.input_validator.validate_request(request, actor_id)
+        return self.input_validator.validate_request(request, actor_id, is_reply)
 
     def route_request(
         self,
