@@ -374,7 +374,7 @@ A Marathi message gets a Marathi question ("माझी आई 65 वर्ष�
 Not done yet: the confirmation, verdict and stop messages are English only and show raw field
 names (`is widow`), and the Streamlit chat does not use this flow yet.
 
-## Eligibility rule engine (prototype)
+## Eligibility Agent
 
 The Eligibility Analyst is a small sub-agent whose job is simple:
 
