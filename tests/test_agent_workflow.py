@@ -303,11 +303,12 @@ def test_application_route_stops_when_deterministic_result_is_not_eligible():
 
 
 def _eligible_application_request():
+    facts = {"age": 30, "has_individual_bank_or_post_office_account": True}
     return {
         "request": "Help me apply",
         "selected_scheme_id": "C01",
-        "known_facts": {"age": 30},
-        "confirmed_facts": {"age": 30},
+        "known_facts": facts,
+        "confirmed_facts": facts,
         "deterministic_evaluation": {
             "verdict": "eligible",
             "reason": "All reviewed conditions are satisfied.",
@@ -326,7 +327,7 @@ def _application_agents(missing=None):
         application=StubAgent(
             ApplicationDraft(
                 scheme_id="C01",
-                fields={"age": 30},
+                fields={"age": 30, "has_individual_bank_or_post_office_account": True},
                 missing_fields=missing or [],
                 review_summary="Draft is ready for human review.",
             )
@@ -352,7 +353,11 @@ def test_application_draft_pauses_for_approval_and_does_not_submit(monkeypatch):
     graph, config, result, submitted = _run_to_approval(monkeypatch)
 
     pending = result["__interrupt__"][0].value
-    assert pending["form"] == {"scheme_id": "C01", "applicant": {"age": 30}}
+    expected_form = {
+        "scheme_id": "C01",
+        "applicant": {"age": 30, "has_individual_bank_or_post_office_account": True},
+    }
+    assert pending["form"] == expected_form
     assert len(pending["payload_hash"]) == 64
     assert pending["options"] == ["approve", "edit", "reject"]
     assert submitted == []
@@ -368,7 +373,10 @@ def test_approval_with_the_exact_hash_submits_once(monkeypatch):
 
     assert final["status"] == "submitted"
     assert final["submission"]["application_id"] == "APP-1"
-    assert submitted == [{"scheme_id": "C01", "applicant": {"age": 30}}]
+    assert submitted == [{
+        "scheme_id": "C01",
+        "applicant": {"age": 30, "has_individual_bank_or_post_office_account": True},
+    }]
 
 
 def test_approval_with_a_wrong_hash_is_refused(monkeypatch):
@@ -665,7 +673,10 @@ def test_portal_draft_exists_before_approval_and_submit_uses_it():
 
     draft_id = pending["portal_draft_id"]
     assert APPLICATIONS[draft_id]["status"] == "draft"
-    assert APPLICATIONS[draft_id]["applicant"] == {"age": 30}
+    assert APPLICATIONS[draft_id]["applicant"] == {
+        "age": 30,
+        "has_individual_bank_or_post_office_account": True,
+    }
 
     final = graph.invoke(Command(resume={"action": "approve", "payload_hash": pending["payload_hash"]}), config)
 
@@ -752,6 +763,7 @@ def test_unsafe_specialist_output_is_blocked_by_supervisor():
         {
             "request": "Am I eligible?",
             "selected_scheme_id": "C01",
+            "confirmed_facts": {"age": 30, "has_individual_bank_or_post_office_account": True},
             "deterministic_evaluation": {
                 "verdict": "eligible",
                 "reason": "All reviewed conditions are satisfied.",

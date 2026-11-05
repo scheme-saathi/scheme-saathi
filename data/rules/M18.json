@@ -17,9 +17,19 @@
       "text": "Applicant should fulfil all the conditions of Age, Education, and fitness as per the Motor Vehicle Act."
     }
   ],
-  "documents_required": [],
+  "documents_required": [
+    "Aadhaar Number.",
+    "Proof of Identity.",
+    "Proof of Age (Birth Certificate).",
+    "Proof of Address.",
+    "Domicile Certificate of Maharashtra.",
+    "Caste Certificate VJNT or SBC Community (duly signed by an authorized Revenue Officer, not below the rank of Tehsildar).",
+    "Marksheet of the Latest Educational Qualification.",
+    "Bank Account Details.",
+    "Passport-sized Photograph."
+  ],
   "rules": [
-    {"field": "social_category", "op": "in", "value": ["VJNT", "OBC", "SBC"], "clause_id": "elig-1", "status": "draft"},
-    {"field": "meets_motor_vehicle_act_age_education_and_fitness_conditions", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"}
+    {"field": "social_category", "op": "in", "value": ["VJNT", "OBC", "SBC"], "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "meets_motor_vehicle_act_age_education_and_fitness_conditions", "op": "eq", "value": true, "clause_id": "elig-2", "status": "reviewed"}
   ]
 }

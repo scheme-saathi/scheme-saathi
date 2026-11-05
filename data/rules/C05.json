@@ -53,18 +53,23 @@
       "text": "Not a member of NPS-Traders scheme."
     }
   ],
-  "documents_required": [],
+  "documents_required": [
+    "Aadhaar Card",
+    "Savings Bank Account Passbook / Jan-Dhan Account Passbook",
+    "Mobile Number",
+    "Self-Certification (At the time of enrollment)"
+  ],
   "rules": [
-    {"field": "is_unorganized_worker", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
-    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-2", "status": "draft"},
-    {"field": "age", "op": "lte", "value": 40, "clause_id": "elig-2", "status": "draft"},
-    {"field": "monthly_income", "op": "lte", "value": 15000, "clause_id": "elig-3", "status": "draft"},
-    {"field": "has_savings_or_jandhan_account_with_ifsc", "op": "eq", "value": true, "clause_id": "elig-4", "status": "draft"},
-    {"field": "is_income_tax_payer", "op": "eq", "value": false, "clause_id": "excl-2", "status": "draft"},
-    {"field": "is_organized_sector_worker", "op": "eq", "value": false, "clause_id": "excl-3", "status": "draft"},
-    {"field": "is_epfo_member", "op": "eq", "value": false, "clause_id": "excl-4", "status": "draft"},
-    {"field": "is_nps_member", "op": "eq", "value": false, "clause_id": "excl-5", "status": "draft"},
-    {"field": "is_esic_member", "op": "eq", "value": false, "clause_id": "excl-6", "status": "draft"},
-    {"field": "is_nps_traders_member", "op": "eq", "value": false, "clause_id": "excl-7", "status": "draft"}
+    {"field": "is_unorganized_worker", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-2", "status": "reviewed"},
+    {"field": "age", "op": "lte", "value": 40, "clause_id": "elig-2", "status": "reviewed"},
+    {"field": "monthly_income", "op": "lte", "value": 15000, "clause_id": "elig-3", "status": "reviewed"},
+    {"field": "has_savings_or_jandhan_account_with_ifsc", "op": "eq", "value": true, "clause_id": "elig-4", "status": "reviewed"},
+    {"field": "is_income_tax_payer", "op": "eq", "value": false, "clause_id": "excl-2", "status": "reviewed"},
+    {"field": "is_organized_sector_worker", "op": "eq", "value": false, "clause_id": "excl-3", "status": "reviewed"},
+    {"field": "is_epfo_member", "op": "eq", "value": false, "clause_id": "excl-4", "status": "reviewed"},
+    {"field": "is_nps_member", "op": "eq", "value": false, "clause_id": "excl-5", "status": "reviewed"},
+    {"field": "is_esic_member", "op": "eq", "value": false, "clause_id": "excl-6", "status": "reviewed"},
+    {"field": "is_nps_traders_member", "op": "eq", "value": false, "clause_id": "excl-7", "status": "reviewed"}
   ]
 }

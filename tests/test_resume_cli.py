@@ -39,10 +39,10 @@ def test_unknown_scheme_id_is_rejected():
     assert result.returncode == 2 and "NOPE" in result.stderr
 
 
-def test_draft_scheme_reports_cant_tell_without_approval():
+def test_reviewed_scheme_reports_verdict_without_approval():
     result = run("--scheme-id", "C10")
     assert result.returncode == 0, result.stderr
-    assert "Cant Tell" in result.stdout and "No application to approve" in result.stdout
+    assert "Verdict:" in result.stdout and "No application to approve" in result.stdout
 
 
 def test_persona_id_loads_profile_facts():

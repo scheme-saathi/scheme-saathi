@@ -11,7 +11,7 @@ EXPECTED_IDS = {
 }
 
 
-def test_fifteen_hand_coded_scheme_records_are_source_linked_drafts():
+def test_fifteen_hand_coded_scheme_records_are_source_linked_and_reviewed():
     paths = sorted((ROOT / "data/rules").glob("*.json"))
     records = {record["scheme_id"]: record for record in (json.loads(path.read_text()) for path in paths)}
     assert set(records) == EXPECTED_IDS
@@ -20,19 +20,17 @@ def test_fifteen_hand_coded_scheme_records_are_source_linked_drafts():
         assert record["source"]["url"].startswith("https://")
         assert record["source"]["collected_on"]
         assert record["rules"]
-        assert all(rule["status"] == "draft" for rule in record["rules"])
+        assert all(rule["status"] == "reviewed" for rule in record["rules"])
         assert all(rule["clause_id"] in clause_ids for rule in record["rules"])
 
 
-def test_all_fifteen_load_but_are_not_live_by_default():
+def test_all_fifteen_reviewed_schemes_are_live_by_default():
     assert set(tools.search_schemes({}, sorted(EXPECTED_IDS))) == EXPECTED_IDS
-    assert "C01" not in tools.search_schemes({})
-    assert "M13" not in tools.search_schemes({})
+    assert set(tools.search_schemes({})) == EXPECTED_IDS | {"SYNTH-PENSION-001"}
 
 
-def test_each_new_record_can_be_preview_evaluated_when_its_rules_are_satisfied():
-    new_ids = EXPECTED_IDS - {"C02", "C04", "C10"}
-    for scheme_id in sorted(new_ids):
+def test_each_reviewed_record_evaluates_live_when_its_rules_are_satisfied():
+    for scheme_id in sorted(EXPECTED_IDS):
         record = _load_scheme(scheme_id)
         profile = {}
         for rule in record.rules:
@@ -42,7 +40,7 @@ def test_each_new_record_can_be_preview_evaluated_when_its_rules_are_satisfied()
                 profile[rule.field] = "__not_listed__"
             else:
                 profile[rule.field] = rule.value
-        result = tools.evaluate_scheme(profile, scheme_id, include_draft=True)
+        result = tools.evaluate_scheme(profile, scheme_id)
         assert result["verdict"] == "eligible", scheme_id
 
 
