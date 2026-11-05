@@ -11,6 +11,7 @@ from agents.contracts import (
 )
 from app import api
 from graph.agent_workflow import AgentSet, build_agent_graph
+from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
 from servers.mock_portal.server import APPLICATIONS
 
 
@@ -22,10 +23,28 @@ class StubAgent:
         return self.result
 
 
+class StubSupervisor(StubAgent):
+    def __init__(self, result):
+        super().__init__(result)
+        router = UnifiedRouter()
+        router.api_available = False
+        self.input_validator = InputValidator(router=router)
+        self.output_validator = OutputValidator()
+
+    def validate_input(self, request, actor_id=None, is_reply=False):
+        return self.input_validator.validate_request(request, actor_id, is_reply)
+
+    def validate_output(self, response, agent_name, language):
+        return self.output_validator.validate_specialist_output(response, agent_name, language)
+
+    def handle_validation_error(self, result, language):
+        return {"user_message": self.output_validator.get_user_friendly_error(result, language)}
+
+
 def make_agents(missing=None):
     return AgentSet(
         intake=StubAgent(IntakeResult(language="en", intent="application")),
-        supervisor=StubAgent(SupervisorPlan(next_agent="application", reason="Prepare draft.")),
+        supervisor=StubSupervisor(SupervisorPlan(next_agent="application", reason="Prepare draft.")),
         eligibility=StubAgent(EligibilityNarrative(explanation="Reviewed result.")),
         document_checker=StubAgent(DocumentCheckResult()),
         application=StubAgent(
@@ -92,6 +111,21 @@ def start_paused(client):
     first = send(client)
     assert first.status_code == 200, first.text
     return first.json()
+
+
+def test_chat_reports_detected_language_and_intent_not_the_client_hint(client):
+    body = {
+        "message": "I want to apply for this scheme",
+        "actor_id": "household-1",
+        "language": "hi",
+        "known_facts": {"age": 30},
+        "selected_scheme_id": "C01",
+    }
+
+    response = client.post("/api/chat", json=body, headers={"x-actor-id": "household-1"}).json()
+
+    assert response["intent"] == "application"
+    assert response["language"] == "en"
 
 
 def test_chat_pauses_with_the_exact_form_and_does_not_submit(client):
