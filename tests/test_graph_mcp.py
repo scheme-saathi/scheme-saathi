@@ -46,12 +46,12 @@ def test_unknown_scheme_is_a_tool_error():
         tools.required_fields(["NOPE"])
 
 
-def test_rule_tools_are_read_only_and_fail_closed_for_drafts():
+def test_rule_tools_are_read_only_and_evaluate_reviewed_rules():
     listing = list_rule_schemes()
     assert listing["ok"] and listing["access"] == "read"
     assert get_rule_fields(["C02"], include_draft=True)["ok"]
     live = evaluate_profile({"age": 40, "has_bank_account": True, "consents_to_auto_debit": True}, "C02")
     assert live["ok"]
-    assert live["data"]["verdict"] == "cant_tell"
+    assert live["data"]["verdict"] == "eligible"
     preview = evaluate_profile({"age": 40, "has_bank_account": True, "consents_to_auto_debit": True}, "C02", include_draft=True)
     assert preview["data"]["verdict"] == "eligible"

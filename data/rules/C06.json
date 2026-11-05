@@ -29,13 +29,17 @@
       "text": "Once the widow moves above poverty line"
     }
   ],
-  "documents_required": [],
+  "documents_required": [
+    "Death Certificate of husband – With the name of the surviving wife(widow).",
+    "BPL Card.",
+    "Age Proof - For age, the birth certificate or school certificate may be relied on. In their absence ration card and EPIC may be considered. If there is no valid document, any Medical Officer of any government hospital may be authorized to issue the age certificate."
+  ],
   "rules": [
-    {"field": "is_widow", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
-    {"field": "age", "op": "gte", "value": 40, "clause_id": "elig-1", "status": "draft"},
-    {"field": "age", "op": "lte", "value": 79, "clause_id": "elig-1", "status": "draft"},
-    {"field": "household_below_bpl", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"},
-    {"field": "is_remarried", "op": "eq", "value": false, "clause_id": "excl-2", "status": "draft"},
-    {"field": "has_not_moved_above_bpl", "op": "eq", "value": true, "clause_id": "excl-3", "status": "draft"}
+    {"field": "is_widow", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "age", "op": "gte", "value": 40, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "age", "op": "lte", "value": 79, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "household_below_bpl", "op": "eq", "value": true, "clause_id": "elig-2", "status": "reviewed"},
+    {"field": "is_remarried", "op": "eq", "value": false, "clause_id": "excl-2", "status": "reviewed"},
+    {"field": "has_not_moved_above_bpl", "op": "eq", "value": true, "clause_id": "excl-3", "status": "reviewed"}
   ]
 }

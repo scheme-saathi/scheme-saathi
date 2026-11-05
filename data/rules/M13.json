@@ -53,18 +53,24 @@
       "text": "Non-Resident Indians (NRIs)"
     }
   ],
-  "documents_required": [],
+  "documents_required": [
+    "Aadhar Card",
+    "7/12",
+    "8-A",
+    "Ferfar",
+    "Ration card etc"
+  ],
   "rules": [
-    {"field": "is_cultivable_landholding_farmer_family", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
-    {"field": "held_qualifying_land_on_2019_02_01", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
-    {"field": "eligible_for_pm_kisan", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
-    {"field": "is_institutional_landholder", "op": "eq", "value": false, "clause_id": "excl-2", "status": "draft"},
-    {"field": "is_former_or_present_constitutional_post_holder", "op": "eq", "value": false, "clause_id": "excl-4", "status": "draft"},
-    {"field": "is_former_or_present_listed_political_office_holder", "op": "eq", "value": false, "clause_id": "excl-5", "status": "draft"},
-    {"field": "is_excluded_government_or_local_body_employee", "op": "eq", "value": false, "clause_id": "excl-6", "status": "draft"},
-    {"field": "is_excluded_retired_pensioner_receiving_at_least_10000_monthly", "op": "eq", "value": false, "clause_id": "excl-7", "status": "draft"},
-    {"field": "paid_income_tax_in_last_assessment_year", "op": "eq", "value": false, "clause_id": "excl-8", "status": "draft"},
-    {"field": "is_practicing_registered_professional_in_listed_field", "op": "eq", "value": false, "clause_id": "excl-9", "status": "draft"},
-    {"field": "is_non_resident_indian", "op": "eq", "value": false, "clause_id": "excl-10", "status": "draft"}
+    {"field": "is_cultivable_landholding_farmer_family", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "held_qualifying_land_on_2019_02_01", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "eligible_for_pm_kisan", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "is_institutional_landholder", "op": "eq", "value": false, "clause_id": "excl-2", "status": "reviewed"},
+    {"field": "is_former_or_present_constitutional_post_holder", "op": "eq", "value": false, "clause_id": "excl-4", "status": "reviewed"},
+    {"field": "is_former_or_present_listed_political_office_holder", "op": "eq", "value": false, "clause_id": "excl-5", "status": "reviewed"},
+    {"field": "is_excluded_government_or_local_body_employee", "op": "eq", "value": false, "clause_id": "excl-6", "status": "reviewed"},
+    {"field": "is_excluded_retired_pensioner_receiving_at_least_10000_monthly", "op": "eq", "value": false, "clause_id": "excl-7", "status": "reviewed"},
+    {"field": "paid_income_tax_in_last_assessment_year", "op": "eq", "value": false, "clause_id": "excl-8", "status": "reviewed"},
+    {"field": "is_practicing_registered_professional_in_listed_field", "op": "eq", "value": false, "clause_id": "excl-9", "status": "reviewed"},
+    {"field": "is_non_resident_indian", "op": "eq", "value": false, "clause_id": "excl-10", "status": "reviewed"}
   ]
 }

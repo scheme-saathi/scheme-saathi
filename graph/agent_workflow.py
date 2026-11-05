@@ -41,6 +41,9 @@ def merge_facts(old: FactMap | None, new: FactMap | None) -> FactMap:
 
 class AgentWorkflowState(TypedDict, total=False):
     request: str
+    actor_id: str
+    intent: str
+    validation_errors: list[str]
     known_facts: Annotated[FactMap, merge_facts]
     confirmed_facts: Annotated[FactMap, merge_facts]
     selected_scheme_id: str
@@ -96,33 +99,63 @@ class AgentSet:
 
 
 def _supervisor_node(
-    agents: AgentSet, state: AgentWorkflowState
+    agents: AgentSet, state: AgentWorkflowState, validate: bool = True
 ) -> dict[str, Any]:
-    """Entry point: Validate input, detect language & intent, route intelligently.
-    
-    Supervisor runs FIRST on all requests to:
-    1. Validate input (no sensitive data, rate limiting, format)
-    2. Detect language (en, hi, mr) and intent in single gpt-4o-mini call
-    3. Route to appropriate specialist or pause for clarification
+    """Entry point: validate input, detect language and intent, route.
+
+    `validate=False` is for the reroute pass, where the same message was already validated this turn.
     """
-    if state.get("pending_field"):
+    update: dict[str, Any] = {}
+    validation = None
+    is_reply = bool(state.get("pending_field"))
+    if validate:
+        validation = agents.supervisor.validate_input(
+            state["request"], state.get("actor_id"), is_reply=is_reply
+        )
+        if not validation.passed:
+            return {
+                "language": validation.language,
+                "intent": validation.intent,
+                "validation_errors": validation.errors,
+                "plan": {"next_agent": "respond", "reason": "The request did not pass input validation."},
+            }
+        update = {"validation_errors": []}
+    if is_reply:
         # A reply to intake's question ("yes", "1 lakh") means nothing without that question,
         # so the plan from the earlier turn stands and the model is not asked to re-route it.
-        return {}
+        return update
     plan = agents.supervisor.invoke(
         SupervisorInput(
             request=state["request"],
             selected_scheme_id=state.get("selected_scheme_id"),
         )
     )
-    update: dict[str, Any] = {"plan": plan.model_dump(mode="json")}
+    update["plan"] = plan.model_dump(mode="json")
     if plan.language != "unknown":
         update["language"] = plan.language
+    elif validation is not None:
+        update["language"] = validation.language
+    if validation is not None:
+        update["intent"] = validation.intent
     return update
+
+
+def _guard_output(
+    agents: AgentSet, state: AgentWorkflowState, update: dict[str, str], agent_name: str
+) -> dict[str, str]:
+    """Supervisor output check: nothing leaves the graph unless it passes."""
+    language = state.get("language", "unknown")
+    result = agents.supervisor.validate_output(update["response"], agent_name, language)
+    if result.passed:
+        return update
+    blocked = agents.supervisor.handle_validation_error(result, language)
+    return {"status": "output_blocked", "response": blocked["user_message"]}
 
 
 def _route_after_supervisor(state: AgentWorkflowState) -> str:
     """The Supervisor's next step. Any goal that needs a profile starts with intake."""
+    if state.get("validation_errors"):
+        return "respond"
     if state.get("pending_field"):
         return "intake"
     return state["plan"]["next_agent"]
@@ -234,13 +267,17 @@ def _intake_question_node(agents: AgentSet, state: AgentWorkflowState) -> dict[s
             request=state.get("intake_request", state["request"]),
         )
     )
+    guarded = _guard_output(
+        agents, state, {"status": "needs_information", "response": question.question}, "intake"
+    )
+    if guarded["status"] == "output_blocked":
+        return guarded
     return {
         "pending_field": field,
         "pending_question": question.question,
         "question_attempts": {**attempts, field: attempts.get(field, 0) + 1},
         "questions_asked": state.get("questions_asked", 0) + 1,
-        "status": "needs_information",
-        "response": question.question,
+        **guarded,
     }
 
 
@@ -474,7 +511,13 @@ def _approval_node(state: AgentWorkflowState) -> dict[str, Any]:
     action = decision.get("action") if isinstance(decision, dict) else None
     if action == "approve":
         if decision.get("payload_hash") == current:
-            return {"approval_status": "approved", "approved_hash": current}
+            portal_draft_id = (state.get("portal_draft") or {}).get("application_id")
+            if not portal_draft_id:
+                return {"approval_status": "invalid", "approved_hash": ""}
+            return {
+                "approval_status": "approved",
+                "approved_hash": current,
+            }
         return {"approval_status": "invalid", "approved_hash": ""}
     if action == "edit" and isinstance(decision.get("changes"), dict):
         facts = {**state.get("confirmed_facts", {}), **decision["changes"]}
@@ -523,7 +566,15 @@ def _submit_node(state: AgentWorkflowState) -> dict[str, Any]:
             "response": "There is no portal draft for the approved form. Nothing was submitted.",
         }
     with tools.acting_as("application"):
-        submission = tools.submit_application(form, application_id=portal_draft["application_id"])
+        submission = tools.submit_application(
+            form,
+            application_id=portal_draft["application_id"],
+            write_capability=tools.issue_submission_capability(
+                form,
+                state["approved_hash"],
+                application_id=portal_draft["application_id"],
+            ),
+        )
     return {
         "submission": submission,
         "status": "submitted",
@@ -531,7 +582,28 @@ def _submit_node(state: AgentWorkflowState) -> dict[str, Any]:
     }
 
 
-def _finish_node(state: AgentWorkflowState) -> dict[str, str]:
+def _respond_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]:
+    if state.get("validation_errors"):
+        return {"status": "validation_error", "response": " ".join(state["validation_errors"])}
+    return _guard_output(
+        agents, state, {"status": "responded", "response": state["plan"]["reason"]}, "supervisor"
+    )
+
+
+def _finish_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]:
+    update = _finish_update(state)
+    if state.get("application_draft") is not None:
+        agent_name = "application"
+    elif state.get("document_check") is not None:
+        agent_name = "document_checker"
+    elif state.get("eligibility") is not None:
+        agent_name = "eligibility"
+    else:
+        agent_name = "supervisor"
+    return _guard_output(agents, state, update, agent_name)
+
+
+def _finish_update(state: AgentWorkflowState) -> dict[str, str]:
     if state.get("application_draft") is not None:
         incomplete = bool(state["application_draft"]["missing_fields"])
         return {
@@ -584,7 +656,7 @@ def build_agent_graph(
     builder.add_node("supervisor", lambda state: _supervisor_node(runtime, state))
     builder.add_node("intake", lambda state: _intake_node(runtime, state))
     builder.add_node("intake_question", lambda state: _intake_question_node(runtime, state))
-    builder.add_node("reroute", lambda state: _supervisor_node(runtime, state))
+    builder.add_node("reroute", lambda state: _supervisor_node(runtime, state, validate=False))
     builder.add_node("confirm", _confirm_node)
     builder.add_node("eligibility", lambda state: _eligibility_node(runtime, state))
     builder.add_node(
@@ -594,10 +666,8 @@ def build_agent_graph(
     builder.add_node("approval", _approval_node)
     builder.add_node("approval_end", _approval_end_node)
     builder.add_node("submit", _submit_node)
-    builder.add_node("finish", _finish_node)
-    builder.add_node(
-        "respond", lambda state: {"status": "responded", "response": state["plan"]["reason"]}
-    )
+    builder.add_node("finish", lambda state: _finish_node(runtime, state))
+    builder.add_node("respond", lambda state: _respond_node(runtime, state))
     
     # Entry point: Supervisor ALWAYS first
     builder.add_edge(START, "supervisor")

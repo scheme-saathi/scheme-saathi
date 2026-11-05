@@ -9,8 +9,21 @@ from servers.rule_engine import server as rule_server
 from graph.workflow import build_graph
 
 ROOT = Path(__file__).resolve().parents[1]
+RULE_IDS = {
+    "C01", "C02", "C04", "C05", "C06", "C10", "C13", "C17",
+    "C19", "C23", "C30", "C38", "M13", "M16", "M18",
+}
 KHADI_OK = {"is_khadi_registered": True, "age": 40, "has_valid_id": True,
             "family_member_already_beneficiary": False, "availed_other_scheme_same_purpose": False}
+
+
+@pytest.fixture
+def draft_khadi(tmp_path, monkeypatch):
+    record = json.loads((ROOT / "data/rules/C10.json").read_text())
+    for rule in record["rules"]:
+        rule["status"] = "draft"
+    (tmp_path / "C10.json").write_text(json.dumps(record))
+    monkeypatch.setattr(rule_server, "RULE_DIRS", [ROOT / "data/schemes", tmp_path])
 
 
 @pytest.fixture
@@ -30,10 +43,10 @@ def run(citizen, scheme_ids=None, thread="t"):
 
 
 def test_default_search_only_uses_fully_reviewed_schemes():
-    assert tools.search_schemes({}) == ["SYNTH-PENSION-001"]
+    assert tools.search_schemes({}) == ["SYNTH-PENSION-001", *sorted(RULE_IDS)]
 
 
-def test_draft_rules_are_valid_but_fail_closed():
+def test_draft_rules_are_valid_but_fail_closed(draft_khadi):
     assert tools.search_schemes({}, ["C10"]) == ["C10"]
     _, _, state = run(KHADI_OK, ["C10"])
     assert state["verdicts"]["C10"]["verdict"] == "cant_tell"
@@ -63,6 +76,6 @@ def test_reviewed_scheme_rejects_out_of_range_age(reviewed_khadi):
 
 
 def test_no_matching_schemes_ends_without_error(monkeypatch):
-    monkeypatch.setattr(rule_server, "RULE_DIRS", [ROOT / "data/rules"])
+    monkeypatch.setattr(rule_server, "RULE_DIRS", [])
     _, _, state = run({"age": 30})
     assert state["verdicts"] == {} and "__interrupt__" not in state

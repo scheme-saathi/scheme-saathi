@@ -12,9 +12,9 @@
     "Duly filled PMSBY enrolment form, submitted at the bank branch where the savings account is held (or enrolment via the bank's net banking)"
   ],
   "rules": [
-    {"field": "has_bank_account", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
-    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-1", "status": "draft"},
-    {"field": "age", "op": "lte", "value": 70, "clause_id": "elig-1", "status": "draft"},
-    {"field": "consents_to_auto_debit", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"}
+    {"field": "has_bank_account", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "age", "op": "lte", "value": 70, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "consents_to_auto_debit", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"}
   ]
 }

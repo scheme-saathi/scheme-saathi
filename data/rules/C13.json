@@ -21,7 +21,15 @@
       "text": "Self Help Groups (SHGs) or Joint Liability Groups (JLGs) of farmers including tenant farmers, share croppers etc"
     }
   ],
-  "documents_required": [],
+  "documents_required": [
+    "Application Form.",
+    "Two Passport Size Photographs.",
+    "ID proof such as Driving License / Aadhar Card / Voter Identity Card / Passport.",
+    "Address Proof such as Driving License, Aadhar Card.",
+    "Proof of landholding duly certified by the revenue authorities.",
+    "Cropping pattern (Crops grown) with acreage.",
+    "Security documents for loan limit above Rs.1.60 lakhs / Rs.3.00 lakhs, as applicable."
+  ],
   "rule_logic": "any",
   "rules": [
     {
@@ -32,7 +40,7 @@
         "joint borrower owner cultivator"
       ],
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "farmer_applicant_category",
@@ -43,7 +51,7 @@
         "sharecropper"
       ],
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "farmer_applicant_category",
@@ -53,7 +61,7 @@
         "farmer joint-liability group"
       ],
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     }
   ]
 }

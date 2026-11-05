@@ -3,7 +3,7 @@
   "name": "Khadi Gramodyog Vikas Yojana: Khadi Vikas Yojana",
   "level": "central",
   "state": null,
-  "source": {"url": "https://www.myscheme.gov.in/schemes/kvyoj", "collected_on": "2026-10-24"},
+  "source": {"url": "https://www.myscheme.gov.in/schemes/kvyoj", "collected_on": "2026-10-28"},
   "clauses": [
     {"clause_id": "elig-1", "text": "The applicant must be a Khadi artisan or Khadi Institution registered with KVIC or KVIB."},
     {"clause_id": "elig-2", "text": "The applicant must be between 18 to 55 years of age."},
@@ -21,11 +21,11 @@
     "Project proposal or work-shed details (if required)"
   ],
   "rules": [
-    {"field": "is_khadi_registered", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
-    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-2", "status": "draft"},
-    {"field": "age", "op": "lte", "value": 55, "clause_id": "elig-2", "status": "draft"},
-    {"field": "has_valid_id", "op": "eq", "value": true, "clause_id": "elig-3", "status": "draft"},
-    {"field": "family_member_already_beneficiary", "op": "eq", "value": false, "clause_id": "elig-4", "status": "draft"},
-    {"field": "availed_other_scheme_same_purpose", "op": "eq", "value": false, "clause_id": "elig-5", "status": "draft"}
+    {"field": "is_khadi_registered", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-2", "status": "reviewed"},
+    {"field": "age", "op": "lte", "value": 55, "clause_id": "elig-2", "status": "reviewed"},
+    {"field": "has_valid_id", "op": "eq", "value": true, "clause_id": "elig-3", "status": "reviewed"},
+    {"field": "family_member_already_beneficiary", "op": "eq", "value": false, "clause_id": "elig-4", "status": "reviewed"},
+    {"field": "availed_other_scheme_same_purpose", "op": "eq", "value": false, "clause_id": "elig-5", "status": "reviewed"}
   ]
 }
