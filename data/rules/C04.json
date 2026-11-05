@@ -5,20 +5,28 @@
   "state": null,
   "source": {
     "url": "https://www.myscheme.gov.in/schemes/apy",
-    "collected_on": "2026-10-30"
+    "collected_on": "2026-10-28"
   },
   "clauses": [
     {
       "clause_id": "elig-1",
-      "text": "Atal Pension Yojana (APY) is an old age income security scheme for a savings account holder in the age group of 18-40 years who is not an income tax-payee."
-    },
-    {
-      "clause_id": "elig-2",
       "text": "The minimum age of joining APY is 18 years and maximum is 40 years."
     },
     {
+      "clause_id": "elig-2",
+      "text": "Subscriber contribution to APY shall be made through the facility of ‘auto-debit’ of the prescribed contribution amount from the savings bank account of the subscriber on monthly, quarterly or half-yearly basis."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The age of exit and start of pension is 60 years."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The subscribers are required to contribute the prescribed contribution amount from the age of joining APY till the age of 60 years."
+    },
+    {
       "clause_id": "excl-1",
-      "text": "From 1st October, 2022, any citizen who is or has been an income tax payer, shall not be eligible to join APY."
+      "text": "From 1st October, 2022, any citizen who is or has been an income tax payer, shall  not be eligible to join  APY."
     },
     {
       "clause_id": "doc-1",
@@ -26,36 +34,36 @@
     }
   ],
   "documents_required": [
-    "KYC details fetched from an active Bank/Post Office Savings account"
+    "KYC details are fetched from active Bank/Post Office Savings account."
   ],
   "rules": [
     {
       "field": "has_savings_account",
       "op": "eq",
       "value": true,
-      "clause_id": "elig-1",
-      "status": "draft"
+      "clause_id": "elig-2",
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 18,
-      "clause_id": "elig-2",
-      "status": "draft"
+      "clause_id": "elig-1",
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 40,
-      "clause_id": "elig-2",
-      "status": "draft"
+      "clause_id": "elig-1",
+      "status": "reviewed"
     },
     {
       "field": "is_or_was_income_tax_payer",
       "op": "eq",
       "value": false,
       "clause_id": "excl-1",
-      "status": "draft"
+      "status": "reviewed"
     }
   ]
 }

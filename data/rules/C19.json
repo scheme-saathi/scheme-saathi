@@ -19,9 +19,9 @@
   ],
   "documents_required": [],
   "rules": [
-    {"field": "is_indian_citizen", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
-    {"field": "school_class", "op": "gte", "value": 1, "clause_id": "elig-2", "status": "draft"},
-    {"field": "school_class", "op": "lte", "value": 8, "clause_id": "elig-2", "status": "draft"},
-    {"field": "school_type", "op": "in", "value": ["government", "government-aided"], "clause_id": "elig-2", "status": "draft"}
+    {"field": "is_indian_citizen", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "school_class", "op": "gte", "value": 1, "clause_id": "elig-2", "status": "reviewed"},
+    {"field": "school_class", "op": "lte", "value": 8, "clause_id": "elig-2", "status": "reviewed"},
+    {"field": "school_type", "op": "in", "value": ["government", "government-aided"], "clause_id": "elig-2", "status": "reviewed"}
   ]
 }
