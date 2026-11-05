@@ -12,6 +12,7 @@ from agents.contracts import (
 )
 from app import api
 from graph.agent_workflow import AgentSet, build_agent_graph
+from graph.tools import ToolCallError
 from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
 from servers.mock_portal.server import APPLICATIONS
 
@@ -134,6 +135,26 @@ def test_chat_reports_detected_language_and_intent_not_the_client_hint(client):
 
     assert response["intent"] == "application"
     assert response["language"] == "en"
+
+
+def test_chat_tool_failure_returns_safe_error_and_does_not_log_exception_text(client, caplog):
+    private_marker = "1234 5678 9012"
+
+    class FailingGraph:
+        def get_state(self, _config):
+            return type("Snapshot", (), {"tasks": []})()
+
+        def invoke(self, *_args, **_kwargs):
+            raise ToolCallError("rule-engine", "evaluate_profile", "tool_error", private_marker)
+
+    api.get_workflow_service()._agent_graph = FailingGraph()
+
+    with caplog.at_level("WARNING", logger="app.api"):
+        response = send(client)
+
+    assert response.status_code == 503
+    assert private_marker not in response.text
+    assert private_marker not in caplog.text
 
 
 def test_chat_pauses_with_the_exact_form_and_does_not_submit(client):

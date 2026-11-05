@@ -85,9 +85,11 @@ def build_tools(profile: dict[str, Any]) -> list:
 
 
 def build_baseline(profile: dict[str, Any], model: BaseChatModel | None = None, checkpointer=None):
-    return create_react_agent(
-        model or build_model(), build_tools(profile), prompt=SYSTEM_PROMPT,
-        checkpointer=checkpointer or InMemorySaver(),
+    return tools.budget_graph(
+        create_react_agent(
+            model or build_model(), build_tools(profile), prompt=SYSTEM_PROMPT,
+            checkpointer=checkpointer or InMemorySaver(),
+        )
     )
 
 

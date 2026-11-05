@@ -554,6 +554,8 @@ How an application is drafted, approved and submitted:
 3. The graph pauses with `interrupt()` and shows the exact form, its SHA-256 hash and the portal draft ID. The person can `approve`, `edit` or `reject`.
 4. `submit` runs only after an approval that names the same hash. It checks the hash again, then moves the existing portal draft to `submitted` (`submit_draft`). A wrong hash, a reject or an edit never submits.
 5. Write tools (`create_application`, `submit_draft`) are checked in `call_tool`. Only the application agent, and the baseline comparison run, may call them. Callers name themselves with `with tools.acting_as("application")`. This stops accidental misuse by other agents. It is not a security boundary against malicious code.
+6. Every compiled workflow invocation (`invoke`, `stream`, and async/batch variants) has a hard MCP-call budget that resets on each invocation, including a resumed graph run. The agent graph and single-agent baseline allow 40 calls; the legacy full-corpus demo allows 1,200 because it evaluates 16 schemes across up to 53 rule fields in one run. Calls beyond the applicable limit fail before reaching an MCP server.
+7. Each MCP call emits a structured `mcp_tool_call` audit event with the known actor, server/tool labels, outcome, error category and duration. It deliberately omits arguments, results and exception text, so household data is not copied into these audit logs.
 
 HTTP API (`app/api.py`):
 

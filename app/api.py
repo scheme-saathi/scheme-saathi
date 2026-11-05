@@ -464,6 +464,12 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             raise HTTPException(status_code=403, detail="This conversation belongs to another user.")
         except ApprovalPendingError as e:
             raise HTTPException(status_code=409, detail=str(e))
+        except ToolCallError as error:
+            category = "budget_exceeded" if error.code == "budget_exceeded" else "tool_error"
+            logger.warning("Agent workflow tool call failed (%s).", category)
+            raise HTTPException(
+                status_code=503, detail="A required workflow tool call could not be completed."
+            ) from error
         except Exception:
             logger.exception("Error in chat endpoint")
             raise HTTPException(status_code=500, detail="The request could not be processed.")
@@ -490,6 +496,12 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             raise HTTPException(status_code=403, detail="This conversation belongs to another user.")
         except NoPendingApprovalError as e:
             raise HTTPException(status_code=409, detail=str(e))
+        except ToolCallError as error:
+            category = "budget_exceeded" if error.code == "budget_exceeded" else "tool_error"
+            logger.warning("Agent workflow tool call failed (%s).", category)
+            raise HTTPException(
+                status_code=503, detail="A required workflow tool call could not be completed."
+            ) from error
         except Exception:
             logger.exception("Error resuming approval")
             raise HTTPException(status_code=500, detail="The decision could not be processed.")
@@ -703,4 +715,3 @@ def create_api(service: DemoService | None = None) -> FastAPI:
 
 
 app = create_api()
-

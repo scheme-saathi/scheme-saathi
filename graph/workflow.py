@@ -12,6 +12,7 @@ from langgraph.types import interrupt
 from graph import tools
 
 MAX_DRAFT_ATTEMPTS = 3
+MAX_TOOL_CALLS_PER_RUN = 1200
 
 
 class GraphState(TypedDict, total=False):
@@ -192,7 +193,10 @@ def build_graph(checkpointer=None):
     builder.add_edge("escalate", END)
     builder.add_conditional_edges("approval", route_after_approval, ["submit", "eligibility", END])
     builder.add_edge("submit", END)
-    return builder.compile(checkpointer=checkpointer or MemorySaver())
+    return tools.budget_graph(
+        builder.compile(checkpointer=checkpointer or MemorySaver()),
+        limit=MAX_TOOL_CALLS_PER_RUN,
+    )
 
 
 @contextmanager
