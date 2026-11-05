@@ -4,9 +4,17 @@ from fastapi.testclient import TestClient
 
 from agents.contracts import CandidateFact, IntakeResult
 from app import app_new, business_logic
+from app.auth import AuthenticatedHousehold, authenticated_household
 from app.api import create_api
 from app.business_logic import ChatIntakeInput, DemoService
 from servers.rule_engine import server as rule_server
+
+
+def authenticated_client(application, household_id="household-1"):
+    application.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
+        household_id, f"test|{household_id}"
+    )
+    return TestClient(application)
 
 
 def test_local_api_url_reuses_an_existing_demo_api(monkeypatch):
@@ -41,7 +49,8 @@ def parse_events(body):
 
 
 def test_streamed_demo_workflow_requires_documents_before_approval():
-    client = TestClient(create_api(DemoService()))
+    application = create_api(DemoService())
+    client = authenticated_client(application)
     scheme_id = "SYNTH-PENSION-001"
     response = client.post(
         "/api/analyze",
@@ -60,6 +69,17 @@ def test_streamed_demo_workflow_requires_documents_before_approval():
 
     thread_id = result["thread_id"]
     approval = result["approval"]
+    application.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
+        "household-2", "test|household-2"
+    )
+    unauthorized = client.post(
+        f"/api/threads/{thread_id}/decision",
+        json={"action": "approve", "payload_hash": approval["payload_hash"]},
+    )
+    assert unauthorized.status_code == 403
+    application.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
+        "household-1", "test|household-1"
+    )
     blocked = client.post(
         f"/api/threads/{thread_id}/decision",
         json={"action": "approve", "payload_hash": approval["payload_hash"]},
@@ -86,7 +106,7 @@ def test_streamed_demo_workflow_requires_documents_before_approval():
 
 
 def test_unknown_scheme_is_rejected_before_streaming():
-    client = TestClient(create_api(DemoService()))
+    client = authenticated_client(create_api(DemoService()))
 
     response = client.post(
         "/api/analyze",
@@ -97,7 +117,28 @@ def test_unknown_scheme_is_rejected_before_streaming():
     )
 
     assert response.status_code == 422
-    assert "unknown-scheme" in response.json()["detail"]
+    assert response.json()["detail"] == "The selected scheme is not available."
+
+
+def test_tool_errors_in_legacy_stream_do_not_expose_exception_text():
+    private_marker = "1234 5678 9012"
+
+    class FailedWorkflow:
+        def stream(self, *_args, **_kwargs):
+            raise business_logic.ToolCallError(
+                "rule-engine", "evaluate_profile", "tool_error", private_marker
+            )
+            yield
+
+    service = DemoService()
+    service.workflow = FailedWorkflow()
+    events = list(
+        service._stream_run({}, {"configurable": {"thread_id": "test"}}, "test")
+    )
+
+    error = next(payload for name, payload in events if name == "error")
+    assert private_marker not in error["detail"]
+    assert error["detail"] == "A required workflow tool call could not be completed."
 
 
 class FakeChatIntakeAgent:
@@ -145,7 +186,8 @@ def test_chat_requests_missing_details_before_checking_eligibility(monkeypatch):
         return evaluate_scheme(profile, scheme_id)
 
     monkeypatch.setattr(business_logic.tools, "evaluate_scheme", track_evaluation)
-    client = TestClient(create_api(DemoService(FakeChatIntakeAgent())))
+    application = create_api(DemoService(FakeChatIntakeAgent()))
+    client = authenticated_client(application)
 
     first_response = client.post(
         "/api/chat/legacy",
@@ -165,6 +207,21 @@ def test_chat_requests_missing_details_before_checking_eligibility(monkeypatch):
     assert "income" in first_result["missing_fields"]
     assert evaluated_schemes == []
 
+    application.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
+        "household-2", "test|household-2"
+    )
+    unauthorized = client.post(
+        "/api/chat/legacy",
+        json={"user_input": "Our annual household income is 250000 INR.", "session_id": chat_id},
+    )
+    assert unauthorized.status_code == 200
+    assert next(payload for name, payload in parse_events(unauthorized.content) if name == "error")[
+        "detail"
+    ] == "The chat session was not found."
+    application.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
+        "household-1", "test|household-1"
+    )
+
     second_response = client.post(
         "/api/chat/legacy",
         json={
@@ -183,7 +240,7 @@ def test_chat_requests_missing_details_before_checking_eligibility(monkeypatch):
 
 
 def test_chat_reports_unknown_session_in_stream():
-    client = TestClient(create_api(DemoService(FakeChatIntakeAgent())))
+    client = authenticated_client(create_api(DemoService(FakeChatIntakeAgent())))
 
     response = client.post(
         "/api/chat/legacy",

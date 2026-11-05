@@ -18,6 +18,7 @@ dependencies = [
     "uvicorn>=0.30",
     "langchain-openai",
     "python-dotenv",
+    "PyJWT[crypto]>=2.8,<3",
 ]
 
 [project.optional-dependencies]

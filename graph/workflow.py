@@ -17,6 +17,7 @@ MAX_TOOL_CALLS_PER_RUN = 1200
 
 class GraphState(TypedDict, total=False):
     simulated_citizen: dict[str, Any]
+    actor_id: str
     scheme_ids: list[str]
     include_draft: bool
     profile: dict[str, Any]
@@ -35,7 +36,11 @@ class GraphState(TypedDict, total=False):
 
 
 def unanswered(state: GraphState) -> list[str]:
-    return [f for f in tools.required_fields(state.get("scheme_ids"), state.get("include_draft", False)) if f not in state["profile"]]
+    with tools.acting_as("intake"):
+        fields = tools.required_fields(
+            state.get("scheme_ids"), state.get("include_draft", False)
+        )
+    return [field for field in fields if field not in state["profile"]]
 
 
 def plan_node(state: GraphState) -> dict[str, Any]:
@@ -57,8 +62,15 @@ def intake_node(state: GraphState) -> dict[str, Any]:
 
 def eligibility_node(state: GraphState) -> dict[str, Any]:
     preview = state.get("include_draft", False)
-    schemes = tools.search_schemes(state["profile"], state.get("scheme_ids"), preview)
-    return {"verdicts": {s: tools.evaluate_scheme(state["profile"], s, preview) for s in schemes}}
+    with tools.acting_as("eligibility"):
+        schemes = tools.search_schemes(
+            state["profile"], state.get("scheme_ids"), preview
+        )
+        verdicts = {
+            scheme: tools.evaluate_scheme(state["profile"], scheme, preview)
+            for scheme in schemes
+        }
+    return {"verdicts": verdicts}
 
 
 def route_after_eligibility(state: GraphState) -> str:
@@ -68,7 +80,9 @@ def route_after_eligibility(state: GraphState) -> str:
 
 def documents_node(state: GraphState) -> dict[str, Any]:
     eligible = [s for s, v in state["verdicts"].items() if v["verdict"] == "eligible"]
-    return {"documents": {s: tools.list_documents(s) for s in eligible}}
+    with tools.acting_as("document_checker"):
+        documents = {scheme: tools.list_documents(scheme) for scheme in eligible}
+    return {"documents": documents}
 
 
 def route_after_documents(state: GraphState) -> str:
@@ -100,7 +114,13 @@ def check_application(state: GraphState) -> list[str]:
     applicant = application.get("applicant")
     if not isinstance(applicant, dict):
         return problems + ["The application has no applicant section."]
-    for field in tools.required_fields([scheme_id]) if scheme_id in state["verdicts"] else []:
+    with tools.acting_as("application"):
+        required_fields = (
+            tools.required_fields([scheme_id])
+            if scheme_id in state["verdicts"]
+            else []
+        )
+    for field in required_fields:
         if field not in applicant:
             problems.append(f"Applicant is missing required field '{field}'.")
     for field, value in applicant.items():
@@ -137,17 +157,27 @@ def approval_node(state: GraphState) -> dict[str, Any]:
         "options": ["approve", "edit", "reject"],
     })
     action = decision.get("action") if isinstance(decision, dict) else None
+    scheme_id = state.get("application", {}).get("scheme_id", "unknown")
+    authenticated = bool(state.get("actor_id"))
     if action == "approve":
         if decision.get("payload_hash") == current:
+            tools.audit_approval_event("approve", "accepted", authenticated)
             return {
                 "approved": True,
                 "approved_hash": current,
                 "approval_status": "approved",
             }
+        tools.audit_approval_event("approve", "invalid", authenticated)
         return {"approved": False, "approval_status": "invalid"}
     if action == "edit" and isinstance(decision.get("changes"), dict):
+        tools.audit_approval_event("edit", "accepted", authenticated)
         return {"profile": {**state["profile"], **decision["changes"]}, "approved": False,
                 "approved_hash": "", "approval_status": "edited", "draft_attempts": 0}
+    tools.audit_approval_event(
+        "reject" if action == "reject" else "invalid",
+        "rejected" if action == "reject" else "invalid",
+        authenticated,
+    )
     return {"approved": False, "approval_status": "rejected" if action == "reject" else "invalid"}
 
 
@@ -167,7 +197,9 @@ def submit_node(state: GraphState) -> dict[str, Any]:
                 write_capability=tools.issue_submission_capability(
                     state["application"],
                     state["approved_hash"],
+                    household_id=state.get("actor_id"),
                 ),
+                household_id=state.get("actor_id"),
             )
         }
 
