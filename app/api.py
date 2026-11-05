@@ -245,7 +245,7 @@ class AgentWorkflowService:
             )
 
         # Keep facts and the chosen scheme from earlier turns unless this turn supplies new ones.
-        state = AgentWorkflowState(request=request)
+        state = AgentWorkflowState(request=request, actor_id=actor_id)
         if known_facts:
             state["known_facts"] = known_facts
         if confirmed_facts:
@@ -305,7 +305,14 @@ class AgentWorkflowService:
             response = result.get("response", "")
 
         self._store_turn(thread_id, request, {**data, "status": status, "response": response})
-        return {"thread_id": thread_id, "status": status, "response": response, "data": data}
+        return {
+            "thread_id": thread_id,
+            "status": status,
+            "response": response,
+            "data": data,
+            "language": result.get("language", "unknown"),
+            "intent": result.get("intent", "other"),
+        }
 
     def _store_turn(
         self, thread_id: str, user_message: str, result: dict[str, Any]
@@ -446,8 +453,8 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             return SupervisorChatResponse(
                 status="success",
                 thread_id=result["thread_id"],
-                language=request.language or "unknown",
-                intent=request.language or "other",
+                language=result.get("language") or request.language or "unknown",
+                intent=result.get("intent") or "other",
                 next_step=result.get("status", "completed"),
                 response=result.get("response", ""),
                 data=result.get("data", {}),
@@ -489,8 +496,8 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         return SupervisorChatResponse(
             status="success",
             thread_id=result["thread_id"],
-            language="unknown",
-            intent="other",
+            language=result.get("language", "unknown"),
+            intent=result.get("intent", "other"),
             next_step=result["status"],
             response=result["response"],
             data=result["data"],
