@@ -6,6 +6,7 @@ from agents.contracts import (
     ApplicationDraft,
     DocumentCheckResult,
     EligibilityNarrative,
+    IntakeExtraction,
     IntakeResult,
     SupervisorPlan,
 )
@@ -21,6 +22,9 @@ class StubAgent:
 
     def invoke(self, value):
         return self.result
+
+    def extract(self, value, specs):
+        return IntakeExtraction()
 
 
 class StubSupervisor(StubAgent):
@@ -50,7 +54,7 @@ def make_agents(missing=None):
         application=StubAgent(
             ApplicationDraft(
                 scheme_id="C01",
-                fields={"age": 30},
+                fields={"age": 30, "has_individual_bank_or_post_office_account": True},
                 missing_fields=missing or [],
                 review_summary="Draft is ready for human review.",
             )
@@ -76,7 +80,11 @@ class WithEvaluation:
 
     def invoke(self, state, config):
         if isinstance(state, dict):
-            state = {**state, "deterministic_evaluation": ELIGIBLE, "confirmed_facts": {"age": 30}}
+            state = {
+                **state,
+                "deterministic_evaluation": ELIGIBLE,
+                "confirmed_facts": {"age": 30, "has_individual_bank_or_post_office_account": True},
+            }
         return self._graph.invoke(state, config)
 
     def get_state(self, config):
@@ -133,7 +141,10 @@ def test_chat_pauses_with_the_exact_form_and_does_not_submit(client):
 
     assert paused["next_step"] == "awaiting_approval"
     approval = paused["data"]["approval"]
-    assert approval["form"] == {"scheme_id": "C01", "applicant": {"age": 30}}
+    assert approval["form"] == {
+        "scheme_id": "C01",
+        "applicant": {"age": 30, "has_individual_bank_or_post_office_account": True},
+    }
     assert len(approval["payload_hash"]) == 64
     assert APPLICATIONS[approval["portal_draft_id"]]["status"] == "draft"
 
