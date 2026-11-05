@@ -30,7 +30,18 @@ _SERVERS = {RULE_ENGINE: rule_server, SCHEMES_KB: kb_server, MOCK_PORTAL: portal
 
 # Pre-tool hook: only these agents may call a write tool. "baseline" is the single-agent
 # comparison run, which is deliberately given every tool.
+READ_TOOLS = {
+    (RULE_ENGINE, "list_rule_schemes"),
+    (RULE_ENGINE, "get_rule_fields"),
+    (RULE_ENGINE, "get_field_specs"),
+    (RULE_ENGINE, "evaluate_profile"),
+    (SCHEMES_KB, "search_schemes"),
+    (SCHEMES_KB, "get_scheme_details"),
+    (SCHEMES_KB, "get_required_documents"),
+    (MOCK_PORTAL, "get_application_status"),
+}
 WRITE_TOOLS = {(MOCK_PORTAL, "create_application"), (MOCK_PORTAL, "submit_draft")}
+ALLOWED_TOOLS = READ_TOOLS | WRITE_TOOLS
 WRITE_ALLOWED = {"application", "baseline"}
 _actor: ContextVar[str | None] = ContextVar("tool_actor", default=None)
 
@@ -46,6 +57,10 @@ def acting_as(agent: str) -> Iterator[None]:
 
 
 def _authorize(server: str, tool: str) -> None:
+    if server not in _SERVERS:
+        raise ToolCallError(server, tool, "unknown_server", f"'{server}' is not an available tool server.")
+    if (server, tool) not in ALLOWED_TOOLS:
+        raise ToolCallError(server, tool, "forbidden", f"'{server}.{tool}' is not an allow-listed tool.")
     if (server, tool) in WRITE_TOOLS and _actor.get() not in WRITE_ALLOWED:
         raise ToolCallError(server, tool, "forbidden", f"'{_actor.get() or 'unknown caller'}' may not use a write tool.")
 
