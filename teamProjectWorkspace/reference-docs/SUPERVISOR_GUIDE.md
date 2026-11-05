@@ -1,7 +1,7 @@
 ## Supervisor Agent: User Guide & Integration Documentation
 
-**Version:** 1.1  
-**Date:** November 2026  
+**Version:** 1.1
+**Date:** November 2026
 **Status:** Integrated in `graph/agent_workflow.py`
 
 ---

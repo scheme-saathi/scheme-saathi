@@ -13,6 +13,11 @@ from typing import Any
 
 from fastmcp import Client
 
+from servers.mock_portal.authorization import (
+    CapabilityError,
+    application_payload_hash,
+    issue_write_capability,
+)
 from servers.doc_check.server import mcp as doc_check_server  # noqa: F401  (registered for later agents)
 from servers.mock_portal.server import mcp as portal_server
 from servers.rule_engine.server import mcp as rule_server
@@ -128,20 +133,66 @@ def application_form_spec(scheme_id: str) -> tuple[list[str], dict[str, str]]:
 
 def create_portal_draft(form: dict) -> dict:
     """Write: store the form on the mock portal as a draft. Nothing is submitted."""
+    form_hash = application_payload_hash(form["scheme_id"], form["applicant"])
+    try:
+        capability = issue_write_capability("create_draft", form["scheme_id"], form_hash)
+    except CapabilityError as exc:
+        raise ToolCallError(MOCK_PORTAL, "create_application", "forbidden", str(exc)) from exc
     record = call_tool(MOCK_PORTAL, "create_application", scheme_id=form["scheme_id"],
-                       applicant=form["applicant"], submit=False)
+                       applicant=form["applicant"], submit=False,
+                       write_capability=capability)
     return {"application_id": record["application_id"], "status": f"{record['status']} (mock)"}
 
 
-def submit_application(form: dict, application_id: str | None = None) -> dict:
+def issue_submission_capability(
+    form: dict,
+    approved_hash: str,
+    application_id: str | None = None,
+) -> str:
+    """Issue a one-use write capability only for the exact approved application form."""
+    form_hash = application_payload_hash(form["scheme_id"], form["applicant"])
+    if approved_hash != form_hash:
+        raise ToolCallError(
+            MOCK_PORTAL,
+            "submit_application",
+            "forbidden",
+            "Approval does not match the current application form.",
+        )
+    action = "submit_draft" if application_id else "submit_application"
+    resource = application_id or form["scheme_id"]
+    try:
+        return issue_write_capability(action, resource, form_hash)
+    except CapabilityError as exc:
+        raise ToolCallError(MOCK_PORTAL, "submit_application", "forbidden", str(exc)) from exc
+
+
+def submit_application(
+    form: dict,
+    application_id: str | None = None,
+    write_capability: str | None = None,
+) -> dict:
     """The only submit. The workflow reaches it only after the exact form is approved.
 
-    With ``application_id`` it submits the draft already on the portal; without, it creates and submits.
+    Requires a one-use capability created after approval. With ``application_id``
+    it submits the existing portal draft; without, it creates and submits.
     """
+    if not write_capability:
+        raise ToolCallError(
+            MOCK_PORTAL,
+            "submit_application",
+            "forbidden",
+            "A one-use approval capability is required.",
+        )
     if application_id:
-        record = call_tool(MOCK_PORTAL, "submit_draft", application_id=application_id)
+        record = call_tool(
+            MOCK_PORTAL,
+            "submit_draft",
+            application_id=application_id,
+            write_capability=write_capability,
+        )
     else:
         record = call_tool(MOCK_PORTAL, "create_application", scheme_id=form["scheme_id"],
-                           applicant=form["applicant"], submit=True)
+                           applicant=form["applicant"], submit=True,
+                           write_capability=write_capability)
     return {"status": f"{record['status']} (mock)", "scheme_id": record["scheme_id"],
             "application_id": record["application_id"]}

@@ -540,6 +540,13 @@ graph.invoke(Command(resume={"action": "approve", "payload_hash": pending["paylo
 
 Set `SUPERVISOR_MODEL` and `SPECIALIST_MODEL` in `.env`, plus either `OPENROUTER_API_KEY` (with an OpenRouter model ID such as `openai/gpt-4o-mini`) or `OPENAI_API_KEY` (with an OpenAI model ID). `OPENAI_BASE_URL` can be set for an OpenAI-compatible endpoint. The model IDs are configuration, not code defaults.
 
+Mock-portal writes also require `MOCK_PORTAL_AUTH_SECRET` in `.env`. Set the
+same long random value in the graph application and mock-portal server
+environments (for example, generate one with
+`python -c 'import secrets; print(secrets.token_urlsafe(32))'`). The workflow
+uses short-lived, one-use capabilities tied to the exact application form; writes
+fail closed when the secret is not configured. Do not commit the secret.
+
 How an application is drafted, approved and submitted:
 
 1. The Application agent fills the form only from confirmed facts. The required fields come from the scheme's reviewed rule fields (`tools.application_form_spec`). If the model fails, the review summary falls back to a deterministic one that lists field names only. A draft with missing fields skips approval and asks for the missing information.

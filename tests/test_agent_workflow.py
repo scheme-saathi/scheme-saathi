@@ -21,6 +21,7 @@ from agents.eligibility import EligibilityAgent
 from graph.agent_workflow import AgentSet, build_agent_graph
 from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
 from graph.persona import HOUSEHOLD_TEST_CASES, profile_facts_to_rule_fields
+from graph.workflow import application_hash
 from agents.memory import ApplicationReference, MemoryConsent, MemoryFact
 from servers.rule_engine.scheme import SchemeRecord
 
@@ -341,7 +342,7 @@ def _run_to_approval(monkeypatch, thread="t1"):
     submitted = []
     monkeypatch.setattr(
         "graph.agent_workflow.tools.submit_application",
-        lambda form, application_id=None: submitted.append(form) or {"application_id": "APP-1", "status": "submitted (mock)"},
+        lambda form, application_id=None, write_capability=None: submitted.append(form) or {"application_id": "APP-1", "status": "submitted (mock)"},
     )
     graph = build_agent_graph(_application_agents(), checkpointer=MemorySaver())
     config = {"configurable": {"thread_id": thread}}
@@ -708,6 +709,14 @@ def test_only_the_application_agent_may_call_write_tools():
         assert tools.create_portal_draft({"scheme_id": "C01", "applicant": {}})["application_id"]
 
 
+def test_submission_capability_requires_the_exact_approved_form():
+    from graph import tools
+
+    form = {"scheme_id": "C01", "applicant": {"age": 30}}
+    with pytest.raises(tools.ToolCallError, match="Approval does not match"):
+        tools.issue_submission_capability(form, "0" * 64)
+
+
 def test_read_tools_need_no_special_caller():
     from graph import tools
 
@@ -717,13 +726,42 @@ def test_read_tools_need_no_special_caller():
 def test_submit_draft_rejects_unknown_and_already_submitted_drafts():
     from graph import tools
 
+    form = {"scheme_id": "C01", "applicant": {}}
+    form_hash = application_hash(form)
     with tools.acting_as("application"):
+        missing_capability = tools.issue_submission_capability(
+            form,
+            form_hash,
+            application_id="missing",
+        )
         with pytest.raises(tools.ToolCallError, match="application_not_found"):
-            tools.submit_application({"scheme_id": "C01", "applicant": {}}, application_id="missing")
-        draft = tools.create_portal_draft({"scheme_id": "C01", "applicant": {}})
-        tools.submit_application({"scheme_id": "C01", "applicant": {}}, application_id=draft["application_id"])
+            tools.submit_application(
+                form,
+                application_id="missing",
+                write_capability=missing_capability,
+            )
+        draft = tools.create_portal_draft(form)
+        capability = tools.issue_submission_capability(
+            form,
+            form_hash,
+            application_id=draft["application_id"],
+        )
+        tools.submit_application(
+            form,
+            application_id=draft["application_id"],
+            write_capability=capability,
+        )
+        replay_capability = tools.issue_submission_capability(
+            form,
+            form_hash,
+            application_id=draft["application_id"],
+        )
         with pytest.raises(tools.ToolCallError, match="not_a_draft"):
-            tools.submit_application({"scheme_id": "C01", "applicant": {}}, application_id=draft["application_id"])
+            tools.submit_application(
+                form,
+                application_id=draft["application_id"],
+                write_capability=replay_capability,
+            )
 
 def test_sensitive_input_is_rejected_before_routing_or_specialists():
     agents = build_agents()

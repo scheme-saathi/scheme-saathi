@@ -511,7 +511,13 @@ def _approval_node(state: AgentWorkflowState) -> dict[str, Any]:
     action = decision.get("action") if isinstance(decision, dict) else None
     if action == "approve":
         if decision.get("payload_hash") == current:
-            return {"approval_status": "approved", "approved_hash": current}
+            portal_draft_id = (state.get("portal_draft") or {}).get("application_id")
+            if not portal_draft_id:
+                return {"approval_status": "invalid", "approved_hash": ""}
+            return {
+                "approval_status": "approved",
+                "approved_hash": current,
+            }
         return {"approval_status": "invalid", "approved_hash": ""}
     if action == "edit" and isinstance(decision.get("changes"), dict):
         facts = {**state.get("confirmed_facts", {}), **decision["changes"]}
@@ -560,7 +566,15 @@ def _submit_node(state: AgentWorkflowState) -> dict[str, Any]:
             "response": "There is no portal draft for the approved form. Nothing was submitted.",
         }
     with tools.acting_as("application"):
-        submission = tools.submit_application(form, application_id=portal_draft["application_id"])
+        submission = tools.submit_application(
+            form,
+            application_id=portal_draft["application_id"],
+            write_capability=tools.issue_submission_capability(
+                form,
+                state["approved_hash"],
+                application_id=portal_draft["application_id"],
+            ),
+        )
     return {
         "submission": submission,
         "status": "submitted",
