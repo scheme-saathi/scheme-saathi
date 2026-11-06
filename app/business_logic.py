@@ -73,6 +73,7 @@ class ChatSession:
     required_fields: list[str]
     scheme_names: dict[str, str]
     field_types: dict[str, tuple[type, ...]]
+    actor_id: str | None = None
     facts: dict[str, Any] = field(default_factory=dict)
     lock: Lock = field(default_factory=Lock)
     completed: bool = False
@@ -86,6 +87,10 @@ class WorkflowConflictError(RuntimeError):
     """Raised when a workflow action is not valid for its current state."""
 
 
+class ThreadAccessError(PermissionError):
+    """The authenticated household does not own this demo workflow."""
+
+
 class DemoService:
     """Run reviewed rules and mock application workflows for the local demo."""
 
@@ -97,14 +102,19 @@ class DemoService:
         self._intake_agent_lock = Lock()
         self._chat_sessions: dict[str, ChatSession] = {}
         self._chat_sessions_lock = Lock()
+        self._thread_owners: dict[str, str] = {}
+        self._thread_owners_lock = Lock()
 
     def chat_turn(
-        self, user_input: str, session_id: str | None = None
+        self,
+        user_input: str,
+        session_id: str | None = None,
+        actor_id: str | None = None,
     ) -> Iterator[tuple[str, dict[str, Any]]]:
         """Gather rule facts conversationally, then stream a deterministic rule check."""
         yield "progress", {"label": "Reading your message"}
         try:
-            chat_id, session = self._get_or_create_chat_session(session_id)
+            chat_id, session = self._get_or_create_chat_session(session_id, actor_id)
             yield "session", {"session_id": chat_id}
             with session.lock:
                 if session.completed:
@@ -181,22 +191,33 @@ class DemoService:
                 yield "result", result
         except (
             SessionNotFoundError,
+            ThreadAccessError,
             ToolCallError,
             RuntimeError,
             ValueError,
             ValidationError,
         ) as error:
-            logger.exception("The conversational eligibility flow failed.")
-            yield "error", {"detail": str(error)}
+            if isinstance(error, ThreadAccessError):
+                yield "error", {"detail": "The chat session was not found."}
+            elif isinstance(error, ToolCallError):
+                logger.warning("A conversational workflow tool call failed.")
+                yield "error", {
+                    "detail": "A required workflow tool call could not be completed."
+                }
+            else:
+                logger.exception("The conversational eligibility flow failed.")
+                yield "error", {"detail": str(error)}
 
     def _get_or_create_chat_session(
-        self, session_id: str | None
+        self, session_id: str | None, actor_id: str | None = None
     ) -> tuple[str, ChatSession]:
         if session_id:
             with self._chat_sessions_lock:
                 session = self._chat_sessions.get(session_id)
             if session is None:
                 raise SessionNotFoundError("The chat session was not found.")
+            if session.actor_id != actor_id:
+                raise ThreadAccessError("The chat session belongs to another household.")
             return session_id, session
 
         schemes = self.available_schemes()
@@ -216,6 +237,7 @@ class DemoService:
             field_types=self._rule_field_types(
                 [scheme["scheme_id"] for scheme in schemes]
             ),
+            actor_id=actor_id,
         )
         chat_id = str(uuid4())
         with self._chat_sessions_lock:
@@ -352,21 +374,35 @@ class DemoService:
         ]
 
     def analyze(
-        self, citizen: dict[str, Any], scheme_ids: list[str] | None = None
+        self,
+        citizen: dict[str, Any],
+        scheme_ids: list[str] | None = None,
+        actor_id: str | None = None,
     ) -> Iterator[tuple[str, dict[str, Any]]]:
         """Validate schemes and return a stream for a new eligibility workflow."""
         tools.search_schemes({}, scheme_ids)
         thread_id = str(uuid4())
+        if actor_id is not None:
+            with self._thread_owners_lock:
+                self._thread_owners[thread_id] = actor_id
         config = {"configurable": {"thread_id": thread_id}}
         run_input: dict[str, Any] = {"simulated_citizen": citizen}
+        if actor_id is not None:
+            run_input["actor_id"] = actor_id
         if scheme_ids:
             run_input["scheme_ids"] = scheme_ids
         return self._stream_run(run_input, config, thread_id)
 
     def decide(
-        self, thread_id: str, action: str, payload_hash: str | None, changes: dict[str, Any]
+        self,
+        thread_id: str,
+        action: str,
+        payload_hash: str | None,
+        changes: dict[str, Any],
+        actor_id: str | None = None,
     ) -> Iterator[tuple[str, dict[str, Any]]]:
         """Validate an application decision and resume the matching workflow."""
+        self._check_thread_owner(thread_id, actor_id)
         snapshot = self._get_snapshot(thread_id)
         if "approval" not in snapshot.next:
             raise WorkflowConflictError(
@@ -399,8 +435,10 @@ class DemoService:
         filename: str,
         content_type: str | None,
         content: bytes,
+        actor_id: str | None = None,
     ) -> dict[str, Any]:
         """Validate a required document and retain upload metadata only."""
+        self._check_thread_owner(thread_id, actor_id)
         if not content or len(content) > MAX_DOCUMENT_SIZE:
             raise ValueError("Choose a non-empty document smaller than 10 MB.")
 
@@ -444,6 +482,16 @@ class DemoService:
             "required_documents": required_documents,
         }
 
+    def _check_thread_owner(self, thread_id: str, actor_id: str | None) -> None:
+        if actor_id is None:
+            return
+        with self._thread_owners_lock:
+            owner = self._thread_owners.get(thread_id)
+        if owner is None:
+            raise SessionNotFoundError("The application session was not found.")
+        if owner != actor_id:
+            raise ThreadAccessError("The application session belongs to another household.")
+
     def _missing_documents(self, thread_id: str, scheme_id: str | None) -> list[str]:
         if not scheme_id:
             return []
@@ -480,8 +528,10 @@ class DemoService:
                 thread_id, self.workflow.get_state(config)
             )
         except ToolCallError as error:
-            logger.exception("A Scheme Saathi workflow tool failed.")
-            yield "error", {"detail": str(error)}
+            logger.warning("A Scheme Saathi workflow tool failed.")
+            yield "error", {
+                "detail": "A required workflow tool call could not be completed."
+            }
 
     @staticmethod
     def _snapshot_payload(thread_id: str, snapshot: Any) -> dict[str, Any]:

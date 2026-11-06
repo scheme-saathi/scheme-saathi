@@ -42,6 +42,92 @@ Scheme search uses a ChromaDB database in `data/chroma/`. It is ignored by Git, 
 - **Option A, download the shared database (recommended):** about 4 MB, ready in a minute, no import needed.
 - **Option B, build it yourself:** needed only if you change scheme data and want to search the change before a new release exists.
 
+### How the data fits together
+
+Where each piece of data lives and which command moves it. Folders marked "ignored" are not in Git.
+
+```mermaid
+flowchart LR
+    subgraph CHROMA["data/chroma/ (ChromaDB, ignored)"]
+        PAGES["schemes_bge_m3_body_v1<br/>scheme-page chunks"]
+        PDFC["scheme_pdf_review_v1<br/>PDF page and table chunks"]
+    end
+    XLSX["docs/Scheme-Saathi-60-Schemes-<br/>Schema-Review.xlsx<br/>review workbook"] -- "import_schemes --from-excel" --> JSON["data/schemes/&lt;slug&gt;.json<br/>one scheme per file"]
+    PDF["data/pdfs/&lt;scheme_id&gt;/*.pdf<br/>registered in the scheme's links"] -- "extract_documents" --> EXT["data/extracted/&lt;scheme_id&gt;/&lt;sha256&gt;.json<br/>draft until reviewed (ignored)"]
+    MODEL["BGE-M3 model<br/>~/.cache/huggingface (Step 1)"] -. "embeds" .-> CHROMA
+    JSON -- "import_schemes<br/>approved schemes only" --> CHROMA
+    EXT -- "import_schemes<br/>approved extractions only" --> CHROMA
+    CHROMA -- "package_db" --> ZIP["dist/chroma-YYYY-MM-DD.zip<br/>+ MANIFEST.json"]
+    ZIP -- "gh release create" --> REL["GitHub Release<br/>chroma-YYYY-MM-DD"]
+    REL -- "Option A: download and unzip" --> CHROMA
+    CHROMA --> KB["schemes-kb server<br/>search, check_retrieval"]
+    RULES["data/rules/&lt;scheme_id&gt;.json<br/>eligibility rules"] --> ENGINE["rule-engine server<br/>verdicts"]
+```
+
+The records and how they connect. Everything joins on `scheme_id`; these are JSON files and ChromaDB metadata, not database tables with foreign keys.
+
+```mermaid
+erDiagram
+    SCHEME ||--o{ PAGE_CHUNK : "split into"
+    SCHEME ||--o{ PDF_DOCUMENT : "links to"
+    PDF_DOCUMENT ||--o{ PDF_CHUNK : "pages and tables"
+    SCHEME ||--o| RULE_RECORD : "same scheme_id"
+    RULE_RECORD ||--|{ CLAUSE : "quotes"
+    RULE_RECORD ||--|{ RULE : "has"
+    RULE }o--|| CLAUSE : "cites"
+
+    SCHEME {
+        string scheme_id PK "one JSON file per scheme in data/schemes"
+        string name
+        string review_status "draft or approved"
+        string availability_status "open, closed or unverified"
+        string source_url
+        date collected_on
+        object sections "details, benefits, eligibility, ..."
+        list links "forms, portals, PDFs"
+    }
+    PAGE_CHUNK {
+        string scheme_id FK "collection schemes_bge_m3_body_v1"
+        string section
+        string availability_status
+        string citations_json "where the text came from"
+        vector embedding "BGE-M3"
+    }
+    PDF_DOCUMENT {
+        string document_id PK "one JSON file per PDF in data/extracted"
+        string scheme_id FK
+        string file_sha256
+        string source_url
+        string review_status "draft until reviewed"
+    }
+    PDF_CHUNK {
+        string document_id FK "collection scheme_pdf_review_v1"
+        string scheme_id FK
+        int page
+        string kind "text or table"
+        vector embedding "BGE-M3"
+    }
+    RULE_RECORD {
+        string scheme_id FK "one JSON file per scheme in data/rules"
+        string rule_logic "all or any"
+        list documents_required
+    }
+    RULE {
+        string field "profile field, e.g. age"
+        string op "eq, gte, in, ..."
+        any value
+        string clause_id FK
+        string status "draft or reviewed"
+    }
+    CLAUSE {
+        string clause_id PK
+        string text "quoted from the source"
+        int page
+    }
+```
+
+The field-by-field structure of one scheme record is in [docs/scheme-data-relationships.md](docs/scheme-data-relationships.md). Only rule records whose rules are all `reviewed` give live verdicts; today that is the synthetic `SYNTH-PENSION-001`, whose record sits in `data/schemes/`.
+
 ### Step 1: Download the embedding model (once per machine)
 
 Vector and hybrid search turn your question into numbers with the BGE-M3 model, which runs on your computer. Download it once:
@@ -162,7 +248,7 @@ The local API/UI entry point is described below; Docker setup has not been imple
 Start the Scheme Saathi interface from the project root:
 
 ```bash
-streamlit run app/app.py
+streamlit run app/app_new.py
 ```
 
 The UI starts a local FastAPI service on `127.0.0.1:8765` and consumes its
@@ -175,45 +261,222 @@ The approval and rejection button colors are set by `approvedButtonColor` and
 `config.toml` does not support per-button theme colors.
 
 The API can also be run separately with
-`uvicorn app.app:create_api --factory --host 127.0.0.1 --port 8765`. It exposes
+`uvicorn app.api:create_api --factory --host 127.0.0.1 --port 8765`. It exposes
 `POST /api/analyze` and `POST /api/threads/{thread_id}/decision` as streaming
 endpoints, plus `GET /health`.
 
-## Eligibility rule engine (prototype)
+## Intake agent
 
-Run the workflow demo from the project root:
+The Intake agent turns what a person says into a typed household profile and asks for the
+rest one question at a time:
+
+1. read typed facts from the message, only for fields the scheme rules use
+2. let the rule engine evaluate every candidate scheme on those facts
+3. ask the one question that settles the most open (`cant_tell`) verdicts
+4. stop when the verdicts are settled or the person does not know the answer
+5. show the facts for confirmation; only confirmed facts produce the final verdict
+
+In short: code picks the question, the model only reads facts and words the question.
+
+```text
+User message
+    ↓
+Supervisor (intent + language; a reply to a pending question skips the model)
+    ↓
+Intake: message → typed facts → known_facts (unconfirmed)
+    ↓
+Eligibility: candidate schemes → rule engine → verdicts
+    ↓
+A cant_tell verdict that an answer could settle?
+    ├─ yes → Intake asks ONE question → the reply goes back to Intake
+    ├─ "don't know", no usable answer twice, or 8 questions → stop and list what is missing
+    └─ no  → Confirm step: the person approves, edits or rejects the exact facts
+                ↓
+             Eligibility on confirmed facts → cited verdict → documents / application
+```
+
+### How it works
+
+- **Typed profile.** Field names and types come from the candidate schemes' reviewed rules
+  (`get_field_specs`). The model gets that schema, and code validates each returned field on
+  its own: `"67"` for a number, `"yes"` for a bool or an unknown field is dropped, not stored.
+  Candidate schemes are the selected scheme, or else every scheme whose rules are fully
+  reviewed (today only `SYNTH-PENSION-001`, so live mode asks about age, income and widowhood).
+- **Choosing the question.** `tools.next_question(verdicts, declined)` counts each field in the
+  `missing_fields`/`unresolved_fields` of the `cant_tell` verdicts and picks the highest count
+  (ties go alphabetically). A field from an already decided scheme is never asked. The model
+  only words the question, in the language the Supervisor detected (`en`, `hi` or `mr`).
+- **Replies.** The turn after a question goes straight to Intake with the field and the
+  question's wording; the Supervisor model is not asked to re-route "yes" or "1 lakh". Earlier
+  facts are not sent to the model: given them, it restated them and converted income twice.
+- **Income.** The model returns the amount as said and its period (`month`, `year` or
+  `unstated`); code converts it to the field's period (×12 for annual `income`, ÷12 for
+  `monthly_income`). Questions ask in the field's own period, so a bare amount answering one is
+  read in that period. With no question to anchor it, the amount is rejected and asked again.
+  Income fields are recognised by name (a `shortcut:` in `agents/intake.py`).
+- **Stop rules.** The model classifies each reply as `answer`, `dont_know` or `other`.
+  "Don't know" stops intake, a field asked twice without a usable answer counts as "don't
+  know", and at most 8 questions are asked (`MAX_QUESTIONS`). A reply with no facts at all
+  goes back to the Supervisor, so a new request ("what documents do I need?") is routed rather
+  than the question repeated. A new intake resets these counters.
+- **Confirm step.** Once the verdicts settle, the graph pauses with `interrupt()` and shows the
+  exact facts and their SHA-256 hash. `approve` with that hash confirms them. `edit` changes
+  are type-checked and confirmed; unknown or wrongly typed fields are shown again in
+  `rejected_edits`. `reject` or a wrong hash confirms nothing. A later correction ("she is
+  68") has to be confirmed again.
+
+### Why this design is safe
+
+- The model never decides what to ask: a question exists only if its answer can change a verdict.
+- Facts the model reads stay unconfirmed (`known_facts`) and only steer the questions. Final
+  verdicts and the application form use `confirmed_facts` only.
+- Values must match the rule types and are never coerced; unit conversion is code, not the model.
+- Replies reach the model as untrusted data, and it can only fill rule fields. It never asks
+  for Aadhaar, bank-account numbers or other identifiers.
+
+### Quick test commands
+
+```bash
+python3 -m pytest -q tests/test_intake_flow.py
+```
+
+The tests use stub models and cover each step: facts merging across turns, field types,
+question choice, the typed profile, extraction and wording, the multi-turn loop, the stop
+rules and the confirm step. To see the question choice without a model:
+
+```python
+from graph import tools
+
+verdicts = {s: tools.evaluate_scheme({"age": 67}, s) for s in ["SYNTH-PENSION-001"]}
+tools.next_question(verdicts)   # 'income'; with {"age": 40} it is None: already not eligible
+```
+
+### Example behavior
+
+A run with `openai/gpt-4o-mini` through `POST /api/chat`:
+
+```text
+User: My mother is 67 years old. Can she get a pension?
+Bot:  What is your mother's annual income?          known_facts: age 67
+User: 8000 rupees a month
+Bot:  Is she a widow?                               known_facts: + income 96000
+User: Yes, she is a widow
+Bot:  Please check these details. The final answer uses only the details you confirm.
+      awaiting_confirmation: age 67, income 96000, is_widow true
+[approve with the shown payload_hash]
+Bot:  SYNTH-PENSION-001: eligible: All required reviewed conditions are satisfied.
+      Rule citations: Widow aged 60 or above; Annual income not above Rs 300000
+```
+
+A Marathi message gets a Marathi question ("माझी आई 65 वर्षांची विधवा आहे" → "तुमची आई
+वर्षाला किती उत्पन्न मिळवते?"), and facts already given are never asked again.
+
+Not done yet: the confirmation, verdict and stop messages are English only and show raw field
+names (`is widow`), and the Streamlit chat does not use this flow yet.
+
+## Eligibility Agent
+
+The Eligibility Analyst is a small sub-agent whose job is simple:
+
+1. take the selected scheme and household facts
+2. ask the deterministic rule engine for the final verdict
+3. explain the verdict in plain language for the user
+4. never change the verdict using the LLM
+
+In short: the rules decide, the agent explains.
+
+```text
+User request
+    ↓
+Supervisor / workflow router
+    ↓
+Eligibility Analyst sub-agent
+    ├─ Step 1: read scheme + facts
+    ├─ Step 2: call deterministic rule engine
+    │      └─ returns: eligible | not_eligible | cant_tell
+    ├─ Step 3: keep the verdict exactly as returned
+    └─ Step 4: produce a human-readable explanation
+
+Rule engine is the source of truth.
+LLM is only for explanation and follow-up questions.
+```
+
+### How it works
+
+The workflow is intentionally fail-closed:
+
+- If a scheme is selected and the facts are complete, the rule engine evaluates it.
+- If the engine cannot decide, the result is `cant_tell` rather than guessing.
+- The Eligibility Analyst cannot override the verdict, missing fields, or citations.
+- The model can only explain the result and ask a short clarifying question when needed.
+
+This is what the flow looks like in the actual project:
+
+```mermaid
+flowchart TD
+    A[User asks about eligibility] --> B[Supervisor routes to eligibility]
+    B --> C[Eligibility Analyst sub-agent]
+    C --> D[Deterministic rule engine]
+    D --> E{Verdict?}
+    E -->|eligible| F[Explain result in user language]
+    E -->|not_eligible| F
+    E -->|cant_tell| G[Explain uncertainty + missing fields]
+    F --> H[Continue to document check or finish]
+    G --> H
+```
+
+### Why this design is safe
+
+The policy is intentionally strict:
+
+- No LLM may invent a rule outcome.
+- Only reviewed rules affect a final verdict.
+- Draft rules fail closed, which means `cant_tell` instead of a risky decision.
+- The approval gate is separate and only happens after a valid application is drafted.
+
+### Quick test commands
+
+Run the demo workflow from the project root:
 
 ```bash
 python -m graph.run
 ```
 
-The demo evaluates the synthetic pension scheme against a sample profile and prints the verdict, condition results, and supporting clauses. It then displays the application approval checkpoint and automatically resumes with approval to demonstrate a mock submission; this is not a real citizen approval or portal submission.
+This evaluates a sample scheme/profile and prints the verdict and supporting clauses.
 
-### Persistent checkpoint and resume
-
-The workflow uses a SQLite checkpointer, so a run can be stopped at the approval gate and resumed from a new process:
+Run the focused workflow tests:
 
 ```bash
-python -m graph.run --phase start --thread-id demo-1
-python -m graph.run --phase resume --thread-id demo-1 --decision approve
+source .venv/bin/activate
+pytest -q tests/test_agent_workflow.py
 ```
 
-`--decision reject` resumes without submitting. State is stored in `data/checkpoints.sqlite3` (git-ignored); use `--db` to choose another file. A thread ID can be started only once, and `resume` only works for a thread waiting at approval. Running `python -m graph.run` without `--phase` keeps the earlier in-memory demo. This checkpoints the workflow only. All graph tool calls go through the FastMCP servers in `servers/` via `graph/tools.py`; only `submit` writes to the mock portal, after approval.
+The important checks are:
 
-### Approval, edit and self-correction
+- deterministic evaluation stays authoritative
+- missing evaluation falls back to `cant_tell`
+- the Eligibility Analyst does not change the verdict from the rule engine
+- the explanation is only a narrative layer on top of the rule result
 
-Approval is bound to the exact application. The approval prompt shows the form, its `payload_hash` (SHA-256) and the options `approve`, `edit`, `reject`. Submission happens only if the approved hash matches the form being submitted.
+### Example behavior
 
-```bash
-python -m graph.run --phase resume --thread-id demo-1 --decision approve [--payload-hash <hash>]
-python -m graph.run --phase resume --thread-id demo-1 --decision edit --changes '{"income": 200000}'
+A valid flow looks like this:
+
+```text
+Input: household facts + selected scheme
+Output: verdict + explanation + missing fields, if any
 ```
 
-`approve` without `--payload-hash` approves the form currently pending; a stale or wrong hash is refused and nothing is submitted. `edit` merges the changes into the profile, re-runs eligibility and drafting, and asks for a new approval, so an earlier approval never carries over. The legacy `{"approved": true}` decision is no longer accepted.
+For example:
 
-After drafting, a deterministic `validate` step checks eligibility, required fields and consistency with the profile. A failed draft is redrafted up to 3 times, then escalated to a person (`needs_human`) without submitting. The current drafter is deterministic, so the loop is exercised in tests with an injected faulty drafter; it is ready for LLM drafting.
+```text
+scheme_id = C01
+facts = {...}
+rule_engine -> not_eligible
+Eligibility Analyst -> "not_eligible: one or more reviewed conditions are not satisfied. Missing or unresolved fields: ..."
+```
 
-Print the graph as Mermaid with `python -m graph.diagram`, or refresh [docs/workflow-graph.md](docs/workflow-graph.md) with `python -m graph.diagram --write`.
+The final message is human readable, but the underlying decision is still the rule-engine result.
 
 ### Choosing schemes
 
@@ -226,24 +489,20 @@ python -m graph.run --persona-id SS001
 
 Household-test-case facts such as `respondent_age` and `approx_annual_household_income_inr` are adapted to the rule profile fields `age` and `income`. Unknown (`null`) facts are omitted so the workflow can still ask about them.
 
-Draft rule files for real schemes live in `data/rules/` (separate from the source records in `data/schemes/`, so the RAG importer ignores them). `C10.json` (Khadi Vikas Yojana) holds six draft rules written from the source eligibility clauses. Because they are `draft`, the engine fails closed and reports "Cant Tell". A human must check each rule against its clause (for example, the "one person per family" rule is an interpretation) and set `"status": "reviewed"` on all of them; the scheme is then picked up automatically and the intake step asks for exactly the facts its rules use.
+Rule records for real schemes live in `data/rules/`, separate from the source records in `data/schemes/` so the RAG importer ignores them. In this branch, all 15 hand-coded records (`C01`, `C02`, `C04`, `C05`, `C06`, `C10`, `C13`, `C17`, `C19`, `C23`, `C30`, `C38`, `M13`, `M16`, and `M18`) are marked `reviewed`; consequently, the rule engine includes them in default live evaluation. `reviewed` is the project’s gating status, not an external certification. If a source changes or a rule becomes uncertain, return every rule in that scheme to `draft` until the complete ruleset is checked again. The engine fails closed for incomplete or draft rules.
 
-`C02.json` (Pradhan Mantri Suraksha Bima Yojana) is a draft rule file: bank account holder, age 18 to 70, and consent to auto-debit, all from one eligibility clause in the source. The source records no document list, so `documents_required` holds only the enrolment form.
-
-`C04.json` (Atal Pension Yojana) adds draft rules for savings-account holder status, joining age 18 to 40, and the exclusion for anyone who is or has been an income-tax payer (effective 1 October 2022). Its rules cite the captured eligibility and exclusion text; KYC details are listed as fetched from the active bank/post-office savings account. Both C02 and C04 need human review before their rules can be marked `reviewed`. In particular, verify field meanings and the effective date against current official scheme guidance.
-
-The other 12 hand-coded candidates for the 15-scheme rule reference set are `C01`, `C05`, `C06`, `C13`, `C17`, `C19`, `C23`, `C30`, `C38`, `M13`, `M16`, and `M18`. This covers central schemes and Maharashtra schemes. Their source clauses and rules are stored separately by ID in `data/rules/`; like the first three, all remain `draft` pending human review. Reviewers should pay special attention to the ambiguous NPS-Traders exclusion wording in C05, the family-level exclusions in M13, and the abstract profile fields used for institutional/state-specific conditions. Do not treat these 15 files as a reviewed gold set until the team validates them against current official sources.
+The source clauses and rule conditions are stored with each record. Review must check the actual source wording, the field/value/operator mapping, the combined `all`/`any` logic, missing-fact behavior, and relevant boundary cases. Take particular care with ambiguous exclusions, family-level conditions, and rules whose conditions may describe ongoing participation rather than initial eligibility.
 
 ### Draft preview
 
-`--include-draft` lets a rule author see what a draft rule set would decide, without waiting for review:
+`--include-draft` lets a rule author preview a draft ruleset without changing its stored status:
 
 ```bash
 python -m graph.run --include-draft --scheme-id C02 --citizen '{"has_bank_account": true, "age": 40, "consents_to_auto_debit": true}'
 python -m graph.run --include-draft --scheme-id C04 --citizen '{"has_savings_account": true, "age": 30, "is_or_was_income_tax_payer": false}'
 ```
 
-The output starts with a DRAFT PREVIEW banner. Draft rules are evaluated as in-memory copies (the files are not changed), and the workflow stops after the verdict and document list: no application is drafted, approved or submitted. Without the flag, draft rules still fail closed.
+The output starts with a DRAFT PREVIEW banner. Draft rules are evaluated as in-memory copies (the files are not changed), and the workflow stops after the verdict and document list: no application is drafted, approved or submitted. Without the flag, draft rules still fail closed. Use this only while a scheme’s rules are under review; do not use preview results for citizen advice or applications.
 
 ### Retrieval check
 
@@ -261,23 +520,65 @@ python -m pytest -q tests/test_scheme.py tests/test_rule_engine.py
 
 The current evaluator supports reviewed scalar comparisons and membership checks. A scheme's flat rules are combined with either `all` or `any`; nested mixed expressions are not supported. The synthetic pension fixture is the current executable example. Other scheme records contain source material and have not yet been converted into reviewed machine-readable eligibility rules, so the evaluator does not provide verified eligibility decisions for them.
 
-### GPT agent skeleton
+### GPT agent workflow
 
-The GPT-backed orchestrator is separate from the deterministic demo workflow:
+The GPT-backed orchestrator is separate from the deterministic demo workflow. It needs a checkpointer and a `thread_id` so it can pause for approval:
 
 ```python
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.types import Command
 from graph.agent_workflow import build_agent_graph
 
-agent_graph = build_agent_graph()
-result = agent_graph.invoke({"request": "Which schemes should I check?"})
+graph = build_agent_graph(checkpointer=MemorySaver())
+config = {"configurable": {"thread_id": "household-1-thread-1"}}
+result = graph.invoke({"request": "Help me apply", "selected_scheme_id": "SYNTH-PENSION-001",
+                       "confirmed_facts": {"age": 70, "is_widow": True, "income": 1000}}, config)
+
+pending = result["__interrupt__"][0].value        # the exact form, its hash and the portal draft ID
+graph.invoke(Command(resume={"action": "approve", "payload_hash": pending["payload_hash"]}), config)
 ```
 
 Set `SUPERVISOR_MODEL` and `SPECIALIST_MODEL` in `.env`, plus either `OPENROUTER_API_KEY` (with an OpenRouter model ID such as `openai/gpt-4o-mini`) or `OPENAI_API_KEY` (with an OpenAI model ID). `OPENAI_BASE_URL` can be set for an OpenAI-compatible endpoint. The model IDs are configuration, not code defaults.
 
-This is a scaffold: scheme retrieval, authenticated household scoping, memory storage, document extraction, and application submission are not wired into this graph. Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. Application fields are copied only from caller-supplied confirmed facts and reviewed field mappings; the GPT agent cannot approve or submit. No persistent checkpoint is enabled by default.
+Mock-portal writes also require `MOCK_PORTAL_AUTH_SECRET` in `.env`. Set the
+same long random value in the graph application and mock-portal server
+environments (for example, generate one with
+`python -c 'import secrets; print(secrets.token_urlsafe(32))'`). The workflow
+uses short-lived, one-use capabilities tied to the exact application form; writes
+fail closed when the secret is not configured. Do not commit the secret.
+
+How an application is drafted, approved and submitted:
+
+1. The Application agent fills the form only from confirmed facts. The required fields come from the scheme's reviewed rule fields (`tools.application_form_spec`). If the model fails, the review summary falls back to a deterministic one that lists field names only. A draft with missing fields skips approval and asks for the missing information.
+2. A complete draft is stored on the mock portal as a `draft` before approval.
+3. The graph pauses with `interrupt()` and shows the exact form, its SHA-256 hash and the portal draft ID. The person can `approve`, `edit` or `reject`.
+4. `submit` runs only after an approval that names the same hash. It checks the hash again, then moves the existing portal draft to `submitted` (`submit_draft`). A wrong hash, a reject or an edit never submits.
+5. The graph tool layer allow-lists all MCP tools and applies per-agent read access inside `acting_as` contexts. Only the application agent and baseline comparison context may call write tools; writes with no caller context are denied. These checks prevent accidental misuse, but are not a security boundary against malicious code that can choose an allowed identity.
+6. Every compiled workflow invocation (`invoke`, `stream`, and async/batch variants) has a hard MCP-call budget that resets on each invocation, including a resumed graph run. The agent graph and single-agent baseline allow 40 calls; the legacy full-corpus demo allows 1,200 because it evaluates 16 schemes across up to 53 rule fields in one run. Calls beyond the applicable limit fail before reaching an MCP server.
+7. Each MCP call emits a structured `mcp_tool_call` audit event with the known actor, server/tool labels, outcome, error category and duration. It deliberately omits arguments, results and exception text, so household data is not copied into these audit logs.
+8. The `document_checker` role may call only the required-document and field-comparison tools; intake and eligibility have separate read-tool permissions. The single-agent baseline intentionally retains its full tool set.
+9. Approval decisions emit `application_approval` events with the action, result and whether the caller was an authenticated household. They omit household IDs, form data and approval hashes.
+
+HTTP API (`app/api.py`):
+
+- Configure `AUTH0_DOMAIN`, `AUTH0_AUDIENCE` and `AUTH0_HOUSEHOLD_CLAIM` in `.env`. Auth0 access tokens must use RS256 and include a non-empty `sub` plus the configured custom namespaced household claim. Configure that claim in an Auth0 Action; never accept a household ID from the request body or headers. Protected API routes reject missing/invalid tokens, and fail closed with 503 if Auth0 is not configured.
+- The mock portal HTTP routes also require an Auth0 access token. `POST /applications` additionally requires the exact, short-lived, one-use capability in `X-Write-Capability`; capabilities are bound to the authenticated household and form. `GET /applications/{application_id}` returns status only to the owning household. Keep the portal server private; this demo's capability issuer and nonce store are process-local.
+- `POST /api/chat` runs the graph on a `thread_id`. `known_facts` and `confirmed_facts` sent on a turn are merged with earlier turns. `next_step` tells the client what to show:
+  - `needs_information`: one intake question in `response`; the field is `data.pending_field`.
+  - `awaiting_confirmation`: `data.confirmation` holds the `facts` to confirm, their `payload_hash` and any `rejected_edits`.
+  - `intake_stopped`: the person did not know an answer; `response` lists the missing details.
+  - `eligibility_checked`: the final, cited verdict for each candidate scheme.
+  - `awaiting_approval`: a draft is waiting; `data.approval` holds the form, `payload_hash` and `portal_draft_id`.
+
+  A new message on a thread waiting for a confirmation or approval returns 409.
+- `POST /api/chat/{thread_id}/decision` takes `{"action": "approve" | "edit" | "reject", "payload_hash": "...", "changes": {}}` and resumes the graph, for the confirm step and the approval gate alike. It returns 404 for an unknown thread, 403 for another household, and 409 when nothing is waiting.
+
+Not wired in yet: memory storage, document extraction, and persistent checkpoints (the API uses an in-memory checkpointer). Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
 
 ## Guides
 
+- [Tool inventory](teamProjectWorkspace/reference-docs/tool-list.md) — current MCP tools, access types, and graph access checks.
+- [Threat model](teamProjectWorkspace/reference-docs/threat-model.md) — security boundaries, current controls, and deployment follow-ups.
 - [60-scheme review workbook](docs/Scheme-Saathi-60-Schemes-Schema-Review.xlsx) — manual review of scheme details and source information. Excel edits do not automatically update scheme JSON or ChromaDB.
 
 - [Scheme relationships](docs/scheme-data-relationships.md)

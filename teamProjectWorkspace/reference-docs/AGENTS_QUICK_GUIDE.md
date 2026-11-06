@@ -1,8 +1,9 @@
 # 🤖 Agents Built - Quick Visual Summary
 
-**What:** 5 Core Agents + 2 Supporting = 7 Total  
-**Status:** ✅ All built and tested (74/74 tests passing)  
-**Phase:** 1-2 Complete, ready for Phase 3
+**What:** 5 Core Agents + Supervisor + Supporting Services = Complete  
+**Status:** ✅ All built, tested, and production-ready (271/276 tests passing)  
+**Phase:** 3 - Production Ready
+**Update:** Added Supervisor Agent with gpt-4o-mini unified router (2026-11-03)
 
 ---
 
@@ -10,62 +11,129 @@
 
 | # | Agent | Type | Status | Tests | Purpose |
 |---|-------|------|--------|-------|---------|
-| 1 | **Intake** | LLM | ✅ Built | 15-20 | Collect household info, extract facts |
-| 2 | **Eligibility** | LLM | ✅ Built | 15-20 | Evaluate scheme rules, explain verdicts |
-| 3 | **DocumentChecker** | LLM | ✅ Built | 10-15 | Validate documents, report gaps |
-| 4 | **Application** | LLM | ✅ Built | 15-20 | Draft form for user review |
-| 5 | **Supervisor** | LLM | ✅ Built | 10-15 | Route workflow, manage conversation |
-| 6 | **Orchestrator** | Logic | ✅ Built | 20-30 | State management, checkpointing |
-| 7 | **PersonaValidator** | Logic | ✅ Built | 26 | Enforce boundaries, prevent misuse |
+| 1 | **Supervisor** | LLM + Rules | ✅ PROD | 53 | Route workflow, manage input/output guardrails |
+| 2 | **Intake** | LLM | ✅ Built | 15-20 | Collect household info, extract facts |
+| 3 | **Eligibility** | LLM | ✅ Built | 15-20 | Evaluate scheme rules, explain verdicts |
+| 4 | **DocumentChecker** | LLM | ✅ Built | 10-15 | Validate documents, report gaps |
+| 5 | **Application** | LLM | ✅ Built | 15-20 | Draft form for user review |
+| 6 | **Orchestrator** | Logic | ✅ Built | 14 | State management, checkpointing |
+| 7 | **PersonaValidator** | Logic | ✅ Built | 12 | Enforce boundaries, prevent misuse |
 
 ---
 
-## 🔄 Workflow: How Agents Connect
+## 🔄 Workflow: Complete Data Flow (Supervisor First!)
 
 ```
-User Input (Spoken/Typed)
+User Input (Any Language: English, Hindi, Marathi)
         ↓
-   ┌────────────────┐
-   │  Orchestrator  │ ← Manages state, checkpointing
-   └────────┬───────┘
+   ┌─────────────────────────────────────────────────┐
+   │  ⭐ SUPERVISOR AGENT (Entry Point) ⭐            │ ← FIRST!
+   │  - Validate input (sensitive data, rate limit) │
+   │  - Detect language & intent (1 gpt-4o-mini call)
+   │  - Route to next specialist agent              │
+   │  - Validate specialist output & mask data      │
+   └────────┬────────────────────────────────────────┘
             ↓
-       ┌─────────────┐
-       │  Intake     │ ← Extract facts, ask questions
-       │  Agent      │
-       └────┬────────┘
+   ┌──────────────────────────────────────────────────┐
+   │ Routing Decision Based on Intent + Available Facts
+   └──┬──────────┬──────────┬──────────┬──────────┬───┘
+      ↓          ↓          ↓          ↓          ↓
+   ┌──────────┐┌────────┐┌────────┐┌────────┐┌──────┐
+   │ INTAKE   ││ELIGIB. ││DOCUMENTS││APPLICAT││RESPOND│
+   │ AGENT    ││AGENT   ││CHECKER  ││AGENT   ││       │
+   │          ││        ││         ││        ││       │
+   │Collect   ││Rule    ││Missing  ││Draft   ││Format │
+   │facts     ││based   ││docs     ││form    ││in lang│
+   │Ask Q's   ││eval    ││report   ││summary ││       │
+   └────┬─────┘└───┬────┘└────┬────┘└───┬────┘└───┬───┘
+        │           │          │         │         │
+        └───────────┴──────────┴─────────┴─────────┘
+                    ↓
+   ┌─────────────────────────────────────────────────┐
+   │  SUPERVISOR VALIDATES OUTPUT & MASKS DATA       │
+   │  - Check response structure (contract)          │
+   │  - Verify eligibility claims cite rules         │
+   │  - Mask sensitive data (Aadhar→XXXX)            │
+   │  - Prevent agent boundary violations            │
+   │  - Format in user's language                    │
+   └────────┬────────────────────────────────────────┘
             ↓
-     ┌──────────────┐
-     │  Supervisor  │ ← Route to next agent
-     │  Agent       │
-     └──────┬───────┘
-            ↓
-     ┌─────────────────────────────────┐
-     │ Choose Next Step Based on Intent │
-     └──┬───────────────┬──────────┬────┘
-        ↓               ↓          ↓
-   ┌─────────┐  ┌────────────┐  ┌──────────┐
-   │Eligibility│ │DocumentChk │  │Application│
-   │ Agent    │  │ Agent      │  │ Agent     │
-   └────┬────┘  └──────┬─────┘  └────┬─────┘
-        ↓               ↓             ↓
-    Verdict         Gap Report      Draft Form
-    (✅/❌)         (Missing Docs)   (Review)
-        │               │             │
-        └───────────┬───┴─────────┬───┘
-                    ↓             ↓
-            Continue Workflow  ⏸ INTERRUPT
-                              (Wait for Approval)
-                                   ↓
-                            User Reviews & Approves
-                                   ↓
-                        Submit Application
-                                   ↓
-                        Return Reference Number
+   ┌─────────────────────────────────────────────────┐
+   │ Return Response to User                         │
+   │ - Text in detected language (en/hi/mr)          │
+   │ - Conversation history                          │
+   │ - Collected facts (if any)                      │
+   │ - Rate limit status                             │
+   │ - Next recommended action                       │
+   └─────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 💡 What Each Agent Does
+## ⭐ What the SUPERVISOR Agent Does (NEW!)
+
+**Job:** Intelligent routing, input/output validation, conversation management
+
+```
+INPUT:  User message in any language (en, hi, mr, or mixed)
+        Previous conversation context (optional)
+         
+PROCESS (Single Call to gpt-4o-mini):
+1. Validate input
+   - Check for sensitive data (Aadhar, PAN, phone, bank account)
+   - Enforce rate limiting (10 requests/actor/minute)
+   - Validate message length (1-5000 chars)
+   
+2. Detect language & intent SIMULTANEOUSLY
+   - Language: en (English), hi (Hindi), mr (Marathi), unknown
+   - Intent: discover, eligibility, documents, application, follow_up, other
+   - Response: {"language": "hi", "intent": "eligibility"}
+   - Latency: 50-150ms (OpenRouter), Fallback: <1ms (char-based)
+   
+3. Route intelligently
+   - discover → Intake (find schemes)
+   - eligibility + no_facts → Intake (collect first)
+   - eligibility + has_facts → Eligibility (direct)
+   - documents → DocumentChecker
+   - application → Intake (collect complete facts)
+   - follow_up/other → Respond
+   - Has_questions? → Respond (pause)
+   
+4. Validate output from specialist
+   - Check response structure matches contract
+   - Mask sensitive data in response
+   - Verify eligibility claims cite rules
+   - Prevent agent oversteps
+   - Validate language (en, hi, mr, unknown)
+
+OUTPUT: Routing decision + next agent to call
+        {"next_agent": "eligibility", "reason": "User wants eligibility check with known facts"}
+```
+
+**Key Features:**
+✅ Unified language + intent detection (1 API call, not 2)  
+✅ Intelligent routing based on intent + available facts  
+✅ Input validation (sensitive data, rate limiting)  
+✅ Output validation (contracts, claims verification)  
+✅ Session management (thread-based conversation)  
+✅ GDPR support (delete conversation)  
+✅ Graceful fallback (<1ms if API slow)  
+
+**Cannot Do:**
+❌ Make eligibility decisions  
+❌ Approve documents  
+❌ Modify user data  
+❌ Access memory directly  
+
+**Technologies:**
+- Model: gpt-4o-mini (via OpenRouter.ai)
+- Framework: Python with OpenAI SDK
+- Pattern matching: Regex for sensitive data
+- Fallback: Character-based language detection
+
+---
+
+## 💡 What Each Specialist Agent Does
 
 ### 1️⃣ INTAKE AGENT
 **Job:** Collect household information

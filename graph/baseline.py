@@ -53,17 +53,20 @@ def build_tools(profile: dict[str, Any]) -> list:
     @tool
     def find_schemes() -> list[str]:
         """List the scheme IDs that can be evaluated."""
-        return tools.search_schemes(profile)
+        with tools.acting_as("baseline"):
+            return tools.search_schemes(profile)
 
     @tool
     def check_eligibility(scheme_id: str) -> dict:
         """Evaluate the citizen against one scheme's reviewed rules. Returns verdict, conditions, citations."""
-        return tools.evaluate_scheme(profile, scheme_id)
+        with tools.acting_as("baseline"):
+            return tools.evaluate_scheme(profile, scheme_id)
 
     @tool
     def get_documents(scheme_id: str) -> list[str]:
         """List the documents a scheme requires."""
-        return tools.list_documents(scheme_id)
+        with tools.acting_as("baseline"):
+            return tools.list_documents(scheme_id)
 
     @tool
     def submit_application(scheme_id: str) -> dict:
@@ -73,16 +76,23 @@ def build_tools(profile: dict[str, Any]) -> list:
         decision = interrupt({"form": form, "payload_hash": current, "options": ["approve", "reject"]})
         if (isinstance(decision, dict) and decision.get("action") == "approve"
                 and decision.get("payload_hash") == current):
-            return tools.submit_application(form)
+            capability = tools.issue_submission_capability(form, current)
+            with tools.acting_as("baseline"):
+                return tools.submit_application(
+                    form,
+                    write_capability=capability,
+                )
         return {"status": "not submitted", "reason": "approval was rejected or did not match the form"}
 
     return [find_schemes, check_eligibility, get_documents, submit_application]
 
 
 def build_baseline(profile: dict[str, Any], model: BaseChatModel | None = None, checkpointer=None):
-    return create_react_agent(
-        model or build_model(), build_tools(profile), prompt=SYSTEM_PROMPT,
-        checkpointer=checkpointer or InMemorySaver(),
+    return tools.budget_graph(
+        create_react_agent(
+            model or build_model(), build_tools(profile), prompt=SYSTEM_PROMPT,
+            checkpointer=checkpointer or InMemorySaver(),
+        )
     )
 
 

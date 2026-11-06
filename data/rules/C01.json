@@ -19,8 +19,8 @@
   ],
   "documents_required": [],
   "rules": [
-    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-1", "status": "draft"},
-    {"field": "age", "op": "lte", "value": 50, "clause_id": "elig-1", "status": "draft"},
-    {"field": "has_individual_bank_or_post_office_account", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"}
+    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "age", "op": "lte", "value": 50, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "has_individual_bank_or_post_office_account", "op": "eq", "value": true, "clause_id": "elig-2", "status": "reviewed"}
   ]
 }

@@ -1,5 +1,7 @@
 """Application agent: populate a draft from confirmed facts without submission."""
 
+import logging
+
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from agents.base import StructuredGPTAgent
@@ -9,6 +11,8 @@ from agents.contracts import (
     ApplicationNarrative,
     ApplicationNarrativeInput,
 )
+
+logger = logging.getLogger(__name__)
 
 INSTRUCTIONS = """Prepare a review summary for a draft whose fields were populated
 deterministically from confirmed facts. Do not invent, transform, or supply applicant
@@ -44,16 +48,29 @@ class ApplicationAgent:
             if source_field in request.confirmed_facts
         }
         missing_fields = sorted(required_fields - fields.keys())
-        narrative = self._narrative.invoke(
-            ApplicationNarrativeInput(
-                scheme_id=request.scheme_id,
-                populated_fields=sorted(fields),
-                missing_fields=missing_fields,
-            )
+        narrative_input = ApplicationNarrativeInput(
+            scheme_id=request.scheme_id,
+            populated_fields=sorted(fields),
+            missing_fields=missing_fields,
         )
+        try:
+            review_summary = self._narrative.invoke(narrative_input).review_summary
+        except Exception:
+            logger.warning("Application narrative model failed; using the deterministic summary.")
+            review_summary = _deterministic_summary(narrative_input)
         return ApplicationDraft(
             scheme_id=request.scheme_id,
             fields=fields,
             missing_fields=missing_fields,
-            review_summary=narrative.review_summary,
+            review_summary=review_summary,
         )
+
+
+def _deterministic_summary(value: ApplicationNarrativeInput) -> str:
+    """Built from field names only, so it never states an applicant value."""
+    summary = f"Draft for scheme {value.scheme_id}: {len(value.populated_fields)} field(s) filled"
+    if value.populated_fields:
+        summary += " (" + ", ".join(value.populated_fields) + ")"
+    if value.missing_fields:
+        return summary + ". Missing required: " + ", ".join(value.missing_fields) + ". Not ready for approval."
+    return summary + ". All required fields are filled. Please check every value before approving."
