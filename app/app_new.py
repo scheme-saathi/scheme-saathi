@@ -141,8 +141,11 @@ def _access_token() -> str | None:
         token = st.session_state.get("access_token")
     except Exception:
         return None
-    if isinstance(token, ui_auth.AccessToken) and token.is_valid():
-        return token.value
+    value = getattr(token, "value", None)
+    expires_at = getattr(token, "expires_at", None)
+    if isinstance(value, str) and isinstance(expires_at, (int, float)):
+        if time.time() < expires_at - 30:
+            return value
     return None
 
 
@@ -163,16 +166,18 @@ def _sign_out() -> None:
 def _http_error_message(error: HTTPError) -> str:
     """Turn an API error into user-facing text; an expired sign-in ends the session."""
     message = error.read().decode("utf-8", errors="replace")
+    try:
+        detail = json.loads(message).get("detail", message)
+    except (json.JSONDecodeError, AttributeError):
+        detail = message
     if error.code == 401:
         try:
             _sign_out()
         except Exception:
             pass
-        return "Your sign-in has expired. Please sign in again."
-    try:
-        detail = json.loads(message).get("detail", message)
-    except (json.JSONDecodeError, AttributeError):
-        detail = message
+        reason = f"Sign-in was rejected: {detail} Please sign in again."
+        st.session_state["access_error"] = reason
+        return reason
     return str(detail) or f"FastAPI request failed ({error.code})."
 
 
@@ -1254,8 +1259,13 @@ def _handle_sign_in_callback(settings: Any) -> None:
     """Finish an Auth0 redirect (?code=&state=) and store the access token."""
     params = st.query_params
     if "error" in params:
+        detail = "".join(
+            c for c in str(params.get("error_description", "")) if c.isprintable() and c not in "<>`"
+        )[:160]
+        code = "".join(c for c in str(params.get("error")) if c.isalnum() or c == "_")[:40]
         st.session_state["access_error"] = (
-            "Sign-in was cancelled or refused. Please try again."
+            f"Sign-in was cancelled or refused (Auth0 error: {code or 'unknown'}"
+            f"{': ' + detail if detail else ''}). Please try again."
         )
         st.query_params.clear()
         return
@@ -1607,7 +1617,7 @@ def _render_citizen_portal() -> None:
         st.session_state["portal_stage"] = stage = "access"
         st.session_state["consent_given"] = False
         st.session_state["access_error"] = (
-            "Please sign in to continue."
+            st.session_state.get("access_error") or "Please sign in to continue."
         )
     if stage == "access":
         _render_access_page()
