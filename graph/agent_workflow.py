@@ -1,5 +1,6 @@
 """GPT agent orchestration skeleton, separate from the deterministic demo graph."""
 
+import logging
 from dataclasses import dataclass
 from typing import Annotated, Any, TypedDict
 
@@ -12,7 +13,9 @@ from agents.contracts import (
     ApplicationInput,
     DocumentCheckInput,
     EligibilityInput,
+    EvidencePassage,
     FactMap,
+    IntakeAnswerInput,
     IntakeAskInput,
     IntakeExtractInput,
     Language,
@@ -27,6 +30,7 @@ from graph import tools
 from graph.workflow import application_hash
 from servers.rule_engine.rules import Evaluation
 
+logger = logging.getLogger(__name__)
 
 MAX_QUESTIONS = 8  # per intake, so a long tail of open schemes can't turn into an interview
 MAX_ATTEMPTS_PER_FIELD = 2  # a field asked twice without a usable answer counts as "don't know"
@@ -601,9 +605,46 @@ def _submit_node(state: AgentWorkflowState) -> dict[str, Any]:
     }
 
 
+NOT_FOUND = {
+    "hi": "मुझे यह जानकारी समीक्षित योजना दस्तावेज़ों में नहीं मिली।",
+    "mr": "मला ही माहिती तपासलेल्या योजना कागदपत्रांमध्ये सापडली नाही.",
+    "en": "I couldn't find this in the reviewed scheme documents.",
+}
+
+
+def _scheme_answer(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]:
+    """Intake drafts a cited answer from schemes-kb evidence; nothing relevant gives NOT_FOUND."""
+    language = state.get("language", "unknown")
+    not_found = {"status": "answer_not_found", "response": NOT_FOUND.get(language, NOT_FOUND["en"])}
+    try:
+        with tools.acting_as("intake"):
+            passages = tools.search_evidence(state["request"], state.get("selected_scheme_id"))
+        if not passages:
+            return not_found
+        result = agents.intake.answer(
+            IntakeAnswerInput(
+                question=state["request"],
+                language=language,
+                passages=[EvidencePassage(id=p["id"], scheme_id=p["scheme_id"], text=p["text"]) for p in passages],
+            )
+        )
+    except Exception:
+        logger.exception("A scheme question could not be answered from evidence.")
+        return not_found
+    if not result.found:
+        return not_found
+    sources = sorted({
+        f"{p['scheme_id']}: {c['source_url']}" + (f" (page {c['page']})" if c.get("page") else "")
+        for p in passages if p["id"] in result.cited_passage_ids for c in p["citations"]
+    })
+    return {"status": "answered", "response": result.answer + "\n\nSources:\n" + "\n".join(f"- {s}" for s in sources)}
+
+
 def _respond_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]:
     if state.get("validation_errors"):
         return {"status": "validation_error", "response": " ".join(state["validation_errors"])}
+    if state["plan"].get("scheme_question"):
+        return _guard_output(agents, state, _scheme_answer(agents, state), "scheme_info")
     return _guard_output(
         agents, state, {"status": "responded", "response": state["plan"]["reason"]}, "supervisor"
     )

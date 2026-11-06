@@ -8,7 +8,8 @@ from sentence_transformers import SentenceTransformer
 
 from servers.schemes_kb.import_schemes import COLLECTION_NAME, DB_PATH, MODEL_NAME
 
-from servers.schemes_kb.keyword_search import bm25_rank, reciprocal_rank_fusion
+from servers.schemes_kb.keyword_search import bm25_rank, reciprocal_rank_fusion, visible_text
+from servers.schemes_kb.rerank import llm_rerank
 
 PDF_COLLECTION_NAME = "scheme_pdf_review_v1"
 
@@ -26,7 +27,7 @@ def get_client():
 
 
 def search_schemes(question, top_k=5, scheme_id=None, availability=None, include_review_pdfs=False,
-                   method="vector", candidate_k=20):
+                   method="vector", candidate_k=20, rerank=False, rerank_model=None):
     if not isinstance(question, str) or not question.strip() or len(question) > 2000:
         raise ValueError("Provide a nonempty question of at most 2000 characters.")
     if not isinstance(top_k, int) or not 1 <= top_k <= 20:
@@ -39,7 +40,7 @@ def search_schemes(question, top_k=5, scheme_id=None, availability=None, include
     targets = []
     records = {}
     warnings = []
-    limit = top_k if method == "vector" else candidate_k
+    limit = top_k if method == "vector" and not rerank else candidate_k
     for name, source_type in [(COLLECTION_NAME, "scheme_page"), (PDF_COLLECTION_NAME, "pdf")]:
         try:
             collection = get_client().get_collection(name, embedding_function=None)
@@ -100,10 +101,19 @@ def search_schemes(question, top_k=5, scheme_id=None, availability=None, include
         ranking = keywords
     else:
         ranking = [(key, 1-distance) for key, distance in vectors]
-    results = [{**records[key], "rank_score": score, "score_type": method}
+    score_type = method
+    if rerank and ranking:
+        try:
+            ranking = llm_rerank(question.strip(), [(key, visible_text(records[key]["text"]) if records[key]["kind"] == "table"
+                                                       else records[key]["text"]) for key, _ in ranking[:limit]],
+                                 rerank_model)
+            score_type = f"{method}+llm_rerank"
+        except Exception as error:
+            warnings.append(f"LLM rerank failed; returning {method} order: {type(error).__name__}")
+    results = [{**records[key], "rank_score": score, "score_type": score_type}
                for key, score in ranking[:top_k]]
     return {"question": question.strip(), "results": results, "warnings": warnings,
-            "ranking": method, "settings": {"candidate_k": limit, "bm25_k1": 1.2, "bm25_b": 0.75,
+            "ranking": score_type, "settings": {"candidate_k": limit, "rerank": rerank, "bm25_k1": 1.2, "bm25_b": 0.75,
                                                "rrf_constant": 60},
             "notice": "Results are evidence, not eligibility verdicts. Scores from different methods are not comparable."}
 
@@ -116,17 +126,19 @@ def main():
     parser.add_argument("--availability", choices=["open", "closed", "unverified"])
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--include-review-pdfs", action="store_true")
+    parser.add_argument("--rerank", action="store_true", help="Reorder candidates with the specialist LLM.")
     args = parser.parse_args()
     try:
         response = search_schemes(args.question, args.top_k, args.scheme_id,
-                                  args.availability, args.include_review_pdfs, method=args.method)
+                                  args.availability, args.include_review_pdfs, method=args.method,
+                                  rerank=args.rerank)
     except ValueError as error:
         parser.error(str(error))
     for warning in response["warnings"]:
         print(f"Notice: {warning}")
     for rank, result in enumerate(response["results"], start=1):
         print(f"\n{rank}. {result['scheme_id']} | {result['source_type']} | "
-              f"{result['review_status']} | {result['availability_status']} | {result['score_type']} score {result['rank_score']:.4f}")
+              f"{result['review_status']} | {result['availability_status']} | {result['score_type']} score {result['rank_score'] if result['rank_score'] is None else round(result['rank_score'], 4)}")
         print(result["text"])
         print("Citations:", json.dumps(result["citations"], ensure_ascii=False))
         print("Sources and References:", json.dumps(result["references"], ensure_ascii=False))

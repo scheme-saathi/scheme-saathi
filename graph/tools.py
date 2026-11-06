@@ -52,6 +52,7 @@ READ_TOOLS = {
     (SCHEMES_KB, "search_schemes"),
     (SCHEMES_KB, "get_scheme_details"),
     (SCHEMES_KB, "get_required_documents"),
+    (SCHEMES_KB, "search_scheme_evidence"),
     (MOCK_PORTAL, "get_application_status"),
     (DOC_CHECK, "compare_document_fields"),
 }
@@ -292,6 +293,11 @@ def call_tool(server: str, tool: str, **arguments: Any) -> Any:
 def search_schemes(profile: dict, scheme_ids: list[str] | None = None, include_draft: bool = False) -> list[str]:
     """Requested schemes, or every scheme whose rules are fully reviewed (any with rules in preview)."""
     return call_tool(RULE_ENGINE, "list_rule_schemes", scheme_ids=scheme_ids, include_draft=include_draft)
+
+
+def search_evidence(question: str, scheme_id: str | None = None) -> list[dict]:
+    """Cited passages that answer a scheme question; empty when nothing relevant was found."""
+    return call_tool(SCHEMES_KB, "search_scheme_evidence", question=question, scheme_id=scheme_id)
 
 
 def required_fields(scheme_ids: list[str] | None = None, include_draft: bool = False) -> list[str]:

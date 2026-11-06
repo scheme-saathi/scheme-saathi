@@ -12,6 +12,8 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
 
 from agents.base import StructuredGPTAgent, untrusted_prompt
 from agents.contracts import (
+    IntakeAnswer,
+    IntakeAnswerInput,
     IntakeAskInput,
     IntakeExtraction,
     IntakeExtractInput,
@@ -46,6 +48,14 @@ request. Refer to the person the way the request does (for example "she" for a m
 For a bool field, ask a yes/no question. When period is given, ask for the amount per that
 period ("per month" or "per year") and say so in the question. Do not mention eligibility, schemes, rules or
 field names, and never ask for Aadhaar, bank-account numbers or other sensitive
+identifiers."""
+
+ANSWER_INSTRUCTIONS = """You answer a question about Indian government schemes using only the
+given passages, never outside knowledge. Set found to false when the passages do not answer the
+question. When found, write a short answer in the given language (en English, hi Hindi, mr Marathi;
+if it is unknown, use the language of the question) and put the id of every passage you used in
+cited_passage_ids. Say what the scheme documents state; never tell the user whether they
+personally are eligible, and never ask for Aadhaar, bank-account numbers or other sensitive
 identifiers."""
 
 _FIELD_TYPES = {"number": int | float, "bool": bool, "str": str}
@@ -109,6 +119,7 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
     def __init__(self, model: BaseChatModel) -> None:
         super().__init__(model, IntakeInput, IntakeResult, INSTRUCTIONS)
         self._asker = StructuredGPTAgent(model, IntakeAskInput, IntakeQuestionText, ASK_INSTRUCTIONS)
+        self._answerer = StructuredGPTAgent(model, IntakeAnswerInput, IntakeAnswer, ANSWER_INSTRUCTIONS)
 
     def extract(self, value: IntakeExtractInput | dict, specs: dict[str, dict[str, Any]]) -> IntakeExtraction:
         """Typed facts from the message. Each field is checked on its own, so one bad value
@@ -146,3 +157,12 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
         """One question for one field; the field comes from the caller, never from the model."""
         request = IntakeAskInput.model_validate(value)
         return IntakeQuestion(field=request.field, question=self._asker.invoke(request).question)
+
+    def answer(self, value: IntakeAnswerInput | dict) -> IntakeAnswer:
+        """A cited answer from the given passages. A citation outside them voids the answer."""
+        request = IntakeAnswerInput.model_validate(value)
+        result = self._answerer.invoke(request)
+        cited = set(result.cited_passage_ids)
+        if not (result.found and result.answer.strip() and cited) or not cited <= {p.id for p in request.passages}:
+            return IntakeAnswer(found=False)
+        return result
