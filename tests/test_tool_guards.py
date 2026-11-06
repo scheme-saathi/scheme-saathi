@@ -142,6 +142,20 @@ def test_agent_read_access_is_restricted_before_the_server_call(monkeypatch):
             )
 
 
+def test_intake_may_search_scheme_evidence_but_eligibility_may_not(monkeypatch):
+    async def expected_call(server, tool, arguments):
+        return {"data": []}
+
+    monkeypatch.setattr(tools, "_call", expected_call)
+
+    with tools.acting_as("intake"):
+        assert tools.search_evidence("What is the age limit?") == []
+
+    with tools.acting_as("eligibility"):
+        with pytest.raises(tools.ToolCallError, match="may not use this read tool"):
+            tools.search_evidence("What is the age limit?")
+
+
 def test_doc_check_tool_is_callable_only_by_document_checker(monkeypatch):
     async def expected_call(server, tool, arguments):
         assert (server, tool) == (tools.DOC_CHECK, "compare_document_fields")

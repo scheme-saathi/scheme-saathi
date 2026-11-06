@@ -21,9 +21,13 @@ import streamlit as st
 import uvicorn
 
 if __package__:
+    from . import ui_auth
     from .api import create_api
 else:
-    from api import create_api
+    # `streamlit run app/app_new.py` puts app/ on sys.path, but api.py imports `app.*`.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from app import ui_auth
+    from app.api import create_api
 
 CSS_PATH = Path(__file__).with_name("style.css")
 BRAND_IMAGE_PATH = Path(__file__).with_name("images") / "main_image.png"
@@ -131,6 +135,47 @@ def _parse_sse(response: Any) -> Iterator[tuple[str, dict[str, Any]]]:
         yield event_name, payload
 
 
+def _access_token() -> str | None:
+    """The signed-in user's Auth0 access token, or None when signed out or expired."""
+    try:
+        token = st.session_state.get("access_token")
+    except Exception:
+        return None
+    if isinstance(token, ui_auth.AccessToken) and token.is_valid():
+        return token.value
+    return None
+
+
+def _auth_headers(headers: dict[str, str] | None = None) -> dict[str, str]:
+    merged = dict(headers or {})
+    token = _access_token()
+    if token:
+        merged["Authorization"] = f"Bearer {token}"
+    return merged
+
+
+def _sign_out() -> None:
+    st.session_state["access_token"] = None
+    st.session_state["portal_stage"] = "access"
+    st.session_state["consent_given"] = False
+
+
+def _http_error_message(error: HTTPError) -> str:
+    """Turn an API error into user-facing text; an expired sign-in ends the session."""
+    message = error.read().decode("utf-8", errors="replace")
+    if error.code == 401:
+        try:
+            _sign_out()
+        except Exception:
+            pass
+        return "Your sign-in has expired. Please sign in again."
+    try:
+        detail = json.loads(message).get("detail", message)
+    except (json.JSONDecodeError, AttributeError):
+        detail = message
+    return str(detail) or f"FastAPI request failed ({error.code})."
+
+
 def _api_request(
     url: str,
     method: str = "GET",
@@ -138,19 +183,12 @@ def _api_request(
     headers: dict[str, str] | None = None,
 ) -> Any:
     """Send a JSON API request and turn HTTP/network failures into clear UI errors."""
-    request = Request(url, data=body, headers=headers or {}, method=method)
+    request = Request(url, data=body, headers=_auth_headers(headers), method=method)
     try:
         with urlopen(request, timeout=300) as response:
             return json.loads(response.read().decode("utf-8"))
     except HTTPError as error:
-        message = error.read().decode("utf-8", errors="replace")
-        try:
-            detail = json.loads(message).get("detail", message)
-        except json.JSONDecodeError:
-            detail = message
-        raise RuntimeError(
-            str(detail) or f"FastAPI request failed ({error.code})."
-        ) from error
+        raise RuntimeError(_http_error_message(error)) from error
     except (URLError, OSError, http.client.HTTPException) as error:
         raise RuntimeError(f"FastAPI request failed: {error}") from error
 
@@ -165,10 +203,9 @@ def _send_workflow(
     request = Request(
         f"{api_base}{path}",
         data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "Content-Type": "application/json",
-            "Accept": "text/event-stream",
-        },
+        headers=_auth_headers(
+            {"Content-Type": "application/json", "Accept": "text/event-stream"}
+        ),
         method="POST",
     )
     result = None
@@ -184,14 +221,7 @@ def _send_workflow(
                 elif event_name == "result":
                     result = event_payload
     except HTTPError as error:
-        message = error.read().decode("utf-8", errors="replace")
-        try:
-            detail = json.loads(message).get("detail", message)
-        except json.JSONDecodeError:
-            detail = message
-        raise RuntimeError(
-            str(detail) or f"FastAPI request failed ({error.code})."
-        ) from error
+        raise RuntimeError(_http_error_message(error)) from error
     except URLError as error:
         raise RuntimeError(f"Could not connect to FastAPI: {error}") from error
     except (OSError, http.client.HTTPException) as error:
@@ -250,6 +280,16 @@ def _upload_document(
     )
 
 
+def _scheme_names(api_base: str) -> dict[str, str]:
+    """Map scheme IDs to display names; names are optional, so failures return {}."""
+    try:
+        with urlopen(f"{api_base}/api/schemes", timeout=10) as response:
+            schemes = json.loads(response.read().decode("utf-8")).get("schemes", [])
+        return {item["scheme_id"]: item["name"] for item in schemes}
+    except (HTTPError, URLError, OSError, ValueError, KeyError, TypeError, AttributeError):
+        return {}
+
+
 def _send_chat(
     api_base: str,
     user_input: str,
@@ -282,11 +322,27 @@ def _send_chat(
         raise RuntimeError("FastAPI returned invalid workflow data.")
 
     result = {"status": response.get("next_step"), "data": data}
+    if data.get("verdicts"):
+        progress.write("Checking reviewed scheme rules")
+        result.update(
+            verdicts=data["verdicts"],
+            explanations=data.get("explanations", {}),
+            profile=data.get("known_facts", {}),
+            scheme_names=_scheme_names(api_base),
+        )
     return thread_id, assistant_reply, result
 
 
+VERDICT_BADGES = {
+    "eligible": (":green-badge[:material/check_circle: ELIGIBLE]", "success"),
+    "not_eligible": (":red-badge[:material/cancel: NOT ELIGIBLE]", "warning"),
+    "cant_tell": (":orange-badge[:material/help: NEEDS INFO]", "info"),
+}
+CONDITION_MARKS = {"true": "✅", "false": "❌", "unknown": "❔"}
+
+
 def _render_eligibility(result: dict[str, Any]) -> None:
-    """Present each reviewed-rule verdict and its source clauses in the chat."""
+    """Present each reviewed-rule verdict, what was checked, and its source clauses."""
     names = result.get("scheme_names", {})
     verdicts = result.get("verdicts", {})
     if not verdicts:
@@ -294,27 +350,38 @@ def _render_eligibility(result: dict[str, Any]) -> None:
         return
 
     st.markdown("**Step 2 — Eligibility check**")
-    for scheme_id, verdict in verdicts.items():
+    st.caption("Decided by reviewed scheme rules, not by the AI model.")
+    order = {"eligible": 0, "cant_tell": 1, "not_eligible": 2}
+    for scheme_id, verdict in sorted(
+        verdicts.items(), key=lambda item: order.get(item[1].get("verdict"), 1)
+    ):
         with st.container(border=True):
-            st.markdown(
-                f"**{names.get(scheme_id, scheme_id)}**  \n"
-                f"`{scheme_id}`"
-            )
             status = verdict.get("verdict", "cant_tell")
-            if status == "eligible":
-                st.success("May be eligible", icon=":material/check_circle:")
-            elif status == "not_eligible":
-                st.warning("Does not currently match", icon=":material/info:")
-            else:
-                st.info("Could not determine", icon=":material/help:")
+            badge, _ = VERDICT_BADGES.get(status, VERDICT_BADGES["cant_tell"])
+            st.markdown(
+                f"**{names.get(scheme_id, scheme_id)}**  {badge}  \n`{scheme_id}`"
+            )
             st.write(verdict.get("reason", "No explanation was returned."))
+            if verdict.get("missing_fields"):
+                st.caption(
+                    "Still needed: " + ", ".join(verdict["missing_fields"])
+                )
+            conditions = verdict.get("conditions", [])
+            if conditions:
+                st.caption(
+                    "  ·  ".join(
+                        f"{CONDITION_MARKS.get(c.get('outcome'), '❔')} {c.get('field')}"
+                        for c in conditions
+                    )
+                )
             citations = verdict.get("citations", [])
             if citations:
                 with st.expander("View reviewed source clauses"):
                     for citation in citations:
+                        page = f" (page {citation['page']})" if citation.get("page") else ""
                         st.markdown(
                             f"- **{citation.get('clause_id', 'Source')}:** "
-                            f"{citation.get('text', '')}"
+                            f"{citation.get('text', '')}{page}"
                         )
 
 
@@ -344,6 +411,23 @@ def _delete_uploaded_documents(
     return True
 
 
+def _delete_conversation(session_id: str | None) -> bool:
+    """Delete the server-side conversation; an already-missing thread counts as deleted."""
+    if not session_id:
+        return True
+    try:
+        _api_request(
+            f"{_api_base_url()}/api/chat/{quote(session_id, safe='')}",
+            method="DELETE",
+        )
+    except RuntimeError as error:
+        if "not found" in str(error).lower():
+            return True
+        st.error(str(error), title="Could not delete the conversation")
+        return False
+    return True
+
+
 def _reset_chat() -> bool:
     """Clear chat/application data and widget values before another profile is checked."""
     application_result = st.session_state.get("application_result")
@@ -353,6 +437,8 @@ def _reset_chat() -> bool:
         else None
     )
     if not _delete_uploaded_documents(thread_id):
+        return False
+    if not _delete_conversation(st.session_state.get("chat_session_id")):
         return False
 
     st.session_state["chat_session_id"] = None
@@ -525,6 +611,9 @@ def _render_review_step(
         return
 
     approval_hash = result["approval"]["payload_hash"]
+    st.caption(
+        f"Approval code: `{approval_hash[:12]}…` — changing anything creates a new code."
+    )
     confirmed = st.checkbox(
         "I reviewed this draft and understand that this is a mock submission.",
         key=f"confirm-application-submission-{approval_hash}",
@@ -746,6 +835,10 @@ def _render_welcome() -> None:
         st.markdown(
             "**Try:** “I’m 62, a widow, and our household earns ₹20,000 a month. "
             "What support may I qualify for?”"
+        )
+        st.caption(
+            "You can write in English, हिन्दी, or मराठी. Eligibility is decided "
+            "by reviewed scheme rules; the assistant only helps collect details."
         )
 
 
@@ -1097,7 +1190,11 @@ def _handle_chat_submission(
                                 state="complete",
                             )
                         st.markdown(chat_reply)
-                        if assistant_result and assistant_result.get("verdicts"):
+                        if (
+                            assistant_result
+                            and assistant_result.get("status") == "eligibility_checked"
+                            and assistant_result.get("verdicts")
+                        ):
                             _render_eligibility(assistant_result)
                         assistant_reply = chat_reply
                     except (RuntimeError, ValueError, json.JSONDecodeError) as error:
@@ -1120,7 +1217,9 @@ def _handle_chat_submission(
                     "content": assistant_reply,
                     "result": (
                         assistant_result
-                        if assistant_result and assistant_result.get("verdicts")
+                        if assistant_result
+                        and assistant_result.get("status") == "eligibility_checked"
+                        and assistant_result.get("verdicts")
                         else None
                     ),
                 }
@@ -1132,8 +1231,8 @@ def _initialize_portal_state() -> None:
     defaults = {
         "portal_stage": "access",
         "access_error": None,
-        "show_password_help": False,
-        "citizen_name": "",
+        "access_token": None,
+        "auth_url": None,
         "consent_given": False,
         "consent_recorded_at": None,
         "consent_error": None,
@@ -1151,113 +1250,71 @@ def _initialize_portal_state() -> None:
         st.session_state.setdefault(key, value)
 
 
-def _complete_access(mode: str) -> None:
-    """Advance the UI prototype without sending or retaining credentials."""
-    contact = str(st.session_state.get("access-contact", "")).strip()
-    password = str(st.session_state.get("access-password", ""))
-    name = str(st.session_state.get("access-name", "")).strip()
-
-    if not contact or not password:
-        st.session_state["access_error"] = "Enter your phone or email and password."
+def _handle_sign_in_callback(settings: Any) -> None:
+    """Finish an Auth0 redirect (?code=&state=) and store the access token."""
+    params = st.query_params
+    if "error" in params:
+        st.session_state["access_error"] = (
+            "Sign-in was cancelled or refused. Please try again."
+        )
+        st.query_params.clear()
         return
-    if mode == "Create account":
-        confirmation = str(st.session_state.get("access-confirm-password", ""))
-        if not name:
-            st.session_state["access_error"] = "Enter your name to create an account."
-            return
-        if password != confirmation:
-            st.session_state["access_error"] = "The passwords do not match."
-            return
-        if not st.session_state.get("access-terms", False):
-            st.session_state["access_error"] = "Accept the demo terms to continue."
-            return
-
-    st.session_state["citizen_name"] = name or "there"
-    st.session_state["access_error"] = None
-    st.session_state["show_password_help"] = False
-    st.session_state["portal_stage"] = "consent"
-    st.session_state["access-password"] = ""
-    st.session_state["access-confirm-password"] = ""
-    st.session_state["access-contact"] = ""
+    code, state = params.get("code"), params.get("state")
+    if not code or not state:
+        return
+    try:
+        st.session_state["access_token"] = ui_auth.complete_sign_in(settings, code, state)
+    except ui_auth.SignInError as error:
+        st.session_state["access_error"] = str(error)
+    else:
+        st.session_state["access_error"] = None
+        st.session_state["portal_stage"] = "consent"
+    finally:
+        st.query_params.clear()
+    st.rerun()
 
 
 def _render_access_page() -> None:
-    """Render the login and registration entry screens for the UI prototype."""
+    """Sign the citizen in with Auth0; their household identity comes from the token."""
+    settings = ui_auth.ui_settings()
+    if settings is not None:
+        _handle_sign_in_callback(settings)
+
     with st.container(key="auth-page"):
         with st.container(border=True, key="auth-shell"):
             with st.container(key="auth-brand"):
                 _render_brand_image()
             st.caption("PUBLIC SUPPORT, MADE SIMPLE")
-            mode = st.segmented_control(
-                "Account access",
-                options=["Sign in", "Create account"],
-                default="Sign in",
-                key="access-mode",
-                label_visibility="collapsed",
-            )
-            if mode is None:
-                mode = "Sign in"
-
-            st.title("Welcome back" if mode == "Sign in" else "Create your account")
+            st.title("Welcome")
             st.write(
-                "Sign in to explore support schemes for your household."
-                if mode == "Sign in"
-                else "A few details to start your guided scheme search."
+                "Sign in to explore support schemes for your household. Your "
+                "household identity is verified by Auth0, so only you can see "
+                "your conversation and applications."
             )
 
-            with st.form(f"access-form-{mode.lower().replace(' ', '-')}"):
-                if mode == "Create account":
-                    st.text_input(
-                        "Full name",
-                        key="access-name",
-                        max_chars=120,
-                        placeholder="Enter your name",
-                    )
-                st.text_input(
-                    "Phone or email",
-                    key="access-contact",
-                    max_chars=254,
-                    placeholder="you@example.com or phone number",
+            if settings is None:
+                missing = ", ".join(f"`{name}`" for name in ui_auth.missing_settings())
+                st.error(
+                    "Sign-in is not configured yet. Set these in `.env`: "
+                    f"{missing or '`AUTH0_REDIRECT_URI`'}.",
+                    icon=":material/key:",
                 )
-                st.text_input(
-                    "Password",
-                    type="password",
-                    key="access-password",
-                    max_chars=256,
-                    placeholder="Enter your password",
-                )
-                if mode == "Create account":
-                    st.text_input(
-                        "Confirm password",
-                        type="password",
-                        key="access-confirm-password",
-                        max_chars=256,
-                        placeholder="Re-enter your password",
-                    )
-                    st.checkbox(
-                        "I agree to the demo terms and privacy notice",
-                        key="access-terms",
-                    )
-                st.form_submit_button(
-                    "Sign in" if mode == "Sign in" else "Create account",
+            else:
+                if not st.session_state.get("auth_url"):
+                    st.session_state["auth_url"] = ui_auth.authorize_url(settings)
+                st.link_button(
+                    "Sign in with Auth0",
+                    st.session_state["auth_url"],
                     type="primary",
+                    icon=":material/login:",
                     width="stretch",
-                    on_click=_complete_access,
-                    args=(mode,),
                 )
-
-            if mode == "Sign in":
-                if st.button("Forgot password?", key="forgot-password"):
-                    st.session_state["show_password_help"] = True
-                if st.session_state["show_password_help"]:
-                    st.info(
-                        "Password recovery is not available in this UI prototype."
-                    )
             if st.session_state["access_error"]:
                 st.error(st.session_state["access_error"])
+                st.session_state["auth_url"] = None
             st.caption(
-                "Demo only. Do not use a real password. This is not an official "
-                "government portal."
+                "Demo only. Nothing is sent to a real government portal. This "
+                "is not an official government service."
             )
 
 
@@ -1467,10 +1524,7 @@ def _render_chat_page() -> None:
         )
         with image_col:
             _render_brand_image()
-        title_col.caption(
-            "A guided way to explore public support · "
-            f"{st.session_state['citizen_name']}"
-        )
+        title_col.caption("A guided way to explore public support")
         with action_col:
             if st.button(
                 "New chat",
@@ -1488,6 +1542,15 @@ def _render_chat_page() -> None:
                 width="stretch",
             ):
                 if _withdraw_consent():
+                    st.rerun()
+            if st.button(
+                "Sign out",
+                icon=":material/logout:",
+                key="sign-out",
+                width="stretch",
+            ):
+                if _reset_chat():
+                    _sign_out()
                     st.rerun()
 
     try:
@@ -1540,6 +1603,12 @@ def _render_chat_page() -> None:
 def _render_citizen_portal() -> None:
     """Route the citizen through access, consent, then the chat workflow."""
     stage = st.session_state["portal_stage"]
+    if stage != "access" and _access_token() is None:
+        st.session_state["portal_stage"] = stage = "access"
+        st.session_state["consent_given"] = False
+        st.session_state["access_error"] = (
+            "Please sign in to continue."
+        )
     if stage == "access":
         _render_access_page()
     elif stage == "consent":
