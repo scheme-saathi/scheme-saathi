@@ -489,24 +489,20 @@ python -m graph.run --persona-id SS001
 
 Household-test-case facts such as `respondent_age` and `approx_annual_household_income_inr` are adapted to the rule profile fields `age` and `income`. Unknown (`null`) facts are omitted so the workflow can still ask about them.
 
-Draft rule files for real schemes live in `data/rules/` (separate from the source records in `data/schemes/`, so the RAG importer ignores them). `C10.json` (Khadi Vikas Yojana) holds six draft rules written from the source eligibility clauses. Because they are `draft`, the engine fails closed and reports "Cant Tell". A human must check each rule against its clause (for example, the "one person per family" rule is an interpretation) and set `"status": "reviewed"` on all of them; the scheme is then picked up automatically and the intake step asks for exactly the facts its rules use.
+Rule records for real schemes live in `data/rules/`, separate from the source records in `data/schemes/` so the RAG importer ignores them. In this branch, all 15 hand-coded records (`C01`, `C02`, `C04`, `C05`, `C06`, `C10`, `C13`, `C17`, `C19`, `C23`, `C30`, `C38`, `M13`, `M16`, and `M18`) are marked `reviewed`; consequently, the rule engine includes them in default live evaluation. `reviewed` is the project’s gating status, not an external certification. If a source changes or a rule becomes uncertain, return every rule in that scheme to `draft` until the complete ruleset is checked again. The engine fails closed for incomplete or draft rules.
 
-`C02.json` (Pradhan Mantri Suraksha Bima Yojana) is a draft rule file: bank account holder, age 18 to 70, and consent to auto-debit, all from one eligibility clause in the source. The source records no document list, so `documents_required` holds only the enrolment form.
-
-`C04.json` (Atal Pension Yojana) adds draft rules for savings-account holder status, joining age 18 to 40, and the exclusion for anyone who is or has been an income-tax payer (effective 1 October 2022). Its rules cite the captured eligibility and exclusion text; KYC details are listed as fetched from the active bank/post-office savings account. Both C02 and C04 need human review before their rules can be marked `reviewed`. In particular, verify field meanings and the effective date against current official scheme guidance.
-
-The other 12 hand-coded candidates for the 15-scheme rule reference set are `C01`, `C05`, `C06`, `C13`, `C17`, `C19`, `C23`, `C30`, `C38`, `M13`, `M16`, and `M18`. This covers central schemes and Maharashtra schemes. Their source clauses and rules are stored separately by ID in `data/rules/`; like the first three, all remain `draft` pending human review. Reviewers should pay special attention to the ambiguous NPS-Traders exclusion wording in C05, the family-level exclusions in M13, and the abstract profile fields used for institutional/state-specific conditions. Do not treat these 15 files as a reviewed gold set until the team validates them against current official sources.
+The source clauses and rule conditions are stored with each record. Review must check the actual source wording, the field/value/operator mapping, the combined `all`/`any` logic, missing-fact behavior, and relevant boundary cases. Take particular care with ambiguous exclusions, family-level conditions, and rules whose conditions may describe ongoing participation rather than initial eligibility.
 
 ### Draft preview
 
-`--include-draft` lets a rule author see what a draft rule set would decide, without waiting for review:
+`--include-draft` lets a rule author preview a draft ruleset without changing its stored status:
 
 ```bash
 python -m graph.run --include-draft --scheme-id C02 --citizen '{"has_bank_account": true, "age": 40, "consents_to_auto_debit": true}'
 python -m graph.run --include-draft --scheme-id C04 --citizen '{"has_savings_account": true, "age": 30, "is_or_was_income_tax_payer": false}'
 ```
 
-The output starts with a DRAFT PREVIEW banner. Draft rules are evaluated as in-memory copies (the files are not changed), and the workflow stops after the verdict and document list: no application is drafted, approved or submitted. Without the flag, draft rules still fail closed.
+The output starts with a DRAFT PREVIEW banner. Draft rules are evaluated as in-memory copies (the files are not changed), and the workflow stops after the verdict and document list: no application is drafted, approved or submitted. Without the flag, draft rules still fail closed. Use this only while a scheme’s rules are under review; do not use preview results for citizen advice or applications.
 
 ### Retrieval check
 
@@ -544,6 +540,13 @@ graph.invoke(Command(resume={"action": "approve", "payload_hash": pending["paylo
 
 Set `SUPERVISOR_MODEL` and `SPECIALIST_MODEL` in `.env`, plus either `OPENROUTER_API_KEY` (with an OpenRouter model ID such as `openai/gpt-4o-mini`) or `OPENAI_API_KEY` (with an OpenAI model ID). `OPENAI_BASE_URL` can be set for an OpenAI-compatible endpoint. The model IDs are configuration, not code defaults.
 
+Mock-portal writes also require `MOCK_PORTAL_AUTH_SECRET` in `.env`. Set the
+same long random value in the graph application and mock-portal server
+environments (for example, generate one with
+`python -c 'import secrets; print(secrets.token_urlsafe(32))'`). The workflow
+uses short-lived, one-use capabilities tied to the exact application form; writes
+fail closed when the secret is not configured. Do not commit the secret.
+
 How an application is drafted, approved and submitted:
 
 1. The Application agent fills the form only from confirmed facts. The required fields come from the scheme's reviewed rule fields (`tools.application_form_spec`). If the model fails, the review summary falls back to a deterministic one that lists field names only. A draft with missing fields skips approval and asks for the missing information.
@@ -551,6 +554,8 @@ How an application is drafted, approved and submitted:
 3. The graph pauses with `interrupt()` and shows the exact form, its SHA-256 hash and the portal draft ID. The person can `approve`, `edit` or `reject`.
 4. `submit` runs only after an approval that names the same hash. It checks the hash again, then moves the existing portal draft to `submitted` (`submit_draft`). A wrong hash, a reject or an edit never submits.
 5. Write tools (`create_application`, `submit_draft`) are checked in `call_tool`. Only the application agent, and the baseline comparison run, may call them. Callers name themselves with `with tools.acting_as("application")`. This stops accidental misuse by other agents. It is not a security boundary against malicious code.
+6. Every compiled workflow invocation (`invoke`, `stream`, and async/batch variants) has a hard MCP-call budget that resets on each invocation, including a resumed graph run. The agent graph and single-agent baseline allow 40 calls; the legacy full-corpus demo allows 1,200 because it evaluates 16 schemes across up to 53 rule fields in one run. Calls beyond the applicable limit fail before reaching an MCP server.
+7. Each MCP call emits a structured `mcp_tool_call` audit event with the known actor, server/tool labels, outcome, error category and duration. It deliberately omits arguments, results and exception text, so household data is not copied into these audit logs.
 
 HTTP API (`app/api.py`):
 

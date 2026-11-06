@@ -15,6 +15,6 @@
   ],
   "documents_required": [],
   "rules": [
-    {"field": "is_woman_or_girl", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"}
+    {"field": "is_woman_or_girl", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"}
   ]
 }

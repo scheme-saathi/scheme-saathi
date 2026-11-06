@@ -6,11 +6,14 @@ from agents.contracts import (
     ApplicationDraft,
     DocumentCheckResult,
     EligibilityNarrative,
+    IntakeExtraction,
     IntakeResult,
     SupervisorPlan,
 )
 from app import api
 from graph.agent_workflow import AgentSet, build_agent_graph
+from graph.tools import ToolCallError
+from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
 from servers.mock_portal.server import APPLICATIONS
 
 
@@ -21,17 +24,38 @@ class StubAgent:
     def invoke(self, value):
         return self.result
 
+    def extract(self, value, specs):
+        return IntakeExtraction()
+
+
+class StubSupervisor(StubAgent):
+    def __init__(self, result):
+        super().__init__(result)
+        router = UnifiedRouter()
+        router.api_available = False
+        self.input_validator = InputValidator(router=router)
+        self.output_validator = OutputValidator()
+
+    def validate_input(self, request, actor_id=None, is_reply=False):
+        return self.input_validator.validate_request(request, actor_id, is_reply)
+
+    def validate_output(self, response, agent_name, language):
+        return self.output_validator.validate_specialist_output(response, agent_name, language)
+
+    def handle_validation_error(self, result, language):
+        return {"user_message": self.output_validator.get_user_friendly_error(result, language)}
+
 
 def make_agents(missing=None):
     return AgentSet(
         intake=StubAgent(IntakeResult(language="en", intent="application")),
-        supervisor=StubAgent(SupervisorPlan(next_agent="application", reason="Prepare draft.")),
+        supervisor=StubSupervisor(SupervisorPlan(next_agent="application", reason="Prepare draft.")),
         eligibility=StubAgent(EligibilityNarrative(explanation="Reviewed result.")),
         document_checker=StubAgent(DocumentCheckResult()),
         application=StubAgent(
             ApplicationDraft(
                 scheme_id="C01",
-                fields={"age": 30},
+                fields={"age": 30, "has_individual_bank_or_post_office_account": True},
                 missing_fields=missing or [],
                 review_summary="Draft is ready for human review.",
             )
@@ -57,7 +81,11 @@ class WithEvaluation:
 
     def invoke(self, state, config):
         if isinstance(state, dict):
-            state = {**state, "deterministic_evaluation": ELIGIBLE, "confirmed_facts": {"age": 30}}
+            state = {
+                **state,
+                "deterministic_evaluation": ELIGIBLE,
+                "confirmed_facts": {"age": 30, "has_individual_bank_or_post_office_account": True},
+            }
         return self._graph.invoke(state, config)
 
     def get_state(self, config):
@@ -94,12 +122,50 @@ def start_paused(client):
     return first.json()
 
 
+def test_chat_reports_detected_language_and_intent_not_the_client_hint(client):
+    body = {
+        "message": "I want to apply for this scheme",
+        "actor_id": "household-1",
+        "language": "hi",
+        "known_facts": {"age": 30},
+        "selected_scheme_id": "C01",
+    }
+
+    response = client.post("/api/chat", json=body, headers={"x-actor-id": "household-1"}).json()
+
+    assert response["intent"] == "application"
+    assert response["language"] == "en"
+
+
+def test_chat_tool_failure_returns_safe_error_and_does_not_log_exception_text(client, caplog):
+    private_marker = "1234 5678 9012"
+
+    class FailingGraph:
+        def get_state(self, _config):
+            return type("Snapshot", (), {"tasks": []})()
+
+        def invoke(self, *_args, **_kwargs):
+            raise ToolCallError("rule-engine", "evaluate_profile", "tool_error", private_marker)
+
+    api.get_workflow_service()._agent_graph = FailingGraph()
+
+    with caplog.at_level("WARNING", logger="app.api"):
+        response = send(client)
+
+    assert response.status_code == 503
+    assert private_marker not in response.text
+    assert private_marker not in caplog.text
+
+
 def test_chat_pauses_with_the_exact_form_and_does_not_submit(client):
     paused = start_paused(client)
 
     assert paused["next_step"] == "awaiting_approval"
     approval = paused["data"]["approval"]
-    assert approval["form"] == {"scheme_id": "C01", "applicant": {"age": 30}}
+    assert approval["form"] == {
+        "scheme_id": "C01",
+        "applicant": {"age": 30, "has_individual_bank_or_post_office_account": True},
+    }
     assert len(approval["payload_hash"]) == 64
     assert APPLICATIONS[approval["portal_draft_id"]]["status"] == "draft"
 

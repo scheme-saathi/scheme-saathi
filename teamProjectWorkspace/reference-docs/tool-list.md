@@ -26,7 +26,15 @@ content, so read access does not make their data safe to trust as instructions.
 
 `graph/tools.py` is the current graph call boundary. It routes calls through
 in-memory FastMCP clients, raises `ToolCallError` for tool errors, and applies a
-pre-call check to the two portal write tools. `search_schemes`,
+pre-call allow-list to registered tools. Unknown servers and tools fail closed;
+the two portal write tools additionally require an allowed caller context.
+Compiled graph executions have an MCP-call budget checked before each server
+request: 40 calls for the agent graph and single-agent baseline, and 1,200 for
+the legacy full-corpus demo. Each attempted call produces a structured audit
+event containing only the actor, registered server/tool labels, outcome, safe
+error category and duration. Arguments, results and exception text are
+intentionally excluded.
+`search_schemes`,
 `evaluate_scheme`, `field_specs`, `list_documents`, and `application_form_spec` are
 helper functions around those read tools. `next_question` calls no tool: it picks
 intake's next question from verdicts the eligibility step already produced.
@@ -48,9 +56,11 @@ path to bypass the approval workflow.
 
 `servers/mock_portal/server.py` also defines `POST /applications` and
 `GET /applications/{application_id}`. These FastAPI routes call the portal
-functions directly and do not pass through the graph's `call_tool` write check.
-Do not expose the mock portal HTTP app to untrusted clients; production use
-requires authentication and authorization at the server boundary.
+functions directly and do not pass through the graph's `call_tool` allow-list.
+POST requires a short-lived write capability, but there is no user
+authentication; GET has no authentication. Do not expose the mock portal HTTP
+app to untrusted clients; production use requires authorization at the server
+boundary.
 
 ## Change checklist
 

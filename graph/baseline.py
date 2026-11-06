@@ -73,17 +73,23 @@ def build_tools(profile: dict[str, Any]) -> list:
         decision = interrupt({"form": form, "payload_hash": current, "options": ["approve", "reject"]})
         if (isinstance(decision, dict) and decision.get("action") == "approve"
                 and decision.get("payload_hash") == current):
+            capability = tools.issue_submission_capability(form, current)
             with tools.acting_as("baseline"):
-                return tools.submit_application(form)
+                return tools.submit_application(
+                    form,
+                    write_capability=capability,
+                )
         return {"status": "not submitted", "reason": "approval was rejected or did not match the form"}
 
     return [find_schemes, check_eligibility, get_documents, submit_application]
 
 
 def build_baseline(profile: dict[str, Any], model: BaseChatModel | None = None, checkpointer=None):
-    return create_react_agent(
-        model or build_model(), build_tools(profile), prompt=SYSTEM_PROMPT,
-        checkpointer=checkpointer or InMemorySaver(),
+    return tools.budget_graph(
+        create_react_agent(
+            model or build_model(), build_tools(profile), prompt=SYSTEM_PROMPT,
+            checkpointer=checkpointer or InMemorySaver(),
+        )
     )
 
 

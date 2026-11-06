@@ -6,6 +6,7 @@ from agents.contracts import CandidateFact, IntakeResult
 from app import api, app_new
 from app.api import ChatIntakeInput, DemoService, create_api
 from app.document_storage import LocalDocumentStore
+from servers.rule_engine import server as rule_server
 
 
 def test_local_api_url_reuses_an_existing_demo_api(monkeypatch):
@@ -238,6 +239,7 @@ class FakeChatIntakeAgent:
 
 
 def test_chat_requests_missing_details_before_checking_eligibility(monkeypatch):
+    monkeypatch.setattr(rule_server, "RULE_DIRS", [rule_server.SCHEME_DIR])
     evaluated_schemes = []
     evaluate_scheme = api.tools.evaluate_scheme
 

@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 import pytest
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.runnables import RunnableLambda
@@ -15,14 +18,17 @@ from agents.contracts import (
 )
 from agents.eligibility import EligibilityAgent
 from agents.intake import IntakeAgent, profile_model
+from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
 from langgraph.types import Command
 
 from app import api
 from graph import tools
 from graph.agent_workflow import AgentSet, build_agent_graph
+from servers.rule_engine import server as rule_server
 from servers.rule_engine.server import get_field_specs
 
 PENSION = "SYNTH-PENSION-001"
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class StubAgent:
@@ -38,7 +44,7 @@ def responding_graph():
     return build_agent_graph(
         AgentSet(
             intake=StubAgent(IntakeResult(language="en", intent="other")),
-            supervisor=StubAgent(SupervisorPlan(next_agent="respond", reason="Hello.")),
+            supervisor=CountingSupervisor(SupervisorPlan(next_agent="respond", reason="Hello.")),
             eligibility=StubAgent(EligibilityNarrative(explanation="-")),
             document_checker=StubAgent(DocumentCheckResult()),
             application=StubAgent(ApplicationDraft(scheme_id="s", fields={}, missing_fields=[], review_summary="-")),
@@ -53,8 +59,8 @@ def responding_graph():
 def test_api_keeps_and_merges_facts_across_turns():
     service = api.AgentWorkflowService()
     service._agent_graph = responding_graph()
-    thread = service.execute_workflow("hi", "a1", known_facts={"age": 67})["thread_id"]
-    service.execute_workflow("more", "a1", thread_id=thread, known_facts={"income": 100000})
+    thread = service.execute_workflow("hello there", "a1", known_facts={"age": 67})["thread_id"]
+    service.execute_workflow("more facts", "a1", thread_id=thread, known_facts={"income": 100000})
     service.execute_workflow("no facts this turn", "a1", thread_id=thread)
 
     state = service.agent_graph.get_state(service._config(thread)).values
@@ -64,8 +70,8 @@ def test_api_keeps_and_merges_facts_across_turns():
 def test_newer_value_wins_and_confirmed_facts_merge():
     graph = responding_graph()
     config = {"configurable": {"thread_id": "t"}}
-    graph.invoke({"request": "a", "confirmed_facts": {"age": 60, "is_widow": True}}, config)
-    graph.invoke({"request": "b", "confirmed_facts": {"age": 61}}, config)
+    graph.invoke({"request": "first turn", "confirmed_facts": {"age": 60, "is_widow": True}}, config)
+    graph.invoke({"request": "second turn", "confirmed_facts": {"age": 61}}, config)
     assert graph.get_state(config).values["confirmed_facts"] == {"age": 61, "is_widow": True}
 
 
@@ -87,7 +93,12 @@ def test_field_specs_unknown_scheme_is_an_error():
     assert get_field_specs(["NOPE"])["error"]["code"] == "scheme_not_found"
 
 
-def test_draft_fields_are_hidden_outside_preview():
+def test_draft_fields_are_hidden_outside_preview(tmp_path, monkeypatch):
+    record = json.loads((ROOT / "data/rules/C06.json").read_text())
+    for rule in record["rules"]:
+        rule["status"] = "draft"
+    (tmp_path / "C06.json").write_text(json.dumps(record))
+    monkeypatch.setattr(rule_server, "RULE_DIRS", [ROOT / "data/schemes", tmp_path])
     assert get_field_specs(["C06"])["data"] == {}
 
 
@@ -262,6 +273,19 @@ class CountingSupervisor:
     def __init__(self, *plans):
         self.plans = plans
         self.calls = 0
+        router = UnifiedRouter()
+        router.api_available = False
+        self.input_validator = InputValidator(router=router)
+        self.output_validator = OutputValidator()
+
+    def validate_input(self, request, actor_id=None, is_reply=False):
+        return self.input_validator.validate_request(request, actor_id, is_reply)
+
+    def validate_output(self, response, agent_name, language):
+        return self.output_validator.validate_specialist_output(response, agent_name, language)
+
+    def handle_validation_error(self, result, language):
+        return {"user_message": self.output_validator.get_user_friendly_error(result, language)}
 
     def invoke(self, value):
         self.calls += 1
@@ -280,7 +304,9 @@ def intake_graph(intake, language="en", next_agent="eligibility", later_plan=Non
     )
     graph = build_agent_graph(agents, checkpointer=MemorySaver())
     config = {"configurable": {"thread_id": "t"}}
-    return graph, supervisor, lambda message: graph.invoke({"request": message}, config)
+    return graph, supervisor, lambda message: graph.invoke(
+        {"request": message, "selected_scheme_id": PENSION}, config
+    )
 
 
 def test_one_question_per_turn_until_the_verdict_is_settled():
@@ -444,7 +470,7 @@ def test_approving_the_exact_facts_gives_a_cited_final_verdict():
     result = resume(graph, config, action="approve", payload_hash=pending["payload_hash"])
     assert result["confirmed_facts"] == WIDOW_67
     assert result["status"] == "eligibility_checked"
-    assert result["response"].startswith(f"{PENSION}: eligible")
+    assert result["response"].startswith("eligible:")
     assert "Widow aged 60 or above" in result["response"]  # the clause text is cited
 
 
@@ -460,7 +486,7 @@ def test_an_edit_is_confirmed_and_can_change_the_verdict():
     result = resume(graph, config, action="edit", changes={"is_widow": False})
     assert result["confirmed_facts"] == {**WIDOW_67, "is_widow": False}
     assert result["verdicts"][PENSION]["verdict"] == "not_eligible"
-    assert result["response"].startswith(f"{PENSION}: not_eligible")
+    assert result["response"].startswith("not_eligible:")
 
 
 def test_a_wrongly_typed_edit_is_shown_again_not_used():
@@ -494,7 +520,12 @@ def test_api_reports_the_confirm_step_and_accepts_the_decision():
     service = api.AgentWorkflowService()
     intake = ScriptedIntake(IntakeExtraction(facts=WIDOW_67))
     service._agent_graph = intake_graph(intake)[0]
-    paused = service.execute_workflow("My mother is a 67 year old widow, income 1 lakh", "a1", thread_id="t")
+    paused = service.execute_workflow(
+        "My mother is a 67 year old widow, income 1 lakh",
+        "a1",
+        thread_id="t",
+        selected_scheme_id=PENSION,
+    )
     assert paused["status"] == "awaiting_confirmation"
     confirmation = paused["data"]["confirmation"]
     assert confirmation["facts"] == WIDOW_67

@@ -21,10 +21,18 @@
       "text": "The worker or family member must be undergoing treatment for a serious illness or critical medical condition."
     }
   ],
-  "documents_required": [],
+  "documents_required": [
+    "Passport-size Photo.",
+    "Aadhaar Card.",
+    "Identity Card of Maharashtra Building and Other Construction Workers Welfare Board.",
+    "Bank Passbook.",
+    "Medical Certificate (issued by competent medical authorities about serious illness).",
+    "Medical Treatment Papers.",
+    "Proof of Residence (One of Aadhaar Card/Passport/Driving Licence/Ration Sheet/Last Month's Electricity Bill/Gram Panchayat Certificate)."
+  ],
   "rules": [
-    {"field": "is_building_or_construction_worker", "op": "eq", "value": true, "clause_id": "elig-1", "status": "draft"},
-    {"field": "registered_with_mbo_cww_board", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"},
-    {"field": "worker_or_family_member_undergoing_critical_treatment", "op": "eq", "value": true, "clause_id": "elig-3", "status": "draft"}
+    {"field": "is_building_or_construction_worker", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "registered_with_mbo_cww_board", "op": "eq", "value": true, "clause_id": "elig-2", "status": "reviewed"},
+    {"field": "worker_or_family_member_undergoing_critical_treatment", "op": "eq", "value": true, "clause_id": "elig-3", "status": "reviewed"}
   ]
 }
