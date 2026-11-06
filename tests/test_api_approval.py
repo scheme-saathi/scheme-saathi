@@ -1,4 +1,5 @@
 import pytest
+from fastapi import Header
 from fastapi.testclient import TestClient
 from langgraph.checkpoint.memory import MemorySaver
 
@@ -6,11 +7,13 @@ from agents.contracts import (
     ApplicationDraft,
     DocumentCheckResult,
     EligibilityNarrative,
+    IntakeQuestion,
     IntakeExtraction,
     IntakeResult,
     SupervisorPlan,
 )
 from app import api
+from app.auth import AuthenticatedHousehold, authenticated_household
 from graph.agent_workflow import AgentSet, build_agent_graph
 from graph.tools import ToolCallError
 from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
@@ -26,6 +29,9 @@ class StubAgent:
 
     def extract(self, value, specs):
         return IntakeExtraction()
+
+    def ask(self, value):
+        return IntakeQuestion(field=value.field, question=f"What is your {value.field}?")
 
 
 class StubSupervisor(StubAgent):
@@ -97,7 +103,13 @@ def client(monkeypatch):
     service = api.AgentWorkflowService()
     service._agent_graph = WithEvaluation(build_agent_graph(make_agents(), checkpointer=MemorySaver()))
     monkeypatch.setattr(api, "get_workflow_service", lambda: service)
-    return TestClient(api.create_api(service=object()))
+    application = api.create_api(service=object())
+
+    def test_household(x_test_household: str = Header("household-1")):
+        return AuthenticatedHousehold(x_test_household, f"test|{x_test_household}")
+
+    application.dependency_overrides[authenticated_household] = test_household
+    return TestClient(application)
 
 
 def send(client, actor="household-1", thread_id=None, message="Help me apply"):
@@ -109,11 +121,15 @@ def send(client, actor="household-1", thread_id=None, message="Help me apply"):
     }
     if thread_id:
         body["thread_id"] = thread_id
-    return client.post("/api/chat", json=body, headers={"x-actor-id": actor})
+    return client.post("/api/chat", json=body, headers={"x-test-household": actor})
 
 
 def decide(client, thread_id, actor="household-1", **body):
-    return client.post(f"/api/chat/{thread_id}/decision", json=body, headers={"x-actor-id": actor})
+    return client.post(
+        f"/api/chat/{thread_id}/decision",
+        json=body,
+        headers={"x-test-household": actor},
+    )
 
 
 def start_paused(client):
@@ -131,10 +147,29 @@ def test_chat_reports_detected_language_and_intent_not_the_client_hint(client):
         "selected_scheme_id": "C01",
     }
 
-    response = client.post("/api/chat", json=body, headers={"x-actor-id": "household-1"}).json()
+    response = client.post(
+        "/api/chat", json=body, headers={"x-test-household": "household-1"}
+    ).json()
 
     assert response["intent"] == "application"
     assert response["language"] == "en"
+
+
+def test_chat_rejects_missing_authentication():
+    client = TestClient(api.create_api(service=object()))
+    response = client.post("/api/chat", json={"message": "Help me apply"})
+    assert response.status_code == 401
+
+
+def test_client_supplied_actor_id_does_not_choose_thread_owner(client):
+    response = client.post(
+        "/api/chat",
+        json={"message": "Help me apply", "actor_id": "untrusted-client-value"},
+        headers={"x-test-household": "authenticated-household"},
+    )
+    assert response.status_code == 200
+    thread_id = response.json()["thread_id"]
+    assert api.get_workflow_service().get_conversation(thread_id)["actor_id"] == "authenticated-household"
 
 
 def test_chat_tool_failure_returns_safe_error_and_does_not_log_exception_text(client, caplog):
@@ -181,6 +216,30 @@ def test_approving_with_the_exact_hash_submits(client):
     assert APPLICATIONS[approval["portal_draft_id"]]["status"] == "submitted"
 
 
+def test_approval_audit_does_not_log_household_or_form_payload(client, caplog):
+    paused = start_paused(client)
+    approval = paused["data"]["approval"]
+    with caplog.at_level("INFO", logger="graph.tools"):
+        decide(
+            client,
+            paused["thread_id"],
+            action="approve",
+            payload_hash=approval["payload_hash"],
+        )
+
+    audit_lines = [
+        record.message
+        for record in caplog.records
+        if record.message.startswith("application_approval ")
+    ]
+    assert len(audit_lines) == 1
+    assert '"action": "approve"' in audit_lines[0]
+    assert '"outcome": "accepted"' in audit_lines[0]
+    assert "household-1" not in "\n".join(audit_lines)
+    assert approval["payload_hash"] not in "\n".join(audit_lines)
+    assert '"applicant"' not in "\n".join(audit_lines)
+
+
 def test_wrong_hash_is_refused_and_nothing_is_submitted(client):
     paused = start_paused(client)
     approval = paused["data"]["approval"]
@@ -221,6 +280,22 @@ def test_another_household_cannot_decide_or_chat_on_the_thread(client):
 
     assert other_decision.status_code == 403
     assert other_chat.status_code == 403
+
+
+def test_another_household_cannot_read_or_manage_thread_data(client):
+    paused = start_paused(client)
+    thread_id = paused["thread_id"]
+    headers = {"x-test-household": "household-2"}
+
+    responses = [
+        client.get(f"/api/chat/{thread_id}", headers=headers),
+        client.get(f"/api/chat/{thread_id}/history", headers=headers),
+        client.get(f"/api/chat/{thread_id}/context", headers=headers),
+        client.post(f"/api/chat/{thread_id}/restart", headers=headers),
+        client.delete(f"/api/chat/{thread_id}", headers=headers),
+    ]
+
+    assert all(response.status_code == 403 for response in responses)
 
 
 def test_new_message_is_refused_while_a_draft_waits_for_approval(client):

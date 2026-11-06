@@ -553,12 +553,16 @@ How an application is drafted, approved and submitted:
 2. A complete draft is stored on the mock portal as a `draft` before approval.
 3. The graph pauses with `interrupt()` and shows the exact form, its SHA-256 hash and the portal draft ID. The person can `approve`, `edit` or `reject`.
 4. `submit` runs only after an approval that names the same hash. It checks the hash again, then moves the existing portal draft to `submitted` (`submit_draft`). A wrong hash, a reject or an edit never submits.
-5. Write tools (`create_application`, `submit_draft`) are checked in `call_tool`. Only the application agent, and the baseline comparison run, may call them. Callers name themselves with `with tools.acting_as("application")`. This stops accidental misuse by other agents. It is not a security boundary against malicious code.
+5. The graph tool layer allow-lists all MCP tools and applies per-agent read access inside `acting_as` contexts. Only the application agent and baseline comparison context may call write tools; writes with no caller context are denied. These checks prevent accidental misuse, but are not a security boundary against malicious code that can choose an allowed identity.
 6. Every compiled workflow invocation (`invoke`, `stream`, and async/batch variants) has a hard MCP-call budget that resets on each invocation, including a resumed graph run. The agent graph and single-agent baseline allow 40 calls; the legacy full-corpus demo allows 1,200 because it evaluates 16 schemes across up to 53 rule fields in one run. Calls beyond the applicable limit fail before reaching an MCP server.
 7. Each MCP call emits a structured `mcp_tool_call` audit event with the known actor, server/tool labels, outcome, error category and duration. It deliberately omits arguments, results and exception text, so household data is not copied into these audit logs.
+8. The `document_checker` role may call only the required-document and field-comparison tools; intake and eligibility have separate read-tool permissions. The single-agent baseline intentionally retains its full tool set.
+9. Approval decisions emit `application_approval` events with the action, result and whether the caller was an authenticated household. They omit household IDs, form data and approval hashes.
 
 HTTP API (`app/api.py`):
 
+- Configure `AUTH0_DOMAIN`, `AUTH0_AUDIENCE` and `AUTH0_HOUSEHOLD_CLAIM` in `.env`. Auth0 access tokens must use RS256 and include a non-empty `sub` plus the configured custom namespaced household claim. Configure that claim in an Auth0 Action; never accept a household ID from the request body or headers. Protected API routes reject missing/invalid tokens, and fail closed with 503 if Auth0 is not configured.
+- The mock portal HTTP routes also require an Auth0 access token. `POST /applications` additionally requires the exact, short-lived, one-use capability in `X-Write-Capability`; capabilities are bound to the authenticated household and form. `GET /applications/{application_id}` returns status only to the owning household. Keep the portal server private; this demo's capability issuer and nonce store are process-local.
 - `POST /api/chat` runs the graph on a `thread_id`. `known_facts` and `confirmed_facts` sent on a turn are merged with earlier turns. `next_step` tells the client what to show:
   - `needs_information`: one intake question in `response`; the field is `data.pending_field`.
   - `awaiting_confirmation`: `data.confirmation` holds the `facts` to confirm, their `payload_hash` and any `rejected_edits`.
@@ -568,14 +572,13 @@ HTTP API (`app/api.py`):
 
   A new message on a thread waiting for a confirmation or approval returns 409.
 - `POST /api/chat/{thread_id}/decision` takes `{"action": "approve" | "edit" | "reject", "payload_hash": "...", "changes": {}}` and resumes the graph, for the confirm step and the approval gate alike. It returns 404 for an unknown thread, 403 for another household, and 409 when nothing is waiting.
-- The `x-actor-id` header is trusted as sent. Real authentication is not built yet.
 
-Not wired in yet: authenticated household scoping, memory storage, document extraction, and persistent checkpoints (the API uses an in-memory checkpointer). Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
+Not wired in yet: memory storage, document extraction, and persistent checkpoints (the API uses an in-memory checkpointer). Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
 
 ## Guides
 
-- [Tool inventory](docs/tool-list.md) — current MCP tools, access types, and graph write checks.
-- [Threat model](docs/threat-model.md) — security boundaries, current controls, and deployment follow-ups.
+- [Tool inventory](teamProjectWorkspace/reference-docs/tool-list.md) — current MCP tools, access types, and graph access checks.
+- [Threat model](teamProjectWorkspace/reference-docs/threat-model.md) — security boundaries, current controls, and deployment follow-ups.
 - [60-scheme review workbook](docs/Scheme-Saathi-60-Schemes-Schema-Review.xlsx) — manual review of scheme details and source information. Excel edits do not automatically update scheme JSON or ChromaDB.
 
 - [Scheme relationships](docs/scheme-data-relationships.md)

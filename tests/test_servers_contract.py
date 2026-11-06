@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from app.auth import AuthenticatedHousehold, authenticated_household
 from servers.doc_check.server import compare_document_fields
 from servers.mock_portal.authorization import (
     CapabilityError,
@@ -62,11 +63,21 @@ def test_doc_check_tool_detects_mismatches():
 
 
 def test_mock_portal_http_workflow():
+    unauthenticated = TestClient(app)
+    assert unauthenticated.post(
+        "/applications", json={"scheme_id": "SYNTH-PENSION-001", "applicant": {}}
+    ).status_code == 401
+    assert unauthenticated.get("/applications/missing").status_code == 401
+    app.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
+        "household-1", "auth0|citizen-1"
+    )
     client = TestClient(app)
     scheme_id = "SYNTH-PENSION-001"
     applicant = {"name": "Anita Rao", "age": 62, "is_widow": True, "income": 250000}
     form_hash = application_payload_hash(scheme_id, applicant)
-    draft_capability = issue_write_capability("create_draft", scheme_id, form_hash)
+    draft_capability = issue_write_capability(
+        "create_draft", scheme_id, form_hash, "household-1"
+    )
 
     create_response = client.post(
         "/applications",
@@ -79,7 +90,7 @@ def test_mock_portal_http_workflow():
 
     create_response = client.post(
         "/applications",
-        headers={"Authorization": f"Bearer {draft_capability}"},
+        headers={"X-Write-Capability": draft_capability},
         json={"scheme_id": scheme_id, "applicant": applicant},
     )
     assert create_response.status_code == 200
@@ -91,6 +102,20 @@ def test_mock_portal_http_workflow():
     assert status_response.status_code == 200
     assert status_response.json()["data"]["status"] == "draft"
 
+    app.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
+        "household-2", "auth0|citizen-2"
+    )
+    assert client.get(f"/applications/{application_id}").status_code == 403
+    cross_household_write = client.post(
+        "/applications",
+        headers={"X-Write-Capability": draft_capability},
+        json={"scheme_id": scheme_id, "applicant": applicant},
+    )
+    assert cross_household_write.status_code == 403
+    app.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
+        "household-1", "auth0|citizen-1"
+    )
+
     status = get_application_status(application_id)
     assert status["ok"] is True
     assert status["data"]["status"] == "draft"
@@ -99,12 +124,14 @@ def test_mock_portal_http_workflow():
         "submit_application",
         scheme_id,
         form_hash,
+        "household-1",
     )
     submitted = create_application(
         scheme_id=scheme_id,
         applicant=applicant,
         submit=True,
         write_capability=submit_capability,
+        household_id="household-1",
     )
     assert submitted["ok"] is True
     assert submitted["data"]["status"] == "submitted"

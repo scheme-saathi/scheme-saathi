@@ -9,7 +9,7 @@ import concurrent.futures
 import json
 import logging
 import time
-from collections.abc import AsyncIterator, Collection, Iterator
+from collections.abc import AsyncIterator, Callable, Collection, Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
 from threading import Lock
@@ -22,7 +22,7 @@ from servers.mock_portal.authorization import (
     application_payload_hash,
     issue_write_capability,
 )
-from servers.doc_check.server import mcp as doc_check_server  # noqa: F401  (registered for later agents)
+from servers.doc_check.server import mcp as document_check_server
 from servers.mock_portal.server import mcp as portal_server
 from servers.rule_engine.server import mcp as rule_server
 from servers.schemes_kb.server import mcp as kb_server
@@ -32,7 +32,13 @@ logger = logging.getLogger(__name__)
 RULE_ENGINE = "rule-engine"
 SCHEMES_KB = "schemes-kb"
 MOCK_PORTAL = "mock-portal"
-_SERVERS = {RULE_ENGINE: rule_server, SCHEMES_KB: kb_server, MOCK_PORTAL: portal_server}
+DOC_CHECK = "doc-check"
+_SERVERS = {
+    RULE_ENGINE: rule_server,
+    SCHEMES_KB: kb_server,
+    MOCK_PORTAL: portal_server,
+    DOC_CHECK: document_check_server,
+}
 DEFAULT_TOOL_CALL_BUDGET = 40
 _KNOWN_ACTORS = {"application", "baseline", "document_checker", "eligibility", "intake", "supervisor"}
 
@@ -47,10 +53,31 @@ READ_TOOLS = {
     (SCHEMES_KB, "get_scheme_details"),
     (SCHEMES_KB, "get_required_documents"),
     (MOCK_PORTAL, "get_application_status"),
+    (DOC_CHECK, "compare_document_fields"),
 }
 WRITE_TOOLS = {(MOCK_PORTAL, "create_application"), (MOCK_PORTAL, "submit_draft")}
 ALLOWED_TOOLS = READ_TOOLS | WRITE_TOOLS
 WRITE_ALLOWED = {"application", "baseline"}
+READ_ACCESS = {
+    "intake": {
+        (RULE_ENGINE, "list_rule_schemes"),
+        (RULE_ENGINE, "get_rule_fields"),
+        (RULE_ENGINE, "get_field_specs"),
+    },
+    "eligibility": {
+        (RULE_ENGINE, "list_rule_schemes"),
+        (RULE_ENGINE, "evaluate_profile"),
+    },
+    "document_checker": {
+        (SCHEMES_KB, "get_required_documents"),
+        (DOC_CHECK, "compare_document_fields"),
+    },
+    "application": {
+        (RULE_ENGINE, "list_rule_schemes"),
+        (RULE_ENGINE, "get_rule_fields"),
+        (RULE_ENGINE, "get_field_specs"),
+    },
+}
 _actor: ContextVar[str | None] = ContextVar("tool_actor", default=None)
 _tool_budget: ContextVar["_ToolCallBudget | None"] = ContextVar("tool_call_budget", default=None)
 
@@ -161,13 +188,31 @@ def acting_as(agent: str) -> Iterator[None]:
         _actor.reset(token)
 
 
+def run_as(agent: str, operation: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    with acting_as(agent):
+        return operation(*args, **kwargs)
+
+
 def _authorize(server: str, tool: str) -> None:
     if server not in _SERVERS:
         raise ToolCallError(server, tool, "unknown_server", f"'{server}' is not an available tool server.")
     if (server, tool) not in ALLOWED_TOOLS:
         raise ToolCallError(server, tool, "forbidden", f"'{server}.{tool}' is not an allow-listed tool.")
-    if (server, tool) in WRITE_TOOLS and _actor.get() not in WRITE_ALLOWED:
-        raise ToolCallError(server, tool, "forbidden", f"'{_actor.get() or 'unknown caller'}' may not use a write tool.")
+    actor = _actor.get()
+    if actor is None:
+        if (server, tool) in WRITE_TOOLS:
+            raise ToolCallError(
+                server,
+                tool,
+                "forbidden",
+                "A missing caller context may not use a write tool.",
+            )
+        return
+    if (server, tool) in WRITE_TOOLS:
+        if actor not in WRITE_ALLOWED:
+            raise ToolCallError(server, tool, "forbidden", f"'{actor}' may not use a write tool.")
+    elif actor != "baseline" and (server, tool) not in READ_ACCESS.get(actor, set()):
+        raise ToolCallError(server, tool, "forbidden", f"'{actor}' may not use this read tool.")
 
 
 def _audit_tool_call(server: str, tool: str, outcome: str, started_at: float, error_code: str = "") -> None:
@@ -180,6 +225,15 @@ def _audit_tool_call(server: str, tool: str, outcome: str, started_at: float, er
         "duration_ms": round((time.perf_counter() - started_at) * 1000),
     }
     logger.info("mcp_tool_call %s", json.dumps(event, sort_keys=True))
+
+
+def audit_approval_event(action: str, outcome: str, authenticated: bool) -> None:
+    event = {
+        "action": action,
+        "outcome": outcome,
+        "actor_type": "authenticated_household" if authenticated else "system",
+    }
+    logger.info("application_approval %s", json.dumps(event, sort_keys=True))
 
 
 class ToolCallError(RuntimeError):
@@ -276,6 +330,20 @@ def list_documents(scheme_id: str) -> list[str]:
     return call_tool(SCHEMES_KB, "get_required_documents", scheme_id=scheme_id)
 
 
+def compare_document_fields(
+    document_a: dict[str, Any],
+    document_b: dict[str, Any],
+    fields: list[str] | None = None,
+) -> dict[str, Any]:
+    return call_tool(
+        DOC_CHECK,
+        "compare_document_fields",
+        document_a=document_a,
+        document_b=document_b,
+        fields=fields,
+    )
+
+
 def draft_application(profile: dict, scheme_id: str) -> dict:
     """Pure local drafting: builds the form to approve. Nothing is written to the portal."""
     return {"scheme_id": scheme_id, "applicant": profile}
@@ -287,16 +355,20 @@ def application_form_spec(scheme_id: str) -> tuple[list[str], dict[str, str]]:
     return fields, {field: field for field in fields}
 
 
-def create_portal_draft(form: dict) -> dict:
+def create_portal_draft(
+    form: dict, household_id: str | None = None
+) -> dict:
     """Write: store the form on the mock portal as a draft. Nothing is submitted."""
     form_hash = application_payload_hash(form["scheme_id"], form["applicant"])
     try:
-        capability = issue_write_capability("create_draft", form["scheme_id"], form_hash)
+        capability = issue_write_capability(
+            "create_draft", form["scheme_id"], form_hash, household_id
+        )
     except CapabilityError as exc:
         raise ToolCallError(MOCK_PORTAL, "create_application", "forbidden", str(exc)) from exc
     record = call_tool(MOCK_PORTAL, "create_application", scheme_id=form["scheme_id"],
                        applicant=form["applicant"], submit=False,
-                       write_capability=capability)
+                       write_capability=capability, household_id=household_id)
     return {"application_id": record["application_id"], "status": f"{record['status']} (mock)"}
 
 
@@ -304,6 +376,7 @@ def issue_submission_capability(
     form: dict,
     approved_hash: str,
     application_id: str | None = None,
+    household_id: str | None = None,
 ) -> str:
     """Issue a one-use write capability only for the exact approved application form."""
     form_hash = application_payload_hash(form["scheme_id"], form["applicant"])
@@ -317,7 +390,7 @@ def issue_submission_capability(
     action = "submit_draft" if application_id else "submit_application"
     resource = application_id or form["scheme_id"]
     try:
-        return issue_write_capability(action, resource, form_hash)
+        return issue_write_capability(action, resource, form_hash, household_id)
     except CapabilityError as exc:
         raise ToolCallError(MOCK_PORTAL, "submit_application", "forbidden", str(exc)) from exc
 
@@ -326,6 +399,7 @@ def submit_application(
     form: dict,
     application_id: str | None = None,
     write_capability: str | None = None,
+    household_id: str | None = None,
 ) -> dict:
     """The only submit. The workflow reaches it only after the exact form is approved.
 
@@ -349,6 +423,7 @@ def submit_application(
     else:
         record = call_tool(MOCK_PORTAL, "create_application", scheme_id=form["scheme_id"],
                            applicant=form["applicant"], submit=True,
-                           write_capability=write_capability)
+                           write_capability=write_capability,
+                           household_id=household_id)
     return {"status": f"{record['status']} (mock)", "scheme_id": record["scheme_id"],
             "application_id": record["application_id"]}

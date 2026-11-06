@@ -43,6 +43,7 @@ def issue_write_capability(
     action: str,
     resource: str,
     payload_hash: str,
+    household_id: str | None = None,
 ) -> str:
     load_dotenv()
     secret = os.getenv("MOCK_PORTAL_AUTH_SECRET", "")
@@ -54,6 +55,7 @@ def issue_write_capability(
         "action": action,
         "resource": resource,
         "payload_hash": payload_hash,
+        "household_id": household_id,
         "expires_at": int(now + CAPABILITY_TTL_SECONDS),
         "nonce": uuid4().hex,
     }
@@ -67,6 +69,7 @@ def consume_write_capability(
     action: str,
     resource: str,
     payload_hash: str,
+    household_id: str | None = None,
 ) -> None:
     if not isinstance(token, str) or not token:
         raise CapabilityError("Write capability is required.")
@@ -93,6 +96,7 @@ def consume_write_capability(
         payload.get("action") != action
         or payload.get("resource") != resource
         or payload.get("payload_hash") != payload_hash
+        or payload.get("household_id") != household_id
         or not isinstance(payload.get("expires_at"), int)
         or payload["expires_at"] < time.time()
         or not isinstance(payload.get("nonce"), str)
