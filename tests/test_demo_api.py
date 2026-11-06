@@ -7,6 +7,7 @@ from app import app_new, business_logic
 from app.auth import AuthenticatedHousehold, authenticated_household
 from app.api import create_api
 from app.business_logic import ChatIntakeInput, DemoService
+from app.document_storage import LocalDocumentStore
 from servers.rule_engine import server as rule_server
 
 
@@ -31,6 +32,68 @@ def test_local_api_url_reuses_an_existing_demo_api(monkeypatch):
     assert app_new._api_base_url() == api_base
 
 
+def test_streamlit_chat_client_uses_supervisor_chat_endpoint(monkeypatch):
+    class FakeResponse:
+        def __init__(self, body):
+            self.body = body
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self):
+            return self.body
+
+    requests = []
+
+    def fake_urlopen(request, timeout):
+        requests.append(request)
+        assert timeout == 300
+        return FakeResponse(
+            json.dumps(
+                {
+                    "status": "success",
+                    "thread_id": "conversation-1",
+                    "next_step": "needs_clarification",
+                    "response": "Please share your annual income.",
+                    "data": {"status": "needs_clarification"},
+                }
+            ).encode("utf-8")
+        )
+
+    monkeypatch.setattr(app_new, "urlopen", fake_urlopen)
+    progress_messages = []
+    progress = type(
+        "Progress",
+        (),
+        {"write": lambda self, message: progress_messages.append(message)},
+    )()
+
+    session_id, reply, result = app_new._send_chat(
+        "http://127.0.0.1:8766",
+        "I am 62 and a widow.",
+        None,
+        "citizen-session",
+        progress,
+    )
+
+    assert requests[0].full_url == "http://127.0.0.1:8766/api/chat"
+    assert json.loads(requests[0].data) == {
+        "message": "I am 62 and a widow.",
+        "actor_id": "citizen-session",
+        "thread_id": None,
+    }
+    assert session_id == "conversation-1"
+    assert reply == "Please share your annual income."
+    assert result == {
+        "status": "needs_clarification",
+        "data": {"status": "needs_clarification"},
+    }
+    assert progress_messages == ["Sending your message"]
+
+
 def parse_events(body):
     events = []
     for block in body.decode("utf-8").split("\n\n"):
@@ -48,8 +111,9 @@ def parse_events(body):
     return events
 
 
-def test_streamed_demo_workflow_requires_documents_before_approval():
-    application = create_api(DemoService())
+def test_streamed_demo_workflow_requires_documents_before_approval(tmp_path):
+    document_store = LocalDocumentStore(tmp_path, start_maintenance=False)
+    application = create_api(DemoService(document_store=document_store))
     client = authenticated_client(application)
     scheme_id = "SYNTH-PENSION-001"
     response = client.post(
@@ -87,13 +151,39 @@ def test_streamed_demo_workflow_requires_documents_before_approval():
     assert blocked.status_code == 409
     assert "required documents" in blocked.json()["detail"]
 
-    for document_type in result["documents"][scheme_id]:
+    for index, document_type in enumerate(result["documents"][scheme_id]):
+        if index == 0:
+            unredacted = client.post(
+                f"/api/threads/{thread_id}/documents/upload",
+                data={"scheme_id": scheme_id, "document_type": document_type},
+                files={
+                    "file": (
+                        "sample.pdf",
+                        b"%PDF-1.4\n%%EOF",
+                        "application/pdf",
+                    )
+                },
+            )
+            assert unredacted.status_code == 422
+
         uploaded = client.post(
             f"/api/threads/{thread_id}/documents/upload",
-            data={"scheme_id": scheme_id, "document_type": document_type},
+            data={
+                "scheme_id": scheme_id,
+                "document_type": document_type,
+                "sensitive_ids_masked": "true",
+            },
             files={"file": ("sample.pdf", b"%PDF-1.4\n%%EOF", "application/pdf")},
         )
         assert uploaded.status_code == 200
+        assert uploaded.json()["expires_at"]
+
+        downloaded = client.get(
+            f"/api/threads/{thread_id}/documents/{scheme_id}/{document_type}"
+        )
+        assert downloaded.status_code == 200
+        assert downloaded.content == b"%PDF-1.4\n%%EOF"
+        assert downloaded.headers["content-type"] == "application/pdf"
 
     submitted = client.post(
         f"/api/threads/{thread_id}/decision",
@@ -103,6 +193,18 @@ def test_streamed_demo_workflow_requires_documents_before_approval():
     final_events = parse_events(submitted.content)
     final_result = next(payload for name, payload in final_events if name == "result")
     assert final_result["submission"]["status"].startswith("submitted")
+
+    forgotten = client.delete(f"/api/threads/{thread_id}/documents")
+    assert forgotten.status_code == 200
+    assert forgotten.json()["deleted_documents"] == len(
+        result["documents"][scheme_id]
+    )
+    unavailable = client.get(
+        f"/api/threads/{thread_id}/documents/"
+        f"{scheme_id}/{result['documents'][scheme_id][0]}"
+    )
+    assert unavailable.status_code == 404
+    document_store.close()
 
 
 def test_unknown_scheme_is_rejected_before_streaming():

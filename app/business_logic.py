@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from agents.base import StructuredGPTAgent
 from agents.contracts import IntakeResult
 from agents.model_factory import create_chat_model
+from app.document_storage import DocumentStorageError, LocalDocumentStore
 from graph import tools
 from graph.tools import ToolCallError
 from graph.workflow import build_graph
@@ -94,10 +95,16 @@ class ThreadAccessError(PermissionError):
 class DemoService:
     """Run reviewed rules and mock application workflows for the local demo."""
 
-    def __init__(self, intake_agent: Any | None = None) -> None:
+    def __init__(
+        self,
+        intake_agent: Any | None = None,
+        document_store: LocalDocumentStore | None = None,
+    ) -> None:
         self.workflow = build_graph()
         self._uploads: dict[str, dict[str, dict[str, dict[str, Any]]]] = {}
         self._uploads_lock = Lock()
+        self._document_store = document_store
+        self._document_store_lock = Lock()
         self._intake_agent = intake_agent
         self._intake_agent_lock = Lock()
         self._chat_sessions: dict[str, ChatSession] = {}
@@ -435,14 +442,24 @@ class DemoService:
         filename: str,
         content_type: str | None,
         content: bytes,
+        sensitive_ids_masked: bool,
         actor_id: str | None = None,
     ) -> dict[str, Any]:
-        """Validate a required document and retain upload metadata only."""
+        """Validate and retain a required document in local storage."""
         self._check_thread_owner(thread_id, actor_id)
+        if not sensitive_ids_masked:
+            raise ValueError(
+                "Mask full Aadhaar, bank-account, and other ID numbers before upload."
+            )
         if not content or len(content) > MAX_DOCUMENT_SIZE:
             raise ValueError("Choose a non-empty document smaller than 10 MB.")
 
         safe_filename = Path(filename.replace("\\", "/")).name
+        safe_filename = (
+            safe_filename.replace('"', "_")
+            .replace("\r", "_")
+            .replace("\n", "_")
+        )
         extension = Path(safe_filename).suffix.lower()
         expected = ALLOWED_DOCUMENTS.get(extension)
         mime_type = (content_type or "").split(";", maxsplit=1)[0].strip().lower()
@@ -464,11 +481,14 @@ class DemoService:
         if document_type not in required_documents:
             raise ValueError("That document is not required for the selected scheme.")
 
-        upload = {
-            "document_type": document_type,
-            "filename": safe_filename,
-            "file_size": len(content),
-        }
+        upload = self._get_document_store().store(
+            thread_id=thread_id,
+            scheme_id=scheme_id,
+            document_type=document_type,
+            filename=safe_filename,
+            content_type=mime_type or expected[0],
+            content=content,
+        )
         with self._uploads_lock:
             self._uploads.setdefault(thread_id, {}).setdefault(scheme_id, {})[
                 document_type
@@ -497,9 +517,62 @@ class DemoService:
             return []
         snapshot = self._get_snapshot(thread_id)
         required = snapshot.values.get("documents", {}).get(scheme_id, [])
+        uploaded_documents = self._list_uploaded_documents(thread_id, scheme_id)
+        uploaded = {item["document_type"] for item in uploaded_documents}
+        return [document for document in required if document not in uploaded]
+
+    def get_uploaded_document(
+        self,
+        thread_id: str,
+        scheme_id: str,
+        document_type: str,
+        actor_id: str | None = None,
+    ) -> tuple[bytes, dict[str, Any]]:
+        """Retrieve an upload belonging to the caller's household."""
+        self._check_thread_owner(thread_id, actor_id)
+        return self._get_document_store().get_document(
+            thread_id, scheme_id, document_type
+        )
+
+    def delete_uploaded_documents(
+        self, thread_id: str, actor_id: str | None = None
+    ) -> int:
+        """Delete every retained upload belonging to one workflow thread."""
+        self._check_thread_owner(thread_id, actor_id)
+        manifest_path = (
+            LocalDocumentStore.configured_directory() / "manifest.json"
+        )
+        if self._document_store is None and not manifest_path.exists():
+            with self._uploads_lock:
+                self._uploads.pop(thread_id, None)
+            return 0
+        deleted = self._get_document_store().delete_thread(thread_id)
         with self._uploads_lock:
-            uploaded = self._uploads.get(thread_id, {}).get(scheme_id, {})
-            return [document for document in required if document not in uploaded]
+            self._uploads.pop(thread_id, None)
+        return deleted
+
+    def _list_uploaded_documents(
+        self, thread_id: str, scheme_id: str
+    ) -> list[dict[str, Any]]:
+        if self._document_store is not None:
+            return self._document_store.list_documents(thread_id, scheme_id)
+
+        manifest_path = (
+            LocalDocumentStore.configured_directory() / "manifest.json"
+        )
+        if manifest_path.exists():
+            return self._get_document_store().list_documents(thread_id, scheme_id)
+
+        with self._uploads_lock:
+            uploads = self._uploads.get(thread_id, {}).get(scheme_id, {})
+            return list(uploads.values())
+
+    def _get_document_store(self) -> LocalDocumentStore:
+        if self._document_store is None:
+            with self._document_store_lock:
+                if self._document_store is None:
+                    self._document_store = LocalDocumentStore.from_environment()
+        return self._document_store
 
     def _get_snapshot(self, thread_id: str) -> Any:
         snapshot = self.workflow.get_state(
@@ -556,3 +629,9 @@ class DemoService:
             "needs_human": values.get("needs_human", False),
             "critique": values.get("critique", []),
         }
+
+
+# ============================================================================
+# DEMO API MODELS (Legacy)
+# ============================================================================
+

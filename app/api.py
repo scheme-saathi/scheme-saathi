@@ -10,9 +10,11 @@ from typing import Any, Literal
 from uuid import uuid4
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Header, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
+from urllib.parse import quote
 
+from app.document_storage import DocumentStorageError
 from graph.tools import ToolCallError
 from graph.agent_workflow import build_agent_graph, AgentSet, AgentWorkflowState
 from langgraph.checkpoint.memory import MemorySaver
@@ -716,6 +718,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         thread_id: str,
         scheme_id: str = Form(...),
         document_type: str = Form(...),
+        sensitive_ids_masked: bool = Form(False),
         file: UploadFile = File(...),
         principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> dict[str, Any]:
@@ -731,6 +734,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 filename,
                 file.content_type,
                 content,
+                sensitive_ids_masked,
                 principal.household_id,
             )
         except ValueError as error:
@@ -744,8 +748,80 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 status_code=403,
                 detail="This application belongs to another household.",
             )
+        except DocumentStorageError as error:
+            logger.exception("Could not store a supporting document.")
+            raise HTTPException(
+                status_code=500, detail="Could not securely store the document."
+            ) from error
         finally:
             await file.close()
+
+    @application.get(
+        "/api/threads/{thread_id}/documents/{scheme_id}/{document_type}",
+        tags=["Demo"],
+    )
+    def download_document(
+        thread_id: str,
+        scheme_id: str,
+        document_type: str,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> Response:
+        try:
+            content, metadata = demo.get_uploaded_document(
+                thread_id, scheme_id, document_type, principal.household_id
+            )
+        except DemoThreadAccessError:
+            raise HTTPException(
+                status_code=403,
+                detail="This application belongs to another household.",
+            )
+        except SessionNotFoundError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except FileNotFoundError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except DocumentStorageError as error:
+            logger.exception("Could not retrieve a supporting document.")
+            raise HTTPException(
+                status_code=500,
+                detail="Could not securely retrieve the document.",
+            ) from error
+
+        filename = metadata["filename"]
+        ascii_filename = filename.encode("ascii", "ignore").decode("ascii")
+        ascii_filename = ascii_filename.replace('"', "_").replace("\\", "_")
+        content_disposition = (
+            f'attachment; filename="{ascii_filename or "document"}"; '
+            f"filename*=UTF-8''{quote(filename)}"
+        )
+        return Response(
+            content=content,
+            media_type=metadata["content_type"],
+            headers={"Content-Disposition": content_disposition},
+        )
+
+    @application.delete("/api/threads/{thread_id}/documents", tags=["Demo"])
+    def delete_documents(
+        thread_id: str,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> dict[str, Any]:
+        try:
+            deleted = demo.delete_uploaded_documents(
+                thread_id, principal.household_id
+            )
+        except DemoThreadAccessError:
+            raise HTTPException(
+                status_code=403,
+                detail="This application belongs to another household.",
+            )
+        except SessionNotFoundError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except DocumentStorageError as error:
+            logger.exception("Could not delete supporting documents.")
+            raise HTTPException(
+                status_code=500,
+                detail="Could not securely delete supporting documents.",
+            ) from error
+        return {"status": "success", "deleted_documents": deleted}
 
     @application.post("/api/threads/{thread_id}/decision", tags=["Demo"])
     def decide(
@@ -774,6 +850,11 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             raise HTTPException(status_code=422, detail=str(error)) from error
         except ToolCallError as error:
             raise _tool_call_http_error(error) from error
+        except DocumentStorageError as error:
+            logger.exception("Could not check stored supporting documents.")
+            raise HTTPException(
+                status_code=500, detail="Could not check stored documents."
+            ) from error
         return _event_stream(events)
 
     return application
