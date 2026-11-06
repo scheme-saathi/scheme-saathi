@@ -1,6 +1,6 @@
 import unittest
 
-from servers.schemes_kb.keyword_search import bm25_rank, reciprocal_rank_fusion, tokenize
+from servers.schemes_kb.keyword_search import bm25_rank, reciprocal_rank_fusion, tokenize, visible_text
 
 
 class KeywordChecks(unittest.TestCase):
@@ -9,6 +9,9 @@ class KeywordChecks(unittest.TestCase):
 
     def test_html_attributes_are_not_search_terms(self):
         self.assertEqual(tokenize('<td rowspan="2">Manpower<br>20%</td>', True), ["manpower", "20"])
+
+    def test_visible_text_keeps_symbols_and_drops_markup(self):
+        self.assertEqual(visible_text('<td rowspan="2">Manpower<br>20%</td>'), "Manpower 20%")
 
     def test_zero_overlap_returns_no_keyword_hits(self):
         records = {("c", "a"): {"text": "Business loans"}}

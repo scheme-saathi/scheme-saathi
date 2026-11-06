@@ -65,6 +65,24 @@ class IntakeQuestion(Contract):
     question: str = Field(min_length=1)
 
 
+class EvidencePassage(Contract):
+    id: str = Field(min_length=1)
+    scheme_id: str
+    text: str
+
+
+class IntakeAnswerInput(Contract):
+    question: str = Field(min_length=1)
+    language: Language = "unknown"
+    passages: list[EvidencePassage] = Field(min_length=1)
+
+
+class IntakeAnswer(Contract):
+    found: bool
+    answer: str = ""
+    cited_passage_ids: list[str] = Field(default_factory=list)
+
+
 class SupervisorInput(Contract):
     request: str = Field(min_length=1)
     intake: IntakeResult | None = None  # Optional: None on first call, populated after Intake runs
@@ -74,6 +92,11 @@ class SupervisorInput(Contract):
 class SupervisorPlan(Contract):
     next_agent: Route
     reason: str = Field(min_length=1)
+    scheme_question: bool = Field(
+        False,
+        description="True when the user asks a factual question about a scheme (benefits, age or "
+        "income limits, how to apply) without asking to check their own eligibility. Route it to respond.",
+    )
     language: Language = Field(
         "unknown",
         description="Language of the user's message; replies use it. Hindi and Marathi both use "

@@ -9,6 +9,7 @@ from fastmcp import FastMCP
 ROOT = Path(__file__).resolve().parents[2]
 SCHEME_DIR = ROOT / "data" / "schemes"
 RULES_DIR = ROOT / "data" / "rules"
+MIN_RERANK_SCORE = 5  # of 10; reranked passages below this don't answer the question
 
 mcp = FastMCP(
     "schemes-kb",
@@ -96,6 +97,40 @@ def get_required_documents(scheme_id: str) -> dict[str, Any]:
                 items = list(rule_record.get("documents_required", []))
                 break
     return {"ok": True, "access": "read", "data": items}
+
+
+@mcp.tool()
+def search_scheme_evidence(question: str, top_k: int = 5, scheme_id: str | None = None) -> dict[str, Any]:
+    """Read-only evidence search over approved scheme pages and PDFs (hybrid BM25 + vectors, LLM reranked).
+
+    Args:
+        question: The user's question, at most 2000 characters.
+        top_k: Passages to return, 1 to 20.
+        scheme_id: Optional scheme to search within.
+
+    Returns:
+        A JSON object whose ``data`` lists passages with citations. Passages are evidence,
+        not eligibility verdicts; an empty list means nothing relevant was found.
+    """
+    from servers.schemes_kb.keyword_search import visible_text
+    from servers.schemes_kb.search import search_schemes as search_index
+
+    try:
+        response = search_index(question, top_k=top_k, scheme_id=scheme_id, method="hybrid", rerank=True)
+    except ValueError as error:
+        return {"ok": False, "access": "read", "error": {"code": "invalid_search", "message": str(error)}}
+    # Without a rerank (it failed), scores are not 0-10, so the caller's answer step decides relevance.
+    reranked = response["ranking"].endswith("llm_rerank")
+    passages = [
+        {
+            "id": row["id"], "scheme_id": row["scheme_id"], "source_type": row["source_type"],
+            "section": row["section"], "page": row["page"], "citations": row["citations"],
+            "text": visible_text(row["text"]) if row["kind"] == "table" else row["text"],
+        }
+        for row in response["results"]
+        if not reranked or (row["rank_score"] or 0) >= MIN_RERANK_SCORE
+    ]
+    return {"ok": True, "access": "read", "data": passages}
 
 
 if __name__ == "__main__":

@@ -13,11 +13,15 @@ class VisibleText(HTMLParser):
         self.parts.append(text)
 
 
+def visible_text(html):
+    parser = VisibleText()
+    parser.feed(html)
+    return " ".join(" ".join(parser.parts).split())
+
+
 def tokenize(text, is_html=False):
     if is_html:
-        parser = VisibleText()
-        parser.feed(text)
-        text = " ".join(parser.parts)
+        text = visible_text(text)
     words = []
     current = []
     for character in unicodedata.normalize("NFC", text).casefold():

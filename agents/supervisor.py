@@ -612,6 +612,9 @@ class OutputValidator:
                 lang = response.get("language", "unknown")
                 if lang not in ["en", "hi", "mr", "unknown"]:
                     errors.append(f"Invalid language in response: {lang}")
+            # Intake should collect facts, not make decisions
+            if "eligible" in response_text.lower() or "approve" in response_text.lower():
+                errors.append("Intake agent should not make eligibility decisions")
 
         elif agent_name == "eligibility":
             # Eligibility must cite rules/clauses
@@ -642,10 +645,14 @@ class OutputValidator:
                         "Document Checker cannot verify authenticity - authenticity_verified must be False"
                     )
 
-        elif agent_name == "intake":
-            # Intake should collect facts, not make decisions
-            if "eligible" in response_text.lower() or "approve" in response_text.lower():
-                errors.append("Intake agent should not make eligibility decisions")
+        elif agent_name == "scheme_info":
+            # Quoting a scheme's criteria is fine; deciding the user's own eligibility is not.
+            # shortcut: phrase list, covers en + common hi/mr wording; extend if reviews find misses.
+            if re.search(r"\byou (are|are not|aren't|'re) (not )?eligible\b|\byou (do not |don't )?qualify\b",
+                         response_text.lower()) or any(
+                phrase in response_text for phrase in ("आप पात्र हैं", "आप पात्र नहीं", "तुम्ही पात्र आहात", "तुम्ही पात्र नाही")
+            ):
+                errors.append("Scheme answers must not decide the user's own eligibility")
 
         # 5. Response length sanity check
         if len(response_text) > 10000:
@@ -695,6 +702,8 @@ Your job is to validate and route requests intelligently:
    - Documents needed → Document Checker Agent
    - Want to apply → Intake Agent first (collect all facts)
    - Status update → Respond (this is Phase 4, not yet available)
+   - Factual question about a scheme (benefits, limits, how to apply) that does not ask to check
+     the user's own eligibility → Respond with scheme_question true; it is answered from cited documents
 
 3. VALIDATE OUTPUT:
    - Ensure specialist responses follow contracts

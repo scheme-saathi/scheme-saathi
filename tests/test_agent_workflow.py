@@ -342,7 +342,10 @@ def _run_to_approval(monkeypatch, thread="t1"):
     submitted = []
     monkeypatch.setattr(
         "graph.agent_workflow.tools.submit_application",
-        lambda form, application_id=None, write_capability=None: submitted.append(form) or {"application_id": "APP-1", "status": "submitted (mock)"},
+        lambda form, application_id=None, write_capability=None, household_id=None: (
+            submitted.append(form)
+            or {"application_id": "APP-1", "status": "submitted (mock)"}
+        ),
     )
     graph = build_agent_graph(_application_agents(), checkpointer=MemorySaver())
     config = {"configurable": {"thread_id": thread}}

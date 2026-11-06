@@ -86,6 +86,7 @@ def main():
     parser.add_argument("--split", choices=["development", "held_out"], default="development")
     parser.add_argument("--allow-pending", action="store_true", help="Run provisional comparisons with unreviewed labels.")
     parser.add_argument("--top-k", type=int, choices=range(1, 21), default=5)
+    parser.add_argument("--rerank", action="store_true", help="Reorder candidates with the specialist LLM.")
     args = parser.parse_args()
     if not args.dataset.is_file():
         parser.error("Evaluation dataset is not bundled. Provide a local file with --dataset PATH.")
@@ -104,7 +105,7 @@ def main():
 
     from servers.schemes_kb.search import get_client, get_model, search_schemes
     from functools import partial
-    search = partial(search_schemes, method=args.method)
+    search = partial(search_schemes, method=args.method, rerank=args.rerank)
     client = get_client()
     snapshots = []
     for collection in client.list_collections():
@@ -151,15 +152,15 @@ def main():
     languages = sorted({r["language"] for r in rows})
     report = {
         "dataset_id": dataset["dataset_id"], "dataset_sha256": hashlib.sha256(args.dataset.read_bytes()).hexdigest(),
-        "method": args.method, "split": args.split, "top_k": args.top_k,
+        "method": args.method, "rerank": args.rerank, "split": args.split, "top_k": args.top_k,
         "provisional": bool(pending), "label_statuses": sorted({c["label_status"] for c in cases}),
         "model_load_ms": model_load_ms, "index_snapshots": snapshots,
-        "retrieval_settings": {"candidate_k": args.top_k if args.method == "vector" else 20, "bm25_k1": 1.2, "bm25_b": 0.75, "rrf_constant": 60, "tokenizer": "NFC-casefold-Unicode-LNM", "lexical_statistics": "filtered eligible corpus"},
+        "retrieval_settings": {"candidate_k": args.top_k if args.method == "vector" and not args.rerank else 20, "bm25_k1": 1.2, "bm25_b": 0.75, "rrf_constant": 60, "tokenizer": "NFC-casefold-Unicode-LNM", "lexical_statistics": "filtered eligible corpus"},
         "summary": summarize(rows), "by_language": {lang: summarize([r for r in rows if r["language"] == lang]) for lang in languages},
         "metric_notes": "Exact normalized evidence text plus matching citation; conservative proxy, not semantic grading. Errors count as failed cases. Translation pairs are correlated. Latency excludes initial model load; first-query warmup may remain. Abstention is unsupported, not counted as passed.",
         "cases": rows,
     }
-    output = PROJECT_ROOT / "data/evaluation-runs" / f"{args.method}-{args.split}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}.json"
+    output = PROJECT_ROOT / "data/evaluation-runs" / f"{args.method}{'-rerank' if args.rerank else ''}-{args.split}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report["summary"], indent=2))
