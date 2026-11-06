@@ -12,6 +12,7 @@ from agents.application import ApplicationAgent
 from agents.contracts import (
     ApplicationInput,
     DocumentCheckInput,
+    DocumentCheckResult,
     EligibilityInput,
     EvidencePassage,
     FactMap,
@@ -449,6 +450,7 @@ def _document_checker_node(
             scheme_id=state["selected_scheme_id"],
             required_documents=state.get("required_documents", []),
             available_documents=state.get("available_documents", []),
+            household_persona=state.get("confirmed_facts", {}),
         )
     )
     return {"document_check": result.model_dump(mode="json")}
@@ -651,9 +653,21 @@ def _respond_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]
 
 
 def _finish_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]:
-    update = _finish_update(state)
+    if state.get("document_check") is not None and state.get("application_draft") is None:
+        review = agents.supervisor.invoke(
+            SupervisorInput(
+                request=state["request"],
+                selected_scheme_id=state.get("selected_scheme_id"),
+                document_check=state["document_check"],
+            )
+        )
+        update = {"status": "documents_checked", "response": review.reason}
+    else:
+        update = _finish_update(state)
     if state.get("application_draft") is not None:
         agent_name = "application"
+    elif state.get("document_check") is not None and state.get("application_draft") is None:
+        agent_name = "supervisor"
     elif state.get("document_check") is not None:
         agent_name = "document_checker"
     elif state.get("eligibility") is not None:
@@ -671,12 +685,16 @@ def _finish_update(state: AgentWorkflowState) -> dict[str, str]:
             "response": state["application_draft"]["review_summary"],
         }
     if state.get("document_check") is not None:
-        missing = state["document_check"]["missing_documents"]
-        response = (
-            "Missing documents: " + ", ".join(missing)
+        check = DocumentCheckResult.model_validate(state["document_check"])
+        missing = check.missing_documents
+        response_parts = (
+            ["Missing documents: " + ", ".join(missing)]
             if missing
-            else "Document checklist complete; authenticity is not verified."
+            else ["Document checklist complete; authenticity is not verified."]
         )
+        response_parts.extend(check.possible_inconsistencies)
+        response_parts.extend(check.clarifying_questions)
+        response = " ".join(response_parts)
         return {"status": "documents_checked", "response": response}
     if state.get("explanations") and not state.get("selected_scheme_id"):
         return {

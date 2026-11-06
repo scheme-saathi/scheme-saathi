@@ -83,10 +83,25 @@ class IntakeAnswer(Contract):
     cited_passage_ids: list[str] = Field(default_factory=list)
 
 
+class DocumentCheckInput(Contract):
+    scheme_id: str = Field(min_length=1)
+    required_documents: list[str] = Field(default_factory=list)
+    available_documents: list[str] = Field(default_factory=list)
+    household_persona: FactMap = Field(default_factory=dict)
+
+
+class DocumentCheckResult(Contract):
+    missing_documents: list[str] = Field(default_factory=list)
+    possible_inconsistencies: list[str] = Field(default_factory=list)
+    clarifying_questions: list[str] = Field(default_factory=list)
+    authenticity_verified: Literal[False] = False
+
+
 class SupervisorInput(Contract):
     request: str = Field(min_length=1)
     intake: IntakeResult | None = None  # Optional: None on first call, populated after Intake runs
     selected_scheme_id: str | None = None
+    document_check: DocumentCheckResult | None = None
 
 
 class SupervisorPlan(Contract):
@@ -112,19 +127,6 @@ class EligibilityInput(Contract):
 class EligibilityNarrative(Contract):
     explanation: str = Field(min_length=1)
     clarifying_questions: list[str] = Field(default_factory=list)
-
-
-class DocumentCheckInput(Contract):
-    scheme_id: str = Field(min_length=1)
-    required_documents: list[str] = Field(default_factory=list)
-    available_documents: list[str] = Field(default_factory=list)
-
-
-class DocumentCheckResult(Contract):
-    missing_documents: list[str] = Field(default_factory=list)
-    possible_inconsistencies: list[str] = Field(default_factory=list)
-    clarifying_questions: list[str] = Field(default_factory=list)
-    authenticity_verified: Literal[False] = False
 
 
 class ApplicationInput(Contract):
