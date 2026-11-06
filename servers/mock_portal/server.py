@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
 
@@ -13,6 +13,7 @@ from servers.mock_portal.authorization import (
     application_payload_hash,
     consume_write_capability,
 )
+from app.auth import AuthenticatedHousehold, authenticated_household
 
 mcp = FastMCP(
     "mock-portal",
@@ -41,6 +42,7 @@ def create_application(
     documents: dict[str, Any] | None = None,
     submit: bool = False,
     write_capability: str = "",
+    household_id: str | None = None,
 ) -> dict[str, Any]:
     """Write-enabled application creation or submission for the Application Agent.
 
@@ -65,6 +67,7 @@ def create_application(
             action,
             scheme_id,
             form_hash,
+            household_id,
         )
     except CapabilityError as exc:
         return _error("forbidden", str(exc))
@@ -78,6 +81,7 @@ def create_application(
         "applicant": applicant,
         "documents": documents or {},
         "form_hash": form_hash,
+        "household_id": household_id,
         "status": status,
         "created_at": now,
         "updated_at": now,
@@ -85,7 +89,11 @@ def create_application(
     if submit:
         payload["submitted_at"] = now
     APPLICATIONS[application_id] = payload
-    return {"ok": True, "access": "write", "data": payload}
+    return {
+        "ok": True,
+        "access": "write",
+        "data": {key: value for key, value in payload.items() if key != "household_id"},
+    }
 
 
 @mcp.tool()
@@ -117,6 +125,7 @@ def submit_draft(application_id: str, write_capability: str = "") -> dict[str, A
             "submit_draft",
             application_id,
             current_hash,
+            application.get("household_id"),
         )
     except CapabilityError as exc:
         return _error("forbidden", str(exc))
@@ -149,24 +158,34 @@ def get_application_status(application_id: str) -> dict[str, Any]:
 @app.post("/applications")
 def create_application_route(
     payload: ApplicationCreateRequest,
-    authorization: str | None = Header(None),
+    write_capability: str | None = Header(None, alias="X-Write-Capability"),
+    principal: AuthenticatedHousehold = Depends(authenticated_household),
 ) -> dict[str, Any]:
-    if not authorization or not authorization.startswith("Bearer "):
+    if not write_capability:
         raise HTTPException(status_code=401, detail="A write capability is required.")
     result = create_application(
         scheme_id=payload.scheme_id,
         applicant=payload.applicant,
         documents=payload.documents,
         submit=payload.submit,
-        write_capability=authorization.removeprefix("Bearer "),
+        write_capability=write_capability,
+        household_id=principal.household_id,
     )
     if not result.get("ok"):
-        raise HTTPException(status_code=403, detail=result["error"]["message"])
+        raise HTTPException(status_code=403, detail="The write capability was not accepted.")
     return result
 
 
 @app.get("/applications/{application_id}")
-def get_application_route(application_id: str) -> dict[str, Any]:
+def get_application_route(
+    application_id: str,
+    principal: AuthenticatedHousehold = Depends(authenticated_household),
+) -> dict[str, Any]:
+    application = APPLICATIONS.get(application_id)
+    if application is None:
+        raise HTTPException(status_code=404, detail="Application not found.")
+    if application.get("household_id") != principal.household_id:
+        raise HTTPException(status_code=403, detail="Application belongs to another household.")
     return get_application_status(application_id)
 
 

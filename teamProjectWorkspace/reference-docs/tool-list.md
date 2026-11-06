@@ -17,7 +17,7 @@ content, so read access does not make their data safe to trust as instructions.
 | `rule-engine` | `get_rule_fields` | Read | Returns profile fields used by the selected rule records. |
 | `rule-engine` | `get_field_specs` | Read | Returns the type (`number`, `bool` or `str`) of each profile field the selected rule records use, plus the string values those rules compare against. Intake uses it to build the typed profile the model fills and to type-check edits at the confirm step. Returns `field_type_conflict` if two rules disagree on a field's type. |
 | `rule-engine` | `evaluate_profile` | Read | Deterministically evaluates a profile against one scheme's rules and returns a verdict and citations. Draft evaluation is explicitly preview-only. |
-| `doc-check` | `compare_document_fields` | Read | Compares supplied structured fields and returns match information. It does not inspect uploaded files or verify document authenticity. This server is registered as an MCP server, but is not currently included in `graph.tools._SERVERS` and therefore is not callable through `graph.tools.call_tool`. |
+| `doc-check` | `compare_document_fields` | Read | Compares supplied structured fields and returns match information. It does not inspect uploaded files or verify document authenticity. It is registered in `graph.tools` and restricted to the `document_checker` actor context. |
 | `mock-portal` | `get_application_status` | Read | Returns the status for a portal application ID. |
 | `mock-portal` | `create_application` | Write | Creates an application. Its `submit` argument can create it directly in `submitted` status; the approval workflow uses `submit=False` to create a draft. |
 | `mock-portal` | `submit_draft` | Write | Changes an existing portal draft to `submitted`. |
@@ -26,8 +26,12 @@ content, so read access does not make their data safe to trust as instructions.
 
 `graph/tools.py` is the current graph call boundary. It routes calls through
 in-memory FastMCP clients, raises `ToolCallError` for tool errors, and applies a
-pre-call allow-list to registered tools. Unknown servers and tools fail closed;
-the two portal write tools additionally require an allowed caller context.
+pre-call allow-list to registered tools. Unknown servers and tools fail closed.
+When a graph node enters an `acting_as` context, read tools are restricted by
+agent: intake reads rule fields, eligibility evaluates rules, and the document
+checker reads document requirements and compares fields. The application agent
+does not have access to portal status lookups. Portal writes are limited to the
+application and baseline contexts.
 Compiled graph executions have an MCP-call budget checked before each server
 request: 40 calls for the agent graph and single-agent baseline, and 1,200 for
 the legacy full-corpus demo. Each attempted call produces a structured audit
@@ -40,11 +44,11 @@ helper functions around those read tools. `next_question` calls no tool: it pick
 intake's next question from verdicts the eligibility step already produced.
 `draft_application` only builds an in-memory form and does not write to the portal.
 
-The current write check permits calls made inside `tools.acting_as("application")`
-or `tools.acting_as("baseline")`. This is a safeguard against accidental calls
-from other graph agents, not an authorization boundary: application code can
-choose either identity. The baseline exception is intentional for the comparison
-workflow.
+Agent checks are applied only when a call has an explicit `acting_as` context.
+Context-free in-process calls may use allow-listed read tools, but write tools
+reject a missing actor context. These checks are not a security boundary against
+malicious application code because code can choose an allowed identity. The
+baseline exception is intentional for the comparison workflow.
 
 The approval graph creates a portal draft before approval, pauses with
 `interrupt()`, and submits that existing draft only after the approved hash
@@ -57,10 +61,12 @@ path to bypass the approval workflow.
 `servers/mock_portal/server.py` also defines `POST /applications` and
 `GET /applications/{application_id}`. These FastAPI routes call the portal
 functions directly and do not pass through the graph's `call_tool` allow-list.
-POST requires a short-lived write capability, but there is no user
-authentication; GET has no authentication. Do not expose the mock portal HTTP
-app to untrusted clients; production use requires authorization at the server
-boundary.
+Both require a verified Auth0 access token. POST additionally requires a
+short-lived one-use capability bound to the exact form and authenticated
+household; GET returns status only to the owning household. Capability nonces
+and application records are process-local, and the shared-secret issuer is
+demo-grade. Keep the portal server private; this is not production service
+isolation.
 
 ## Change checklist
 

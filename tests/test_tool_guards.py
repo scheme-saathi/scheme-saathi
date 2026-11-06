@@ -111,3 +111,49 @@ def test_allowlisted_read_tool_requires_no_actor(monkeypatch):
     monkeypatch.setattr(tools, "_call", expected_call)
 
     assert tools.call_tool(tools.RULE_ENGINE, "list_rule_schemes") == ["SYNTH-PENSION-001"]
+
+
+def test_agent_read_access_is_restricted_before_the_server_call(monkeypatch):
+    async def expected_call(server, tool, arguments):
+        assert (server, tool) == (tools.RULE_ENGINE, "get_field_specs")
+        return {"data": {}}
+
+    monkeypatch.setattr(tools, "_call", expected_call)
+
+    with tools.acting_as("intake"):
+        assert tools.call_tool(
+            tools.RULE_ENGINE, "get_field_specs", scheme_ids=[]
+        ) == {}
+
+    with tools.acting_as("intake"):
+        with pytest.raises(tools.ToolCallError, match="may not use this read tool"):
+            tools.call_tool(tools.RULE_ENGINE, "evaluate_profile", profile={}, scheme_id="C01")
+
+    with tools.acting_as("document_checker"):
+        with pytest.raises(tools.ToolCallError, match="may not use this read tool"):
+            tools.call_tool(tools.RULE_ENGINE, "list_rule_schemes")
+
+    with tools.acting_as("application"):
+        with pytest.raises(tools.ToolCallError, match="may not use this read tool"):
+            tools.call_tool(
+                tools.MOCK_PORTAL,
+                "get_application_status",
+                application_id="another-household-application",
+            )
+
+
+def test_doc_check_tool_is_callable_only_by_document_checker(monkeypatch):
+    async def expected_call(server, tool, arguments):
+        assert (server, tool) == (tools.DOC_CHECK, "compare_document_fields")
+        return {"data": {"name_matches": True}}
+
+    monkeypatch.setattr(tools, "_call", expected_call)
+
+    with tools.acting_as("document_checker"):
+        assert tools.compare_document_fields({"name": "A"}, {"name": "A"}) == {
+            "name_matches": True
+        }
+
+    with tools.acting_as("intake"):
+        with pytest.raises(tools.ToolCallError, match="may not use this read tool"):
+            tools.compare_document_fields({"name": "A"}, {"name": "A"})

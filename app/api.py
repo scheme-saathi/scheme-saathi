@@ -9,7 +9,7 @@ from functools import lru_cache
 from typing import Any, Literal
 from uuid import uuid4
 
-from fastapi import FastAPI, File, Form, HTTPException, Header, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Header, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -20,17 +20,20 @@ from langgraph.types import Command
 
 from agents.supervisor import SupervisorAgent
 from agents.contracts import Language
+from app.auth import AuthenticatedHousehold, authenticated_household
 
 if __package__:
     from .business_logic import (
         DemoService,
         SessionNotFoundError,
+        ThreadAccessError as DemoThreadAccessError,
         WorkflowConflictError,
     )
 else:
     from business_logic import (
         DemoService,
         SessionNotFoundError,
+        ThreadAccessError as DemoThreadAccessError,
         WorkflowConflictError,
     )
 
@@ -64,7 +67,6 @@ class ChatRequest(BaseModel):
 class SupervisorChatRequest(BaseModel):
     """Request to send message through supervisor agent."""
     message: str = Field(min_length=1, max_length=5000, description="User message")
-    actor_id: str = Field(min_length=1, description="Household/user identifier")
     thread_id: str | None = Field(None, description="Conversation thread ID")
     language: Language | None = Field(None, description="Language hint (en, hi, mr)")
     known_facts: dict[str, Any] = Field(
@@ -361,6 +363,28 @@ def get_workflow_service() -> AgentWorkflowService:
     return AgentWorkflowService()
 
 
+def _owned_conversation(
+    workflow: AgentWorkflowService, thread_id: str, household_id: str
+) -> dict[str, Any]:
+    conversation = workflow.get_conversation(thread_id)
+    if conversation is None:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    if conversation.get("actor_id") != household_id:
+        raise HTTPException(
+            status_code=403, detail="This conversation belongs to another household."
+        )
+    return conversation
+
+
+def _tool_call_http_error(error: ToolCallError) -> HTTPException:
+    if error.code == "scheme_not_found":
+        return HTTPException(status_code=422, detail="The selected scheme is not available.")
+    return HTTPException(
+        status_code=503,
+        detail="A required workflow tool call could not be completed.",
+    )
+
+
 # ============================================================================
 # EVENT STREAMING HELPER
 # ============================================================================
@@ -429,12 +453,11 @@ def create_api(service: DemoService | None = None) -> FastAPI:
     )
     def chat_with_supervisor(
         request: SupervisorChatRequest,
-        x_actor_id: str | None = Header(None),
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
         x_thread_id: str | None = Header(None),
     ) -> SupervisorChatResponse:
         """Send message through supervisor agent for intelligent routing."""
         try:
-            actor_id = x_actor_id or request.actor_id
             thread_id = x_thread_id or request.thread_id
             
             # Get workflow service (lazy-loaded on first call)
@@ -443,7 +466,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             # Execute workflow
             result = workflow.execute_workflow(
                 request=request.message,
-                actor_id=actor_id,
+                actor_id=principal.household_id,
                 thread_id=thread_id,
                 known_facts=request.known_facts,
                 selected_scheme_id=request.selected_scheme_id,
@@ -483,12 +506,16 @@ def create_api(service: DemoService | None = None) -> FastAPI:
     def decide_on_draft(
         thread_id: str,
         decision: ApprovalDecisionRequest,
-        x_actor_id: str = Header(...),
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> SupervisorChatResponse:
         """Approve, edit or reject the exact form the graph is waiting on."""
         try:
             result = get_workflow_service().submit_decision(
-                thread_id, x_actor_id, decision.action, decision.payload_hash, decision.changes
+                thread_id,
+                principal.household_id,
+                decision.action,
+                decision.payload_hash,
+                decision.changes,
             )
         except ThreadNotFoundError:
             raise HTTPException(status_code=404, detail="Thread not found")
@@ -521,12 +548,13 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         response_model=SupervisorChatResponse,
         tags=["Agent Workflow"],
     )
-    def get_chat_response(thread_id: str) -> dict[str, Any]:
+    def get_chat_response(
+        thread_id: str,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> dict[str, Any]:
         """Get latest response from conversation thread."""
         workflow = get_workflow_service()
-        conversation = workflow.get_conversation(thread_id)
-        if not conversation:
-            raise HTTPException(status_code=404, detail="Thread not found")
+        conversation = _owned_conversation(workflow, thread_id, principal.household_id)
         
         if not conversation["turns"]:
             raise HTTPException(status_code=404, detail="No turns in conversation")
@@ -548,12 +576,11 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         thread_id: str,
         limit: int = 50,
         offset: int = 0,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> ConversationHistory:
         """Get full conversation history."""
         workflow = get_workflow_service()
-        conversation = workflow.get_conversation(thread_id)
-        if not conversation:
-            raise HTTPException(status_code=404, detail="Thread not found")
+        conversation = _owned_conversation(workflow, thread_id, principal.household_id)
         
         turns_data = conversation["turns"][offset : offset + limit]
         turns = [
@@ -585,9 +612,13 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         response_model=SessionContext,
         tags=["Agent Workflow"],
     )
-    def get_session_context(thread_id: str) -> SessionContext:
+    def get_session_context(
+        thread_id: str,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> SessionContext:
         """Get current session context and collected facts."""
         workflow = get_workflow_service()
+        _owned_conversation(workflow, thread_id, principal.household_id)
         context = workflow.get_context(thread_id)
         if not context:
             raise HTTPException(status_code=404, detail="Context not found")
@@ -604,9 +635,13 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         "/api/chat/{thread_id}/restart",
         tags=["Agent Workflow"],
     )
-    def restart_session_context(thread_id: str) -> dict[str, Any]:
+    def restart_session_context(
+        thread_id: str,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> dict[str, Any]:
         """Reset session context but keep conversation history."""
         workflow = get_workflow_service()
+        _owned_conversation(workflow, thread_id, principal.household_id)
         context = workflow.get_context(thread_id)
         if not context:
             raise HTTPException(status_code=404, detail="Context not found")
@@ -623,12 +658,13 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         "/api/chat/{thread_id}",
         tags=["Agent Workflow"],
     )
-    def delete_chat_conversation(thread_id: str) -> dict[str, Any]:
+    def delete_chat_conversation(
+        thread_id: str,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> dict[str, Any]:
         """Delete entire conversation (GDPR compliance)."""
         workflow = get_workflow_service()
-        conversation = workflow.get_conversation(thread_id)
-        if not conversation:
-            raise HTTPException(status_code=404, detail="Thread not found")
+        conversation = _owned_conversation(workflow, thread_id, principal.household_id)
         
         deleted_turns = len(conversation.get("turns", []))
         workflow.delete_conversation(thread_id)
@@ -649,20 +685,30 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         try:
             return {"schemes": demo.available_schemes()}
         except ToolCallError as error:
-            raise HTTPException(status_code=503, detail=str(error)) from error
+            raise _tool_call_http_error(error) from error
 
     @application.post("/api/analyze", tags=["Demo"])
-    def analyze(payload: AnalysisRequest) -> StreamingResponse:
+    def analyze(
+        payload: AnalysisRequest,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> StreamingResponse:
         try:
-            events = demo.analyze(payload.citizen, payload.scheme_ids)
+            events = demo.analyze(
+                payload.citizen, payload.scheme_ids, principal.household_id
+            )
         except ToolCallError as error:
-            raise HTTPException(status_code=422, detail=str(error)) from error
+            raise _tool_call_http_error(error) from error
         return _event_stream(events)
 
     @application.post("/api/chat/legacy", tags=["Demo"])
-    def chat_legacy(payload: ChatRequest) -> StreamingResponse:
+    def chat_legacy(
+        payload: ChatRequest,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> StreamingResponse:
         return _event_stream(
-            demo.chat_turn(payload.user_input, payload.session_id)
+            demo.chat_turn(
+                payload.user_input, payload.session_id, principal.household_id
+            )
         )
 
     @application.post("/api/threads/{thread_id}/documents/upload", tags=["Demo"])
@@ -671,6 +717,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         scheme_id: str = Form(...),
         document_type: str = Form(...),
         file: UploadFile = File(...),
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> dict[str, Any]:
         filename = file.filename or ""
         if not filename:
@@ -684,6 +731,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 filename,
                 file.content_type,
                 content,
+                principal.household_id,
             )
         except ValueError as error:
             raise HTTPException(status_code=422, detail=str(error)) from error
@@ -691,17 +739,32 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail=str(error)) from error
         except WorkflowConflictError as error:
             raise HTTPException(status_code=409, detail=str(error)) from error
+        except DemoThreadAccessError:
+            raise HTTPException(
+                status_code=403,
+                detail="This application belongs to another household.",
+            )
         finally:
             await file.close()
 
     @application.post("/api/threads/{thread_id}/decision", tags=["Demo"])
-    def decide(thread_id: str, payload: DecisionRequest) -> StreamingResponse:
+    def decide(
+        thread_id: str,
+        payload: DecisionRequest,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> StreamingResponse:
         try:
             events = demo.decide(
                 thread_id,
                 payload.action,
                 payload.payload_hash,
                 payload.changes,
+                principal.household_id,
+            )
+        except DemoThreadAccessError:
+            raise HTTPException(
+                status_code=403,
+                detail="This application belongs to another household.",
             )
         except SessionNotFoundError as error:
             raise HTTPException(status_code=404, detail=str(error)) from error
@@ -709,6 +772,8 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             raise HTTPException(status_code=409, detail=str(error)) from error
         except ValueError as error:
             raise HTTPException(status_code=422, detail=str(error)) from error
+        except ToolCallError as error:
+            raise _tool_call_http_error(error) from error
         return _event_stream(events)
 
     return application

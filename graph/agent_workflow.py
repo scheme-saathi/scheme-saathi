@@ -27,7 +27,6 @@ from agents.intake import IntakeAgent, income_period
 from agents.model_factory import create_chat_model
 from agents.supervisor import SupervisorAgent
 from graph import tools
-from graph.tools import evaluate_scheme
 from graph.workflow import application_hash
 from servers.rule_engine.rules import Evaluation
 
@@ -183,7 +182,8 @@ def _unconfirmed(state: AgentWorkflowState) -> FactMap:
 
 def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
     """Read typed facts from the message into known_facts. They stay unconfirmed."""
-    specs = tools.field_specs(_candidate_schemes(state))
+    with tools.acting_as("intake"):
+        specs = tools.field_specs(_candidate_schemes(state))
     if not specs:  # no reviewed rule fields, so nothing the profile could hold
         return {"pending_field": None}
     pending = state.get("pending_field")
@@ -295,17 +295,7 @@ def _resolve_deterministic_evaluation(state: AgentWorkflowState) -> dict[str, An
     if not isinstance(facts, dict) or not facts:
         return None
 
-    try:
-        return evaluate_scheme(facts, scheme_id)
-    except Exception:
-        return {
-            "verdict": "cant_tell",
-            "reason": "The deterministic rule engine could not evaluate this scheme with the current facts.",
-            "missing_fields": [],
-            "unresolved_fields": [],
-            "conditions": [],
-            "citations": [],
-        }
+    return tools.evaluate_scheme(facts, scheme_id)
 
 
 def _eligibility_node(
@@ -316,7 +306,10 @@ def _eligibility_node(
     While some facts are unconfirmed the verdicts only steer intake's questions; once all are
     confirmed they are final and, without a selected scheme, each gets a cited explanation.
     """
-    verdicts = {s: evaluate_scheme(_facts_so_far(state), s) for s in _candidate_schemes(state)}
+    verdicts = {
+        scheme_id: tools.evaluate_scheme(_facts_so_far(state), scheme_id)
+        for scheme_id in _candidate_schemes(state)
+    }
     explanations = {}
     if not state.get("selected_scheme_id") and not _unconfirmed(state):
         explanations = {
@@ -332,6 +325,18 @@ def _selected_scheme_eligibility(
     scheme_id = state.get("selected_scheme_id")
     raw_evaluation = state.get("deterministic_evaluation")
     facts = state.get("confirmed_facts") or {}
+
+    if not scheme_id:
+        return {
+            "eligibility": {
+                "verdict": "cant_tell",
+                "reason": "A scheme was not selected for eligibility evaluation.",
+                "missing_fields": [],
+                "unresolved_fields": [],
+                "conditions": [],
+                "citations": [],
+            }
+        }
 
     if raw_evaluation is None:
         raw_evaluation = _resolve_deterministic_evaluation(state)
@@ -484,7 +489,9 @@ def _application_node(
     if not draft.missing_fields:
         form = {"scheme_id": draft.scheme_id, "applicant": draft.fields}
         with tools.acting_as("application"):
-            portal_draft = tools.create_portal_draft(form)
+            portal_draft = tools.create_portal_draft(
+                form, household_id=state.get("actor_id")
+            )
         update["portal_draft"] = {**portal_draft, "form_hash": application_hash(form)}
     return update
 
@@ -513,17 +520,22 @@ def _approval_node(state: AgentWorkflowState) -> dict[str, Any]:
         }
     )
     action = decision.get("action") if isinstance(decision, dict) else None
+    authenticated = bool(state.get("actor_id"))
     if action == "approve":
         if decision.get("payload_hash") == current:
             portal_draft_id = (state.get("portal_draft") or {}).get("application_id")
             if not portal_draft_id:
+                tools.audit_approval_event("approve", "invalid", authenticated)
                 return {"approval_status": "invalid", "approved_hash": ""}
+            tools.audit_approval_event("approve", "accepted", authenticated)
             return {
                 "approval_status": "approved",
                 "approved_hash": current,
             }
+        tools.audit_approval_event("approve", "invalid", authenticated)
         return {"approval_status": "invalid", "approved_hash": ""}
     if action == "edit" and isinstance(decision.get("changes"), dict):
+        tools.audit_approval_event("edit", "accepted", authenticated)
         facts = {**state.get("confirmed_facts", {}), **decision["changes"]}
         return {
             "confirmed_facts": facts,
@@ -532,6 +544,11 @@ def _approval_node(state: AgentWorkflowState) -> dict[str, Any]:
             "status": "draft_edited",
             "response": "Facts were edited. Prepare a new draft to review again.",
         }
+    tools.audit_approval_event(
+        "reject" if action == "reject" else "invalid",
+        "rejected" if action == "reject" else "invalid",
+        authenticated,
+    )
     return {
         "approval_status": "rejected" if action == "reject" else "invalid",
         "approved_hash": "",
@@ -577,7 +594,9 @@ def _submit_node(state: AgentWorkflowState) -> dict[str, Any]:
                 form,
                 state["approved_hash"],
                 application_id=portal_draft["application_id"],
+                household_id=state.get("actor_id"),
             ),
+            household_id=state.get("actor_id"),
         )
     return {
         "submission": submission,
@@ -695,15 +714,32 @@ def build_agent_graph(
     
     # Add all nodes
     builder.add_node("supervisor", lambda state: _supervisor_node(runtime, state))
-    builder.add_node("intake", lambda state: _intake_node(runtime, state))
-    builder.add_node("intake_question", lambda state: _intake_question_node(runtime, state))
-    builder.add_node("reroute", lambda state: _supervisor_node(runtime, state, validate=False))
-    builder.add_node("confirm", _confirm_node)
-    builder.add_node("eligibility", lambda state: _eligibility_node(runtime, state))
     builder.add_node(
-        "document_checker", lambda state: _document_checker_node(runtime, state)
+        "intake",
+        lambda state: tools.run_as("intake", _intake_node, runtime, state),
     )
-    builder.add_node("application", lambda state: _application_node(runtime, state))
+    builder.add_node(
+        "intake_question",
+        lambda state: tools.run_as("intake", _intake_question_node, runtime, state),
+    )
+    builder.add_node("reroute", lambda state: _supervisor_node(runtime, state, validate=False))
+    builder.add_node(
+        "confirm", lambda state: tools.run_as("intake", _confirm_node, state)
+    )
+    builder.add_node(
+        "eligibility",
+        lambda state: tools.run_as("eligibility", _eligibility_node, runtime, state),
+    )
+    builder.add_node(
+        "document_checker",
+        lambda state: tools.run_as(
+            "document_checker", _document_checker_node, runtime, state
+        ),
+    )
+    builder.add_node(
+        "application",
+        lambda state: tools.run_as("application", _application_node, runtime, state),
+    )
     builder.add_node("approval", _approval_node)
     builder.add_node("approval_end", _approval_end_node)
     builder.add_node("submit", _submit_node)
