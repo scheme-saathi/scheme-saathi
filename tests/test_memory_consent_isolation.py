@@ -15,7 +15,7 @@ def _scope(household_id: str) -> MemoryScope:
 
 
 def _consent(ref: str = "c1") -> MemoryConsent:
-    now = datetime.now()
+    now = datetime.utcnow()
     return MemoryConsent(
         purpose="profile_facts",
         granted=True,
@@ -27,7 +27,7 @@ def _consent(ref: str = "c1") -> MemoryConsent:
 
 
 def _fact(ref: str = "c1") -> MemoryFact:
-    now = datetime.now()
+    now = datetime.utcnow()
     return MemoryFact(
         field="state_code",
         value="KA",

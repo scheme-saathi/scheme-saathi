@@ -6,6 +6,9 @@ import pytest
 
 from agents.chromadb_memory_service import ChromaDBMemoryService
 from agents.memory import ApplicationReference, MemoryConsent, MemoryFact, MemoryScope
+from agents.memory_service import HouseholdAllowlist
+
+ALLOWLIST = HouseholdAllowlist(allowed_fields={"state_code": {"type": "string"}})
 
 
 def _scope(household_id: str = "hh_a") -> MemoryScope:
@@ -14,7 +17,7 @@ def _scope(household_id: str = "hh_a") -> MemoryScope:
     )
 
 
-def _consent(purpose="profile_facts", granted=True, days=30) -> MemoryConsent:
+def _consent(purpose="profile_facts", granted=True, days=30, reference="c1") -> MemoryConsent:
     now = datetime.utcnow()
     return MemoryConsent(
         purpose=purpose,
@@ -22,7 +25,7 @@ def _consent(purpose="profile_facts", granted=True, days=30) -> MemoryConsent:
         notice_version="1.0",
         decided_at=now - timedelta(days=max(0, -days) + 1),
         expires_at=now + timedelta(days=days),
-        consent_reference="c1",
+        consent_reference=reference,
     )
 
 
@@ -39,20 +42,20 @@ def _fact() -> MemoryFact:
     )
 
 
-def _reference() -> ApplicationReference:
+def _reference(reference="c1") -> ApplicationReference:
     now = datetime.utcnow()
     return ApplicationReference(
         scheme_id="S1",
         application_id="APP1",
         submitted_at=now,
         expires_at=now + timedelta(days=20),
-        consent_reference="c1",
+        consent_reference=reference,
     )
 
 
 @pytest.fixture
 def service(tmp_path):
-    return ChromaDBMemoryService(persist_directory=str(tmp_path))
+    return ChromaDBMemoryService(persist_directory=str(tmp_path), allowlist=ALLOWLIST)
 
 
 def test_save_without_consent_is_rejected(service):
@@ -70,9 +73,9 @@ def test_wrong_purpose_is_rejected(service):
     service.record_consent(_scope(), _consent(purpose="application_references"))
     with pytest.raises(ValueError, match="No active"):
         service.save_confirmed_fact(_scope(), _fact())
-    service.record_consent(_scope("hh_b"), _consent(purpose="profile_facts"))
+    service.record_consent(_scope("hh_b"), _consent(purpose="profile_facts", reference="c2"))
     with pytest.raises(ValueError, match="No active"):
-        service.save_application_reference(_scope("hh_b"), _reference())
+        service.save_application_reference(_scope("hh_b"), _reference("c2"))
 
 
 def test_other_household_cannot_use_consent(service):
