@@ -57,6 +57,20 @@ class StubSupervisor(StubAgent):
     def handle_validation_error(self, result, language):
         return {"user_message": self.output_validator.get_user_friendly_error(result, language)}
 
+    def invoke(self, value):
+        self.calls.append(value)
+        if value.document_check is not None:
+            check = DocumentCheckResult.model_validate(value.document_check)
+            parts = (
+                ["Missing documents: " + ", ".join(check.missing_documents)]
+                if check.missing_documents
+                else ["Document checklist complete; authenticity is not verified."]
+            )
+            parts.extend(check.possible_inconsistencies)
+            parts.extend(check.clarifying_questions)
+            return SupervisorPlan(next_agent="respond", reason=" ".join(parts))
+        return self.result
+
 
 class StubIntake:
     """Reads no facts from the message and words each question as its field name."""
@@ -195,6 +209,31 @@ def test_document_request_is_routed_to_checker_without_application_access():
     assert result["status"] == "documents_checked"
     assert "Income certificate" in result["response"]
     assert application.calls == []
+
+
+def test_document_checker_receives_confirmed_persona_and_supervisor_receives_result():
+    documents = StubAgent(DocumentCheckResult(missing_documents=["Income certificate"]))
+    supervisor = StubSupervisor(
+        SupervisorPlan(next_agent="document_checker", reason="Check documents.")
+    )
+    agents = build_agents(plan=supervisor, documents=documents)
+
+    result = build_agent_graph(agents).invoke(
+        {
+            "request": "Check these documents",
+            "selected_scheme_id": "C01",
+            "required_documents": ["Income certificate"],
+            "available_documents": ["Age proof: age: 60"],
+            "confirmed_facts": {"age": 60, "income": 250000},
+        }
+    )
+
+    assert documents.calls[0].household_persona == {"age": 60, "income": 250000}
+    assert (
+        supervisor.calls[-1].document_check.model_dump(mode="json")
+        == result["document_check"]
+    )
+    assert "Income certificate" in result["response"]
 
 
 def test_respond_route_does_not_invoke_specialists():

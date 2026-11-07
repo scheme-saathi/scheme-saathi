@@ -718,6 +718,9 @@ Rules you must follow:
 - When input is invalid, explain briefly in user's language without exposing technical details
 - Log all validation failures for security review
 - If a specialist returns invalid output, ask it to fix or escalate to human reviewer
+- When document_check is supplied, use that result to give a concise user-facing
+  summary in reason and set next_agent to respond. Do not add findings or claim
+  documents are authentic, valid, or verified.
 
 You are the security layer. Your job is to prevent harm and ensure trust."""
 

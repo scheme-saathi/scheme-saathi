@@ -1,7 +1,7 @@
 """Check a scheme's document checklist and flag explicitly reported mismatches.
 
 The model interprets the supplied document descriptions, while local checks keep
-the reported checklist gaps and Aadhaar/passbook name comparison tied to evidence.
+the reported checklist gaps and persona comparisons tied to explicit evidence.
 This module does not inspect files or verify document authenticity.
 """
 
@@ -27,6 +27,36 @@ _DOCUMENT_NAME_ALIASES = {
     "aadhaarcard": "aadhaarcard",
     "bankaccountpassbook": "bankpassbook",
     "bankpassbook": "bankpassbook",
+}
+_PERSONA_FIELD_ALIASES = {
+    "respondentage": "age",
+    "approxannualhouseholdincomeinr": "income",
+    "annualhouseholdincomeinr": "income",
+}
+_PERSONA_FIELD_LABELS = {
+    "age": {"respondent age"},
+    "income": {
+        "annual income",
+        "annual household income",
+        "annual household income inr",
+        "approx annual household income inr",
+    },
+}
+_SENSITIVE_PERSONA_FIELDS = {
+    "aadhaar",
+    "aadhar",
+    "pan",
+    "ssn",
+    "gst",
+    "bankaccount",
+    "accountnumber",
+    "creditcard",
+    "apikey",
+    "password",
+    "pin",
+    "otp",
+    "token",
+    "secret",
 }
 
 INSTRUCTIONS = """You are Scheme Saathi's document-checking assistant. Compare only
@@ -62,6 +92,10 @@ Evidence and inconsistencies:
   in the supplied entries. Document titles alone are not evidence of a personal
   detail or a mismatch. Do not infer document contents, condition, expiry, or
   acceptance from a document name.
+- Compare explicitly labeled values in available_documents with matching fields
+  in household_persona. Report a mismatch only when both values are present and
+  clearly conflict. The persona is context for consistency checks, not proof that
+  a document is valid. Do not repeat persona values or identity numbers.
 - If explicit evidence shows that the name on an Aadhaar card and a bank passbook
   differs, add one concise possible_inconsistencies entry describing the mismatch
   without reproducing sensitive identifiers. Do not decide which name is correct.
@@ -105,11 +139,17 @@ class DocumentCheckerAgent(
         """Return checklist gaps, possible inconsistencies, and follow-up questions.
 
         Model-reported missing items are replaced with a deterministic comparison
-        against the input checklist. Explicit name differences from entries such
-        as ``"Aadhaar card: Name: ..."`` are also checked locally. Names are used
-        only for comparison and are never copied into the result.
+        against the input checklist. Explicitly labeled document details are
+        compared with matching persona facts locally. Values are used only for
+        comparison and are never copied into the result.
         """
         request = DocumentCheckInput.model_validate(value)
+        safe_persona = {
+            field: fact
+            for field, fact in request.household_persona.items()
+            if not _is_sensitive_persona_field(field)
+        }
+        request = request.model_copy(update={"household_persona": safe_persona})
         result = super().invoke(request)
 
         required_documents = request.required_documents
@@ -141,6 +181,12 @@ class DocumentCheckerAgent(
             clarifying_questions.append(
                 "Which name reflects the applicant's correct identity details?"
             )
+
+        persona_inconsistencies, persona_questions = _persona_mismatches(
+            request.household_persona, available_documents
+        )
+        inconsistencies.extend(persona_inconsistencies)
+        clarifying_questions.extend(persona_questions)
 
         return DocumentCheckResult(
             missing_documents=missing_documents,
@@ -202,6 +248,97 @@ def _missing_documents(
     ]
 
 
+def _persona_mismatches(
+    household_persona: dict[str, object], documents: list[str]
+) -> tuple[list[str], list[str]]:
+    """Compare only document values explicitly labeled with known persona fields."""
+    persona_values = {
+        _persona_field_key(field): (field, value)
+        for field, value in household_persona.items()
+        if not _is_sensitive_persona_field(field)
+        and value is not None
+        and not isinstance(value, (dict, list))
+    }
+    mismatched_fields: set[str] = set()
+    for field, persona_value in persona_values.values():
+        for document in documents:
+            if not isinstance(document, str):
+                continue
+            document_value = _labeled_persona_value(field, persona_value, document)
+            if document_value is not None and not _persona_values_match(
+                persona_value, document_value
+            ):
+                mismatched_fields.add(field.replace("_", " "))
+
+    inconsistencies = [
+        f"The {field} reported in a document does not match the household profile. "
+        "Confirm the correct value and update any inaccurate record with its issuer."
+        for field in sorted(mismatched_fields)
+    ]
+    questions = [
+        f"Is the {field} shown in the document consistent with the household's correct details?"
+        for field in sorted(mismatched_fields)
+    ]
+    return inconsistencies, questions
+
+
+def _persona_field_key(field: str) -> str:
+    key = _document_key(field)
+    return _PERSONA_FIELD_ALIASES.get(key, key)
+
+
+def _is_sensitive_persona_field(field: str) -> bool:
+    key = _document_key(field)
+    return any(sensitive in key for sensitive in _SENSITIVE_PERSONA_FIELDS)
+
+
+def _labeled_persona_value(
+    field: str, persona_value: object, document: str
+) -> str | None:
+    key = _persona_field_key(field)
+    labels = {field.replace("_", " "), field}
+    labels.update(_PERSONA_FIELD_LABELS.get(key, set()))
+    labels.update(
+        alias
+        for alias, canonical in _PERSONA_FIELD_ALIASES.items()
+        if canonical == key
+    )
+    labels = sorted(labels, key=len, reverse=True)
+    for label in labels:
+        label_pattern = re.escape(label).replace(r"\ ", r"[\s_-]+")
+        value_pattern = (
+            r"(?P<value>-?\d+(?:,\d{3})*(?:\.\d+)?)"
+            if isinstance(persona_value, (int, float))
+            and not isinstance(persona_value, bool)
+            else r"(?P<value>[^,;|\r\n:]+)"
+        )
+        match = re.search(
+            rf"(?<!\w){label_pattern}(?!\w)\s*(?:is|:|=)\s*{value_pattern}",
+            document,
+            re.IGNORECASE,
+        )
+        if match:
+            return match.group("value").strip()
+    return None
+
+
+def _persona_values_match(persona_value: object, document_value: str) -> bool:
+    if isinstance(persona_value, bool):
+        normalized = _document_key(document_value)
+        if normalized in {"true", "yes", "1"}:
+            return persona_value
+        if normalized in {"false", "no", "0"}:
+            return not persona_value
+    if isinstance(persona_value, (int, float)) and not isinstance(persona_value, bool):
+        persona_numbers = re.findall(r"-?\d+(?:,\d{3})*(?:\.\d+)?", document_value)
+        if len(persona_numbers) == 1:
+            try:
+                return float(persona_numbers[0].replace(",", "")) == float(persona_value)
+            except ValueError:
+                pass
+    return _normalize_name(str(persona_value)) == _normalize_name(document_value)
+
+
 def _document_key(document: str) -> str:
     """Normalize a document label for case-, spacing-, and punctuation-insensitive matching."""
     normalized = unicodedata.normalize("NFKC", document).casefold()
@@ -218,3 +355,6 @@ def _normalize_name(name: str) -> str:
 def _unique(values: list[str]) -> list[str]:
     """Remove blank and duplicate messages while preserving their original order."""
     return list(dict.fromkeys(value for value in values if value.strip()))
+
+
+
