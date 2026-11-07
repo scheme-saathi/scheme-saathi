@@ -585,12 +585,14 @@ How an application is drafted, approved and submitted:
 
 **Entering the citizen portal:**
 
-1. Open the portal URL and select **Sign in with Auth0**.
+1. Open the portal URL and select **Sign in / Create account**.
 2. Sign in with an account available in the configured Auth0 tenant. Whether new users can register depends on the tenant's signup settings.
 3. After returning to Scheme Saathi, review the privacy notice and consent before starting the chat.
 4. Check schemes and, if eligible, prepare an application for review. Submission is to a mock portal, not a government service.
 
 Auth0 issues an access token after sign-in. The API verifies the token and takes the household identity from its trusted claim; the Auth0 Action must provide this claim or protected API requests are rejected. The token is not a household ID entered in chat. The current model scopes access to the household in the token; an operator workflow for authorized access to multiple households has not been established.
+
+The UI requests the OpenID `email` scope and displays the account email returned by Auth0's `/userinfo` endpoint on the consent and workflow screens. It is kept only in the current UI session and cleared on sign-out or expiry; it is not used to authorize household access. If Auth0 cannot provide the email, sign-in still works and the UI displays a notice. On shared screens, consider who can see the displayed address.
 
 `localhost:8501` is local to the machine running the app. Other users need a reachable deployed URL configured as an Auth0 callback and as `AUTH0_REDIRECT_URI`. Account provisioning, signup policy and household mapping must be decided by the team. The current sign-out clears the local app session but does not explicitly end the Auth0 session; shared CSC devices need an appropriate logout and session-isolation design before use.
 

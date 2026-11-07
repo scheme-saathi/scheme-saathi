@@ -83,7 +83,7 @@ def authorize_url(settings: Auth0UiSettings) -> str:
             "response_type": "code",
             "client_id": settings.client_id,
             "redirect_uri": settings.redirect_uri,
-            "scope": "openid profile",
+            "scope": "openid profile email",
             "audience": settings.audience,
             "code_challenge": _challenge(verifier),
             "code_challenge_method": "S256",
@@ -127,3 +127,25 @@ def complete_sign_in(settings: Auth0UiSettings, code: str, state: str) -> Access
     if not isinstance(token, str) or not token or not isinstance(lifetime, (int, float)):
         raise SignInError("Sign-in could not be completed. Please try again.")
     return AccessToken(token, time.time() + float(lifetime))
+
+
+def user_email(settings: Auth0UiSettings, token: AccessToken) -> str | None:
+    """Fetch the optional display email from Auth0 without logging profile details."""
+    request = Request(
+        f"https://{settings.domain}/userinfo",
+        headers={"Authorization": f"Bearer {token.value}"},
+        method="GET",
+    )
+    try:
+        with urlopen(request, timeout=15) as response:
+            profile = json.loads(response.read().decode("utf-8"))
+    except (HTTPError, URLError, OSError, ValueError) as error:
+        raise SignInError("Your account email could not be retrieved.") from error
+    if not isinstance(profile, dict):
+        raise SignInError("Your account email could not be retrieved.")
+    email = profile.get("email")
+    if email is None:
+        return None
+    if not isinstance(email, str) or not email.strip() or not email.isprintable() or len(email) > 254:
+        raise SignInError("Auth0 returned an invalid account email.")
+    return email.strip()

@@ -159,6 +159,8 @@ def _auth_headers(headers: dict[str, str] | None = None) -> dict[str, str]:
 
 def _sign_out() -> None:
     st.session_state["access_token"] = None
+    st.session_state["account_email"] = None
+    st.session_state["account_email_error"] = None
     st.session_state["portal_stage"] = "access"
     st.session_state["consent_given"] = False
 
@@ -1410,6 +1412,8 @@ def _initialize_portal_state() -> None:
         "portal_stage": "access",
         "access_error": None,
         "access_token": None,
+        "account_email": None,
+        "account_email_error": None,
         "auth_url": None,
         "consent_given": False,
         "consent_recorded_at": None,
@@ -1449,11 +1453,23 @@ def _handle_sign_in_callback(settings: Any) -> None:
     code, state = params.get("code"), params.get("state")
     if not code or not state:
         return
+    st.session_state["account_email"] = None
+    st.session_state["account_email_error"] = None
     try:
-        st.session_state["access_token"] = ui_auth.complete_sign_in(settings, code, state)
+        token = ui_auth.complete_sign_in(settings, code, state)
     except ui_auth.SignInError as error:
         st.session_state["access_error"] = str(error)
     else:
+        st.session_state["access_token"] = token
+        try:
+            st.session_state["account_email"] = ui_auth.user_email(settings, token)
+        except ui_auth.SignInError as error:
+            st.session_state["account_email_error"] = str(error)
+        else:
+            if st.session_state["account_email"] is None:
+                st.session_state["account_email_error"] = (
+                    "Your account has no email available for display."
+                )
         st.session_state["access_error"] = None
         st.session_state["portal_stage"] = "consent"
     finally:
@@ -1474,9 +1490,8 @@ def _render_access_page() -> None:
             st.caption("PUBLIC SUPPORT, MADE SIMPLE")
             st.title("Welcome")
             st.write(
-                "Sign in to explore support schemes for your household. Your "
-                "household identity is verified by Auth0, so only you can see "
-                "your conversation and applications."
+                "Sign in or create an account to explore support schemes for your "
+                "household. Your sign-in helps protect your conversation and applications."
             )
 
             if settings is None:
@@ -1490,7 +1505,7 @@ def _render_access_page() -> None:
                 if not st.session_state.get("auth_url"):
                     st.session_state["auth_url"] = ui_auth.authorize_url(settings)
                 st.link_button(
-                    "Sign in with Auth0",
+                    "Sign in / Create account",
                     st.session_state["auth_url"],
                     type="primary",
                     icon=":material/login:",
@@ -1521,9 +1536,16 @@ def _complete_consent() -> None:
 
 def _decline_consent() -> None:
     """Return to the access screen without enabling chat."""
-    st.session_state["portal_stage"] = "access"
-    st.session_state["consent_given"] = False
+    _sign_out()
     st.session_state["session-consent"] = False
+
+
+def _render_signed_in_account() -> None:
+    email = st.session_state.get("account_email")
+    if email:
+        st.text(f"Signed in as: {email}")
+    elif st.session_state.get("account_email_error"):
+        st.warning(st.session_state["account_email_error"])
 
 
 def _render_consent_page() -> None:
@@ -1541,6 +1563,7 @@ def _render_consent_page() -> None:
                 st.caption("Privacy and consent")
 
         with st.container(border=True, key="consent-shell"):
+            _render_signed_in_account()
             st.markdown(":material/verified_user: PRIVACY & CONSENT")
             st.title("Your information. Your choice.")
             st.write(
@@ -1718,6 +1741,7 @@ def _render_chat_page() -> None:
         with title_col:
             st.markdown("#### Support for every household")
             st.caption("Explore schemes, check eligibility, and prepare a mock application.")
+            _render_signed_in_account()
         with action_col:
             if st.button(
                 "New chat",
@@ -1828,8 +1852,8 @@ def _render_citizen_portal() -> None:
     """Route the citizen through access, consent, then the chat workflow."""
     stage = st.session_state["portal_stage"]
     if stage != "access" and _access_token() is None:
-        st.session_state["portal_stage"] = stage = "access"
-        st.session_state["consent_given"] = False
+        _sign_out()
+        stage = "access"
         st.session_state["access_error"] = (
             st.session_state.get("access_error") or "Please sign in to continue."
         )
