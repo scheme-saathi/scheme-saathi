@@ -1,6 +1,6 @@
 # Long-term memory implementation plan
 
-**Status:** Phases 1 to 4 are built and committed. Family members and the Phase 5 evaluation harness are built but not yet committed, and their tests have not yet been confirmed as passing. Phase 0 was dropped. Held-out cases and attacks for Phase 5 are still to be written by someone else. See the progress table and the pending list in section 6.
+**Status:** Phases 1 to 4, family members and the Phase 5 evaluation harness are built and committed. Phase 0 was dropped. The family and harness tests have not yet been reported as passing. Held-out cases and attacks for Phase 5 are still to be written by someone else. See the progress table and the pending list in section 6.
 **Supersedes where they differ:** the proposed allowlist, storage choice and operator scope in `scheme-saathi-agent-memory-architecture.md`. That document is a design input, not the source of truth.
 
 ## 1. Goal
@@ -120,8 +120,8 @@ Branch `feature/long-term-memory` off `develop`. One PR per phase into `develop`
 | 2 Graph | Built, committed | Subject tag, `memory_load`, `memory_save` and `memory_save_edit` nodes, reference saving in `submit`, scope in `config["configurable"]`. Commits 3c52e25 and 5edd839. |
 | 3 API and UI | Built, committed | Memory and application endpoints, consent screens, saved-details panel, chat tracking, 5-minute cleanup, and a "Forget my data" that covers every session (db2beaf). Hindi and Marathi text are drafts that need human review. |
 | 4 Portal, auth, forget | Built, committed | Operator role claim, portal owner check, thread registry, optional durable workflow state, 24-hour and 7-day expiry. Tests pass. |
-| 5 Evaluation | Partly built, not committed | `evaluation/memory_eval.py` runs the real graph, rule engine and memory policy with a persona in place of the model. It compares a returning person's questions with memory on and off, and fails a run if the verdict changes, memory adds questions, or the control differs from the first visit. The development set is the 50 synthetic households in `data/household_profiles/`. A run on 10 of them had 0 failed runs. The full 50-case run and the harness unit tests (`tests/test_memory_eval.py`) are not yet confirmed. Held-out cases (`--cases FILE`) and attacks are not written. |
-| Family members (added later) | Built, not committed | Family relations, per-member grouping, nickname, rename and delete, chat tracking by relation. Facts about family members are still not remembered. Tests (`tests/test_family.py` and extensions) are written but not yet confirmed as passing. |
+| 5 Evaluation | Partly built, committed (ccc3ddc) | `evaluation/memory_eval.py` runs the real graph, rule engine and memory policy with a persona in place of the model. It compares a returning person's questions with memory on and off, and fails a run if the verdict changes, memory adds questions, or the control differs from the first visit. The development set is the 50 synthetic households in `data/household_profiles/`. A run on 10 of them had 0 failed runs. The full 50-case run and the harness unit tests (`tests/test_memory_eval.py`) are not yet reported as passing. Held-out cases (`--cases FILE`) and attacks are not written. |
+| Family members (added later) | Built, committed (ccc3ddc) | Family relations, per-member grouping, nickname, rename and delete, chat tracking by relation. Facts about family members are still not remembered. Tests (`tests/test_family.py` and extensions) are written but not yet reported as passing. |
 
 Differences from the plan as first written:
 
@@ -137,12 +137,11 @@ Differences from the plan as first written:
 ### Pending before merge
 
 1. Run the full suite once (`python -m pytest -q`, as the pull request template requires) and confirm the family and harness tests pass. Check the known failures in section 8 against a clean `develop` or CI.
-2. Commit the family members and Phase 5 work.
-3. Team decisions in section 10, above all approval of `SqliteSaver` (item 1).
-4. Held-out cases and attacks for the evaluation, from someone other than the memory author, including the "household_id=..." prompt refusal and a log-masking test (section 8).
-5. Human review of the Hindi and Marathi text.
-6. Update `.github/copilot-instructions.md`, which still describes a `memory/store.py` that does not exist (section 11). It is another role's file, so it needs the owner's sign-off.
-7. Decide whether to open one pull request or one per phase (this section's first paragraph). There are now several phases on one branch.
+2. Team decisions in section 10, above all approval of `SqliteSaver` (item 1).
+3. Held-out cases and attacks for the evaluation, from someone other than the memory author, including the "household_id=..." prompt refusal and a log-masking test (section 8).
+4. Human review of the Hindi and Marathi text.
+5. Update `.github/copilot-instructions.md`, which still describes a `memory/store.py` that does not exist (section 11). It is another role's file, so it needs the owner's sign-off.
+6. Decide whether to open one pull request or one per phase (this section's first paragraph). There are now several phases on one branch.
 
 ### Phase 0: Setup
 
@@ -227,7 +226,7 @@ Run with `pytest --cov`. The Chroma tests need `chromadb` (installed in CI throu
 | No personal values in logs or audit entries | None | Not written. |
 | Memory-on versus memory-off question count on personas | `evaluation/memory_eval.py`, `test_memory_eval.py` | Built on a development set. Not yet run in full. No held-out set. |
 | Workflow state, expiry, thread ownership | `test_thread_registry.py`, `test_workflow_expiry.py` | Covered |
-| Family members | `test_family.py`, `test_memory_api.py`, `test_memory_ui.py` | Covered, tests not yet confirmed as passing |
+| Family members | `test_family.py`, `test_memory_api.py`, `test_memory_ui.py` | Covered, tests not yet reported as passing |
 
 ## 9. Out of scope and deferred
 
