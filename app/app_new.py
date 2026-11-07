@@ -382,7 +382,6 @@ FIELD_LABELS = {
     "is_widow": "Widow",
     "household_below_bpl": "Household below poverty line (BPL)",
     "is_remarried": "Remarried",
-    "has_not_moved_above_bpl": "Has not moved above the poverty line",
 }
 
 

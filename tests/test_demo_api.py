@@ -328,7 +328,7 @@ def test_profile_edit_creates_new_approval_and_rechecks_eligibility(tmp_path):
         "/api/analyze",
         json={"citizen": {
             "is_widow": True, "age": 55, "household_below_bpl": True,
-            "is_remarried": False, "has_not_moved_above_bpl": True,
+            "is_remarried": False,
         }, "scheme_ids": ["C06"]},
     )
     initial = next(payload for name, payload in parse_events(analyzed.content) if name == "result")

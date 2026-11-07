@@ -39,7 +39,6 @@
     {"field": "age", "op": "gte", "value": 40, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "age", "op": "lte", "value": 79, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "household_below_bpl", "op": "eq", "value": true, "clause_id": "elig-2", "status": "reviewed"},
-    {"field": "is_remarried", "op": "eq", "value": false, "clause_id": "excl-2", "status": "reviewed"},
-    {"field": "has_not_moved_above_bpl", "op": "eq", "value": true, "clause_id": "excl-3", "status": "reviewed"}
+    {"field": "is_remarried", "op": "eq", "value": false, "clause_id": "excl-2", "status": "reviewed"}
   ]
 }
