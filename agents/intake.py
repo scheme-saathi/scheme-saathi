@@ -21,6 +21,8 @@ from agents.contracts import (
     IntakeQuestion,
     IntakeQuestionText,
     IntakeResult,
+    SchemeChoice,
+    SchemeChoiceInput,
 )
 
 INSTRUCTIONS = """You are Scheme Saathi's intake specialist.
@@ -57,6 +59,12 @@ if it is unknown, use the language of the question) and put the id of every pass
 cited_passage_ids. Say what the scheme documents state; never tell the user whether they
 personally are eligible, and never ask for Aadhaar, bank-account numbers or other sensitive
 identifiers."""
+
+CHOOSE_INSTRUCTIONS = """You pick which government schemes are worth checking for a person.
+Given the person's request and a list of schemes (scheme_id, name, description), return the
+scheme_ids of the schemes that plausibly fit what the person describes or asks about (their
+occupation, age, gender, family, need). Return only ids from the list, best fit first, at most
+8. Return an empty list when none fit. You never decide eligibility; rules do that later."""
 
 _FIELD_TYPES = {"number": int | float, "bool": bool, "str": str}
 
@@ -120,6 +128,14 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
         super().__init__(model, IntakeInput, IntakeResult, INSTRUCTIONS)
         self._asker = StructuredGPTAgent(model, IntakeAskInput, IntakeQuestionText, ASK_INSTRUCTIONS)
         self._answerer = StructuredGPTAgent(model, IntakeAnswerInput, IntakeAnswer, ANSWER_INSTRUCTIONS)
+        self._chooser = StructuredGPTAgent(model, SchemeChoiceInput, SchemeChoice, CHOOSE_INSTRUCTIONS)
+
+    def choose_schemes(self, value: SchemeChoiceInput | dict) -> list[str]:
+        """Schemes worth checking for this person, best fit first. Ids outside the list are dropped."""
+        request = SchemeChoiceInput.model_validate(value)
+        allowed = {option.scheme_id for option in request.schemes}
+        chosen = self._chooser.invoke(request).scheme_ids
+        return [scheme_id for scheme_id in dict.fromkeys(chosen) if scheme_id in allowed]
 
     def extract(self, value: IntakeExtractInput | dict, specs: dict[str, dict[str, Any]]) -> IntakeExtraction:
         """Typed facts from the message. Each field is checked on its own, so one bad value

@@ -1,0 +1,342 @@
+import json
+
+import pytest
+from streamlit.testing.v1 import AppTest
+
+from app import app_new
+
+
+def selection_screen():
+    import streamlit as st
+    from app import app_new
+
+    result = {
+        "status": "eligibility_checked",
+        "profile": {"age": 35},
+        "verdicts": {
+            "A": {"verdict": "eligible"},
+            "B": {"verdict": "not_eligible"},
+            "C": {"verdict": "cant_tell"},
+        },
+        "scheme_names": {"A": "Scheme A", "B": "Scheme B", "C": "Scheme C"},
+    }
+    app_new._render_application_start("http://api", result)
+
+
+def confirmation_screen():
+    import streamlit as st
+    from app import app_new
+
+    st.session_state.setdefault("chat_session_id", "thread-1")
+    st.session_state.setdefault("chat_messages", [])
+    st.session_state.setdefault(
+        "chat_confirmation",
+        {"facts": {"age": 35}, "payload_hash": "exact-hash"},
+    )
+    app_new._render_fact_confirmation("http://api")
+
+
+def chat_screen():
+    import streamlit as st
+    from app import app_new
+
+    app_new._initialize_portal_state()
+    app_new._render_chat_page()
+
+
+def document_screen():
+    import streamlit as st
+    from app import app_new
+
+    st.session_state.setdefault("application_uploads", {})
+    result = {
+        "thread_id": "thread-1",
+        "application": {"scheme_id": "C02"},
+        "documents": {"C02": ["Enrolment form", "Proof"]},
+    }
+    if app_new._render_document_step("http://api", result):
+        st.success("Ready for review")
+
+
+def edit_screen():
+    import streamlit as st
+    from app import app_new
+
+    st.session_state.setdefault("application_editing", True)
+    st.session_state.setdefault("application_edit_revision", 0)
+    result = {
+        "thread_id": "thread-1",
+        "profile": {"is_widow": True, "age": 55, "household_below_bpl": True,
+                    "is_remarried": False, "has_not_moved_above_bpl": True},
+        "application": {"scheme_id": "C06", "applicant": {
+            "is_widow": True, "age": 55, "household_below_bpl": True,
+            "is_remarried": False, "has_not_moved_above_bpl": True,
+        }},
+        "approval": {"payload_hash": "test-hash"},
+    }
+    app_new._render_review_step("http://api", result, documents_complete=True)
+
+
+def results_screen():
+    import streamlit as st
+    from app import app_new
+
+    st.session_state.setdefault("chat_messages", [])
+    result = {
+        "status": "eligibility_checked",
+        "profile": {"is_widow": True, "is_remarried": False},
+        "verdicts": {
+            "B": {"verdict": "not_eligible"},
+            "C": {"verdict": "cant_tell", "missing_fields": ["household_below_bpl"]},
+            "A": {"verdict": "eligible", "citations": [{"clause_id": "1", "text": "Reviewed rule"}]},
+        },
+        "scheme_names": {"A": "Scheme A", "B": "Scheme B", "C": "Scheme C"},
+    }
+    app_new._render_eligibility_screen(result, "http://api")
+
+
+def test_edit_form_submits_changed_fields(monkeypatch):
+    calls = []
+
+    def send(api, path, payload, progress):
+        calls.append(payload)
+        return {"application": {}, "approval": None}
+
+    monkeypatch.setattr(app_new, "_send_workflow", send)
+    app = AppTest.from_function(edit_screen).run()
+    assert not app.exception
+    assert {box.label for box in app.checkbox} >= {
+        "Widow", "Household below poverty line (BPL)", "Remarried",
+        "Has not moved above the poverty line",
+    }
+    assert not app.text_input
+    next(box for box in app.checkbox if box.label == "Widow").uncheck()
+    app.number_input[0].set_value(56)
+    next(button for button in app.button if button.label == "Save changes and recheck eligibility").click().run()
+    assert not app.exception
+    assert calls == [{"action": "edit", "changes": {
+        "is_widow": False, "age": 56,
+    }}]
+
+
+def test_results_show_readable_facts_and_prioritize_eligible_schemes():
+    app = AppTest.from_function(results_screen).run()
+    assert not app.exception
+    assert app.table[0].value.to_dict("records") == [
+        {"Field": "Widow", "Value": "Yes"},
+        {"Field": "Remarried", "Value": "No"},
+    ]
+    headings = [item.value for item in app.markdown if item.value in {
+        "**Scheme A**", "**Scheme B**", "**Scheme C**"
+    }]
+    assert headings == ["**Scheme A**", "**Scheme C**", "**Scheme B**"]
+    assert any("Still needed: Household below poverty line (BPL)" in item.value for item in app.caption)
+    assert any(item.label == "View reviewed source clauses" for item in app.expander)
+    assert app.selectbox[0].options == ["Scheme A (A)"]
+
+
+def test_approval_requires_review_and_uses_exact_draft_hash(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        app_new, "_finish_application",
+        lambda api, result, decision: calls.append(decision),
+    )
+    app = AppTest.from_function(edit_screen).run()
+    approve = next(button for button in app.button if button.label == "Approve")
+    assert approve.disabled
+    next(box for box in app.checkbox if box.label.startswith("I reviewed this draft")).check().run()
+    approve = next(button for button in app.button if button.label == "Approve")
+    assert not approve.disabled
+    approve.click().run()
+    assert not app.exception
+    assert calls == [{"action": "approve", "payload_hash": "test-hash"}]
+
+
+def test_edit_form_without_changes_does_not_send_decision(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app_new, "_send_workflow", lambda *args: calls.append(args))
+    app = AppTest.from_function(edit_screen).run()
+    next(button for button in app.button if button.label == "Save changes and recheck eligibility").click().run()
+    assert not app.exception
+    assert not calls
+    assert any("Change a detail before saving." in item.value for item in app.info)
+
+
+def test_document_upload_requires_redaction_and_each_document(monkeypatch):
+    class Upload:
+        name = "redacted.pdf"
+
+    calls = []
+    monkeypatch.setattr(app_new.st, "file_uploader", lambda *args, **kwargs: Upload())
+    monkeypatch.setattr(
+        app_new, "_upload_document",
+        lambda api, result, scheme, document, upload: (
+            calls.append((scheme, document)) or {"filename": upload.name}
+        ),
+    )
+    app = AppTest.from_function(document_screen).run()
+    assert not app.exception
+    assert app.button[0].disabled
+    app.checkbox[0].check().run()
+    assert not app.button[0].disabled
+    app.button[0].click().run()
+    assert calls == [("C02", "Enrolment form")]
+    assert app.button[0].disabled
+    assert not app.checkbox[0].value
+    app.checkbox[0].check().run()
+    app.button[0].click().run()
+    assert calls == [("C02", "Enrolment form"), ("C02", "Proof")]
+    assert any(item.value == "Ready for review" for item in app.success)
+
+
+def test_document_upload_error_does_not_advance(monkeypatch):
+    class Upload:
+        name = "redacted.pdf"
+
+    def reject(*args):
+        raise RuntimeError("Upload unavailable")
+
+    monkeypatch.setattr(app_new.st, "file_uploader", lambda *args, **kwargs: Upload())
+    monkeypatch.setattr(app_new, "_upload_document", reject)
+    app = AppTest.from_function(document_screen).run()
+    app.checkbox[0].check().run()
+    app.button[0].click().run()
+    assert any("Upload unavailable" in item.value for item in app.error)
+    assert not app.session_state["application_uploads"]
+    assert not app.success
+
+
+def test_operator_selects_only_an_eligible_scheme(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        app_new, "_start_application",
+        lambda api, result, scheme_id: calls.append((api, scheme_id)),
+    )
+    app = AppTest.from_function(selection_screen).run()
+    assert not app.exception
+    assert app.selectbox[0].options == ["Scheme A (A)"]
+    assert app.button[0].disabled
+    app.selectbox[0].select("A").run()
+    assert not app.button[0].disabled
+    app.button[0].click().run()
+    assert calls == [("http://api", "A")]
+
+
+@pytest.mark.parametrize("status,verdict", [
+    ("intake_stopped", "eligible"),
+    ("eligibility_checked", "not_eligible"),
+    ("eligibility_checked", "cant_tell"),
+])
+def test_application_cannot_start_without_confirmed_eligibility(status, verdict):
+    result = {"status": status, "profile": {}, "verdicts": {"A": {"verdict": verdict}}}
+    with pytest.raises(ValueError, match="confirmed eligible"):
+        app_new._start_application("http://api", result, "A")
+
+
+@pytest.mark.parametrize("action,button", [("approve", "Confirm details"), ("reject", "Change details in chat")])
+def test_confirmation_buttons_resume_exact_fact_payload(monkeypatch, action, button):
+    calls = []
+
+    def fake_decision(api, thread_id, confirmation, selected_action, progress):
+        calls.append((thread_id, confirmation["payload_hash"], selected_action))
+        return thread_id, "Decision received.", {"status": "facts_rejected", "data": {}}
+
+    monkeypatch.setattr(app_new, "_send_fact_decision", fake_decision)
+    app = AppTest.from_function(confirmation_screen).run()
+    assert not app.exception
+    next(b for b in app.button if b.label == button).click().run()
+    assert not app.exception
+    assert calls == [("thread-1", "exact-hash", action)]
+    assert app.session_state["chat_confirmation"] is None
+
+
+def test_decision_posts_to_the_current_thread_with_the_exact_hash(monkeypatch):
+    requests = []
+
+    def request(url, **kwargs):
+        requests.append((url, json.loads(kwargs["body"])))
+        return {"thread_id": "t/1", "response": "Done", "next_step": "facts_rejected", "data": {}}
+
+    monkeypatch.setattr(app_new, "_api_request", request)
+    app_new._send_fact_decision("http://api", "t/1", {"payload_hash": "exact"}, "approve", None)
+    assert requests == [
+        ("http://api/api/chat/t%2F1/decision", {"action": "approve", "payload_hash": "exact"})
+    ]
+
+
+def test_chat_confirmation_leads_to_scheme_selection(monkeypatch):
+    class HealthResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return b'{"status":"ok"}'
+
+    monkeypatch.setattr(app_new, "_api_base_url", lambda: "http://api")
+    monkeypatch.setattr(app_new, "urlopen", lambda *args, **kwargs: HealthResponse())
+    monkeypatch.setattr(
+        app_new, "_send_chat",
+        lambda *args: (
+            "thread-1", "Please confirm your details.",
+            {"status": "awaiting_confirmation", "data": {
+                "confirmation": {"facts": {"age": 35}, "payload_hash": "exact"}
+            }},
+        ),
+    )
+    monkeypatch.setattr(
+        app_new, "_send_fact_decision",
+        lambda *args: (
+            "thread-1", "You may be eligible.",
+            {"status": "eligibility_checked", "data": {},
+             "profile": {"age": 35}, "verdicts": {"A": {"verdict": "eligible"}},
+             "scheme_names": {"A": "Scheme A"}},
+        ),
+    )
+    calls = []
+    monkeypatch.setattr(app_new, "_start_application", lambda api, result, scheme: calls.append(scheme))
+    app = AppTest.from_function(chat_screen).run()
+    app.chat_input[0].set_value("Check my eligibility").run()
+    assert not app.exception
+    assert any(b.label == "Confirm details" for b in app.button)
+    assert app.chat_input[0].disabled
+    next(b for b in app.button if b.label == "Confirm details").click().run()
+    assert not app.exception
+    assert app.selectbox[0].options == ["Scheme A (A)"]
+    app.selectbox[0].select("A").run()
+    next(b for b in app.button if b.label == "Prepare selected application").click().run()
+    assert calls == ["A"]
+
+
+def test_partial_results_remain_available_without_allowing_application(monkeypatch):
+    class HealthResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return b'{"status":"ok"}'
+
+    monkeypatch.setattr(app_new, "_api_base_url", lambda: "http://api")
+    monkeypatch.setattr(app_new, "urlopen", lambda *args, **kwargs: HealthResponse())
+    monkeypatch.setattr(
+        app_new, "_send_chat",
+        lambda *args: (
+            "thread-1", "More details are needed.",
+            {"status": "intake_stopped", "data": {}, "profile": {"age": 35},
+             "verdicts": {"A": {"verdict": "eligible"}}, "scheme_names": {"A": "Scheme A"}},
+        ),
+    )
+    app = AppTest.from_function(chat_screen).run()
+    app.chat_input[0].set_value("Check my eligibility").run()
+    assert not app.exception
+    next(b for b in app.button if b.label == "Review preliminary results").click().run()
+    assert not app.exception
+    assert not app.selectbox
+    assert not any(b.label == "Prepare selected application" for b in app.button)
+    next(b for b in app.button if b.label == "Back to chat").click().run()
+    assert not app.chat_input[0].disabled

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from threading import Lock
@@ -11,6 +12,7 @@ from typing import Any, Iterator
 from uuid import uuid4
 
 from langgraph.types import Command
+from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from agents.base import StructuredGPTAgent
@@ -429,6 +431,12 @@ class DemoService:
                     "Upload all required documents before submitting: "
                     + ", ".join(missing)
                 )
+            load_dotenv()
+            if not os.getenv("MOCK_PORTAL_AUTH_SECRET"):
+                raise WorkflowConflictError(
+                    "Mock submission is not configured. Set MOCK_PORTAL_AUTH_SECRET "
+                    "in the API environment before approving; this draft is still awaiting approval."
+                )
             decision["payload_hash"] = payload_hash
         elif action == "edit":
             decision["changes"] = changes
@@ -602,6 +610,15 @@ class DemoService:
             )
         except ToolCallError as error:
             logger.warning("A Scheme Saathi workflow tool failed.")
+            if isinstance(run_input, Command) and self.workflow.get_state(config).next == ("submit",):
+                yield "error", {
+                    "detail": (
+                        "Approval was recorded, but mock submission did not complete successfully. "
+                        "The submission outcome may be unknown; check the mock portal before "
+                        "starting another application."
+                    )
+                }
+                return
             yield "error", {
                 "detail": "A required workflow tool call could not be completed."
             }
@@ -634,4 +651,3 @@ class DemoService:
 # ============================================================================
 # DEMO API MODELS (Legacy)
 # ============================================================================
-

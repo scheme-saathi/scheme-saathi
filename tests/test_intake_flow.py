@@ -532,3 +532,73 @@ def test_api_reports_the_confirm_step_and_accepts_the_decision():
 
     done = service.submit_decision("t", "a1", "approve", confirmation["payload_hash"], {})
     assert done["status"] == "eligibility_checked"
+
+
+def ui_confirmation_journey():
+    from app import app_new
+
+    app_new._initialize_portal_state()
+    app_new._render_chat_page()
+
+
+@pytest.mark.parametrize("correct_first", [False, True])
+def test_ui_confirm_details_resumes_real_api_and_graph(monkeypatch, correct_first):
+    from fastapi.testclient import TestClient
+    from streamlit.testing.v1 import AppTest
+
+    from app import app_new
+    from app.auth import AuthenticatedHousehold, authenticated_household
+
+    service = api.AgentWorkflowService()
+    service._agent_graph = intake_graph(ScriptedIntake(
+        IntakeExtraction(facts=WIDOW_67), IntakeExtraction(facts={"age": 68})
+    ))[0]
+    monkeypatch.setattr(api, "get_workflow_service", lambda: service)
+    monkeypatch.setattr("graph.agent_workflow._shortlist_schemes", lambda agents, request: [PENSION])
+    application = api.create_api()
+    application.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
+        household_id="test-household", subject="test-subject"
+    )
+    client = TestClient(application)
+
+    class HealthResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return b'{"status":"ok"}'
+
+    def request(url, method="GET", body=None, headers=None):
+        response = client.request(method, url, content=body, headers=headers)
+        if response.status_code >= 400:
+            raise RuntimeError(response.json()["detail"])
+        return response.json()
+
+    monkeypatch.setattr(app_new, "_api_base_url", lambda: "http://testserver")
+    monkeypatch.setattr(app_new, "urlopen", lambda *args, **kwargs: HealthResponse())
+    monkeypatch.setattr(app_new, "_api_request", request)
+    monkeypatch.setattr(app_new, "_scheme_names", lambda base: {PENSION: "Synthetic pension"})
+
+    ui = AppTest.from_function(ui_confirmation_journey).run()
+    ui.chat_input[0].set_value("My mother is 67, a widow, and earns 1 lakh a year").run()
+    assert not ui.exception
+    assert ui.session_state["chat_confirmation"]["facts"] == WIDOW_67
+    expected = WIDOW_67
+    if correct_first:
+        next(button for button in ui.button if button.label == "Change details in chat").click().run()
+        assert not ui.exception
+        assert ui.session_state["chat_confirmation"] is None
+        assert not ui.chat_input[0].disabled
+        ui.chat_input[0].set_value("Sorry, she is 68").run()
+        expected = {**WIDOW_67, "age": 68}
+        assert ui.session_state["chat_confirmation"]["facts"] == expected
+    next(button for button in ui.button if button.label == "Confirm details").click().run()
+    assert not ui.exception
+    assert ui.session_state["chat_confirmation"] is None
+    assert ui.session_state["chat_eligibility_result"]["status"] == "eligibility_checked"
+    assert ui.session_state["chat_eligibility_result"]["verdicts"][PENSION]["verdict"] == "eligible"
+    assert ui.session_state["chat_eligibility_result"]["profile"] == expected
+    assert ui.selectbox[0].options == [f"Synthetic pension ({PENSION})"]
