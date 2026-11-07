@@ -127,6 +127,37 @@ def test_intake_question_pauses_before_other_specialists():
     assert agents.document_checker.calls == agents.application.calls == []
 
 
+def test_intake_only_asks_about_the_shortlisted_schemes():
+    class ChoosingIntake(StubIntake):
+        def choose_schemes(self, value):
+            return ["C13", "not-a-scheme"][:1]
+
+    agents = build_agents(
+        intake=ChoosingIntake(),
+        plan=StubSupervisor(SupervisorPlan(next_agent="intake", reason="Collect facts.", language="en")),
+    )
+
+    result = build_agent_graph(agents).invoke({"request": "I am a farmer, which schemes fit me?"})
+
+    assert result["shortlist"] == ["C13"]
+    assert list(result["verdicts"]) == ["C13"]
+
+
+def test_failed_shortlisting_falls_back_to_every_reviewed_scheme():
+    class BrokenIntake(StubIntake):
+        def choose_schemes(self, value):
+            raise RuntimeError("model unavailable")
+
+    agents = build_agents(
+        intake=BrokenIntake(),
+        plan=StubSupervisor(SupervisorPlan(next_agent="intake", reason="Collect facts.", language="en")),
+    )
+
+    result = build_agent_graph(agents).invoke({"request": "I am a farmer, which schemes fit me?"})
+
+    assert len(result["verdicts"]) > 1
+
+
 def test_intake_question_leaking_an_id_is_blocked_and_not_pending():
     class LeakyIntake(StubIntake):
         def ask(self, value):

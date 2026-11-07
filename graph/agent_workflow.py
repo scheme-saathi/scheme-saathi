@@ -1,7 +1,10 @@
 """GPT agent orchestration skeleton, separate from the deterministic demo graph."""
 
+import json
 import logging
 from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 from typing import Annotated, Any, TypedDict
 
 from langgraph.checkpoint.base import BaseCheckpointSaver
@@ -20,6 +23,8 @@ from agents.contracts import (
     IntakeAskInput,
     IntakeExtractInput,
     Language,
+    SchemeChoiceInput,
+    SchemeOption,
     SupervisorInput,
 )
 from agents.document_checker import DocumentCheckerAgent
@@ -33,6 +38,9 @@ from servers.rule_engine.rules import Evaluation
 
 logger = logging.getLogger(__name__)
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+SHORTLIST_SIZE = 5  # schemes one intake asks about, so questions stay relevant to the person
 MAX_QUESTIONS = 8  # per intake, so a long tail of open schemes can't turn into an interview
 MAX_ATTEMPTS_PER_FIELD = 2  # a field asked twice without a usable answer counts as "don't know"
 PROFILE_GOALS = {"intake", "eligibility", "application"}
@@ -51,6 +59,7 @@ class AgentWorkflowState(TypedDict, total=False):
     known_facts: Annotated[FactMap, merge_facts]
     confirmed_facts: Annotated[FactMap, merge_facts]
     selected_scheme_id: str
+    shortlist: list[str]  # reviewed schemes this intake is about, found by retrieval on the request
     deterministic_evaluation: dict[str, Any]
     required_documents: list[str]
     available_documents: list[str]
@@ -166,9 +175,38 @@ def _route_after_supervisor(state: AgentWorkflowState) -> str:
 
 
 def _candidate_schemes(state: AgentWorkflowState) -> list[str]:
-    """The selected scheme, or every scheme whose rules are fully reviewed."""
+    """The selected scheme, else this intake's shortlist, else every scheme whose rules are reviewed."""
     scheme_id = state.get("selected_scheme_id")
-    return [scheme_id] if scheme_id else tools.search_schemes({})
+    if scheme_id:
+        return [scheme_id]
+    return state.get("shortlist") or tools.search_schemes({})
+
+
+@lru_cache(maxsize=1)
+def _scheme_catalogue() -> tuple[tuple[str, str, str], ...]:
+    """(scheme_id, name, short description) for every scheme whose rules are reviewed."""
+    reviewed = set(tools.search_schemes({}))
+    found: dict[str, tuple[str, str, str]] = {}
+    for path in sorted((PROJECT_ROOT / "data" / "schemes").glob("*.json")):
+        record = json.loads(path.read_text(encoding="utf-8"))
+        scheme_id = record.get("scheme_id")
+        if scheme_id not in reviewed:
+            continue
+        items = ((record.get("sections") or {}).get("details") or {}).get("items") or []
+        found[scheme_id] = (scheme_id, record.get("name", scheme_id), str((items[:1] or [{}])[0].get("text", ""))[:200])
+    return tuple(found.values())
+
+
+def _shortlist_schemes(agents: AgentSet, request: str) -> list[str]:
+    """Reviewed schemes the model judges relevant to the request; empty means check them all."""
+    options = [SchemeOption(scheme_id=i, name=n, description=d) for i, n, d in _scheme_catalogue()]
+    if not options:
+        return []
+    try:
+        return agents.intake.choose_schemes(SchemeChoiceInput(request=request, schemes=options))[:SHORTLIST_SIZE]
+    except Exception:
+        logger.warning("Scheme shortlisting failed; every reviewed scheme will be checked.")
+        return []
 
 
 def _facts_so_far(state: AgentWorkflowState) -> FactMap:
@@ -183,11 +221,13 @@ def _unconfirmed(state: AgentWorkflowState) -> FactMap:
 
 def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
     """Read typed facts from the message into known_facts. They stay unconfirmed."""
+    pending = state.get("pending_field")
+    if pending is None and not state.get("selected_scheme_id"):
+        state = {**state, "shortlist": _shortlist_schemes(agents, state["request"])}
     with tools.acting_as("intake"):
         specs = tools.field_specs(_candidate_schemes(state))
     if not specs:  # no reviewed rule fields, so nothing the profile could hold
         return {"pending_field": None}
-    pending = state.get("pending_field")
     result = agents.intake.extract(
         IntakeExtractInput(
             request=state["request"],
@@ -198,6 +238,7 @@ def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
     )
     update: dict[str, Any] = {
         "known_facts": result.facts,
+        "shortlist": state.get("shortlist") or [],
         "pending_field": None,
         "pending_question": None,
         "reply_unanswered": pending is not None and not result.facts and not result.dont_know,

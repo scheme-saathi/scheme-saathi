@@ -21,9 +21,13 @@ import streamlit as st
 import uvicorn
 
 if __package__:
+    from . import ui_auth
     from .api import create_api
 else:
-    from api import create_api
+    # `streamlit run app/app_new.py` puts app/ on sys.path, but api.py imports `app.*`.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from app import ui_auth
+    from app.api import create_api
 
 CSS_PATH = Path(__file__).with_name("style.css")
 BRAND_IMAGE_PATH = Path(__file__).with_name("images") / "main_image.png"
@@ -131,6 +135,52 @@ def _parse_sse(response: Any) -> Iterator[tuple[str, dict[str, Any]]]:
         yield event_name, payload
 
 
+def _access_token() -> str | None:
+    """The signed-in user's Auth0 access token, or None when signed out or expired."""
+    try:
+        token = st.session_state.get("access_token")
+    except Exception:
+        return None
+    value = getattr(token, "value", None)
+    expires_at = getattr(token, "expires_at", None)
+    if isinstance(value, str) and isinstance(expires_at, (int, float)):
+        if time.time() < expires_at - 30:
+            return value
+    return None
+
+
+def _auth_headers(headers: dict[str, str] | None = None) -> dict[str, str]:
+    merged = dict(headers or {})
+    token = _access_token()
+    if token:
+        merged["Authorization"] = f"Bearer {token}"
+    return merged
+
+
+def _sign_out() -> None:
+    st.session_state["access_token"] = None
+    st.session_state["portal_stage"] = "access"
+    st.session_state["consent_given"] = False
+
+
+def _http_error_message(error: HTTPError) -> str:
+    """Turn an API error into user-facing text; an expired sign-in ends the session."""
+    message = error.read().decode("utf-8", errors="replace")
+    try:
+        detail = json.loads(message).get("detail", message)
+    except (json.JSONDecodeError, AttributeError):
+        detail = message
+    if error.code == 401:
+        try:
+            _sign_out()
+        except Exception:
+            pass
+        reason = f"Sign-in was rejected: {detail} Please sign in again."
+        st.session_state["access_error"] = reason
+        return reason
+    return str(detail) or f"FastAPI request failed ({error.code})."
+
+
 def _api_request(
     url: str,
     method: str = "GET",
@@ -138,19 +188,12 @@ def _api_request(
     headers: dict[str, str] | None = None,
 ) -> Any:
     """Send a JSON API request and turn HTTP/network failures into clear UI errors."""
-    request = Request(url, data=body, headers=headers or {}, method=method)
+    request = Request(url, data=body, headers=_auth_headers(headers), method=method)
     try:
         with urlopen(request, timeout=300) as response:
             return json.loads(response.read().decode("utf-8"))
     except HTTPError as error:
-        message = error.read().decode("utf-8", errors="replace")
-        try:
-            detail = json.loads(message).get("detail", message)
-        except json.JSONDecodeError:
-            detail = message
-        raise RuntimeError(
-            str(detail) or f"FastAPI request failed ({error.code})."
-        ) from error
+        raise RuntimeError(_http_error_message(error)) from error
     except (URLError, OSError, http.client.HTTPException) as error:
         raise RuntimeError(f"FastAPI request failed: {error}") from error
 
@@ -165,10 +208,9 @@ def _send_workflow(
     request = Request(
         f"{api_base}{path}",
         data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "Content-Type": "application/json",
-            "Accept": "text/event-stream",
-        },
+        headers=_auth_headers(
+            {"Content-Type": "application/json", "Accept": "text/event-stream"}
+        ),
         method="POST",
     )
     result = None
@@ -184,14 +226,7 @@ def _send_workflow(
                 elif event_name == "result":
                     result = event_payload
     except HTTPError as error:
-        message = error.read().decode("utf-8", errors="replace")
-        try:
-            detail = json.loads(message).get("detail", message)
-        except json.JSONDecodeError:
-            detail = message
-        raise RuntimeError(
-            str(detail) or f"FastAPI request failed ({error.code})."
-        ) from error
+        raise RuntimeError(_http_error_message(error)) from error
     except URLError as error:
         raise RuntimeError(f"Could not connect to FastAPI: {error}") from error
     except (OSError, http.client.HTTPException) as error:
@@ -250,13 +285,23 @@ def _upload_document(
     )
 
 
+def _scheme_names(api_base: str) -> dict[str, str]:
+    """Map scheme IDs to display names; names are optional, so failures return {}."""
+    try:
+        with urlopen(f"{api_base}/api/schemes", timeout=10) as response:
+            schemes = json.loads(response.read().decode("utf-8")).get("schemes", [])
+        return {item["scheme_id"]: item["name"] for item in schemes}
+    except (HTTPError, URLError, OSError, ValueError, KeyError, TypeError, AttributeError):
+        return {}
+
+
 def _send_chat(
     api_base: str,
     user_input: str,
     session_id: str | None,
     actor_id: str,
     progress: Any,
-) -> tuple[str | None, str | None, dict[str, Any] | None]:
+) -> tuple[str, str, dict[str, Any]]:
     """Send one supervisor chat turn and return its reply and workflow data."""
     payload = {"message": user_input, "actor_id": actor_id, "thread_id": session_id}
     progress.write("Sending your message")
@@ -268,6 +313,12 @@ def _send_chat(
             "Content-Type": "application/json",
         },
     )
+    return _chat_response(api_base, response, progress)
+
+
+def _chat_response(
+    api_base: str, response: Any, progress: Any
+) -> tuple[str, str, dict[str, Any]]:
     if not isinstance(response, dict):
         raise RuntimeError("FastAPI returned an invalid chat response.")
 
@@ -282,39 +333,107 @@ def _send_chat(
         raise RuntimeError("FastAPI returned invalid workflow data.")
 
     result = {"status": response.get("next_step"), "data": data}
+    if data.get("verdicts"):
+        progress.write("Checking reviewed scheme rules")
+        result.update(
+            verdicts=data["verdicts"],
+            explanations=data.get("explanations", {}),
+            profile=data.get("known_facts", {}),
+            scheme_names=_scheme_names(api_base),
+        )
     return thread_id, assistant_reply, result
 
 
+def _send_fact_decision(
+    api_base: str, thread_id: str, confirmation: dict[str, Any], action: str,
+    progress: Any,
+) -> tuple[str, str, dict[str, Any]]:
+    payload_hash = confirmation.get("payload_hash")
+    if action not in ("approve", "reject") or not isinstance(payload_hash, str) or not payload_hash:
+        raise ValueError("The details confirmation is invalid. Start a new chat.")
+    response = _api_request(
+        f"{api_base}/api/chat/{quote(thread_id, safe='')}/decision",
+        method="POST",
+        body=json.dumps({"action": action, "payload_hash": payload_hash}).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+    )
+    return _chat_response(api_base, response, progress)
+
+
+def _shows_verdicts(result: dict[str, Any] | None) -> bool:
+    """Show rule verdicts when the check finished, or stopped with some schemes already decided."""
+    return bool(
+        result
+        and result.get("verdicts")
+        and result.get("status") in ("eligibility_checked", "intake_stopped")
+    )
+
+
+VERDICT_BADGES = {
+    "eligible": (":green-badge[:material/check_circle: ELIGIBLE]", "success"),
+    "not_eligible": (":red-badge[:material/cancel: NOT ELIGIBLE]", "warning"),
+    "cant_tell": (":orange-badge[:material/help: NEEDS INFO]", "info"),
+}
+CONDITION_MARKS = {"true": "✅", "false": "❌", "unknown": "❔"}
+FIELD_LABELS = {
+    "age": "Age (years)",
+    "income": "Income",
+    "monthly_income": "Monthly income",
+    "is_widow": "Widow",
+    "household_below_bpl": "Household below poverty line (BPL)",
+    "is_remarried": "Remarried",
+    "has_not_moved_above_bpl": "Has not moved above the poverty line",
+}
+
+
+def _field_label(field: str) -> str:
+    return FIELD_LABELS.get(field, field.replace("_", " ").capitalize())
+
+
 def _render_eligibility(result: dict[str, Any]) -> None:
-    """Present each reviewed-rule verdict and its source clauses in the chat."""
+    """Present each reviewed-rule verdict, what was checked, and its source clauses."""
     names = result.get("scheme_names", {})
     verdicts = result.get("verdicts", {})
     if not verdicts:
         st.caption("No reviewed eligibility rules were available to check.")
         return
 
-    st.markdown("**Step 2 — Eligibility check**")
-    for scheme_id, verdict in verdicts.items():
+    st.markdown("**Eligibility check**")
+    if result.get("status") == "intake_stopped":
+        st.caption("Preliminary results based on unconfirmed details; please verify them before continuing.")
+    else:
+        st.caption("Decided by reviewed scheme rules, not by the AI model.")
+    order = {"eligible": 0, "cant_tell": 1, "not_eligible": 2}
+    for scheme_id, verdict in sorted(
+        verdicts.items(), key=lambda item: order.get(item[1].get("verdict"), 1)
+    ):
         with st.container(border=True):
-            st.markdown(
-                f"**{names.get(scheme_id, scheme_id)}**  \n"
-                f"`{scheme_id}`"
-            )
             status = verdict.get("verdict", "cant_tell")
-            if status == "eligible":
-                st.success("May be eligible", icon=":material/check_circle:")
-            elif status == "not_eligible":
-                st.warning("Does not currently match", icon=":material/info:")
-            else:
-                st.info("Could not determine", icon=":material/help:")
+            badge, _ = VERDICT_BADGES.get(status, VERDICT_BADGES["cant_tell"])
+            st.markdown(
+                f"**{names.get(scheme_id, scheme_id)}**  {badge}  \n`{scheme_id}`"
+            )
             st.write(verdict.get("reason", "No explanation was returned."))
+            if verdict.get("missing_fields"):
+                st.caption(
+                    "Still needed: " + ", ".join(_field_label(f) for f in verdict["missing_fields"])
+                )
+            conditions = verdict.get("conditions", [])
+            if conditions:
+                st.caption(
+                    "  ·  ".join(
+                        f"{CONDITION_MARKS.get(c.get('outcome'), '❔')} {_field_label(str(c.get('field', '')))}"
+                        for c in conditions
+                    )
+                )
             citations = verdict.get("citations", [])
             if citations:
                 with st.expander("View reviewed source clauses"):
                     for citation in citations:
+                        page = f" (page {citation['page']})" if citation.get("page") else ""
                         st.markdown(
                             f"- **{citation.get('clause_id', 'Source')}:** "
-                            f"{citation.get('text', '')}"
+                            f"{citation.get('text', '')}{page}"
                         )
 
 
@@ -344,6 +463,23 @@ def _delete_uploaded_documents(
     return True
 
 
+def _delete_conversation(session_id: str | None) -> bool:
+    """Delete the server-side conversation; an already-missing thread counts as deleted."""
+    if not session_id:
+        return True
+    try:
+        _api_request(
+            f"{_api_base_url()}/api/chat/{quote(session_id, safe='')}",
+            method="DELETE",
+        )
+    except RuntimeError as error:
+        if "not found" in str(error).lower():
+            return True
+        st.error(str(error), title="Could not delete the conversation")
+        return False
+    return True
+
+
 def _reset_chat() -> bool:
     """Clear chat/application data and widget values before another profile is checked."""
     application_result = st.session_state.get("application_result")
@@ -354,10 +490,16 @@ def _reset_chat() -> bool:
     )
     if not _delete_uploaded_documents(thread_id):
         return False
+    if not _delete_conversation(st.session_state.get("chat_session_id")):
+        return False
 
     st.session_state["chat_session_id"] = None
     st.session_state["chat_messages"] = []
+    st.session_state["chat_known_facts"] = {}
     st.session_state["chat_eligibility_result"] = None
+    st.session_state["chat_partial_result"] = None
+    st.session_state["chat_show_partial"] = False
+    st.session_state["chat_confirmation"] = None
     st.session_state["application_result"] = None
     st.session_state["application_uploads"] = {}
     st.session_state["application_outcome"] = None
@@ -365,7 +507,7 @@ def _reset_chat() -> bool:
     st.session_state["application_edit_revision"] = 0
     for key in list(st.session_state):
         if key.startswith(
-            ("edit-field-", "confirm-application-submission-")
+            ("edit-field-", "confirm-application-submission-", "choose-eligible-scheme")
         ):
             del st.session_state[key]
     return True
@@ -375,6 +517,11 @@ def _start_application(
     api_base: str, eligibility_result: dict[str, Any], scheme_id: str
 ) -> None:
     """Create the graph-backed application workflow for one eligible scheme."""
+    if (
+        eligibility_result.get("status") != "eligibility_checked"
+        or eligibility_result.get("verdicts", {}).get(scheme_id, {}).get("verdict") != "eligible"
+    ):
+        raise ValueError("Choose a confirmed eligible scheme before preparing an application.")
     with st.status("Preparing the application workflow...", expanded=True) as progress:
         application_result = _send_workflow(
             api_base,
@@ -399,45 +546,53 @@ def _render_application_start(
         for scheme_id, verdict in eligibility_result.get("verdicts", {}).items()
         if verdict.get("verdict") == "eligible"
     ]
-    st.markdown("#### Continue to application")
+    st.markdown("#### Choose the next step")
     st.caption(
         "Eligibility guidance is informational. The remaining steps prepare "
         "and record a mock application; nothing is sent to a government service."
     )
     if not eligible:
-        st.info("No eligible scheme is available to continue to an application.")
+        st.info("No scheme is currently eligible for an application. Review the results or start a new chat.")
         return
 
     names = eligibility_result.get("scheme_names", {})
-    st.write("Choose an eligible scheme to prepare its application:")
-    for scheme_id in eligible:
-        label = names.get(scheme_id, scheme_id)
-        if st.button(
-            f"Prepare application: {label}",
-            type="primary",
-            key=f"prepare-application-{scheme_id}",
-        ):
-            try:
-                _start_application(api_base, eligibility_result, scheme_id)
-            except (RuntimeError, ValueError, json.JSONDecodeError) as error:
-                st.error(str(error), title="Could not start the application")
-            else:
-                st.rerun()
+    scheme_id = st.selectbox(
+        "Select an eligible scheme",
+        options=eligible,
+        index=None,
+        placeholder="Choose a scheme",
+        format_func=lambda value: f"{names.get(value, value)} ({value})",
+        key="choose-eligible-scheme",
+    )
+    if st.button(
+        "Prepare selected application",
+        type="primary",
+        disabled=scheme_id is None,
+        key="prepare-selected-application",
+    ) and scheme_id is not None:
+        try:
+            _start_application(api_base, eligibility_result, scheme_id)
+        except (RuntimeError, ValueError, json.JSONDecodeError) as error:
+            st.error(str(error), title="Could not start the application")
+        else:
+            st.rerun()
 
 
-def _render_document_step(result: dict[str, Any]) -> bool:
+def _document_mask_key(result: dict[str, Any], document_type: str) -> str:
+    scheme_id = result["application"]["scheme_id"]
+    position = result["documents"][scheme_id].index(document_type)
+    return f"document-sensitive-ids-masked-{result['thread_id']}-{position}"
+
+
+def _render_document_step(api_base: str, result: dict[str, Any]) -> bool:
     """Show document status and explain how to attach the next required file."""
     scheme_id = result.get("application", {}).get("scheme_id")
     required_documents = result.get("documents", {}).get(scheme_id, [])
     uploads = st.session_state["application_uploads"]
-    st.markdown("#### Step 3 — Upload required documents")
+    st.markdown("#### Step 3 — Documents")
     st.caption(
         "Upload a redacted copy only. Mask Aadhaar, bank-account, and other full "
         "ID numbers before upload. Copies are stored unencrypted and deleted after 30 days."
-    )
-    st.checkbox(
-        "I confirm this document has no unmasked Aadhaar, bank-account, or other ID numbers.",
-        key=f"document-sensitive-ids-masked-{result.get('thread_id', '')}",
     )
     missing = []
     document_rows = []
@@ -451,18 +606,46 @@ def _render_document_step(result: dict[str, Any]) -> bool:
         document_rows.append({"Document": document_type, "Status": status})
 
     if document_rows:
+        st.caption(f"{len(required_documents) - len(missing)} of {len(required_documents)} documents uploaded")
         st.table(document_rows)
     else:
         st.caption("No documents are required for this application.")
 
     if missing:
-        st.info(
-            "Still required: "
-            + ", ".join(missing)
-            + ". Attach the next document using the paperclip in the chat input below."
+        next_document = missing[0]
+        st.info(f"Next required document: {next_document}")
+        masked = st.checkbox(
+            "I confirm this document has no unmasked Aadhaar, bank-account, or other ID numbers.",
+            key=_document_mask_key(result, next_document),
         )
+        uploaded_file = st.file_uploader(
+            "Choose a redacted document",
+            type=["pdf", "png", "jpg", "jpeg"],
+            max_upload_size=10,
+            key=f"document-upload-{result['thread_id']}-{required_documents.index(next_document)}",
+            help="PDF, PNG or JPEG, up to 10 MB. Upload one document at a time.",
+        )
+        if st.button(
+            "Upload document",
+            key="upload-required-document",
+            type="primary",
+            disabled=not masked or uploaded_file is None,
+        ) and masked and uploaded_file is not None:
+            try:
+                _upload = _upload_document(
+                    api_base, result, scheme_id, next_document, uploaded_file
+                )
+            except (RuntimeError, ValueError) as error:
+                st.error(str(error), title="Document upload failed")
+            else:
+                uploads[next_document] = _upload
+                st.rerun()
+        st.caption("You can also attach the next document using the chat paperclip.")
     else:
-        st.success("All required documents are recorded.")
+        st.success(
+            "All required documents are recorded." if required_documents
+            else "No documents are required for this application."
+        )
     return not missing
 
 
@@ -472,7 +655,7 @@ def _render_workflow_fields(fields: dict[str, Any]) -> None:
     def field_rows(values: dict[str, Any], parent: str = "") -> list[dict[str, str]]:
         rows = []
         for field, value in values.items():
-            label = str(field).replace("_", " ").title()
+            label = _field_label(str(field))
             label = f"{parent} - {label}" if parent else label
             if isinstance(value, dict) and value:
                 rows.extend(field_rows(value, label))
@@ -483,6 +666,9 @@ def _render_workflow_fields(fields: dict[str, Any]) -> None:
                     "Value": (
                         json.dumps(value, ensure_ascii=False, default=str)
                         if isinstance(value, (dict, list, tuple))
+                        else "Yes" if value is True
+                        else "No" if value is False
+                        else "Not provided" if value is None
                         else str(value)
                     ),
                 }
@@ -525,6 +711,9 @@ def _render_review_step(
         return
 
     approval_hash = result["approval"]["payload_hash"]
+    st.caption(
+        f"Approval code: `{approval_hash[:12]}…` — changing anything creates a new code."
+    )
     confirmed = st.checkbox(
         "I reviewed this draft and understand that this is a mock submission.",
         key=f"confirm-application-submission-{approval_hash}",
@@ -554,6 +743,7 @@ def _render_review_step(
             "review the updated draft before approving it."
         )
         profile = result.get("profile", {})
+        st.caption("Only the profile details shown above can be changed. Checked boxes mean Yes.")
         edit_revision = st.session_state["application_edit_revision"]
         with st.form("edit-application-profile"):
             changes: dict[str, Any] = {}
@@ -562,26 +752,26 @@ def _render_review_step(
                 with edit_columns[index % len(edit_columns)]:
                     if isinstance(value, bool):
                         updated = st.checkbox(
-                            field.replace("_", " ").title(),
+                            _field_label(field),
                             value=value,
                             key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
                         )
                     elif isinstance(value, int):
                         updated = st.number_input(
-                            field.replace("_", " ").title(),
+                            _field_label(field),
                             value=value,
                             step=1,
                             key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
                         )
                     elif isinstance(value, float):
                         updated = st.number_input(
-                            field.replace("_", " ").title(),
+                            _field_label(field),
                             value=value,
                             key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
                         )
                     elif isinstance(value, str):
                         updated = st.text_input(
-                            field.replace("_", " ").title(),
+                            _field_label(field),
                             value=value,
                             key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
                         )
@@ -589,11 +779,11 @@ def _render_review_step(
                         continue
                     if updated != value:
                         changes[field] = updated
-            edit_submitted = st.form_submit_button(
-                "Save changes and recheck eligibility",
-                disabled=not changes,
-            )
+            edit_submitted = st.form_submit_button("Save changes and recheck eligibility")
         if edit_submitted:
+            if not changes:
+                st.info("Change a detail before saving.")
+                return
             try:
                 with st.status(
                     "Rechecking eligibility and rebuilding the draft...",
@@ -609,6 +799,14 @@ def _render_review_step(
                 st.error(str(error), title="Could not update the application")
             else:
                 st.session_state["application_result"] = updated_result
+                if isinstance(updated_result.get("verdicts"), dict):
+                    previous = st.session_state.get("chat_eligibility_result") or {}
+                    st.session_state["chat_eligibility_result"] = {
+                        **previous,
+                        "status": "eligibility_checked",
+                        "profile": updated_result.get("profile", {}),
+                        "verdicts": updated_result["verdicts"],
+                    }
                 st.session_state["application_outcome"] = None
                 st.session_state["application_editing"] = False
                 st.session_state["application_edit_revision"] += 1
@@ -651,7 +849,7 @@ def _journey_step() -> tuple[int, str]:
     if outcome:
         return 5, "Confirmation"
 
-    if not st.session_state["chat_eligibility_result"]:
+    if not st.session_state["chat_eligibility_result"] and not st.session_state.get("chat_show_partial"):
         return 1, "Your details"
     if not st.session_state["application_result"]:
         return 2, "Eligibility"
@@ -671,12 +869,18 @@ def _render_eligibility_screen(
     eligibility_result: dict[str, Any], api_base: str
 ) -> None:
     """Present profile facts and reviewed eligibility results as one workflow stage."""
+    partial = eligibility_result.get("status") == "intake_stopped"
     with st.container(key="eligibility-screen"):
-        st.subheader("Eligibility results")
+        st.subheader("Preliminary results" if partial else "Eligibility results")
         st.caption(
             "Results are determined by reviewed scheme rules. The assistant explains "
             "the findings but does not decide eligibility."
         )
+        if partial:
+            st.warning(
+                "These results use details that have not yet been confirmed. "
+                "Return to chat to provide missing or corrected details before preparing an application."
+            )
         assistant_explanation = next(
             (
                 message["content"]
@@ -697,7 +901,10 @@ def _render_eligibility_screen(
             verdicts = eligibility_result.get("verdicts", {})
             if not verdicts:
                 st.info("No reviewed eligibility rules were available to check.")
-            for scheme_id, verdict in verdicts.items():
+            order = {"eligible": 0, "cant_tell": 1, "not_eligible": 2}
+            for scheme_id, verdict in sorted(
+                verdicts.items(), key=lambda item: order.get(item[1].get("verdict"), 1)
+            ):
                 with st.container(border=True):
                     name = eligibility_result.get("scheme_names", {}).get(
                         scheme_id, scheme_id
@@ -713,12 +920,89 @@ def _render_eligibility_screen(
                     else:
                         st.info("Could not determine", icon=":material/help:")
                     st.write(verdict.get("reason", "No explanation was returned."))
-                    for citation in verdict.get("citations", []):
+                    if verdict.get("missing_fields"):
                         st.caption(
-                            f"{citation.get('clause_id', 'Reviewed source')}: "
-                            f"{citation.get('text', '')}"
+                            "Still needed: "
+                            + ", ".join(_field_label(field) for field in verdict["missing_fields"])
                         )
-    _render_application_start(api_base, eligibility_result)
+                    citations = verdict.get("citations", [])
+                    if citations:
+                        with st.expander("View reviewed source clauses"):
+                            for citation in citations:
+                                st.caption(
+                                    f"{citation.get('clause_id', 'Reviewed source')}: "
+                                    f"{citation.get('text', '')}"
+                                )
+    if partial:
+        if st.button("Back to chat", key="back-to-chat", type="primary"):
+            st.session_state["chat_show_partial"] = False
+            st.rerun()
+    else:
+        _render_application_start(api_base, eligibility_result)
+
+
+def _record_chat_result(result: dict[str, Any]) -> None:
+    data = result["data"]
+    confirmation = data.get("confirmation") if result.get("status") == "awaiting_confirmation" else None
+    if result.get("status") == "awaiting_confirmation" and (
+        not isinstance(confirmation, dict)
+        or not isinstance(confirmation.get("facts"), dict)
+        or not isinstance(confirmation.get("payload_hash"), str)
+        or not confirmation["payload_hash"]
+    ):
+        raise ValueError("The server did not provide the details needed for confirmation. Start a new chat.")
+    if isinstance(data.get("known_facts"), dict):
+        st.session_state["chat_known_facts"] = data["known_facts"]
+    st.session_state["chat_confirmation"] = confirmation
+    st.session_state["chat_partial_result"] = (
+        result if result.get("status") == "intake_stopped" and result.get("verdicts") else None
+    )
+    st.session_state["chat_show_partial"] = False
+    if result.get("status") == "eligibility_checked" and result.get("verdicts"):
+        st.session_state["chat_eligibility_result"] = result
+
+
+def _render_fact_confirmation(api_base: str) -> None:
+    confirmation = st.session_state.get("chat_confirmation")
+    if not isinstance(confirmation, dict):
+        return
+    facts = confirmation.get("facts")
+    if not isinstance(facts, dict) or not isinstance(confirmation.get("payload_hash"), str):
+        st.error("Could not display the details for confirmation. Start a new chat.")
+        return
+    with st.container(border=True, key="fact-confirmation"):
+        st.subheader("Confirm the details")
+        st.caption(
+            "Ask the citizen to check these details. Confirm only if they are correct; "
+            "otherwise return to chat to change them."
+        )
+        _render_workflow_fields(facts)
+        approve, reject = st.columns(2)
+        action = None
+        if approve.button("Confirm details", type="primary", key="confirm-chat-facts"):
+            action = "approve"
+        if reject.button("Change details in chat", key="reject-chat-facts"):
+            action = "reject"
+        if action:
+            try:
+                with st.status("Checking your decision...", expanded=False) as progress:
+                    thread_id, reply, result = _send_fact_decision(
+                        api_base, st.session_state["chat_session_id"], confirmation, action, progress
+                    )
+                st.session_state["chat_session_id"] = thread_id
+                _record_chat_result(result)
+                if action == "reject" and result.get("status") == "facts_rejected":
+                    reply = (
+                        "The details have not been confirmed. Please type the correction "
+                        "in the chat; you will be asked to review the updated details."
+                    )
+                st.session_state["chat_messages"].append(
+                    {"role": "assistant", "content": reply,
+                     "result": result if _shows_verdicts(result) else None}
+                )
+                st.rerun()
+            except (RuntimeError, ValueError, json.JSONDecodeError) as error:
+                st.error(str(error), title="Could not confirm details")
 
 
 def _render_welcome() -> None:
@@ -746,6 +1030,10 @@ def _render_welcome() -> None:
         st.markdown(
             "**Try:** “I’m 62, a widow, and our household earns ₹20,000 a month. "
             "What support may I qualify for?”"
+        )
+        st.caption(
+            "You can write in English, हिन्दी, or मराठी. Eligibility is decided "
+            "by reviewed scheme rules; the assistant only helps collect details."
         )
 
 
@@ -941,7 +1229,7 @@ def _render_application_workflow(api_base: str, current_step: int) -> None:
         if current_step == 3:
             st.caption(f"Selected scheme: {scheme_id}")
             with st.container(border=True):
-                _render_document_step(result)
+                _render_document_step(api_base, result)
                 latest_upload_message = next(
                     (
                         message["content"]
@@ -960,7 +1248,7 @@ def _render_application_workflow(api_base: str, current_step: int) -> None:
             )
             with document_column:
                 with st.container(border=True):
-                    _render_document_step(result)
+                    _render_document_step(api_base, result)
             with review_column:
                 with st.container(border=True):
                     _render_review_step(api_base, result, documents_complete=True)
@@ -1002,11 +1290,18 @@ def _handle_chat_submission(
                     )
                 else:
                     scheme_id = application_result["application"]["scheme_id"]
-                    mask_confirmation_key = (
-                        f"document-sensitive-ids-masked-"
-                        f"{application_result.get('thread_id', '')}"
+                    required = application_result.get("documents", {}).get(scheme_id, [])
+                    uploaded = st.session_state["application_uploads"]
+                    next_document = next(
+                        (name for name in required if name not in uploaded), None
                     )
-                    if not st.session_state.get(mask_confirmation_key, False):
+                    if next_document is None:
+                        assistant_reply = (
+                            "All required documents have already been uploaded."
+                        )
+                    elif not st.session_state.get(
+                        _document_mask_key(application_result, next_document), False
+                    ):
                         assistant_reply = (
                             "Before uploading, mask any full Aadhaar, bank-account, "
                             "or other ID numbers in the document, then confirm this "
@@ -1014,46 +1309,34 @@ def _handle_chat_submission(
                         )
                         st.warning(assistant_reply)
                     else:
-                        required = application_result.get("documents", {}).get(
-                            scheme_id, []
-                        )
-                        uploaded = st.session_state["application_uploads"]
-                        next_document = next(
-                            (name for name in required if name not in uploaded), None
-                        )
-                        if next_document is None:
-                            assistant_reply = (
-                                "All required documents have already been uploaded."
-                            )
-                        else:
-                            try:
-                                with st.status(
-                                    f"Validating {next_document}...", expanded=True
-                                ) as progress:
-                                    progress.write(
-                                        "Validating and saving the document."
-                                    )
-                                    upload_result = _upload_document(
-                                        api_base,
-                                        application_result,
-                                        scheme_id,
-                                        next_document,
-                                        files[0],
-                                    )
-                                    st.session_state["application_uploads"][
-                                        next_document
-                                    ] = upload_result
-                                    progress.update(
-                                        label=f"{next_document} uploaded",
-                                        state="complete",
-                                    )
-                                assistant_reply = (
-                                    f"Uploaded **{next_document}** "
-                                    f"({upload_result['filename']})."
+                        try:
+                            with st.status(
+                                f"Validating {next_document}...", expanded=True
+                            ) as progress:
+                                progress.write(
+                                    "Validating and saving the document."
                                 )
-                            except (RuntimeError, ValueError) as error:
-                                assistant_reply = f"Document upload failed: {error}"
-                                st.error(str(error), title="Upload failed")
+                                upload_result = _upload_document(
+                                    api_base,
+                                    application_result,
+                                    scheme_id,
+                                    next_document,
+                                    files[0],
+                                )
+                                st.session_state["application_uploads"][
+                                    next_document
+                                ] = upload_result
+                                progress.update(
+                                    label=f"{next_document} uploaded",
+                                    state="complete",
+                                )
+                            assistant_reply = (
+                                f"Uploaded **{next_document}** "
+                                f"({upload_result['filename']})."
+                            )
+                        except (RuntimeError, ValueError) as error:
+                            assistant_reply = f"Document upload failed: {error}"
+                            st.error(str(error), title="Upload failed")
                 st.markdown(assistant_reply)
             st.session_state["chat_messages"].append(
                 {"role": "assistant", "content": assistant_reply}
@@ -1088,16 +1371,13 @@ def _handle_chat_submission(
                             progress.update(
                                 label=(
                                     "Eligibility check complete"
-                                    if assistant_result
-                                    and assistant_result.get("status")
-                                    == "eligibility_checked"
-                                    and assistant_result.get("verdicts")
+                                    if _shows_verdicts(assistant_result)
                                     else "Waiting for your details"
                                 ),
                                 state="complete",
                             )
                         st.markdown(chat_reply)
-                        if assistant_result and assistant_result.get("verdicts"):
+                        if _shows_verdicts(assistant_result):
                             _render_eligibility(assistant_result)
                         assistant_reply = chat_reply
                     except (RuntimeError, ValueError, json.JSONDecodeError) as error:
@@ -1108,21 +1388,18 @@ def _handle_chat_submission(
                         st.error(str(error), title="Request failed")
                         st.markdown(assistant_reply)
 
-            if (
-                assistant_result
-                and assistant_result.get("status") == "eligibility_checked"
-                and assistant_result.get("verdicts")
-            ):
-                st.session_state["chat_eligibility_result"] = assistant_result
+            if assistant_result:
+                try:
+                    _record_chat_result(assistant_result)
+                except ValueError as error:
+                    assistant_reply = str(error)
+                    assistant_result = None
+                    st.error(assistant_reply, title="Could not continue")
             st.session_state["chat_messages"].append(
                 {
                     "role": "assistant",
                     "content": assistant_reply,
-                    "result": (
-                        assistant_result
-                        if assistant_result and assistant_result.get("verdicts")
-                        else None
-                    ),
+                    "result": assistant_result if _shows_verdicts(assistant_result) else None,
                 }
             )
 
@@ -1132,15 +1409,19 @@ def _initialize_portal_state() -> None:
     defaults = {
         "portal_stage": "access",
         "access_error": None,
-        "show_password_help": False,
-        "citizen_name": "",
+        "access_token": None,
+        "auth_url": None,
         "consent_given": False,
         "consent_recorded_at": None,
         "consent_error": None,
         "chat_actor_id": f"citizen-{uuid4().hex}",
         "chat_session_id": None,
         "chat_messages": [],
+        "chat_known_facts": {},
         "chat_eligibility_result": None,
+        "chat_partial_result": None,
+        "chat_show_partial": False,
+        "chat_confirmation": None,
         "application_result": None,
         "application_uploads": {},
         "application_outcome": None,
@@ -1151,113 +1432,76 @@ def _initialize_portal_state() -> None:
         st.session_state.setdefault(key, value)
 
 
-def _complete_access(mode: str) -> None:
-    """Advance the UI prototype without sending or retaining credentials."""
-    contact = str(st.session_state.get("access-contact", "")).strip()
-    password = str(st.session_state.get("access-password", ""))
-    name = str(st.session_state.get("access-name", "")).strip()
-
-    if not contact or not password:
-        st.session_state["access_error"] = "Enter your phone or email and password."
+def _handle_sign_in_callback(settings: Any) -> None:
+    """Finish an Auth0 redirect (?code=&state=) and store the access token."""
+    params = st.query_params
+    if "error" in params:
+        detail = "".join(
+            c for c in str(params.get("error_description", "")) if c.isprintable() and c not in "<>`"
+        )[:160]
+        code = "".join(c for c in str(params.get("error")) if c.isalnum() or c == "_")[:40]
+        st.session_state["access_error"] = (
+            f"Sign-in was cancelled or refused (Auth0 error: {code or 'unknown'}"
+            f"{': ' + detail if detail else ''}). Please try again."
+        )
+        st.query_params.clear()
         return
-    if mode == "Create account":
-        confirmation = str(st.session_state.get("access-confirm-password", ""))
-        if not name:
-            st.session_state["access_error"] = "Enter your name to create an account."
-            return
-        if password != confirmation:
-            st.session_state["access_error"] = "The passwords do not match."
-            return
-        if not st.session_state.get("access-terms", False):
-            st.session_state["access_error"] = "Accept the demo terms to continue."
-            return
-
-    st.session_state["citizen_name"] = name or "there"
-    st.session_state["access_error"] = None
-    st.session_state["show_password_help"] = False
-    st.session_state["portal_stage"] = "consent"
-    st.session_state["access-password"] = ""
-    st.session_state["access-confirm-password"] = ""
-    st.session_state["access-contact"] = ""
+    code, state = params.get("code"), params.get("state")
+    if not code or not state:
+        return
+    try:
+        st.session_state["access_token"] = ui_auth.complete_sign_in(settings, code, state)
+    except ui_auth.SignInError as error:
+        st.session_state["access_error"] = str(error)
+    else:
+        st.session_state["access_error"] = None
+        st.session_state["portal_stage"] = "consent"
+    finally:
+        st.query_params.clear()
+    st.rerun()
 
 
 def _render_access_page() -> None:
-    """Render the login and registration entry screens for the UI prototype."""
+    """Sign the citizen in with Auth0; their household identity comes from the token."""
+    settings = ui_auth.ui_settings()
+    if settings is not None:
+        _handle_sign_in_callback(settings)
+
     with st.container(key="auth-page"):
         with st.container(border=True, key="auth-shell"):
             with st.container(key="auth-brand"):
                 _render_brand_image()
             st.caption("PUBLIC SUPPORT, MADE SIMPLE")
-            mode = st.segmented_control(
-                "Account access",
-                options=["Sign in", "Create account"],
-                default="Sign in",
-                key="access-mode",
-                label_visibility="collapsed",
-            )
-            if mode is None:
-                mode = "Sign in"
-
-            st.title("Welcome back" if mode == "Sign in" else "Create your account")
+            st.title("Welcome")
             st.write(
-                "Sign in to explore support schemes for your household."
-                if mode == "Sign in"
-                else "A few details to start your guided scheme search."
+                "Sign in to explore support schemes for your household. Your "
+                "household identity is verified by Auth0, so only you can see "
+                "your conversation and applications."
             )
 
-            with st.form(f"access-form-{mode.lower().replace(' ', '-')}"):
-                if mode == "Create account":
-                    st.text_input(
-                        "Full name",
-                        key="access-name",
-                        max_chars=120,
-                        placeholder="Enter your name",
-                    )
-                st.text_input(
-                    "Phone or email",
-                    key="access-contact",
-                    max_chars=254,
-                    placeholder="you@example.com or phone number",
+            if settings is None:
+                missing = ", ".join(f"`{name}`" for name in ui_auth.missing_settings())
+                st.error(
+                    "Sign-in is not configured yet. Set these in `.env`: "
+                    f"{missing or '`AUTH0_REDIRECT_URI`'}.",
+                    icon=":material/key:",
                 )
-                st.text_input(
-                    "Password",
-                    type="password",
-                    key="access-password",
-                    max_chars=256,
-                    placeholder="Enter your password",
-                )
-                if mode == "Create account":
-                    st.text_input(
-                        "Confirm password",
-                        type="password",
-                        key="access-confirm-password",
-                        max_chars=256,
-                        placeholder="Re-enter your password",
-                    )
-                    st.checkbox(
-                        "I agree to the demo terms and privacy notice",
-                        key="access-terms",
-                    )
-                st.form_submit_button(
-                    "Sign in" if mode == "Sign in" else "Create account",
+            else:
+                if not st.session_state.get("auth_url"):
+                    st.session_state["auth_url"] = ui_auth.authorize_url(settings)
+                st.link_button(
+                    "Sign in with Auth0",
+                    st.session_state["auth_url"],
                     type="primary",
+                    icon=":material/login:",
                     width="stretch",
-                    on_click=_complete_access,
-                    args=(mode,),
                 )
-
-            if mode == "Sign in":
-                if st.button("Forgot password?", key="forgot-password"):
-                    st.session_state["show_password_help"] = True
-                if st.session_state["show_password_help"]:
-                    st.info(
-                        "Password recovery is not available in this UI prototype."
-                    )
             if st.session_state["access_error"]:
                 st.error(st.session_state["access_error"])
+                st.session_state["auth_url"] = None
             st.caption(
-                "Demo only. Do not use a real password. This is not an official "
-                "government portal."
+                "Demo only. Nothing is sent to a real government portal. This "
+                "is not an official government service."
             )
 
 
@@ -1454,7 +1698,11 @@ def _render_chat_page() -> None:
     st.session_state.setdefault("chat_actor_id", f"citizen-{uuid4().hex}")
     st.session_state.setdefault("chat_session_id", None)
     st.session_state.setdefault("chat_messages", [])
+    st.session_state.setdefault("chat_known_facts", {})
     st.session_state.setdefault("chat_eligibility_result", None)
+    st.session_state.setdefault("chat_partial_result", None)
+    st.session_state.setdefault("chat_show_partial", False)
+    st.session_state.setdefault("chat_confirmation", None)
     st.session_state.setdefault("application_result", None)
     st.session_state.setdefault("application_uploads", {})
     st.session_state.setdefault("application_outcome", None)
@@ -1467,10 +1715,9 @@ def _render_chat_page() -> None:
         )
         with image_col:
             _render_brand_image()
-        title_col.caption(
-            "A guided way to explore public support · "
-            f"{st.session_state['citizen_name']}"
-        )
+        with title_col:
+            st.markdown("#### Support for every household")
+            st.caption("Explore schemes, check eligibility, and prepare a mock application.")
         with action_col:
             if st.button(
                 "New chat",
@@ -1489,6 +1736,15 @@ def _render_chat_page() -> None:
             ):
                 if _withdraw_consent():
                     st.rerun()
+            if st.button(
+                "Sign out",
+                icon=":material/logout:",
+                key="sign-out",
+                width="stretch",
+            ):
+                if _reset_chat():
+                    _sign_out()
+                    st.rerun()
 
     try:
         api_base = _api_base_url()
@@ -1506,10 +1762,26 @@ def _render_chat_page() -> None:
     with st.container(key="workflow-screen"):
         if current_step == 1:
             _render_welcome()
-            for message in st.session_state["chat_messages"]:
-                _render_message(message)
+            if st.session_state["chat_messages"]:
+                with st.container(key="conversation"):
+                    st.subheader("Conversation")
+                    for message in st.session_state["chat_messages"]:
+                        _render_message(message)
+            if st.session_state["chat_known_facts"]:
+                with st.expander("Details collected so far", expanded=False):
+                    st.caption("Please check these with the citizen. They are not confirmed yet.")
+                    _render_workflow_fields(st.session_state["chat_known_facts"])
+            _render_fact_confirmation(api_base)
+            if st.session_state["chat_partial_result"]:
+                st.info("The check stopped with some details missing. You can continue chatting or review preliminary results.")
+                if st.button("Review preliminary results", key="show-partial-results"):
+                    st.session_state["chat_show_partial"] = True
+                    st.rerun()
         elif current_step == 2:
-            eligibility_result = st.session_state["chat_eligibility_result"]
+            eligibility_result = (
+                st.session_state["chat_eligibility_result"]
+                or st.session_state["chat_partial_result"]
+            )
             if eligibility_result:
                 _render_eligibility_screen(eligibility_result, api_base)
         else:
@@ -1521,7 +1793,18 @@ def _render_chat_page() -> None:
     # Pin the prompt and its always-visible starter guidance to the bottom of
     # the app viewport while keeping workflow output in the main content above.
     with st.bottom:
-        st.caption("Tell us what you need. We’ll ask only for missing details.")
+        if st.session_state["chat_confirmation"]:
+            st.caption("Confirm or correct the details above to continue.")
+        elif current_step == 2 and st.session_state["chat_show_partial"]:
+            st.caption("Return to chat to provide or confirm your details.")
+        elif current_step == 2:
+            st.caption("Select an eligible scheme above, or return to chat for preliminary results.")
+        elif current_step in (3, 4):
+            st.caption("Upload redacted documents on the Documents screen when required.")
+        elif current_step == 5:
+            st.caption("This is a mock application. Start a new chat to check another profile.")
+        else:
+            st.caption("Tell us what you need. We’ll ask for missing details.")
         prompt = st.chat_input(
             "Ask about eligibility or share a requested detail...",
             max_chars=4000,
@@ -1529,7 +1812,11 @@ def _render_chat_page() -> None:
             accept_file=True,
             file_type=["pdf", "png", "jpg", "jpeg"],
             submit_mode="disable",
-            disabled=st.session_state["application_outcome"] is not None,
+            disabled=(
+                st.session_state["application_outcome"] is not None
+                or st.session_state["chat_confirmation"] is not None
+                or current_step == 2
+            ),
         )
 
     if prompt:       
@@ -1540,6 +1827,12 @@ def _render_chat_page() -> None:
 def _render_citizen_portal() -> None:
     """Route the citizen through access, consent, then the chat workflow."""
     stage = st.session_state["portal_stage"]
+    if stage != "access" and _access_token() is None:
+        st.session_state["portal_stage"] = stage = "access"
+        st.session_state["consent_given"] = False
+        st.session_state["access_error"] = (
+            st.session_state.get("access_error") or "Please sign in to continue."
+        )
     if stage == "access":
         _render_access_page()
     elif stage == "consent":

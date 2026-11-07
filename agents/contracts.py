@@ -56,6 +56,21 @@ class IntakeAskInput(Contract):
     request: str = Field(min_length=1)  # the message that started intake, so "she" stays "she"
 
 
+class SchemeOption(Contract):
+    scheme_id: str = Field(min_length=1)
+    name: str = Field(min_length=1)
+    description: str = ""
+
+
+class SchemeChoiceInput(Contract):
+    request: str = Field(min_length=1)
+    schemes: list[SchemeOption]
+
+
+class SchemeChoice(Contract):
+    scheme_ids: list[str] = Field(default_factory=list)
+
+
 class IntakeQuestionText(Contract):
     question: str = Field(min_length=1)
 

@@ -259,6 +259,27 @@ server-sent event stream while the eligibility workflow runs. The current
 eligibility rules include a synthetic widow-pension example for testing; results
 are not official benefit decisions. Applications are only submitted by the
 mock workflow after the user approves the exact drafted form.
+
+During chat, **Details collected so far** shows the unconfirmed profile. After
+intake, ask the citizen to confirm the displayed details; **Change details in
+chat** returns to the conversation without confirming them. Once the
+reviewed rules return final results, select an eligible scheme and choose
+**Prepare selected application** to proceed to documents and draft review.
+On the Documents screen, select the requested redacted PDF, PNG or JPEG,
+confirm the masking notice for each document, and select **Upload document**.
+Alternatively, attach the next required document using the chat paperclip.
+The workflow advances to review once all required documents are uploaded.
+On the review screen, **Edit** updates collected profile details. Saving changes
+rechecks eligibility and requires approval of the new draft.
+If intake stops before confirmation, **Review preliminary results** shows
+the current rule results without enabling application preparation; return to
+chat to supply or correct details. Nothing is sent to a government portal.
+
+Mock submission requires `MOCK_PORTAL_AUTH_SECRET` in the API environment.
+If it is missing, approval is blocked without consuming the pending decision.
+If submission fails after approval, its outcome may be unknown; check the mock
+portal before preparing another application.
+
 The approval and rejection button colors are set by `approvedButtonColor` and
 `rejectButtonColor` in `.streamlit/scheme_saathi.toml`; Streamlit's standard
 `config.toml` does not support per-button theme colors.
@@ -562,9 +583,21 @@ How an application is drafted, approved and submitted:
 8. The `document_checker` role may call only the required-document and field-comparison tools; intake and eligibility have separate read-tool permissions. The single-agent baseline intentionally retains its full tool set.
 9. Approval decisions emit `application_approval` events with the action, result and whether the caller was an authenticated household. They omit household IDs, form data and approval hashes.
 
+**Entering the citizen portal:**
+
+1. Open the portal URL and select **Sign in with Auth0**.
+2. Sign in with an account available in the configured Auth0 tenant. Whether new users can register depends on the tenant's signup settings.
+3. After returning to Scheme Saathi, review the privacy notice and consent before starting the chat.
+4. Check schemes and, if eligible, prepare an application for review. Submission is to a mock portal, not a government service.
+
+Auth0 issues an access token after sign-in. The API verifies the token and takes the household identity from its trusted claim; the Auth0 Action must provide this claim or protected API requests are rejected. The token is not a household ID entered in chat. The current model scopes access to the household in the token; an operator workflow for authorized access to multiple households has not been established.
+
+`localhost:8501` is local to the machine running the app. Other users need a reachable deployed URL configured as an Auth0 callback and as `AUTH0_REDIRECT_URI`. Account provisioning, signup policy and household mapping must be decided by the team. The current sign-out clears the local app session but does not explicitly end the Auth0 session; shared CSC devices need an appropriate logout and session-isolation design before use.
+
 HTTP API (`app/api.py`):
 
 - Configure `AUTH0_DOMAIN`, `AUTH0_AUDIENCE` and `AUTH0_HOUSEHOLD_CLAIM` in `.env`. Auth0 access tokens must use RS256 and include a non-empty `sub` plus the configured custom namespaced household claim. Configure that claim in an Auth0 Action; never accept a household ID from the request body or headers. Protected API routes reject missing/invalid tokens, and fail closed with 503 if Auth0 is not configured.
+- The Streamlit UI signs users in with the Auth0 Authorization Code flow with PKCE and sends the resulting access token to the API. Create an Auth0 "Single Page Application" (or Native) application, add `http://localhost:8501` to its Allowed Callback URLs, and set `AUTH0_CLIENT_ID` (and `AUTH0_REDIRECT_URI` if the UI is not served at `http://localhost:8501`). No client secret is used or stored. Without these values the UI shows a configuration message instead of a login form.
 - The mock portal HTTP routes also require an Auth0 access token. `POST /applications` additionally requires the exact, short-lived, one-use capability in `X-Write-Capability`; capabilities are bound to the authenticated household and form. `GET /applications/{application_id}` returns status only to the owning household. Keep the portal server private; this demo's capability issuer and nonce store are process-local.
 - `POST /api/chat` runs the graph on a `thread_id`. `known_facts` and `confirmed_facts` sent on a turn are merged with earlier turns. `next_step` tells the client what to show:
   - `needs_information`: one intake question in `response`; the field is `data.pending_field`.
