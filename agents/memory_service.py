@@ -98,6 +98,18 @@ class HouseholdAllowlist(BaseModel):
                 f"Field {field} is too long or looks like an identifier number and cannot be stored"
             )
 
+    def validate_retention(self, fact: MemoryFact) -> None:
+        """Raise ValueError if the fact outlives the policy's reconfirm or expiry period."""
+        retention = (self.allowed_fields.get(fact.field) or {}).get("retention", {})
+        if "reconfirm_days" not in retention or "expiry_days" not in retention:
+            return
+        reconfirm_by, expires_at = self.retention_window(fact.field, as_utc(fact.confirmed_at))
+        if as_utc(fact.reconfirm_by) > reconfirm_by or as_utc(fact.expires_at) > expires_at:
+            raise ValueError(
+                f"Field {fact.field} may be kept for {retention['expiry_days']} days "
+                f"and reconfirmed after {retention['reconfirm_days']} days at most"
+            )
+
     def retention_window(self, field: str, confirmed_at: datetime) -> tuple[datetime, datetime]:
         """The (reconfirm_by, expires_at) the policy gives a fact confirmed at `confirmed_at`."""
         retention = (self.allowed_fields.get(field) or {}).get("retention", {})
@@ -272,6 +284,7 @@ class InMemoryMemoryService(MemoryService):
 
         # Check allowlist, type and value
         self.allowlist.validate_fact(fact.field, fact.value)
+        self.allowlist.validate_retention(fact)
 
         # Verify consent exists and is valid
         consent = self._consent_for(scope, fact.consent_reference)

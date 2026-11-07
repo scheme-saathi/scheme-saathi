@@ -87,6 +87,8 @@ def test_default_policy_is_enforced(consented):
         consented.save_confirmed_fact(_scope(), _fact("has_disability", True))
     with pytest.raises(ValueError, match="must be of type number"):
         consented.save_confirmed_fact(_scope(), _fact("age", "34"))
+    with pytest.raises(ValueError, match="at most"):
+        consented.save_confirmed_fact(_scope(), _fact("age", 34, days=3650))
     assert consented.get_household_fact_count("hh_a") == 0
 
 

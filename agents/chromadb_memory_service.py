@@ -294,6 +294,7 @@ class ChromaDBMemoryService:
         """
         self._validate_scope(scope)
         self.allowlist.validate_fact(fact.field, fact.value)
+        self.allowlist.validate_retention(fact)
 
         if not self._has_active_consent(scope.household_id, fact.consent_reference, "profile_facts"):
             raise ValueError(

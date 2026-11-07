@@ -209,3 +209,116 @@ def test_relation_label_is_only_for_other_people_and_is_a_short_word():
     for bad in ["Ramesh 9876543210", "1234", "", "a" * 41, "<script>"]:
         with pytest.raises(ValueError, match="relation label"):
             _reference(subject="other", relation=bad)
+
+
+def _fact_for(field, value, confirmed_at, reconfirm_days, expiry_days):
+    return MemoryFact(
+        field=field,
+        value=value,
+        source="user",
+        confirmed_at=confirmed_at,
+        reconfirm_by=confirmed_at + timedelta(days=reconfirm_days),
+        expires_at=confirmed_at + timedelta(days=expiry_days),
+        consent_reference="c1",
+    )
+
+
+def test_a_fact_cannot_outlive_the_policy_period(policy):
+    policy.validate_retention(_fact_for("age", 34, NOW, 30, 90))
+    policy.validate_retention(_fact_for("age", 34, NOW, 10, 20))
+    with pytest.raises(ValueError, match="at most"):
+        policy.validate_retention(_fact_for("age", 34, NOW, 30, 3650))
+    with pytest.raises(ValueError, match="at most"):
+        policy.validate_retention(_fact_for("age", 34, NOW, 300, 365))
+
+
+def test_the_period_is_not_checked_when_the_policy_sets_none():
+    allowlist = HouseholdAllowlist(allowed_fields={"state_code": {"type": "string"}})
+    allowlist.validate_retention(_fact_for("state_code", "KA", NOW, 3000, 3650))
+
+
+def test_in_memory_service_rejects_a_fact_kept_longer_than_the_policy_allows(policy):
+    service = InMemoryMemoryService(policy)
+    scope = MemoryScope(actor_id="a", household_id="hh1", actor_role="citizen")
+    now = datetime.utcnow()
+    service.record_consent(
+        scope,
+        _consent(purpose="profile_facts", decided_at=now, expires_at=now + timedelta(days=30)),
+    )
+    with pytest.raises(ValueError, match="at most"):
+        service.save_confirmed_fact(scope, _fact_for("age", 34, now, 30, 3650))
+    service.save_confirmed_fact(scope, _fact_for("age", 34, now, 30, 90))
+    assert service.read_facts(scope, ["age"]) == {"age": 34}
+
+
+def _reference_for(application_id, submitted_at, days=90, **changes):
+    return ApplicationReference(
+        **{
+            "scheme_id": "C01",
+            "application_id": application_id,
+            "submitted_at": submitted_at,
+            "expires_at": submitted_at + timedelta(days=days),
+            "consent_reference": "rc",
+            **changes,
+        }
+    )
+
+
+def _references_service(policy):
+    service = InMemoryMemoryService(policy)
+    now = datetime.utcnow()
+    citizen = MemoryScope(actor_id="u1", household_id="hh1", actor_role="citizen")
+    operator = MemoryScope(actor_id="op1", household_id="hh1", actor_role="operator")
+    for scope, reference in ((citizen, "rc"), (operator, "orc")):
+        service.record_consent(
+            scope,
+            _consent(
+                consent_reference=reference,
+                decided_at=now,
+                expires_at=now + timedelta(days=60),
+            ),
+        )
+    return service, citizen, operator, now
+
+
+def test_in_memory_references_are_kept_per_owner_newest_first_and_replaced_by_application(policy):
+    service, citizen, operator, now = _references_service(policy)
+    service.save_application_reference(citizen, _reference_for("A1", now))
+    service.save_application_reference(citizen, _reference_for("A1", now, scheme_id="C02"))
+    service.save_application_reference(citizen, _reference_for("A2", now + timedelta(days=1)))
+    service.save_application_reference(
+        operator, _reference_for("A9", now, consent_reference="orc", subject="other")
+    )
+
+    refs = service.read_application_references(citizen)
+    assert [r.application_id for r in refs] == ["A2", "A1"]
+    assert [r.scheme_id for r in refs if r.application_id == "A1"] == ["C02"]
+    assert [r.application_id for r in service.read_application_references(operator)] == ["A9"]
+
+
+def test_in_memory_operators_cannot_forget_a_household_and_the_operator_list_survives(policy):
+    service, citizen, operator, now = _references_service(policy)
+    service.save_application_reference(citizen, _reference_for("A1", now))
+    service.save_application_reference(operator, _reference_for("A9", now, consent_reference="orc"))
+    with pytest.raises(ValueError, match="Operators cannot"):
+        service.forget_household(operator)
+    service.forget_household(citizen)
+    assert service.read_application_references(citizen) == []
+    assert [r.application_id for r in service.read_application_references(operator)] == ["A9"]
+
+
+def test_in_memory_purge_removes_only_expired_records(policy, monkeypatch):
+    import agents.memory_service as module
+
+    service, citizen, operator, now = _references_service(policy)
+    service.save_application_reference(citizen, _reference_for("A1", now, days=10))
+    service.save_application_reference(citizen, _reference_for("A2", now, days=50))
+    assert service.purge_expired() == 0
+
+    monkeypatch.setattr(module, "utc_now", lambda: datetime.utcnow() + timedelta(days=20))
+    assert service.purge_expired() == 1
+    assert [r.application_id for r in service.read_application_references(citizen)] == ["A2"]
+
+    monkeypatch.setattr(module, "utc_now", lambda: datetime.utcnow() + timedelta(days=70))
+    assert service.purge_expired() >= 3
+    assert service.consents == {} and service.application_refs == {}
