@@ -1,4 +1,4 @@
-"""GPT agent orchestration skeleton, separate from the deterministic demo graph."""
+﻿"""GPT agent orchestration skeleton, separate from the deterministic demo graph."""
 
 import json
 import logging
@@ -30,9 +30,16 @@ from agents.contracts import (
 from agents.document_checker import DocumentCheckerAgent
 from agents.eligibility import EligibilityAgent
 from agents.intake import IntakeAgent, income_period
+from agents.memory import MemoryService, clean_relation
 from agents.model_factory import create_chat_model
 from agents.supervisor import SupervisorAgent
 from graph import tools
+from graph.memory_nodes import (
+    load_remembered,
+    memory_context,
+    save_application_reference,
+    save_confirmed,
+)
 from graph.workflow import application_hash
 from servers.rule_engine.rules import Evaluation
 
@@ -44,10 +51,17 @@ SHORTLIST_SIZE = 5  # schemes one intake asks about, so questions stay relevant 
 MAX_QUESTIONS = 12  # per intake, so a long tail of open schemes can't turn into an interview
 MAX_ATTEMPTS_PER_FIELD = 2  # a field asked twice without a usable answer counts as "don't know"
 PROFILE_GOALS = {"intake", "eligibility", "application"}
+RESET_FACTS = "__reset__"  # in a facts update: drop what is held and start from the rest
 
 
 def merge_facts(old: FactMap | None, new: FactMap | None) -> FactMap:
-    """Each turn adds to the facts from earlier turns; a newer value for a field wins."""
+    """Each turn adds to the facts from earlier turns; a newer value for a field wins.
+
+    An update that carries RESET_FACTS replaces them instead: the person is now talking about
+    someone else, and one person's facts must never mix with another's.
+    """
+    if new and RESET_FACTS in new:
+        return {field: value for field, value in new.items() if field != RESET_FACTS}
     return {**(old or {}), **(new or {})}
 
 
@@ -58,6 +72,13 @@ class AgentWorkflowState(TypedDict, total=False):
     validation_errors: list[str]
     known_facts: Annotated[FactMap, merge_facts]
     confirmed_facts: Annotated[FactMap, merge_facts]
+    subject: str  # "self" or "other": whose facts these are
+    relation: str | None  # for "other": a word such as "mother"
+    memory_loaded: bool  # remembered facts were read for this thread
+    remembered_facts: FactMap  # what memory holds for this person, as last read or saved
+    remembered_fields: list[str]  # fields prefilled from memory, so the person sees where they came from
+    memory_saved: list[str]  # fields remembered or reconfirmed at the last confirmation
+    reference_saved: bool  # the submitted application was remembered for status checks
     selected_scheme_id: str
     shortlist: list[str]  # reviewed schemes this intake is about, found by retrieval on the request
     deterministic_evaluation: dict[str, Any]
@@ -220,6 +241,64 @@ def _unconfirmed(state: AgentWorkflowState) -> FactMap:
     return {f: v for f, v in state.get("known_facts", {}).items() if f not in confirmed or confirmed[f] != v}
 
 
+def _subject(state: AgentWorkflowState) -> str:
+    """Whose facts these are; the signed-in person unless a message said otherwise."""
+    return state.get("subject") or "self"
+
+
+def _fresh_assessment(request: str) -> dict[str, Any]:
+    """Everything one person's check built up, cleared for a different person."""
+    return {
+        "known_facts": {RESET_FACTS: True},
+        "confirmed_facts": {RESET_FACTS: True},
+        "remembered_facts": {},
+        "remembered_fields": [],
+        "memory_loaded": False,
+        "memory_saved": [],
+        "verdicts": {},
+        "explanations": {},
+        "eligibility": None,
+        "document_check": None,
+        "application_draft": None,
+        "portal_draft": None,
+        "approved_hash": "",
+        "approval_status": "",
+        "confirm_status": "",
+        "rejected_edits": [],
+        "intake_request": request,
+        "declined_fields": [],
+        "question_attempts": {},
+        "questions_asked": 0,
+        "intake_stopped": None,
+    }
+
+
+def _subject_update(
+    agents: AgentSet, state: AgentWorkflowState, result: Any, replying: bool
+) -> dict[str, Any]:
+    """Whose facts a message is about; a switch of person starts a clean assessment.
+
+    A new request with no facts and no named relation says nothing about whose it is, so the
+    subject stays as it was. A short reply to a question counts only when it names a different
+    relation and brings facts: "yes" must never move the check to someone else.
+    """
+    relation = clean_relation(result.relation) if result.subject == "other" else None
+    if replying:
+        if not (relation and result.facts and relation != state.get("relation")):
+            return {}
+    elif not (result.subject == "other" or result.facts):
+        return {}
+    subject = result.subject
+    update: dict[str, Any] = {"subject": subject, "relation": relation}
+    known_person = state.get("subject") or state.get("remembered_fields")
+    if known_person and (_subject(state), state.get("relation")) != (subject, relation):
+        update |= _fresh_assessment(state["request"])
+        update["known_facts"] = {RESET_FACTS: True, **result.facts}
+        if not state.get("selected_scheme_id"):
+            update["shortlist"] = _shortlist_schemes(agents, state["request"], result.facts)
+    return update
+
+
 def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
     """Read typed facts from the message into known_facts. They stay unconfirmed."""
     pending = state.get("pending_field")
@@ -257,6 +336,7 @@ def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
             "questions_asked": 0,
             "intake_stopped": None,
         }
+    update |= _subject_update(agents, state, result, replying=pending is not None)
     if result.dont_know:
         update["declined_fields"] = [*state.get("declined_fields", []), pending]
         update["intake_stopped"] = "dont_know"
@@ -458,6 +538,9 @@ def _confirm_node(state: AgentWorkflowState) -> dict[str, Any]:
             "kind": "confirm_facts",
             "facts": facts,
             "payload_hash": shown,
+            "subject": _subject(state),
+            "relation": state.get("relation"),
+            "remembered_fields": [f for f in state.get("remembered_fields", []) if f in facts],
             "rejected_edits": state.get("rejected_edits", []),
             "options": ["approve", "edit", "reject"],
         }
@@ -493,8 +576,57 @@ def _confirm_node(state: AgentWorkflowState) -> dict[str, Any]:
 
 
 def _route_after_confirm(state: AgentWorkflowState) -> str:
-    # Confirmed or edited facts are evaluated again: an edit can reopen a verdict.
-    return "eligibility" if state["confirm_status"] in {"confirmed", "edit_rejected"} else END
+    # Confirmed facts are offered to memory first; an edit that was not usable is shown again,
+    # and either way the verdicts are evaluated again: an edit can reopen a verdict.
+    if state["confirm_status"] == "confirmed":
+        return "memory_save"
+    return "eligibility" if state["confirm_status"] == "edit_rejected" else END
+
+
+def _memory_load_node(
+    memory: MemoryService | None, state: AgentWorkflowState, config: dict[str, Any]
+) -> dict[str, Any]:
+    """Prefill facts the signed-in person asked to be remembered, once per thread.
+
+    They go in as unconfirmed facts, so the confirm step shows them and no verdict is final
+    until the person has seen them. Only the fields the candidate schemes need are read.
+    """
+    ctx = memory_context(memory, config)
+    if ctx is None or ctx.scope.actor_role != "citizen" or state.get("memory_loaded"):
+        return {}
+    if _subject(state) != "self":
+        return {}
+    try:
+        specs = tools.field_specs(_candidate_schemes(state))
+        remembered = load_remembered(ctx, specs, _facts_so_far(state))
+    except Exception:
+        logger.warning("Memory could not be read; continuing without it.")
+        return {}
+    return {
+        "memory_loaded": True,
+        "subject": "self",
+        "relation": None,
+        "known_facts": remembered,
+        "remembered_facts": remembered,
+        "remembered_fields": sorted(remembered),
+    }
+
+
+def _memory_save_node(
+    memory: MemoryService | None, state: AgentWorkflowState, config: dict[str, Any]
+) -> dict[str, Any]:
+    """Remember the confirmed facts the policy allows. Facts about someone else are never saved."""
+    ctx = memory_context(memory, config)
+    if ctx is None or ctx.scope.actor_role != "citizen" or _subject(state) != "self":
+        return {}
+    try:
+        saved, held = save_confirmed(
+            ctx, state.get("confirmed_facts") or {}, state.get("remembered_facts") or {}
+        )
+    except Exception:
+        logger.warning("Memory could not be updated; continuing without it.")
+        return {}
+    return {"memory_saved": saved, "remembered_facts": held}
 
 
 def _document_checker_node(
@@ -573,6 +705,8 @@ def _approval_node(state: AgentWorkflowState) -> dict[str, Any]:
             "form": form,
             "portal_draft_id": (state.get("portal_draft") or {}).get("application_id"),
             "payload_hash": current,
+            "subject": _subject(state),
+            "relation": state.get("relation"),
             "options": ["approve", "edit", "reject"],
         }
     )
@@ -613,7 +747,9 @@ def _approval_node(state: AgentWorkflowState) -> dict[str, Any]:
 
 
 def _route_after_approval(state: AgentWorkflowState) -> str:
-    return "submit" if state["approval_status"] == "approved" else "approval_end"
+    if state["approval_status"] == "approved":
+        return "submit"
+    return "memory_save_edit" if state["approval_status"] == "edited" else "approval_end"
 
 
 def _approval_end_node(state: AgentWorkflowState) -> dict[str, str]:
@@ -627,7 +763,30 @@ def _approval_end_node(state: AgentWorkflowState) -> dict[str, str]:
     return {"status": f"approval_{status}", "response": messages[status]}
 
 
-def _submit_node(state: AgentWorkflowState) -> dict[str, Any]:
+def _remember_application(
+    memory: MemoryService | None,
+    state: AgentWorkflowState,
+    config: dict[str, Any],
+    form: dict[str, Any],
+    submission: dict[str, Any],
+) -> dict[str, Any]:
+    """Remember the submitted application for status checks, if consent allows. Never fails the run."""
+    ctx = memory_context(memory, config)
+    if ctx is None:
+        return {}
+    try:
+        saved = save_application_reference(
+            ctx, form["scheme_id"], submission["application_id"], _subject(state), state.get("relation")
+        )
+    except Exception:
+        logger.warning("The submitted application could not be remembered.")
+        saved = False
+    return {"reference_saved": saved}
+
+
+def _submit_node(
+    memory: MemoryService | None, state: AgentWorkflowState, config: dict[str, Any]
+) -> dict[str, Any]:
     """The only write. Refuses unless the approved hash still matches the form."""
     form = _application_form(state)
     if application_hash(form) != state.get("approved_hash"):
@@ -659,12 +818,13 @@ def _submit_node(state: AgentWorkflowState) -> dict[str, Any]:
         "submission": submission,
         "status": "submitted",
         "response": f"Application submitted (mock). Reference: {submission['application_id']}",
+        **_remember_application(memory, state, config, form, submission),
     }
 
 
 NOT_FOUND = {
-    "hi": "मुझे यह जानकारी समीक्षित योजना दस्तावेज़ों में नहीं मिली।",
-    "mr": "मला ही माहिती तपासलेल्या योजना कागदपत्रांमध्ये सापडली नाही.",
+    "hi": "à¤®à¥à¤à¥‡ à¤¯à¤¹ à¤œà¤¾à¤¨à¤•à¤¾à¤°à¥€ à¤¸à¤®à¥€à¤•à¥à¤·à¤¿à¤¤ à¤¯à¥‹à¤œà¤¨à¤¾ à¤¦à¤¸à¥à¤¤à¤¾à¤µà¥‡à¤œà¤¼à¥‹à¤‚ à¤®à¥‡à¤‚ à¤¨à¤¹à¥€à¤‚ à¤®à¤¿à¤²à¥€à¥¤",
+    "mr": "à¤®à¤²à¤¾ à¤¹à¥€ à¤®à¤¾à¤¹à¤¿à¤¤à¥€ à¤¤à¤ªà¤¾à¤¸à¤²à¥‡à¤²à¥à¤¯à¤¾ à¤¯à¥‹à¤œà¤¨à¤¾ à¤•à¤¾à¤—à¤¦à¤ªà¤¤à¥à¤°à¤¾à¤‚à¤®à¤§à¥à¤¯à¥‡ à¤¸à¤¾à¤ªà¤¡à¤²à¥€ à¤¨à¤¾à¤¹à¥€.",
     "en": "I couldn't find this in the reviewed scheme documents.",
 }
 
@@ -769,18 +929,24 @@ def _finish_update(state: AgentWorkflowState) -> dict[str, str]:
 def build_agent_graph(
     agents: AgentSet | None = None,
     checkpointer: BaseCheckpointSaver | None = None,
+    memory: MemoryService | None = None,
 ):
     """Build agent workflow with Supervisor as entry point.
     
     Graph Flow:
-    START → Supervisor (detect language/intent and route; a pending question skips the model)
-            ├→ intake (message → typed known_facts) → eligibility (verdicts for candidate schemes)
-            │       ├→ intake_question (one question that settles the most open verdicts) → END
-            │       └→ document_checker → application → approval → submit, or finish
-            ├→ document_checker
-            └→ respond (direct response without specialist)
-    → finish (format response)
-    → END
+    START â†’ Supervisor (detect language/intent and route; a pending question skips the model)
+            â”œâ†’ intake (message â†’ typed known_facts) â†’ eligibility (verdicts for candidate schemes)
+            â”‚       â”œâ†’ intake_question (one question that settles the most open verdicts) â†’ END
+            â”‚       â””â†’ document_checker â†’ application â†’ approval â†’ submit, or finish
+            â”œâ†’ document_checker
+            â””â†’ respond (direct response without specialist)
+    â†’ finish (format response)
+    â†’ END
+
+    With `memory`, remembered facts are prefilled after intake (memory_load) and confirmed facts
+    are remembered after the confirm step and after an edit at approval (memory_save); submit
+    remembers the application reference. The person comes from the run config (graph.memory_nodes.
+    memory_config); without it, or without consent, nothing is read or written.
     """
     runtime = agents or AgentSet.from_environment()
     builder = StateGraph(AgentWorkflowState)
@@ -815,9 +981,20 @@ def build_agent_graph(
     )
     builder.add_node("approval", _approval_node)
     builder.add_node("approval_end", _approval_end_node)
-    builder.add_node("submit", _submit_node)
+    builder.add_node("submit", lambda state, config: _submit_node(memory, state, config))
     builder.add_node("finish", lambda state: _finish_node(runtime, state))
     builder.add_node("respond", lambda state: _respond_node(runtime, state))
+    if memory is not None:
+        builder.add_node(
+            "memory_load",
+            lambda state, config: tools.run_as("intake", _memory_load_node, memory, state, config),
+        )
+        builder.add_node("memory_save", lambda state, config: _memory_save_node(memory, state, config))
+        builder.add_node("memory_save_edit", lambda state, config: _memory_save_node(memory, state, config))
+    # Where a profile goal goes once intake has read the message, and where a confirmation goes next
+    facts_ready = "memory_load" if memory is not None else "eligibility"
+    after_confirmed = "memory_save" if memory is not None else "eligibility"
+    after_edited = "memory_save_edit" if memory is not None else "approval_end"
     
     # Entry point: Supervisor ALWAYS first
     builder.add_edge(START, "supervisor")
@@ -836,15 +1013,19 @@ def build_agent_graph(
     )
 
     builder.add_conditional_edges(
-        "intake", _route_after_intake, {"eligibility": "eligibility", "reroute": "reroute"}
+        "intake", _route_after_intake, {"eligibility": facts_ready, "reroute": "reroute"}
     )
     builder.add_conditional_edges(
         "reroute",
         _route_after_reroute,
-        {"eligibility": "eligibility", "document_checker": "document_checker", "respond": "respond"},
+        {"eligibility": facts_ready, "document_checker": "document_checker", "respond": "respond"},
     )
+    if memory is not None:
+        builder.add_edge("memory_load", "eligibility")
+        builder.add_edge("memory_save", "eligibility")
+        builder.add_edge("memory_save_edit", "approval_end")
 
-    # Eligibility → one intake question while a verdict is open, else Document Checker → Finish
+    # Eligibility â†’ one intake question while a verdict is open, else Document Checker â†’ Finish
     builder.add_conditional_edges(
         "eligibility",
         _route_after_eligibility,
@@ -855,17 +1036,21 @@ def build_agent_graph(
             "finish": "finish",
         },
     )
-    builder.add_conditional_edges("confirm", _route_after_confirm, {"eligibility": "eligibility", END: END})
+    builder.add_conditional_edges(
+        "confirm",
+        _route_after_confirm,
+        {"memory_save": after_confirmed, "eligibility": "eligibility", END: END},
+    )
     builder.add_edge("intake_question", END)
     
-    # Document Checker → Application (if needed) → Finish
+    # Document Checker â†’ Application (if needed) â†’ Finish
     builder.add_conditional_edges(
         "document_checker",
         _route_after_documents,
         {"application": "application", "finish": "finish"},
     )
     
-    # Application → human approval of the exact form → submit (the only write)
+    # Application â†’ human approval of the exact form â†’ submit (the only write)
     builder.add_conditional_edges(
         "application",
         _route_after_application,
@@ -874,15 +1059,15 @@ def build_agent_graph(
     builder.add_conditional_edges(
         "approval",
         _route_after_approval,
-        {"submit": "submit", "approval_end": "approval_end"},
+        {"submit": "submit", "memory_save_edit": after_edited, "approval_end": "approval_end"},
     )
     builder.add_edge("approval_end", END)
     builder.add_edge("submit", END)
     
-    # Respond → END (respond node handles its own final output)
+    # Respond â†’ END (respond node handles its own final output)
     builder.add_edge("respond", END)
     
-    # Finish → END
+    # Finish â†’ END
     builder.add_edge("finish", END)
     
     return tools.budget_graph(builder.compile(checkpointer=checkpointer))

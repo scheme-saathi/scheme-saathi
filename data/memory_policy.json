@@ -48,6 +48,9 @@
       "retention": {"store": true, "reconfirm_days": 90, "expiry_days": 180}
     }
   },
+  "application_reference": {
+    "expiry_days": 90
+  },
   "temporary_only": [
     "has_disability",
     "disability_percent",

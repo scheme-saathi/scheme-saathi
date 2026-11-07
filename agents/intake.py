@@ -40,7 +40,11 @@ each field's type. For an income field, give the amount in rupees exactly as the
 it (1 lakh = 100000, 15 hazaar = 15000, 10k = 10000) and its period: "month" or "year" when
 the user says so or pending_question asked for that period, otherwise "unstated". Never
 convert between periods or multiply by 12; that is done for you. Classify the reply to
-pending_question in reply_kind. Never record Aadhaar, bank-account numbers or other sensitive
+pending_question in reply_kind. Set subject to "other" when the request is about someone
+else (your mother, a neighbour, a client) or when it is unclear whose facts these are, and
+"self" only when the user clearly speaks about themselves. For "other", give relation as one
+lowercase word such as "mother" or "neighbour"; never a name or a number. For "self", relation
+is null. Never record Aadhaar, bank-account numbers or other sensitive
 identifiers. Never decide eligibility or claim that a fact has been saved."""
 
 ASK_INSTRUCTIONS = """You write the next question for Scheme Saathi's intake. Ask exactly
@@ -159,12 +163,20 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
                 facts={**result.facts, **narrow.facts},
                 rejected_fields=result.rejected_fields + narrow.rejected_fields,
                 dont_know=narrow.dont_know,
+                subject=result.subject,
+                relation=result.relation,
             )
         return result
 
     def _extract_once(self, request: IntakeExtractInput, specs: dict[str, dict[str, Any]]) -> IntakeExtraction:
         profile = profile_model(specs)
-        output = create_model("IntakeExtractionOutput", facts=(profile, ...), reply_kind=(ReplyKind, "other"))
+        output = create_model(
+            "IntakeExtractionOutput",
+            facts=(profile, ...),
+            reply_kind=(ReplyKind, "other"),
+            subject=(Literal["self", "other"], ...),
+            relation=(str | None, None),
+        )
         # A JSON schema, not the model class: the reply comes back as a dict and is validated below.
         chain = untrusted_prompt(EXTRACT_INSTRUCTIONS) | self._model.with_structured_output(
             output.model_json_schema()
@@ -189,7 +201,16 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
                     continue
             facts[field] = value
         dont_know = raw.get("reply_kind") == "dont_know" and pending is not None and pending not in facts
-        return IntakeExtraction(facts=facts, rejected_fields=rejected, dont_know=dont_know)
+        # A missing or unrecognised subject counts as someone else, so nothing is remembered by mistake.
+        subject = raw.get("subject") if raw.get("subject") in ("self", "other") else "other"
+        relation = raw.get("relation") if isinstance(raw.get("relation"), str) else None
+        return IntakeExtraction(
+            facts=facts,
+            rejected_fields=rejected,
+            dont_know=dont_know,
+            subject=subject,
+            relation=relation,
+        )
 
     def ask(self, value: IntakeAskInput | dict) -> IntakeQuestion:
         """One question for one field; the field comes from the caller, never from the model."""

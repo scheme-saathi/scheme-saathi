@@ -10,6 +10,8 @@ data/private_documents/
 .venv312/
 *.egg-info/
 data/chroma/
+chroma_data/
+chroma_checkpoints/
 .DS_Store
 *.pyc
 docs/chunk-preview.json

@@ -17,6 +17,7 @@ from agents.memory import (
     MemoryFact,
     ApplicationReference,
     MemoryService,
+    Purpose,
     as_utc,
     utc_now,
 )
@@ -49,6 +50,7 @@ class HouseholdAllowlist(BaseModel):
 
     allowed_fields: dict[str, dict] = Field(default_factory=dict)
     temporary_only: list[str] = Field(default_factory=list)
+    application_reference_expiry_days: int = Field(default=90, gt=0)
     # Example:
     # {
     #     "state_code": {
@@ -63,7 +65,11 @@ class HouseholdAllowlist(BaseModel):
     def from_policy_file(cls, path: Path | str | None = None) -> "HouseholdAllowlist":
         policy = json.loads(Path(path or DEFAULT_POLICY_PATH).read_text(encoding="utf-8"))
         allowlist = cls(
-            allowed_fields=policy["fields"], temporary_only=policy.get("temporary_only", [])
+            allowed_fields=policy["fields"],
+            temporary_only=policy.get("temporary_only", []),
+            application_reference_expiry_days=policy.get("application_reference", {}).get(
+                "expiry_days", 90
+            ),
         )
         overlap = set(allowlist.allowed_fields) & set(allowlist.temporary_only)
         if overlap:
@@ -221,6 +227,27 @@ class InMemoryMemoryService(MemoryService):
                 r for r in data["application_refs"] if r in self.application_refs
             ]
 
+    def active_consent(
+        self, scope: MemoryScope, purpose: Purpose
+    ) -> Optional[MemoryConsent]:
+        """The newest granted, unexpired consent the scope's owner holds for the purpose."""
+        self._validate_scope(scope)
+
+        owner = scope.owner_for(purpose)
+        now = utc_now()
+        best = None
+        for reference in self.households.get(owner, {}).get("consents", []):
+            consent = self._consent_for(scope, reference)
+            if (
+                consent is not None
+                and consent.granted
+                and consent.purpose == purpose
+                and as_utc(consent.expires_at) > now
+                and (best is None or as_utc(consent.decided_at) >= as_utc(best.decided_at))
+            ):
+                best = consent
+        return best
+
     def read_facts(
         self, scope: MemoryScope, fields: list[str]
     ) -> FactMap:
@@ -308,6 +335,55 @@ class InMemoryMemoryService(MemoryService):
         fact_id = str(uuid4())
         self.facts[fact_id] = fact
         self._bucket(scope.household_id)["facts"].append(fact_id)
+
+    def reconfirm_facts(
+        self, scope: MemoryScope, fields: list[str], confirmed_at: datetime | None = None
+    ) -> list[str]:
+        """Move on `reconfirm_by` of stored facts the person confirmed unchanged; keep `expires_at`."""
+        self._validate_scope(scope)
+
+        now = utc_now()
+        confirmed = as_utc(confirmed_at) if confirmed_at is not None else now
+        done = []
+        for field in dict.fromkeys(fields):
+            reconfirm_days = (self.allowlist.get_field_policy(field) or {}).get("retention", {}).get(
+                "reconfirm_days"
+            )
+            current = self._current_fact(scope, field, now)
+            if reconfirm_days is None or current is None:
+                continue
+            fact_id, fact = current
+            self.facts[fact_id] = fact.model_copy(
+                update={
+                    "confirmed_at": confirmed,
+                    "reconfirm_by": min(
+                        confirmed + timedelta(days=reconfirm_days), as_utc(fact.expires_at)
+                    ),
+                }
+            )
+            done.append(field)
+        return done
+
+    def _current_fact(
+        self, scope: MemoryScope, field: str, now: datetime
+    ) -> Optional[tuple[str, MemoryFact]]:
+        """The newest unexpired, consented fact stored for the field, with its id."""
+        best = None
+        for fact_id in self.households.get(scope.household_id, {}).get("facts", []):
+            fact = self.facts.get(fact_id)
+            if fact is None or fact.field != field or as_utc(fact.expires_at) <= now:
+                continue
+            consent = self._consent_for(scope, fact.consent_reference)
+            if (
+                consent is None
+                or not consent.granted
+                or consent.purpose != "profile_facts"
+                or as_utc(consent.expires_at) <= now
+            ):
+                continue
+            if best is None or as_utc(fact.confirmed_at) >= as_utc(best[1].confirmed_at):
+                best = (fact_id, fact)
+        return best
 
     def read_application_references(
         self, scope: MemoryScope

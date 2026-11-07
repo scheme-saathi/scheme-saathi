@@ -16,7 +16,7 @@ import hashlib
 import json
 import os
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -229,6 +229,73 @@ class ChromaDBMemoryService:
             and m["expires_at_ts"] > now
             for m in metas
         )
+
+    def active_consent(self, scope: MemoryScope, purpose: Purpose) -> Optional[MemoryConsent]:
+        """The newest granted, unexpired, unwithdrawn consent the scope's owner holds for the purpose."""
+        self._validate_scope(scope)
+
+        owner = scope.owner_for(purpose)
+        rows = self.consent_collection.get(
+            where={
+                "$and": [
+                    {"owner_key": {"$eq": owner}},
+                    {"purpose": {"$eq": purpose}},
+                    {"kind": {"$eq": "consent"}},
+                ]
+            }
+        )
+        best_at, best = -1.0, None
+        for meta, doc in zip(rows["metadatas"], rows["documents"]):
+            if meta["decided_at_ts"] > best_at and self._has_active_consent(
+                owner, meta["consent_reference"], purpose
+            ):
+                best_at, best = meta["decided_at_ts"], MemoryConsent(**json.loads(doc))
+        return best
+
+    def reconfirm_facts(
+        self, scope: MemoryScope, fields: list[str], confirmed_at: Optional[datetime] = None
+    ) -> list[str]:
+        """Move on `reconfirm_by` of stored facts the person confirmed unchanged; keep `expires_at`."""
+        self._validate_scope(scope)
+
+        now = utc_now()
+        confirmed = as_utc(confirmed_at) if confirmed_at is not None else now
+        done = []
+        with self._lock:
+            for field in dict.fromkeys(fields):
+                reconfirm_days = (self.allowlist.get_field_policy(field) or {}).get(
+                    "retention", {}
+                ).get("reconfirm_days")
+                fact_id = _record_id(scope.household_id, field)
+                stored = self.facts_collection.get(ids=[fact_id])
+                if reconfirm_days is None or not stored["ids"]:
+                    continue
+                meta = stored["metadatas"][0]
+                if meta["expires_at_ts"] <= _timestamp(now) or not self._has_active_consent(
+                    scope.household_id, meta["consent_reference"], "profile_facts"
+                ):
+                    continue
+                fact = MemoryFact(**json.loads(stored["documents"][0]))
+                fact = fact.model_copy(
+                    update={
+                        "confirmed_at": confirmed,
+                        "reconfirm_by": min(
+                            confirmed + timedelta(days=reconfirm_days), as_utc(fact.expires_at)
+                        ),
+                    }
+                )
+                self._put(
+                    self.facts_collection,
+                    fact_id,
+                    {
+                        **meta,
+                        "confirmed_at_ts": _timestamp(fact.confirmed_at),
+                        "reconfirm_by_ts": _timestamp(fact.reconfirm_by),
+                    },
+                    json.dumps(fact.model_dump(mode="json")),
+                )
+                done.append(field)
+        return done
 
     def read_facts(
         self,

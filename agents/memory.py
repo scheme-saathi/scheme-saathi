@@ -6,11 +6,14 @@ with `as_utc` before any comparison, so every implementation uses one clock.
 
 import re
 from datetime import datetime, timezone
-from typing import Literal, Protocol
+from typing import TYPE_CHECKING, Literal, Protocol
 
 from pydantic import Field, JsonValue, model_validator
 
 from agents.contracts import Contract, FactMap
+
+if TYPE_CHECKING:
+    from agents.memory_service import HouseholdAllowlist
 
 Purpose = Literal["profile_facts", "application_references"]
 
@@ -20,6 +23,14 @@ RELATION_LABEL = re.compile(r"^[A-Za-z\u0900-\u097F][A-Za-z\u0900-\u097F '\-]{0,
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
+def clean_relation(value: object) -> str | None:
+    """A relation label that passes the same check as ApplicationReference, or None."""
+    if not isinstance(value, str):
+        return None
+    label = value.strip().lower()
+    return label if RELATION_LABEL.fullmatch(label) else None
 
 
 def as_utc(value: datetime) -> datetime:
@@ -111,6 +122,8 @@ class ApplicationReference(Contract):
 class MemoryService(Protocol):
     """Implementations must enforce authorization, consent, allowlists, and expiry."""
 
+    allowlist: "HouseholdAllowlist"
+
     def record_consent(
         self, scope: MemoryScope, consent: MemoryConsent
     ) -> None: ...
@@ -119,6 +132,12 @@ class MemoryService(Protocol):
         self, scope: MemoryScope, consent_reference: str
     ) -> None: ...
 
+    def active_consent(
+        self, scope: MemoryScope, purpose: Purpose
+    ) -> MemoryConsent | None:
+        """The newest granted, unexpired, unwithdrawn consent the scope's owner holds for the purpose."""
+        ...
+
     def read_facts(
         self, scope: MemoryScope, fields: list[str]
     ) -> FactMap: ...
@@ -126,6 +145,16 @@ class MemoryService(Protocol):
     def save_confirmed_fact(
         self, scope: MemoryScope, fact: MemoryFact
     ) -> None: ...
+
+    def reconfirm_facts(
+        self, scope: MemoryScope, fields: list[str], confirmed_at: datetime | None = None
+    ) -> list[str]:
+        """Record that the person confirmed these stored facts again, unchanged.
+
+        Moves `reconfirm_by` on, never past the original `expires_at`, so retention is not
+        extended. Returns the fields that were stored, unexpired and consented.
+        """
+        ...
 
     def read_application_references(
         self, scope: MemoryScope
