@@ -58,8 +58,26 @@ def get_memory_service() -> MemoryService | None:
     return service
 
 
-def citizen_scope(principal: AuthenticatedHousehold) -> MemoryScope:
+def memory_scope(principal: AuthenticatedHousehold) -> MemoryScope:
     """The scope for the signed-in person, built from the verified token only."""
     return MemoryScope(
-        actor_id=principal.subject, household_id=principal.household_id, actor_role="citizen"
+        actor_id=principal.subject, household_id=principal.household_id, actor_role=principal.role
     )
+
+
+def forget_memory(service: MemoryService, scope: MemoryScope) -> None:
+    """Delete what the signed-in person's memory holds.
+
+    A citizen's whole household goes. An operator has no household memory to delete, only the
+    list of applications they chose to keep, which is cleared by withdrawing its consent.
+    """
+    if scope.actor_role == "citizen":
+        service.forget_household(scope)
+        return
+    for _ in range(10):  # a person holds at most one active consent per purpose
+        consent = service.active_consent(scope, "application_references")
+        if consent is None:
+            break
+        service.withdraw_consent(scope, consent.consent_reference)
+    for reference in service.read_application_references(scope):
+        service.delete_application_reference(scope, reference.application_id)

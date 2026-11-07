@@ -337,9 +337,14 @@ def list_documents(scheme_id: str) -> list[str]:
     return call_tool(SCHEMES_KB, "get_required_documents", scheme_id=scheme_id)
 
 
-def application_status(application_id: str) -> dict[str, Any]:
-    """The portal's current status of one application; it is read live and never stored."""
-    return call_tool(MOCK_PORTAL, "get_application_status", application_id=application_id)
+def application_status(application_id: str, household_id: str) -> dict[str, Any]:
+    """The portal's current status of one application, for the household that owns it.
+
+    It is read live and never stored. The portal answers "not found" to any other household.
+    """
+    return call_tool(
+        MOCK_PORTAL, "get_application_status", application_id=application_id, household_id=household_id
+    )
 
 
 def compare_document_fields(

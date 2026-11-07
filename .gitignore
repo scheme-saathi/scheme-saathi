@@ -4,6 +4,7 @@ __pycache__/
 .env
 *.db
 *.sqlite3
+*.sqlite
 data/raw/
 data/private_documents/
 

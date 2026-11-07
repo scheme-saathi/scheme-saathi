@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from agents.memory import MemoryConsent, MemoryService, Purpose, as_utc, utc_now
 from app import memory_runtime
 from app.auth import AuthenticatedHousehold, authenticated_household
-from app.memory_runtime import citizen_scope
+from app.memory_runtime import memory_scope
 from graph import tools
 from graph.memory_nodes import MemoryContext, save_application_reference
 
@@ -26,6 +26,11 @@ logger = logging.getLogger(__name__)
 NOTICE_VERSION = "1"
 CONSENT_EXPIRY_DAYS = 180
 PURPOSES: tuple[Purpose, ...] = ("profile_facts", "application_references")
+# An operator keeps no household details; they can only keep a list of the applications they submitted.
+PURPOSES_BY_ROLE: dict[str, tuple[Purpose, ...]] = {
+    "citizen": PURPOSES,
+    "operator": ("application_references",),
+}
 MAX_WITHDRAWALS = 10  # one person should never hold more than one active consent per purpose
 FORGET_NOTE = "Applications already submitted to a government portal are not deleted."
 
@@ -48,9 +53,9 @@ class ConsentChange(BaseModel):
 
 
 def _consent_state(service: MemoryService, principal: AuthenticatedHousehold) -> dict[str, Any]:
-    scope = citizen_scope(principal)
+    scope = memory_scope(principal)
     state: dict[str, Any] = {}
-    for purpose in PURPOSES:
+    for purpose in PURPOSES_BY_ROLE[principal.role]:
         consent = service.active_consent(scope, purpose)
         state[purpose] = {
             "granted": consent is not None,
@@ -88,6 +93,7 @@ def get_consent(
 ) -> dict[str, Any]:
     """What the person has agreed to remember, and the policy that applies to it."""
     return {
+        "role": principal.role,
         "notice_version": NOTICE_VERSION,
         "consent_expiry_days": CONSENT_EXPIRY_DAYS,
         "purposes": _consent_state(service, principal),
@@ -104,9 +110,13 @@ def change_consent(
     """Agree to remember, or stop remembering and delete what was saved under that agreement.
 
     Agreeing when an agreement is already active changes nothing, so retention is never
-    extended silently.
+    extended silently. An operator can only keep their own list of submitted applications,
+    and their agreement is recorded as taken in person, with who recorded it.
     """
-    scope = citizen_scope(principal)
+    if change.purpose not in PURPOSES_BY_ROLE[principal.role]:
+        raise HTTPException(status_code=403, detail="Operators cannot remember household details.")
+    scope = memory_scope(principal)
+    in_person = principal.role == "operator"
     try:
         if change.granted:
             if service.active_consent(scope, change.purpose) is None:
@@ -120,6 +130,8 @@ def change_consent(
                         decided_at=now,
                         expires_at=now + timedelta(days=CONSENT_EXPIRY_DAYS),
                         consent_reference=f"consent-{uuid4().hex}",
+                        obtained_via="in_person" if in_person else "self_service",
+                        recorded_by=principal.subject if in_person else None,
                     ),
                 )
         else:
@@ -150,7 +162,7 @@ def get_memory(
             "expires_at": fact.expires_at,
             "reconfirm_due": as_utc(fact.reconfirm_by) <= now,
         }
-        for fact in service.list_facts(citizen_scope(principal))
+        for fact in service.list_facts(memory_scope(principal))
     ]
     return {"facts": facts}
 
@@ -161,7 +173,9 @@ def forget_fact(
     principal: AuthenticatedHousehold = Depends(authenticated_household),
     service: MemoryService = Depends(require_memory),
 ) -> dict[str, Any]:
-    if not service.delete_fact(citizen_scope(principal), field):
+    if principal.role == "operator":
+        raise HTTPException(status_code=403, detail="Operators cannot delete a household's details.")
+    if not service.delete_fact(memory_scope(principal), field):
         raise HTTPException(status_code=404, detail="That detail is not remembered.")
     return {"status": "success", "field": field}
 
@@ -173,7 +187,7 @@ def list_applications(
 ) -> dict[str, list[dict[str, Any]]]:
     """Applications saved for this person, split into their own and those for other people."""
     grouped: dict[str, list[dict[str, Any]]] = {"for_me": [], "for_others": []}
-    for reference in service.read_application_references(citizen_scope(principal)):
+    for reference in service.read_application_references(memory_scope(principal)):
         grouped["for_others" if reference.subject == "other" else "for_me"].append(
             {
                 "application_id": reference.application_id,
@@ -194,7 +208,7 @@ def application_status(
 ) -> dict[str, Any]:
     """The portal's current status, for an application in this person's own list only."""
     reference = next(
-        (r for r in service.read_application_references(citizen_scope(principal)) if r.application_id == application_id),
+        (r for r in service.read_application_references(memory_scope(principal)) if r.application_id == application_id),
         None,
     )
     if reference is None:
@@ -205,7 +219,7 @@ def application_status(
         "checked_at": utc_now(),
     }
     try:
-        result["status"] = tools.application_status(application_id)["status"]
+        result["status"] = tools.application_status(application_id, principal.household_id)["status"]
         result["found_at_portal"] = True
     except tools.ToolCallError as error:
         if error.code != "application_not_found":
@@ -223,7 +237,7 @@ def remove_application(
     service: MemoryService = Depends(require_memory),
 ) -> dict[str, Any]:
     """Remove an application from the saved list. The application at the portal is not touched."""
-    if not service.delete_application_reference(citizen_scope(principal), application_id):
+    if not service.delete_application_reference(memory_scope(principal), application_id):
         raise HTTPException(status_code=404, detail="This application is not in your list.")
     return {"status": "success", "application_id": application_id}
 
@@ -242,7 +256,7 @@ def remember_submission(
         return {}
     try:
         saved = save_application_reference(
-            MemoryContext(memory, citizen_scope(principal)),
+            MemoryContext(memory, memory_scope(principal)),
             scheme_id,
             submission["application_id"],
             subject,

@@ -94,16 +94,19 @@ def panel_screen():
 
 
 class PanelApi:
-    def __init__(self, granted=True, available=True):
+    def __init__(self, granted=True, available=True, role="citizen"):
         self.calls = []
         self.granted = granted
         self.available = available
+        self.role = role
 
     def __call__(self, api_base, path, method="GET", payload=None):
         self.calls.append((method, path, payload))
         if not self.available:
             raise RuntimeError("Remembering details is not available.")
         if path == "/api/memory/consent":
+            if self.role == "operator":
+                return {"role": "operator", "purposes": {"application_references": {"granted": True}}}
             return {
                 "purposes": {
                     "profile_facts": {"granted": self.granted},
@@ -187,6 +190,19 @@ def test_forgetting_everything_needs_a_ticked_confirmation(panel):
 
     assert ("DELETE", "/api/memory", None) in panel.calls
     assert app.session_state["memory_notice"] == memory_text.text("en", "forget_done")
+
+
+def test_an_operator_sees_only_the_applications_list_choice(monkeypatch):
+    api = PanelApi(role="operator")
+    monkeypatch.setattr(app_new, "_memory_request", api)
+    monkeypatch.setattr(app_new, "_scheme_names", lambda api_base: {})
+
+    app = AppTest.from_function(panel_screen).run()
+
+    assert not app.exception
+    keys = {b.key for b in app.button}
+    assert "memory-consent-application_references" in keys
+    assert "memory-consent-profile_facts" not in keys
 
 
 def test_the_panel_says_so_when_remembering_is_unavailable(monkeypatch):

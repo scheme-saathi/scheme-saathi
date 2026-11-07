@@ -25,9 +25,12 @@ from agents.contracts import Language
 from agents.memory import MemoryScope, MemoryService, clean_relation
 from app import memory_runtime
 from app.auth import AuthenticatedHousehold, authenticated_household
+from app.checkpoints import get_checkpointer, thread_registry
 from app.forget import all_deleted, household_threads, run_forgetting, unfinished
 from app.memory_api import FORGET_NOTE, optional_memory, remember_submission, router as memory_router
-from app.memory_runtime import citizen_scope
+from app.memory_runtime import forget_memory, memory_scope
+from app.periodic import PeriodicTask
+from app.thread_registry import ThreadRegistry
 from graph.memory_nodes import memory_config
 
 if __package__:
@@ -176,8 +179,10 @@ class LanguageInfo(BaseModel):
 
 @lru_cache(maxsize=1)
 def get_service() -> DemoService:
-    """Share one in-memory demo workflow across requests."""
-    return DemoService()
+    """Share one demo workflow across requests; its state is durable only when a database is configured."""
+    service = DemoService(checkpointer=get_checkpointer(), registry=thread_registry("application"))
+    PeriodicTask("application-workflow-expiry", service.expire_idle)
+    return service
 
 
 # ============================================================================
@@ -203,8 +208,15 @@ class ApprovalPendingError(RuntimeError):
 class AgentWorkflowService:
     """Service to manage agent workflow execution."""
     
-    def __init__(self, memory: MemoryService | None = None):
+    def __init__(
+        self,
+        memory: MemoryService | None = None,
+        checkpointer: Any | None = None,
+        registry: ThreadRegistry | None = None,
+    ):
         self.memory = memory
+        self._saver = checkpointer  # durable saver, or None for one kept in memory
+        self.registry = registry or ThreadRegistry("agent")
         self._agent_graph = None  # Lazy-loaded on first use
         self.conversations: dict[str, dict[str, Any]] = {}  # thread_id -> conversation data
         self.session_contexts: dict[str, dict[str, Any]] = {}  # thread_id -> context
@@ -214,13 +226,18 @@ class AgentWorkflowService:
         """Lazy-load the agent graph on first access."""
         if self._agent_graph is None:
             logger.info("Initializing agent graph (lazy-loaded)...")
-            self._agent_graph = build_agent_graph(checkpointer=MemorySaver(), memory=self.memory)
+            self._agent_graph = build_agent_graph(checkpointer=self._saver or MemorySaver(), memory=self.memory)
             logger.info("Agent graph initialized successfully")
         return self._agent_graph
         
     def create_thread(self, actor_id: str, thread_id: str | None = None) -> str:
-        """Create new conversation thread."""
+        """Create new conversation thread, or restore one after a restart.
+
+        A thread another household owns is refused, even when its conversation record is gone.
+        """
         thread_id = thread_id or f"conv_{uuid4().hex[:12]}"
+        if not self.registry.touch(thread_id, actor_id):
+            raise ThreadAccessError(thread_id)
         self.conversations[thread_id] = {
             "thread_id": thread_id,
             "actor_id": actor_id,
@@ -251,6 +268,7 @@ class AgentWorkflowService:
         elif thread_id not in self.conversations:
             self.create_thread(actor_id, thread_id)
         self._check_owner(thread_id, actor_id)
+        self.registry.touch(thread_id, actor_id)
 
         config = self._config(thread_id, memory_scope)
         if self._pending_approval(config) is not None:
@@ -284,8 +302,11 @@ class AgentWorkflowService:
     ) -> dict[str, Any]:
         """Resume the paused graph with the person's decision on the exact form."""
         if thread_id not in self.conversations:
-            raise ThreadNotFoundError(thread_id)
+            if self.registry.owner_of(thread_id) is None:
+                raise ThreadNotFoundError(thread_id)
+            self.create_thread(actor_id, thread_id)  # a thread from before a restart, if it is theirs
         self._check_owner(thread_id, actor_id)
+        self.registry.touch(thread_id, actor_id)
         config = self._config(thread_id, memory_scope)
         if self._pending_approval(config) is None:
             raise NoPendingApprovalError("There is no draft waiting for approval in this conversation.")
@@ -373,9 +394,10 @@ class AgentWorkflowService:
         if thread_id in self.session_contexts:
             del self.session_contexts[thread_id]
         self._delete_checkpoints({thread_id})
+        self.registry.forget({thread_id})
 
     def _checkpointer(self) -> Any:
-        return getattr(self._agent_graph, "checkpointer", None)
+        return self._saver or getattr(self._agent_graph, "checkpointer", None)
 
     def _delete_checkpoints(self, thread_ids: set[str]) -> None:
         saver = self._checkpointer()
@@ -386,26 +408,43 @@ class AgentWorkflowService:
     def forget_household(self, household_id: str) -> int:
         """Delete every conversation, context and saved workflow state of one household.
 
-        Saved state is searched as well as the conversation table, so a thread whose
-        conversation was deleted earlier, or lost, is still found and removed.
+        The registry and the saved state are searched as well as the conversation table, so a
+        thread whose conversation was deleted earlier, or lost in a restart, is still found.
         """
         threads = {
             thread_id
             for thread_id, conversation in self.conversations.items()
             if conversation.get("actor_id") == household_id
         }
+        threads |= self.registry.threads_of(household_id)
         threads |= household_threads(self._checkpointer(), household_id)
+        self._drop(threads)
+        return len(threads)
+
+    def expire_idle(self) -> int:
+        """Delete conversations idle for 24 hours or started 7 days ago, with their saved state."""
+        threads = set(self.registry.expired())
+        self._drop(threads)
+        return len(threads)
+
+    def _drop(self, threads: set[str]) -> None:
         for thread_id in threads:
             self.conversations.pop(thread_id, None)
             self.session_contexts.pop(thread_id, None)
         self._delete_checkpoints(threads)
-        return len(threads)
+        self.registry.forget(threads)
 
 
 @lru_cache(maxsize=1)
 def get_workflow_service() -> AgentWorkflowService:
     """Get singleton workflow service."""
-    return AgentWorkflowService(memory=memory_runtime.get_memory_service())
+    service = AgentWorkflowService(
+        memory=memory_runtime.get_memory_service(),
+        checkpointer=get_checkpointer(),
+        registry=thread_registry("agent"),
+    )
+    PeriodicTask("agent-workflow-expiry", service.expire_idle)
+    return service
 
 
 def _owned_conversation(
@@ -537,7 +576,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 known_facts=request.known_facts,
                 selected_scheme_id=request.selected_scheme_id,
                 confirmed_facts=request.confirmed_facts,
-                memory_scope=citizen_scope(principal),
+                memory_scope=memory_scope(principal),
             )
             
             return SupervisorChatResponse(
@@ -583,7 +622,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 decision.action,
                 decision.payload_hash,
                 decision.changes,
-                memory_scope=citizen_scope(principal),
+                memory_scope=memory_scope(principal),
             )
         except ThreadNotFoundError:
             raise HTTPException(status_code=404, detail="Thread not found")
@@ -932,17 +971,18 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         principal: AuthenticatedHousehold = Depends(authenticated_household),
         memory: MemoryService | None = Depends(optional_memory),
     ) -> dict[str, Any]:
-        """Delete everything held for the household, across every session.
+        """Delete everything held for the signed-in person, across every session.
 
-        That is the remembered details, saved applications and consents, the application
-        workflows with their uploaded documents, and the conversations with their saved state.
-        Every store is attempted. Success is reported only when all of them were cleared;
-        deleting again is safe.
+        For a citizen that is the remembered details, saved applications and consents, the
+        application workflows with their uploaded documents, and the conversations with their
+        saved state. An operator's own list of saved applications, workflows and conversations go
+        the same way; no household's details are theirs to delete. Every store is attempted.
+        Success is reported only when all of them were cleared; deleting again is safe.
         """
         household_id = principal.household_id
         steps: list[tuple[str, Any]] = []
         if memory is not None:
-            steps.append(("memory", lambda: memory.forget_household(citizen_scope(principal))))
+            steps.append(("memory", lambda: forget_memory(memory, memory_scope(principal))))
         steps += [
             ("documents", lambda: demo.forget_household_documents(household_id)),
             ("application_workflows", lambda: demo.forget_household_workflows(household_id)),

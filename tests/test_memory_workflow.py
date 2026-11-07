@@ -624,7 +624,8 @@ def test_a_follow_up_is_answered_from_the_persons_own_saved_applications(monkeyp
     looked_up = []
     monkeypatch.setattr(
         "graph.agent_workflow.tools.application_status",
-        lambda application_id: looked_up.append(application_id) or {"application_id": application_id, "status": "submitted"},
+        lambda application_id, household_id: looked_up.append((application_id, household_id))
+        or {"application_id": application_id, "status": "submitted"},
     )
     conversation = Conversation(ScriptedIntake(), memory=service)
 
@@ -634,8 +635,8 @@ def test_a_follow_up_is_answered_from_the_persons_own_saved_applications(monkeyp
     assert "C01: submitted" in result["response"]
     assert "C02: submitted for your mother" in result["response"]
     assert sorted(looked_up) == [
-        "a1b2c3d4-0000-4000-8000-000000000001",
-        "e5f6a7b8-0000-4000-8000-000000000002",
+        ("a1b2c3d4-0000-4000-8000-000000000001", "hh1"),  # the portal is asked on behalf of the household
+        ("e5f6a7b8-0000-4000-8000-000000000002", "hh1"),
     ]
     assert "a1b2c3d4-0000" not in result["response"]  # only a short reference is shown
     assert "a1b2c3d4" in result["response"]
@@ -659,7 +660,7 @@ def test_an_application_id_in_the_message_is_never_looked_up(monkeypatch):
     looked_up = []
     monkeypatch.setattr(
         "graph.agent_workflow.tools.application_status",
-        lambda application_id: looked_up.append(application_id) or {"status": "submitted"},
+        lambda application_id, household_id: looked_up.append(application_id) or {"status": "submitted"},
     )
     conversation = Conversation(ScriptedIntake(), memory=service, scope=other)
 
@@ -670,7 +671,10 @@ def test_an_application_id_in_the_message_is_never_looked_up(monkeypatch):
 
 
 def test_a_follow_up_with_nothing_saved_says_so(monkeypatch):
-    monkeypatch.setattr("graph.agent_workflow.tools.application_status", lambda application_id: pytest.fail("no lookup"))
+    monkeypatch.setattr(
+        "graph.agent_workflow.tools.application_status",
+        lambda application_id, household_id: pytest.fail("no lookup"),
+    )
     conversation = Conversation(ScriptedIntake(), memory=memory_service(consent_facts=False))
     result = conversation.send(FOLLOW_UP)
     assert result["status"] == "no_applications"
@@ -690,7 +694,7 @@ def test_an_application_the_portal_lost_or_cannot_reach_is_reported_per_applicat
     service = memory_service(consent_facts=False)
     saved_applications(service)
 
-    def status(application_id):
+    def status(application_id, household_id):
         code = "application_not_found" if application_id.startswith("a1b2") else "transport_error"
         raise tools.ToolCallError("mock-portal", "get_application_status", code, "x")
 

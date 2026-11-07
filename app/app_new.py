@@ -1862,11 +1862,14 @@ def _change_memory_consent(api_base: str, purpose: str, granted: bool) -> None:
 
 
 def _render_memory_consent(api_base: str, consent: dict[str, Any]) -> None:
+    purposes = consent.get("purposes", {})
     for purpose, on_text, off_text in (
         ("profile_facts", "facts_on", "facts_off"),
         ("application_references", "refs_on", "refs_off"),
     ):
-        granted = bool(consent.get("purposes", {}).get(purpose, {}).get("granted"))
+        if purpose not in purposes:  # an operator is offered only the list of applications
+            continue
+        granted = bool(purposes[purpose].get("granted"))
         label_column, button_column = st.columns([3, 2], vertical_alignment="center")
         label_column.write(_t(on_text if granted else off_text))
         if button_column.button(

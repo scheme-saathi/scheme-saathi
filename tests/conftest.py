@@ -14,12 +14,15 @@ def mock_portal_test_secret(monkeypatch):
 @pytest.fixture(autouse=True)
 def isolated_memory_store(monkeypatch, tmp_path):
     """Point the API's memory store at a temporary folder, so no test writes to the real one."""
-    from app import memory_runtime
+    from app import checkpoints, memory_runtime
 
     monkeypatch.setenv(memory_runtime.DIRECTORY_ENV, str(tmp_path / "memory"))
+    monkeypatch.setenv(checkpoints.DATABASE_ENV, "")  # workflow state stays in memory unless a test opts in
     memory_runtime.get_memory_service.cache_clear()
+    checkpoints.get_checkpointer.cache_clear()
     yield
     getattr(memory_runtime.get_memory_service, "cache_clear", lambda: None)()
+    checkpoints.get_checkpointer.cache_clear()
 
 
 @pytest.fixture(autouse=True)

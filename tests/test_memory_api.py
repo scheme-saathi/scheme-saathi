@@ -20,7 +20,7 @@ def memory():
 
 @pytest.fixture
 def who():
-    return {"household": "hh1", "sub": "user-1"}
+    return {"household": "hh1", "sub": "user-1", "role": "citizen"}
 
 
 class Surfaces:
@@ -57,7 +57,7 @@ def surfaces(monkeypatch):
 def client(memory, who, surfaces):
     application = api.create_api(service=surfaces)
     application.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
-        who["household"], who["sub"]
+        who["household"], who["sub"], who["role"]
     )
     application.dependency_overrides[optional_memory] = lambda: memory
     return TestClient(application)
@@ -350,18 +350,25 @@ def test_status_is_read_live_from_the_portal_for_my_own_application(client, memo
     grant(memory, "application_references")
     remember_application(memory, "APP-1")
     asked = []
-    monkeypatch.setattr(tools, "application_status", lambda application_id: asked.append(application_id) or {"application_id": application_id, "status": "submitted"})
+    monkeypatch.setattr(
+        tools,
+        "application_status",
+        lambda application_id, household_id: asked.append((application_id, household_id))
+        or {"application_id": application_id, "status": "submitted"},
+    )
 
     body = client.get("/api/applications/APP-1/status").json()
 
     assert (body["status"], body["found_at_portal"], body["scheme_id"]) == ("submitted", True, "C01")
-    assert asked == ["APP-1"]
+    assert asked == [("APP-1", "hh1")]  # asked on behalf of the token's household
 
 
 def test_an_application_that_is_not_in_my_list_is_never_looked_up(client, memory, monkeypatch):
     grant(memory, "application_references", household="hh2", sub="user-2")
     remember_application(memory, "SOMEONE-ELSES", household="hh2")
-    monkeypatch.setattr(tools, "application_status", lambda application_id: pytest.fail("must not reach the portal"))
+    monkeypatch.setattr(
+        tools, "application_status", lambda application_id, household_id: pytest.fail("must not reach the portal")
+    )
 
     assert client.get("/api/applications/SOMEONE-ELSES/status").status_code == 404
     assert client.get("/api/applications/NOT-REAL/status").status_code == 404
@@ -371,7 +378,7 @@ def test_an_application_the_portal_no_longer_has_is_reported_not_hidden(client, 
     grant(memory, "application_references")
     remember_application(memory, "APP-1")
 
-    def gone(application_id):
+    def gone(application_id, household_id):
         raise tools.ToolCallError("mock-portal", "get_application_status", "application_not_found", "missing")
 
     monkeypatch.setattr(tools, "application_status", gone)
@@ -383,7 +390,7 @@ def test_a_portal_failure_is_a_503_not_a_made_up_status(client, memory, monkeypa
     grant(memory, "application_references")
     remember_application(memory, "APP-1")
 
-    def down(application_id):
+    def down(application_id, household_id):
         raise tools.ToolCallError("mock-portal", "get_application_status", "transport_error", "down")
 
     monkeypatch.setattr(tools, "application_status", down)
@@ -504,3 +511,148 @@ def test_the_demo_service_remembers_whose_application_a_thread_is_for():
     assert service.thread_subject("unknown") == ("self", None)
     service._thread_subjects["t-1"] = ("other", "mother")
     assert service.thread_subject("t-1") == ("other", "mother")
+
+
+# Operators
+
+
+OPERATOR = {"household": "operator:op-1", "sub": "op-1", "role": "operator"}
+
+
+@pytest.fixture
+def operator(who):
+    who.update(OPERATOR)
+    return who
+
+
+def operator_scope(sub="op-1"):
+    return MemoryScope(actor_id=sub, household_id=f"operator:{sub}", actor_role="operator")
+
+
+def operator_remembers(client, memory, application_id, sub="op-1"):
+    """Agree through the API, then save an application the way a submission would."""
+    assert client.put("/api/memory/consent", json={"purpose": "application_references", "granted": True}).status_code == 200
+    scope_ = operator_scope(sub)
+    now = datetime.utcnow()
+    memory.save_application_reference(
+        scope_,
+        ApplicationReference(
+            scheme_id="C01",
+            application_id=application_id,
+            submitted_at=now,
+            expires_at=now + timedelta(days=90),
+            consent_reference=memory.active_consent(scope_, "application_references").consent_reference,
+            subject="other",
+            relation="neighbour",
+            submitted_by=sub,
+        ),
+    )
+
+
+def test_a_citizen_is_told_their_role_and_sees_both_choices(client):
+    body = client.get("/api/memory/consent").json()
+    assert body["role"] == "citizen"
+    assert set(body["purposes"]) == {"profile_facts", "application_references"}
+
+
+def test_an_operator_is_offered_only_their_own_list_of_applications(client, operator):
+    body = client.get("/api/memory/consent").json()
+    assert body["role"] == "operator"
+    assert set(body["purposes"]) == {"application_references"}
+
+
+def test_an_operator_cannot_agree_to_remember_household_details(client, operator, memory):
+    response = client.put("/api/memory/consent", json={"purpose": "profile_facts", "granted": True})
+
+    assert response.status_code == 403
+    assert memory.active_consent(operator_scope(), "profile_facts") is None
+
+
+def test_an_operators_agreement_is_recorded_as_taken_in_person_and_by_whom(client, operator, memory):
+    body = client.put("/api/memory/consent", json={"purpose": "application_references", "granted": True}).json()
+
+    assert body["purposes"]["application_references"]["granted"] is True
+    consent = memory.active_consent(operator_scope(), "application_references")
+    assert (consent.obtained_via, consent.recorded_by) == ("in_person", "op-1")
+
+
+def test_a_citizens_agreement_is_self_service(client, memory):
+    client.put("/api/memory/consent", json={"purpose": "profile_facts", "granted": True})
+    consent = memory.active_consent(scope(), "profile_facts")
+    assert (consent.obtained_via, consent.recorded_by) == ("self_service", None)
+
+
+def test_an_operator_cannot_delete_a_households_details(client, operator, memory):
+    grant(memory, "profile_facts", household="hh1")
+    remember_fact(memory, household="hh1")
+
+    assert client.delete("/api/memory/facts/age").status_code == 403
+    assert len(memory.list_facts(scope("hh1"))) == 1
+
+
+def test_an_operator_has_no_household_details_to_see(client, operator, memory):
+    grant(memory, "profile_facts", household="hh1")
+    remember_fact(memory, household="hh1")
+    assert client.get("/api/memory").json()["facts"] == []
+
+
+def test_an_operator_sees_only_the_applications_they_submitted(client, operator, memory):
+    grant(memory, "application_references", household="hh1")
+    remember_application(memory, "CITIZEN-APP", household="hh1")
+    operator_remembers(client, memory, "OP-APP")
+
+    body = client.get("/api/applications").json()
+
+    assert [a["application_id"] for a in body["for_others"]] == ["OP-APP"]
+    assert body["for_me"] == []
+
+
+def test_one_operators_list_is_invisible_to_another_operator(client, operator, memory, who):
+    operator_remembers(client, memory, "OP-APP")
+    who.update({"household": "operator:op-2", "sub": "op-2"})
+    assert client.get("/api/applications").json() == {"for_me": [], "for_others": []}
+    assert client.get("/api/applications/OP-APP/status").status_code == 404
+
+
+def test_an_operators_status_lookup_is_made_under_their_own_account(client, operator, memory, monkeypatch):
+    operator_remembers(client, memory, "OP-APP")
+    asked = []
+    monkeypatch.setattr(
+        tools,
+        "application_status",
+        lambda application_id, household_id: asked.append((application_id, household_id))
+        or {"application_id": application_id, "status": "submitted"},
+    )
+
+    assert client.get("/api/applications/OP-APP/status").json()["status"] == "submitted"
+    assert asked == [("OP-APP", "operator:op-1")]
+
+
+def test_an_operator_forgetting_clears_only_their_own_list(client, operator, memory, surfaces):
+    grant(memory, "profile_facts", household="hh1")
+    grant(memory, "application_references", household="hh1")
+    remember_fact(memory, household="hh1")
+    remember_application(memory, "CITIZEN-APP", household="hh1")
+    operator_remembers(client, memory, "OP-APP")
+
+    assert client.delete("/api/memory").json()["status"] == "success"
+
+    assert memory.read_application_references(operator_scope()) == []
+    assert memory.active_consent(operator_scope(), "application_references") is None
+    assert len(memory.list_facts(scope("hh1"))) == 1
+    assert [r.application_id for r in memory.read_application_references(scope("hh1"))] == ["CITIZEN-APP"]
+    assert ("conversations", "operator:op-1") in surfaces.calls
+
+
+def test_a_citizen_forgetting_leaves_an_operators_list_alone(client, memory, who, surfaces):
+    who.update(OPERATOR)
+    operator_remembers(client, memory, "OP-APP")
+    who.update({"household": "hh1", "sub": "user-1", "role": "citizen"})
+    grant(memory, "profile_facts")
+    remember_fact(memory)
+
+    assert client.delete("/api/memory").json()["status"] == "success"
+
+    assert client.get("/api/memory").json()["facts"] == []
+    assert [r.application_id for r in memory.read_application_references(operator_scope())] == ["OP-APP"]
+

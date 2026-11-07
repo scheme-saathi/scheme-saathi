@@ -1,6 +1,6 @@
 # Long-term memory implementation plan
 
-**Status:** Proposed, for team review. Not implemented.
+**Status:** Phases 1 to 4 are built and committed. Phase 0 was dropped and Phase 5 has not started. See the progress table in section 6.
 **Supersedes where they differ:** the proposed allowlist, storage choice and operator scope in `scheme-saathi-agent-memory-architecture.md`. That document is a design input, not the source of truth.
 
 ## 1. Goal
@@ -13,7 +13,7 @@ Non-goals for this plan:
 - Operator access to a citizen's stored facts (needs assistance grants, see section 9).
 - Retention changes to uploaded documents (currently 30 days, see `document-retention.md`).
 
-## 2. Current state (verified in the repo)
+## 2. Current state (verified in the repo, before this work started)
 
 | Area | State |
 |---|---|
@@ -110,6 +110,27 @@ Retention periods follow document section 9.3 unless the team revises them. A te
 ## 6. Phases
 
 Branch `feature/long-term-memory` off `develop`. One PR per phase into `develop`. Follow `.github/pull_request_template.md`.
+
+### Progress
+
+| Phase | Status | Notes |
+|---|---|---|
+| 0 Setup | Dropped | The team chose not to lazy-import `chromadb` and not to add `docs/memory-policy.md`. `memory_runtime` returns no store when `chromadb` is missing. The Chroma tests skip through `importorskip`. |
+| 1 Policy and storage | Built, committed | `data/memory_policy.json`, allowlist and retention checks in both services, ID-number rejection, Chroma fixes, contract extensions. Commits a85d1de and 1cc9c78. |
+| 2 Graph | Built, committed | Subject tag, `memory_load`, `memory_save` and `memory_save_edit` nodes, reference saving in `submit`, scope in `config["configurable"]`. Commits 3c52e25 and 5edd839. |
+| 3 API and UI | Built, committed | Memory and application endpoints, consent screens, saved-details panel, chat tracking, 5-minute cleanup, and a "Forget my data" that covers every session (db2beaf). Hindi and Marathi text are drafts that need human review. |
+| 4 Portal, auth, forget | Built, committed | Operator role claim, portal owner check, thread registry, optional durable workflow state, 24-hour and 7-day expiry. Tests pass. |
+| 5 Evaluation | Not started | |
+
+Differences from the plan as first written:
+
+- **Forget:** the full "forget across every surface" work shipped in Phase 3, not Phase 4. Phase 4 added operator handling and the thread registry to it.
+- **Workflow state:** `SqliteSaver` is opt-in through `SCHEME_SAATHI_CHECKPOINT_DB`, not a replacement for `MemorySaver`. Without the variable, state stays in memory and is lost on restart. The team has not yet approved the storage exception (section 10, item 1).
+- **Application flow:** the UI's application flow (`graph/workflow.py`) saves application references but does not load remembered facts. Prefill and fact saving run only in the chat flow.
+- **Portal:** `get_application_status` still accepts a call with no household, for existing contract tests.
+- **Operators:** they work only under their own `operator:<sub>` account. Access inside a citizen's household stays deferred (section 9).
+- **Log masking:** the memory code logs only counts and exception types. There is no dedicated test that memory logs hold no personal values (section 8).
+- **Evaluation:** the memory-on versus memory-off question-count test on `data/personas` does not exist yet (Phase 5).
 
 ### Phase 0: Setup
 

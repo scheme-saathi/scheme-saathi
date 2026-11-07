@@ -830,7 +830,7 @@ def _track_node(
     lines = []
     for reference in references[:MAX_TRACKED]:
         try:
-            status = tools.application_status(reference.application_id)["status"]
+            status = tools.application_status(reference.application_id, ctx.scope.household_id)["status"]
         except tools.ToolCallError as error:
             status = text["gone"] if error.code == "application_not_found" else text["unknown"]
         except Exception:
