@@ -244,7 +244,26 @@ The repository is public, so release assets can be downloaded by anyone. Only pu
 Never mark a scheme `open` without checking; unknown availability stays `unverified`.
 
 For later OpenRouter-backed agents, copy `.env.example` to `.env` and add your key. Never commit `.env`.
-The local API/UI entry point is described below; Docker setup has not been implemented yet.
+The local API/UI entry point is described below, along with Docker setup.
+
+### Run with Docker
+
+Build the image from the project root:
+
+```bash
+docker build -t scheme-saathi .
+```
+
+Run the UI on <http://localhost:8501>. If using model-backed features, provide
+your local `.env` file at runtime; it is not copied into the image. Uploaded
+documents are stored in a named Docker volume:
+
+```bash
+docker run --rm -p 8501:8501 --env-file .env -v scheme-saathi-documents:/app/data/private_documents scheme-saathi
+```
+
+Create `.env` from `.env.example` and configure the required model variables
+before starting the container.
 
 ### Local Streamlit UI
 
