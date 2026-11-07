@@ -80,4 +80,4 @@ def authenticated_household(
     except Auth0ConfigurationError as error:
         raise HTTPException(status_code=503, detail="Authentication is not configured.") from error
     except Auth0TokenError as error:
-        raise HTTPException(status_code=401, detail="The bearer token is invalid.") from error
+        raise HTTPException(status_code=401, detail=str(error)) from error

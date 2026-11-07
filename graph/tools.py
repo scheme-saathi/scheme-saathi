@@ -64,6 +64,7 @@ READ_ACCESS = {
         (RULE_ENGINE, "list_rule_schemes"),
         (RULE_ENGINE, "get_rule_fields"),
         (RULE_ENGINE, "get_field_specs"),
+        (SCHEMES_KB, "search_scheme_evidence"),
     },
     "eligibility": {
         (RULE_ENGINE, "list_rule_schemes"),
