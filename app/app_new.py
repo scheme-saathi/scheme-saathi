@@ -1907,39 +1907,73 @@ def _render_remembered_facts(api_base: str, remembered: dict[str, Any]) -> None:
                 st.rerun()
 
 
+def _render_application_item(api_base: str, names: dict[str, str], item: dict[str, Any], show_relation: bool) -> None:
+    application_id = str(item.get("application_id", ""))
+    scheme_id = str(item.get("scheme_id", ""))
+    who = f" ({item['relation']})" if show_relation and item.get("relation") else ""
+    st.markdown(f"{names.get(scheme_id, scheme_id)}{who}")
+    st.caption(f"`{application_id}` · {_short_date(item.get('submitted_at'))}")
+    check_column, remove_column = st.columns(2)
+    quoted = quote(application_id, safe="")
+    if check_column.button(_t("check_status"), key=f"status-{application_id}"):
+        try:
+            status = _memory_request(api_base, f"/api/applications/{quoted}/status")
+        except RuntimeError as error:
+            st.error(str(error))
+        else:
+            if status.get("found_at_portal"):
+                st.info(_t("status_is", status=status.get("status")))
+            else:
+                st.warning(_t("not_at_portal"))
+    if remove_column.button(_t("remove"), key=f"remove-{application_id}"):
+        try:
+            _memory_request(api_base, f"/api/applications/{quoted}", method="DELETE")
+        except RuntimeError as error:
+            st.error(str(error))
+        else:
+            st.rerun()
+
+
+def _render_family_member(api_base: str, names: dict[str, str], member: dict[str, Any]) -> None:
+    language = st.session_state.get("portal_language", "en")
+    relation = str(member.get("relation", ""))
+    nickname = member.get("nickname")
+    title = memory_text.relation_name(language, relation)
+    st.markdown(f"**{title}{f' ({nickname})' if nickname else ''}**")
+    quoted = quote(relation, safe="")
+    name_column, save_column = st.columns([3, 2], vertical_alignment="bottom")
+    entered = name_column.text_input(_t("nickname_label"), value=nickname or "", key=f"nickname-{relation}")
+    if save_column.button(_t("nickname_save"), key=f"nickname-save-{relation}"):
+        try:
+            _memory_request(api_base, f"/api/family/{quoted}", method="PATCH", payload={"nickname": entered})
+        except RuntimeError as error:
+            st.error(str(error))
+        else:
+            st.rerun()
+    for item in member.get("applications") or []:
+        _render_application_item(api_base, names, item, show_relation=False)
+    if st.button(_t("family_remove"), key=f"family-remove-{relation}"):
+        try:
+            _memory_request(api_base, f"/api/family/{quoted}", method="DELETE")
+        except RuntimeError as error:
+            st.error(str(error))
+        else:
+            st.rerun()
+
+
 def _render_saved_applications(api_base: str, applications: dict[str, Any]) -> None:
     st.markdown(f"**{_t('applications_title')}**")
     names = _scheme_names(api_base)
-    for group, title in (("for_me", "for_me"), ("for_others", "for_others")):
-        st.caption(_t(title))
+    for group in ("for_me", "family", "for_others"):
+        st.caption(_t("for_family" if group == "family" else group))
         items = applications.get(group) or []
         if not items:
             st.caption(_t("none_saved"))
         for item in items:
-            application_id = str(item.get("application_id", ""))
-            scheme_id = str(item.get("scheme_id", ""))
-            who = f" ({item['relation']})" if item.get("relation") else ""
-            st.markdown(f"{names.get(scheme_id, scheme_id)}{who}")
-            st.caption(f"`{application_id}` · {_short_date(item.get('submitted_at'))}")
-            check_column, remove_column = st.columns(2)
-            quoted = quote(application_id, safe="")
-            if check_column.button(_t("check_status"), key=f"status-{application_id}"):
-                try:
-                    status = _memory_request(api_base, f"/api/applications/{quoted}/status")
-                except RuntimeError as error:
-                    st.error(str(error))
-                else:
-                    if status.get("found_at_portal"):
-                        st.info(_t("status_is", status=status.get("status")))
-                    else:
-                        st.warning(_t("not_at_portal"))
-            if remove_column.button(_t("remove"), key=f"remove-{application_id}"):
-                try:
-                    _memory_request(api_base, f"/api/applications/{quoted}", method="DELETE")
-                except RuntimeError as error:
-                    st.error(str(error))
-                else:
-                    st.rerun()
+            if group == "family":
+                _render_family_member(api_base, names, item)
+            else:
+                _render_application_item(api_base, names, item, show_relation=True)
 
 
 def _render_forget_everything(api_base: str) -> None:

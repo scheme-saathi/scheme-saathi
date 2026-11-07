@@ -43,5 +43,7 @@ include = [
     "agents.*",
     "graph",
     "graph.*",
+    "evaluation",
+    "evaluation.*",
 ]
 namespaces = true

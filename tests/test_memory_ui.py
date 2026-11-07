@@ -123,7 +123,16 @@ class PanelApi:
         if path == "/api/applications":
             return {
                 "for_me": [{"application_id": "APP-1", "scheme_id": "C01", "submitted_at": "2026-11-01T10:00:00", "relation": None}],
-                "for_others": [{"application_id": "APP-2", "scheme_id": "C02", "submitted_at": "2026-11-02T10:00:00", "relation": "mother"}],
+                "family": [
+                    {
+                        "relation": "mother",
+                        "nickname": "Amma",
+                        "applications": [
+                            {"application_id": "APP-3", "scheme_id": "C01", "submitted_at": "2026-11-03T10:00:00", "relation": "mother"}
+                        ],
+                    }
+                ],
+                "for_others": [{"application_id": "APP-2", "scheme_id": "C02", "submitted_at": "2026-11-02T10:00:00", "relation": "neighbour"}],
             }
         if path.endswith("/status"):
             return {"found_at_portal": True, "status": "submitted"}
@@ -144,10 +153,10 @@ def test_the_panel_shows_what_is_remembered_and_the_saved_applications(panel):
     text = " ".join(m.value for m in app.markdown)
     assert "**Age:** 34" in text
     assert "**Indian citizen:** Yes" in text
-    assert "Pension scheme" in text and "C02 (mother)" in text
+    assert "Pension scheme" in text and "C02 (neighbour)" in text
     captions = " ".join(c.value for c in app.caption)
     assert "Will be asked again at your next check" in captions
-    assert "APP-1" in captions and "APP-2" in captions
+    assert "APP-1" in captions and "APP-2" in captions and "APP-3" in captions
     assert "Remembering household details: on" in " ".join(w.value for w in app.markdown)
 
 
@@ -190,6 +199,49 @@ def test_forgetting_everything_needs_a_ticked_confirmation(panel):
 
     assert ("DELETE", "/api/memory", None) in panel.calls
     assert app.session_state["memory_notice"] == memory_text.text("en", "forget_done")
+
+
+def test_a_family_member_is_listed_with_their_nickname_and_applications(panel):
+    app = AppTest.from_function(panel_screen).run()
+    assert not app.exception
+    assert any("**Mother (Amma)**" in m.value for m in app.markdown)
+    assert any("My family" in c.value for c in app.caption)
+    assert app.text_input(key="nickname-mother").value == "Amma"
+    assert any(b.key == "status-APP-3" for b in app.button)
+
+
+def test_a_family_member_can_be_renamed(panel):
+    app = AppTest.from_function(panel_screen).run()
+    app.text_input(key="nickname-mother").set_value("Aai").run()
+    next(b for b in app.button if b.key == "nickname-save-mother").click().run()
+    assert ("PATCH", "/api/family/mother", {"nickname": "Aai"}) in panel.calls
+
+
+def test_a_family_member_can_be_removed_with_their_saved_applications(panel):
+    app = AppTest.from_function(panel_screen).run()
+    next(b for b in app.button if b.key == "family-remove-mother").click().run()
+    assert ("DELETE", "/api/family/mother", None) in panel.calls
+
+
+def test_a_family_application_can_still_be_checked_and_removed_on_its_own(panel):
+    app = AppTest.from_function(panel_screen).run()
+    next(b for b in app.button if b.key == "status-APP-3").click().run()
+    next(b for b in app.button if b.key == "remove-APP-3").click().run()
+    assert ("GET", "/api/applications/APP-3/status", None) in panel.calls
+    assert ("DELETE", "/api/applications/APP-3", None) in panel.calls
+
+
+def test_a_response_without_a_family_group_still_renders(monkeypatch):
+    class OldApi(PanelApi):
+        def __call__(self, api_base, path, method="GET", payload=None):
+            result = super().__call__(api_base, path, method, payload)
+            if path == "/api/applications":
+                result = {key: value for key, value in result.items() if key != "family"}
+            return result
+
+    monkeypatch.setattr(app_new, "_memory_request", OldApi())
+    monkeypatch.setattr(app_new, "_scheme_names", lambda api_base: {})
+    assert not AppTest.from_function(panel_screen).run().exception
 
 
 def test_an_operator_sees_only_the_applications_list_choice(monkeypatch):
@@ -329,6 +381,14 @@ def test_every_field_the_policy_may_remember_has_a_name_in_every_language():
     for language in memory_text.LANGUAGES:
         for field in fields:
             assert field in memory_text.FIELD_NAMES[language], (language, field)
+
+
+def test_every_family_relation_has_a_name_in_every_language():
+    from agents.family import FAMILY_RELATIONS
+
+    for language in memory_text.LANGUAGES:
+        for relation in FAMILY_RELATIONS:
+            assert relation in memory_text.RELATION_NAMES[language], (language, relation)
 
 
 def test_unknown_languages_and_fields_fall_back_to_english():

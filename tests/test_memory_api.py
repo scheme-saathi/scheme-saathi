@@ -223,7 +223,7 @@ def test_forgetting_everything_clears_every_store_of_the_household(client, memor
         ("conversations", "hh1"),
     ]
     assert client.get("/api/memory").json()["facts"] == []
-    assert client.get("/api/applications").json() == {"for_me": [], "for_others": []}
+    assert client.get("/api/applications").json() == {"for_me": [], "family": [], "for_others": []}
     consent = client.get("/api/memory/consent").json()["purposes"]
     assert not consent["profile_facts"]["granted"] and not consent["application_references"]["granted"]
 
@@ -333,17 +333,22 @@ def test_memory_endpoints_report_when_remembering_is_unavailable(who):
 # Saved applications
 
 
-def test_applications_are_grouped_for_me_and_for_other_people(client, memory):
+def test_applications_are_grouped_for_me_family_and_other_people(client, memory):
     grant(memory, "application_references")
     remember_application(memory, "APP-1", scheme_id="C01")
     remember_application(memory, "APP-2", subject="other", relation="mother", scheme_id="C02")
+    remember_application(memory, "APP-3", subject="other", relation="neighbour", scheme_id="C03")
 
     body = client.get("/api/applications").json()
 
     assert [a["application_id"] for a in body["for_me"]] == ["APP-1"]
+    [member] = body["family"]
+    assert (member["relation"], member["nickname"]) == ("mother", None)
+    [family_app] = member["applications"]
+    assert (family_app["application_id"], family_app["scheme_id"]) == ("APP-2", "C02")
     [other] = body["for_others"]
-    assert (other["application_id"], other["relation"], other["scheme_id"]) == ("APP-2", "mother", "C02")
-    assert "submitted_by" not in other
+    assert (other["application_id"], other["relation"], other["scheme_id"]) == ("APP-3", "neighbour", "C03")
+    assert "submitted_by" not in other and "submitted_by" not in family_app
 
 
 def test_status_is_read_live_from_the_portal_for_my_own_application(client, memory, monkeypatch):
@@ -401,7 +406,7 @@ def test_an_application_can_be_removed_from_the_list(client, memory):
     grant(memory, "application_references")
     remember_application(memory, "APP-1")
     assert client.delete("/api/applications/APP-1").status_code == 200
-    assert client.get("/api/applications").json() == {"for_me": [], "for_others": []}
+    assert client.get("/api/applications").json() == {"for_me": [], "family": [], "for_others": []}
     assert client.delete("/api/applications/APP-1").status_code == 404
 
 
@@ -610,7 +615,7 @@ def test_an_operator_sees_only_the_applications_they_submitted(client, operator,
 def test_one_operators_list_is_invisible_to_another_operator(client, operator, memory, who):
     operator_remembers(client, memory, "OP-APP")
     who.update({"household": "operator:op-2", "sub": "op-2"})
-    assert client.get("/api/applications").json() == {"for_me": [], "for_others": []}
+    assert client.get("/api/applications").json() == {"for_me": [], "family": [], "for_others": []}
     assert client.get("/api/applications/OP-APP/status").status_code == 404
 
 
@@ -655,4 +660,117 @@ def test_a_citizen_forgetting_leaves_an_operators_list_alone(client, memory, who
 
     assert client.get("/api/memory").json()["facts"] == []
     assert [r.application_id for r in memory.read_application_references(operator_scope())] == ["OP-APP"]
+
+
+# Family members
+
+
+def family_apps(client):
+    return {m["relation"]: m for m in client.get("/api/applications").json()["family"]}
+
+
+def test_a_family_member_is_created_by_the_first_application_and_listed_with_it(client, memory):
+    grant(memory, "application_references")
+    remember_application(memory, "A1", subject="other", relation="mother")
+    remember_application(memory, "A2", subject="other", relation="mother", scheme_id="C02")
+
+    members = family_apps(client)
+
+    assert set(members) == {"mother"}
+    assert {a["application_id"] for a in members["mother"]["applications"]} == {"A1", "A2"}
+    assert members["mother"]["nickname"] is None
+
+
+def test_a_family_member_can_be_given_a_nickname_and_it_is_listed(client, memory):
+    grant(memory, "application_references")
+    remember_application(memory, "A1", subject="other", relation="mother")
+
+    response = client.patch("/api/family/mother", json={"nickname": "Amma"})
+
+    assert response.status_code == 200 and response.json()["relation"] == "mother"
+    assert family_apps(client)["mother"]["nickname"] == "Amma"
+    client.patch("/api/family/mother", json={"nickname": ""})
+    assert family_apps(client)["mother"]["nickname"] is None
+
+
+def test_a_relation_alias_reaches_the_same_member(client, memory):
+    grant(memory, "application_references")
+    remember_application(memory, "A1", subject="other", relation="mother")
+    assert client.patch("/api/family/mom", json={"nickname": "Amma"}).json()["relation"] == "mother"
+
+
+def test_a_nickname_with_digits_is_refused_and_nothing_changes(client, memory):
+    grant(memory, "application_references")
+    remember_application(memory, "A1", subject="other", relation="mother")
+    assert client.patch("/api/family/mother", json={"nickname": "Amma 9876543210"}).status_code == 422
+    assert family_apps(client)["mother"]["nickname"] is None
+
+
+def test_someone_who_is_not_family_or_not_saved_is_not_found(client, memory):
+    grant(memory, "application_references")
+    remember_application(memory, "A1", subject="other", relation="neighbour")
+    for relation in ("neighbour", "father", "nobody"):
+        assert client.patch(f"/api/family/{relation}", json={"nickname": "X"}).status_code == 404
+        assert client.delete(f"/api/family/{relation}").status_code == 404
+    assert len(client.get("/api/applications").json()["for_others"]) == 1
+
+
+def test_removing_a_family_member_removes_their_saved_applications_only(client, memory):
+    grant(memory, "application_references")
+    remember_application(memory, "A1", subject="other", relation="mother")
+    remember_application(memory, "A2", subject="other", relation="mother", scheme_id="C02")
+    remember_application(memory, "A3", subject="other", relation="son")
+    remember_application(memory, "A4")
+
+    body = client.delete("/api/family/mother").json()
+
+    assert body["applications_removed"] == 2
+    listed = client.get("/api/applications").json()
+    assert [m["relation"] for m in listed["family"]] == ["son"]
+    assert [a["application_id"] for a in listed["for_me"]] == ["A4"]
+    assert client.delete("/api/family/mother").status_code == 404
+
+
+def test_another_household_cannot_rename_or_remove_my_family_member(client, memory, who):
+    grant(memory, "application_references")
+    remember_application(memory, "A1", subject="other", relation="mother")
+    who.update({"household": "hh2", "sub": "user-2"})
+
+    assert client.patch("/api/family/mother", json={"nickname": "Amma"}).status_code == 404
+    assert client.delete("/api/family/mother").status_code == 404
+    assert client.get("/api/applications").json()["family"] == []
+
+    who.update({"household": "hh1", "sub": "user-1"})
+    assert len(family_apps(client)["mother"]["applications"]) == 1
+
+
+def test_family_endpoints_need_a_signed_in_person(memory):
+    application = api.create_api(service=object())
+    application.dependency_overrides[optional_memory] = lambda: memory
+    anonymous = TestClient(application)
+    assert anonymous.patch("/api/family/mother", json={"nickname": "X"}).status_code == 401
+    assert anonymous.delete("/api/family/mother").status_code == 401
+
+
+def test_an_operator_has_family_members_under_their_own_account(client, operator, memory):
+    operator_remembers(client, memory, "OP-APP")  # saves a "neighbour"
+    now = datetime.utcnow()
+    memory.save_application_reference(
+        operator_scope(),
+        ApplicationReference(
+            scheme_id="C01",
+            application_id="OP-MOTHER",
+            submitted_at=now,
+            expires_at=now + timedelta(days=90),
+            consent_reference=memory.active_consent(operator_scope(), "application_references").consent_reference,
+            subject="other",
+            relation="mother",
+            submitted_by="op-1",
+        ),
+    )
+
+    assert set(family_apps(client)) == {"mother"}
+    assert client.patch("/api/family/mother", json={"nickname": "Client"}).status_code == 200
+    assert client.delete("/api/family/mother").json()["applications_removed"] == 1
+    assert [a["application_id"] for a in client.get("/api/applications").json()["for_others"]] == ["OP-APP"]
 

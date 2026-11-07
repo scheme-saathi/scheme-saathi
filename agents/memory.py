@@ -106,6 +106,7 @@ class ApplicationReference(Contract):
     subject: Literal["self", "other"] = "self"
     relation: str | None = None
     submitted_by: str | None = None
+    nickname: str | None = None
 
     @model_validator(mode="after")
     def validate_expiry(self) -> "ApplicationReference":
@@ -116,6 +117,11 @@ class ApplicationReference(Contract):
                 raise ValueError("A relation label only applies to applications for someone else.")
             if not RELATION_LABEL.fullmatch(self.relation):
                 raise ValueError("A relation label is a short word such as 'mother', never a name or number.")
+        if self.nickname is not None:
+            if self.relation is None:
+                raise ValueError("A nickname needs a relation.")
+            if not RELATION_LABEL.fullmatch(self.nickname):
+                raise ValueError("A nickname is a short word made of letters, never a number or ID.")
         return self
 
 

@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from typing import Any, Mapping
 
 from agents.contracts import FactMap
+from agents.family import family_members, family_relation
 from agents.memory import (
     ApplicationReference,
     MemoryFact,
@@ -129,6 +130,13 @@ def save_application_reference(
         return False
     now = now or utc_now()
     for_other = ctx.scope.actor_role == "operator" or subject == "other"
+    label = (family_relation(relation) or clean_relation(relation)) if for_other else None
+    nickname = None
+    if label and family_relation(label):  # a returning family member keeps their nickname
+        nickname = next(
+            (m.nickname for m in family_members(ctx.service.read_application_references(ctx.scope)) if m.relation == label),
+            None,
+        )
     ctx.service.save_application_reference(
         ctx.scope,
         ApplicationReference(
@@ -138,8 +146,9 @@ def save_application_reference(
             expires_at=now + timedelta(days=ctx.allowlist.application_reference_expiry_days),
             consent_reference=consent.consent_reference,
             subject="other" if for_other else "self",
-            relation=clean_relation(relation) if for_other else None,
+            relation=label,
             submitted_by=ctx.scope.actor_id,
+            nickname=nickname,
         ),
     )
     return True

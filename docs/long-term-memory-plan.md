@@ -1,6 +1,6 @@
 # Long-term memory implementation plan
 
-**Status:** Phases 1 to 4 are built and committed. Phase 0 was dropped and Phase 5 has not started. See the progress table in section 6.
+**Status:** Phases 1 to 4 are built and committed. Family members and the Phase 5 evaluation harness are built but not yet committed, and their tests have not yet been confirmed as passing. Phase 0 was dropped. Held-out cases and attacks for Phase 5 are still to be written by someone else. See the progress table and the pending list in section 6.
 **Supersedes where they differ:** the proposed allowlist, storage choice and operator scope in `scheme-saathi-agent-memory-architecture.md`. That document is a design input, not the source of truth.
 
 ## 1. Goal
@@ -120,7 +120,8 @@ Branch `feature/long-term-memory` off `develop`. One PR per phase into `develop`
 | 2 Graph | Built, committed | Subject tag, `memory_load`, `memory_save` and `memory_save_edit` nodes, reference saving in `submit`, scope in `config["configurable"]`. Commits 3c52e25 and 5edd839. |
 | 3 API and UI | Built, committed | Memory and application endpoints, consent screens, saved-details panel, chat tracking, 5-minute cleanup, and a "Forget my data" that covers every session (db2beaf). Hindi and Marathi text are drafts that need human review. |
 | 4 Portal, auth, forget | Built, committed | Operator role claim, portal owner check, thread registry, optional durable workflow state, 24-hour and 7-day expiry. Tests pass. |
-| 5 Evaluation | Not started | |
+| 5 Evaluation | Partly built, not committed | `evaluation/memory_eval.py` runs the real graph, rule engine and memory policy with a persona in place of the model. It compares a returning person's questions with memory on and off, and fails a run if the verdict changes, memory adds questions, or the control differs from the first visit. The development set is the 50 synthetic households in `data/household_profiles/`. A run on 10 of them had 0 failed runs. The full 50-case run and the harness unit tests (`tests/test_memory_eval.py`) are not yet confirmed. Held-out cases (`--cases FILE`) and attacks are not written. |
+| Family members (added later) | Built, not committed | Family relations, per-member grouping, nickname, rename and delete, chat tracking by relation. Facts about family members are still not remembered. Tests (`tests/test_family.py` and extensions) are written but not yet confirmed as passing. |
 
 Differences from the plan as first written:
 
@@ -130,7 +131,18 @@ Differences from the plan as first written:
 - **Portal:** `get_application_status` still accepts a call with no household, for existing contract tests.
 - **Operators:** they work only under their own `operator:<sub>` account. Access inside a citizen's household stays deferred (section 9).
 - **Log masking:** the memory code logs only counts and exception types. There is no dedicated test that memory logs hold no personal values (section 8).
-- **Evaluation:** the memory-on versus memory-off question-count test on `data/personas` does not exist yet (Phase 5).
+- **Evaluation:** the harness exists, but it measures a development set. Its cases are not held-out, because the author of the memory code wrote it. A person who did not write the memory code must supply the held-out cases and the attacks.
+- **Harness finding:** a first visit reaches the confirm step, the only point where anything is remembered, only when the rules reach a definite verdict from the facts the person knows. A visit that stops on "I don't know" saves nothing. The harness reports these separately as `first_visits_stopped_early`.
+
+### Pending before merge
+
+1. Run the full suite once (`python -m pytest -q`, as the pull request template requires) and confirm the family and harness tests pass. Check the known failures in section 8 against a clean `develop` or CI.
+2. Commit the family members and Phase 5 work.
+3. Team decisions in section 10, above all approval of `SqliteSaver` (item 1).
+4. Held-out cases and attacks for the evaluation, from someone other than the memory author, including the "household_id=..." prompt refusal and a log-masking test (section 8).
+5. Human review of the Hindi and Marathi text.
+6. Update `.github/copilot-instructions.md`, which still describes a `memory/store.py` that does not exist (section 11). It is another role's file, so it needs the owner's sign-off.
+7. Decide whether to open one pull request or one per phase (this section's first paragraph). There are now several phases on one branch.
 
 ### Phase 0: Setup
 
@@ -156,7 +168,8 @@ Differences from the plan as first written:
 
 - `GET/PUT /api/memory/consent` with two purposes (facts, application references), both off by default.
 - `GET /api/memory`, `DELETE /api/memory/facts/{field}`, `DELETE /api/memory`.
-- `GET /api/applications` (grouped "For me" and "For others") and `GET /api/applications/{id}/status`. The status endpoint first checks that the ID is in the caller's own references, then asks the portal.
+- `GET /api/applications` (grouped "For me", "My family" and "For others") and `GET /api/applications/{id}/status`. The status endpoint first checks that the ID is in the caller's own references, then asks the portal.
+- Family members (added after Phase 4): mother, father, grandmother, grandfather, son, daughter, wife and husband count as family. A member is the group of saved applications sharing a family relation, plus an optional nickname (letters only) kept on them, so it needs no new consent, holds no facts, and goes with its last application (90-day expiry). It is created automatically when a submitted application names the relation. `PATCH /api/family/{relation}` renames and `DELETE /api/family/{relation}` removes the member with their saved applications. Operators get the same list under their own account. One member per relation for now.
 - Chat "track my application" calls the same lookup. The model never queries by an ID taken from message text.
 - Streamlit: two unticked consent choices with actual fields and retention shown, "What we remember", "My applications", "Forget my data", in Hindi, Marathi and English.
 - 5-minute cleanup loop, following the pattern in `LocalDocumentStore`. Mask IDs in logs and audit entries.
@@ -195,6 +208,26 @@ See section 8.
 - Memory-on versus memory-off question count on the persona data in `data/personas`.
 
 Run with `pytest --cov`. The Chroma tests need `chromadb` (installed in CI through the `rag` extra) and skip without it. Sixteen errors in `tests/test_chromadb_phase2.py` exist on a clean tree on Windows: teardown cannot delete the open temporary `chroma.sqlite3`. Fix them with the Chroma adapter work.
+
+### Coverage of this test plan
+
+| Item | Covered by | State |
+|---|---|---|
+| Memory off | `test_memory_workflow.py` | Covered |
+| Returning citizen, prefill, fewer questions, confirm step | `test_memory_workflow.py`, `evaluation/memory_eval.py` | Covered |
+| Expired and past-`reconfirm_by` facts, edits overwrite | `test_memory_workflow.py`, `test_memory_service_phase2.py` | Covered |
+| Subject `other` | `test_memory_workflow.py`, `test_family.py` | Covered |
+| Household isolation by a direct call | `test_memory_service_phase2.py`, `test_memory_api.py`, `test_portal_owner.py` | Covered |
+| A prompt such as "household_id=..." or a request for someone else's data | None | Not written. It is an attack, so it needs an author who did not write the defence. |
+| Consent withdrawal | `test_memory_api.py`, `test_memory_withdraw_cleanup.py` | Covered |
+| Application references and status lookup | `test_memory_api.py`, `test_memory_workflow.py`, `test_portal_owner.py` | Covered |
+| Operator limits and own list | `test_memory_api.py`, `test_auth.py`, `test_family.py` | Covered |
+| Forget across every surface | `test_forget_household.py`, `test_memory_api.py` | Covered |
+| Cleanup removes expired records | `test_memory_service_phase2.py`, `test_chroma_memory_phase1.py` | Covered for `purge_expired`. The 5-minute timer class `MemoryCleanup` has no direct test. |
+| No personal values in logs or audit entries | None | Not written. |
+| Memory-on versus memory-off question count on personas | `evaluation/memory_eval.py`, `test_memory_eval.py` | Built on a development set. Not yet run in full. No held-out set. |
+| Workflow state, expiry, thread ownership | `test_thread_registry.py`, `test_workflow_expiry.py` | Covered |
+| Family members | `test_family.py`, `test_memory_api.py`, `test_memory_ui.py` | Covered, tests not yet confirmed as passing |
 
 ## 9. Out of scope and deferred
 

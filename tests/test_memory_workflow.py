@@ -642,6 +642,55 @@ def test_a_follow_up_is_answered_from_the_persons_own_saved_applications(monkeyp
     assert "a1b2c3d4" in result["response"]
 
 
+def test_a_follow_up_naming_a_family_member_tracks_only_that_member(monkeypatch):
+    service = memory_service(consent_facts=False)
+    saved_applications(service)
+    looked_up = []
+    monkeypatch.setattr(
+        "graph.agent_workflow.tools.application_status",
+        lambda application_id, household_id: looked_up.append(application_id) or {"status": "submitted"},
+    )
+    conversation = Conversation(ScriptedIntake(), memory=service)
+
+    result = conversation.send("Track the status of my mother's case")
+
+    assert result["status"] == "applications_listed"
+    assert "C02: submitted for your mother" in result["response"]
+    assert "C01" not in result["response"]
+    assert looked_up == ["e5f6a7b8-0000-4000-8000-000000000002"]
+
+
+def test_a_follow_up_for_a_family_member_with_nothing_saved_says_so_without_a_lookup(monkeypatch):
+    service = memory_service(consent_facts=False)
+    saved_applications(service)
+    monkeypatch.setattr(
+        "graph.agent_workflow.tools.application_status",
+        lambda application_id, household_id: pytest.fail("no lookup"),
+    )
+    conversation = Conversation(ScriptedIntake(), memory=service)
+
+    result = conversation.send("Track the status of my father's case")
+
+    assert result["status"] == "no_applications"
+    assert "your father" in result["response"]
+
+
+def test_a_family_members_nickname_is_shown_in_the_follow_up(monkeypatch):
+    from agents.family import rename_family_member
+
+    service = memory_service(consent_facts=False)
+    saved_applications(service)
+    rename_family_member(service, CITIZEN, "mother", "Amma")
+    monkeypatch.setattr(
+        "graph.agent_workflow.tools.application_status",
+        lambda application_id, household_id: {"status": "submitted"},
+    )
+
+    result = Conversation(ScriptedIntake(), memory=service).send(FOLLOW_UP)
+
+    assert "for your mother (Amma)" in result["response"]
+
+
 def test_an_application_id_in_the_message_is_never_looked_up(monkeypatch):
     service = memory_service(consent_facts=False)
     saved_applications(service)

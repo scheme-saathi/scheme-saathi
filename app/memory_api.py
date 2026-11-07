@@ -14,7 +14,8 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from agents.memory import MemoryConsent, MemoryService, Purpose, as_utc, utc_now
+from agents.family import delete_family_member, family_members, family_relation, rename_family_member
+from agents.memory import ApplicationReference, MemoryConsent, MemoryService, Purpose, as_utc, utc_now
 from app import memory_runtime
 from app.auth import AuthenticatedHousehold, authenticated_household
 from app.memory_runtime import memory_scope
@@ -180,24 +181,82 @@ def forget_fact(
     return {"status": "success", "field": field}
 
 
+def _application_item(reference: ApplicationReference) -> dict[str, Any]:
+    return {
+        "application_id": reference.application_id,
+        "scheme_id": reference.scheme_id,
+        "submitted_at": reference.submitted_at,
+        "expires_at": reference.expires_at,
+        "relation": reference.relation,
+    }
+
+
 @router.get("/applications")
 def list_applications(
     principal: AuthenticatedHousehold = Depends(authenticated_household),
     service: MemoryService = Depends(require_memory),
-) -> dict[str, list[dict[str, Any]]]:
-    """Applications saved for this person, split into their own and those for other people."""
-    grouped: dict[str, list[dict[str, Any]]] = {"for_me": [], "for_others": []}
-    for reference in service.read_application_references(memory_scope(principal)):
-        grouped["for_others" if reference.subject == "other" else "for_me"].append(
+) -> dict[str, Any]:
+    """Applications saved for this person: their own, each family member's, and other people's."""
+    references = service.read_application_references(memory_scope(principal))
+    members = family_members(references)
+    in_family = {item.application_id for member in members for item in member.applications}
+    return {
+        "for_me": [_application_item(r) for r in references if r.subject != "other"],
+        "family": [
             {
-                "application_id": reference.application_id,
-                "scheme_id": reference.scheme_id,
-                "submitted_at": reference.submitted_at,
-                "expires_at": reference.expires_at,
-                "relation": reference.relation,
+                "relation": member.relation,
+                "nickname": member.nickname,
+                "applications": [_application_item(r) for r in member.applications],
             }
-        )
-    return grouped
+            for member in members
+        ],
+        "for_others": [
+            _application_item(r) for r in references if r.subject == "other" and r.application_id not in in_family
+        ],
+    }
+
+
+class FamilyRename(BaseModel):
+    nickname: str | None = None
+
+
+def _family_relation_or_404(relation: str) -> str:
+    canonical = family_relation(relation)
+    if canonical is None:
+        raise HTTPException(status_code=404, detail="That is not a family member in your list.")
+    return canonical
+
+
+@router.patch("/family/{relation}")
+def rename_member(
+    relation: str,
+    change: FamilyRename,
+    principal: AuthenticatedHousehold = Depends(authenticated_household),
+    service: MemoryService = Depends(require_memory),
+) -> dict[str, Any]:
+    """Give a family member a nickname, or clear it. Letters only, so no number or ID is kept."""
+    canonical = _family_relation_or_404(relation)
+    try:
+        changed = rename_family_member(service, memory_scope(principal), canonical, change.nickname)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    if not changed:
+        raise HTTPException(status_code=404, detail="That is not a family member in your list.")
+    return {"status": "success", "relation": canonical}
+
+
+@router.delete("/family/{relation}")
+def remove_member(
+    relation: str,
+    principal: AuthenticatedHousehold = Depends(authenticated_household),
+    service: MemoryService = Depends(require_memory),
+) -> dict[str, Any]:
+    """Remove a family member and their saved applications. Nothing at the portal is touched."""
+    canonical = _family_relation_or_404(relation)
+    removed = delete_family_member(service, memory_scope(principal), canonical)
+    if not removed:
+        raise HTTPException(status_code=404, detail="That is not a family member in your list.")
+    return {"status": "success", "relation": canonical, "applications_removed": removed}
 
 
 @router.get("/applications/{application_id}/status")

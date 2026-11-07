@@ -30,6 +30,7 @@ from agents.contracts import (
 from agents.document_checker import DocumentCheckerAgent
 from agents.eligibility import EligibilityAgent
 from agents.intake import IntakeAgent, income_period
+from agents.family import family_relation, relation_in_text
 from agents.memory import MemoryService, clean_relation
 from agents.model_factory import create_chat_model
 from agents.supervisor import SupervisorAgent
@@ -771,6 +772,7 @@ TRACK_TEXT = {
             "I have no saved applications for you. An application is remembered only if "
             "you allowed it before submitting."
         ),
+        "none_for": "I have no saved applications for your {relation}.",
         "off": "Remembering applications is not available right now.",
         "other": "for your {relation}",
         "someone": "for someone else",
@@ -784,6 +786,7 @@ TRACK_TEXT = {
             "आपके लिए कोई आवेदन सहेजा हुआ नहीं है। आवेदन तभी याद रखा जाता है जब आपने "
             "जमा करने से पहले अनुमति दी हो।"
         ),
+        "none_for": "आपके {relation} के लिए कोई आवेदन सहेजा हुआ नहीं है।",
         "off": "आवेदन याद रखने की सुविधा अभी उपलब्ध नहीं है।",
         "other": "आपके {relation} के लिए",
         "someone": "किसी और के लिए",
@@ -797,6 +800,7 @@ TRACK_TEXT = {
             "तुमच्यासाठी कोणताही अर्ज जतन केलेला नाही. सादर करण्यापूर्वी तुम्ही परवानगी दिली "
             "असेल तरच अर्ज लक्षात ठेवला जातो."
         ),
+        "none_for": "तुमच्या {relation} साठी कोणताही अर्ज जतन केलेला नाही.",
         "off": "अर्ज लक्षात ठेवण्याची सुविधा सध्या उपलब्ध नाही.",
         "other": "तुमच्या {relation} साठी",
         "someone": "इतर कोणासाठी",
@@ -827,6 +831,15 @@ def _track_node(
     if not references:
         return _guard_output(agents, state, {"status": "no_applications", "response": text["none"]}, "supervisor")
 
+    asked = relation_in_text(state.get("request", ""))
+    if asked:
+        references = [
+            r for r in references if r.subject == "other" and family_relation(r.relation) == asked
+        ]
+        if not references:
+            reply = {"status": "no_applications", "response": text["none_for"].format(relation=asked)}
+            return _guard_output(agents, state, reply, "supervisor")
+
     lines = []
     for reference in references[:MAX_TRACKED]:
         try:
@@ -838,6 +851,8 @@ def _track_node(
         for_whom = ""
         if reference.subject == "other":
             relation = reference.relation
+            if relation and reference.nickname:
+                relation = f"{relation} ({reference.nickname})"
             for_whom = " " + (text["other"].format(relation=relation) if relation else text["someone"])
         lines.append(
             f"- {reference.scheme_id}: {status}{for_whom} ({text['reference']} {reference.application_id[:8]})"

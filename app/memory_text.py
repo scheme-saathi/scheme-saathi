@@ -43,6 +43,11 @@ TEXT: dict[str, dict[str, str]] = {
         "applications_title": "My applications",
         "for_me": "For me",
         "for_others": "For other people",
+        "for_family": "My family",
+        "nickname_label": "Nickname (letters only, optional)",
+        "nickname_save": "Save nickname",
+        "family_remove": "Remove this person and their saved applications",
+        "nickname_invalid": "A nickname can only use letters.",
         "none_saved": "No applications are saved.",
         "check_status": "Check status",
         "status_is": "Status at the portal: {status}",
@@ -104,6 +109,11 @@ TEXT: dict[str, dict[str, str]] = {
         "applications_title": "मेरे आवेदन",
         "for_me": "मेरे लिए",
         "for_others": "दूसरे लोगों के लिए",
+        "for_family": "मेरा परिवार",
+        "nickname_label": "उपनाम (केवल अक्षर, वैकल्पिक)",
+        "nickname_save": "उपनाम सहेजें",
+        "family_remove": "इस व्यक्ति और उनके सहेजे गए आवेदन हटाएँ",
+        "nickname_invalid": "उपनाम में केवल अक्षर हो सकते हैं।",
         "none_saved": "कोई आवेदन सहेजा नहीं गया है।",
         "check_status": "स्थिति देखें",
         "status_is": "पोर्टल पर स्थिति: {status}",
@@ -165,6 +175,11 @@ TEXT: dict[str, dict[str, str]] = {
         "applications_title": "माझे अर्ज",
         "for_me": "माझ्यासाठी",
         "for_others": "इतर लोकांसाठी",
+        "for_family": "माझे कुटुंब",
+        "nickname_label": "टोपणनाव (फक्त अक्षरे, ऐच्छिक)",
+        "nickname_save": "टोपणनाव जतन करा",
+        "family_remove": "ही व्यक्ती आणि त्यांचे जतन केलेले अर्ज काढा",
+        "nickname_invalid": "टोपणनावात फक्त अक्षरे असू शकतात.",
         "none_saved": "कोणताही अर्ज जतन केलेला नाही.",
         "check_status": "स्थिती पहा",
         "status_is": "पोर्टलवरील स्थिती: {status}",
@@ -230,11 +245,51 @@ FIELD_NAMES: dict[str, dict[str, str]] = {
 }
 
 
+RELATION_NAMES: dict[str, dict[str, str]] = {
+    "en": {
+        "mother": "Mother",
+        "father": "Father",
+        "grandmother": "Grandmother",
+        "grandfather": "Grandfather",
+        "son": "Son",
+        "daughter": "Daughter",
+        "wife": "Wife",
+        "husband": "Husband",
+    },
+    "hi": {
+        "mother": "माँ",
+        "father": "पिता",
+        "grandmother": "दादी/नानी",
+        "grandfather": "दादा/नाना",
+        "son": "बेटा",
+        "daughter": "बेटी",
+        "wife": "पत्नी",
+        "husband": "पति",
+    },
+    "mr": {
+        "mother": "आई",
+        "father": "वडील",
+        "grandmother": "आजी",
+        "grandfather": "आजोबा",
+        "son": "मुलगा",
+        "daughter": "मुलगी",
+        "wife": "पत्नी",
+        "husband": "पती",
+    },
+}
+
+
 def text(language: str, key: str, **values: object) -> str:
     """The wording for `key` in the language, falling back to English; `values` fill its blanks."""
     table = TEXT.get(language) or TEXT["en"]
     template = table.get(key) or TEXT["en"][key]
     return template.format(**values) if values else template
+
+
+def relation_name(language: str, relation: str) -> str:
+    """A family relation in the person's language, falling back to English and then the word itself."""
+    names = RELATION_NAMES.get(language) or RELATION_NAMES["en"]
+    return names.get(relation) or RELATION_NAMES["en"].get(relation) or relation.capitalize()
 
 
 def field_name(language: str, field: str) -> str:
