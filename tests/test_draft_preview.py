@@ -21,7 +21,7 @@ def draft_rule_records(tmp_path, monkeypatch):
         for rule in record["rules"]:
             rule["status"] = "draft"
         (tmp_path / f"{scheme_id}.json").write_text(json.dumps(record))
-    monkeypatch.setattr(rule_server, "RULE_DIRS", [ROOT / "data/schemes", tmp_path])
+    monkeypatch.setattr(rule_server, "RULE_DIRS", [ROOT / "data/schemes", ROOT / "tests/fixtures", tmp_path])
     return tmp_path
 
 

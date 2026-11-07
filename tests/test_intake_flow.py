@@ -98,7 +98,7 @@ def test_draft_fields_are_hidden_outside_preview(tmp_path, monkeypatch):
     for rule in record["rules"]:
         rule["status"] = "draft"
     (tmp_path / "C06.json").write_text(json.dumps(record))
-    monkeypatch.setattr(rule_server, "RULE_DIRS", [ROOT / "data/schemes", tmp_path])
+    monkeypatch.setattr(rule_server, "RULE_DIRS", [ROOT / "data/schemes", ROOT / "tests/fixtures", tmp_path])
     assert get_field_specs(["C06"])["data"] == {}
 
 
@@ -208,14 +208,27 @@ def test_extract_never_sees_earlier_facts(pension_specs):
 
 
 def test_dont_know_counts_only_for_an_unanswered_pending_field(pension_specs):
-    def run(reply, pending):
-        return IntakeAgent(FakeModel(reply)).extract({"request": "pata nahi", "pending_field": pending}, pension_specs)
+    def run(reply, pending):  # a missed pending field is asked again on its own, so script both calls
+        return IntakeAgent(FakeModel(reply, reply)).extract({"request": "pata nahi", "pending_field": pending}, pension_specs)
 
     assert run({"facts": {}, "reply_kind": "dont_know"}, "income").dont_know
     assert not run({"facts": {}, "reply_kind": "other"}, "income").dont_know
     assert not run({"facts": {}, "reply_kind": "dont_know"}, None).dont_know
     answered = {"facts": {"income": {"amount": 100000, "period": "year"}}, "reply_kind": "dont_know"}
     assert not run(answered, "income").dont_know
+
+
+def test_a_missed_pending_answer_is_read_again_against_that_field_alone(pension_specs):
+    """gpt-4o-mini read "No" as dont_know against a wide schema, which stopped intake."""
+    model = FakeModel(
+        {"facts": {"age": 67}, "reply_kind": "dont_know"},
+        {"facts": {"is_widow": False}, "reply_kind": "answer"},
+    )
+    result = IntakeAgent(model).extract({"request": "No", "pending_field": "is_widow"}, pension_specs)
+
+    assert result.facts == {"age": 67, "is_widow": False}
+    assert not result.dont_know
+    assert set(model.schemas[1]["$defs"]["HouseholdProfile"]["properties"]) == {"is_widow"}
 
 
 @pytest.mark.parametrize(
@@ -394,6 +407,7 @@ def test_question_cap(monkeypatch):
     send("My mother is 67")
     result = send("1 lakh a year")
     assert result["intake_stopped"] == "question_cap"
+    assert result["response"].startswith("You have reached your limit of questions.")
     assert [q.field for q in intake.ask_calls] == ["income"]
 
 
@@ -554,7 +568,7 @@ def test_ui_confirm_details_resumes_real_api_and_graph(monkeypatch, correct_firs
         IntakeExtraction(facts=WIDOW_67), IntakeExtraction(facts={"age": 68})
     ))[0]
     monkeypatch.setattr(api, "get_workflow_service", lambda: service)
-    monkeypatch.setattr("graph.agent_workflow._shortlist_schemes", lambda agents, request: [PENSION])
+    monkeypatch.setattr("graph.agent_workflow._shortlist_schemes", lambda agents, request, facts=None: [PENSION])
     application = api.create_api()
     application.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
         household_id="test-household", subject="test-subject"

@@ -1,0 +1,69 @@
+{
+  "scheme_id": "C16",
+  "name": "Dr Ambedkar Central Sector Scheme of Interest Subsidy on Educational Loans for Overseas Studies for Other Backward Classes (OBCs) and Economically Backward Classes (EBCs)",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/dacssiselosobcebc",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant should be a Student."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The student should have secured admission in the approved course at Masters, M.Phil or PhD levels abroad for the listed courses."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant should have availed loan from a scheduled bank under the Education Loan Scheme of the Indian Banks Association (IBA) for the purpose."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The total income of the applicant (from all sources) shall not exceed ₹ 8,00,000 per annum."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "Reservation/ Relaxation/ Preference/ Priority"
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "Out of the total outlay in a year, a minimum of 50% amount will be earmarked for Interest Subsidy to the girl candidates."
+    }
+  ],
+  "documents_required": [
+    "Passport Sized Photograph",
+    "Aadhaar Number",
+    "Proof of Educational Qualification",
+    "Bonafide Certificate",
+    "For the candidate applying under the OBC category, the OBC Caste certificate in the prescribed Performa issued by the competent authority.",
+    "Income certificate produced by the student for availing Educational Loan viz. ITR/Form 16/Audited Accounts/Income certificate issued by the authority of the State Government/UT Administration.",
+    "Details of the Aadhaar-linked Bank Account."
+  ],
+  "rules": [
+    {
+      "field": "admitted_abroad_masters_mphil_or_phd",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_iba_education_loan_from_scheduled_bank",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "annual_income",
+      "op": "lte",
+      "value": 800000,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

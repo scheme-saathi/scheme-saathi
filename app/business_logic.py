@@ -22,7 +22,6 @@ from app.document_storage import DocumentStorageError, LocalDocumentStore
 from graph import tools
 from graph.tools import ToolCallError
 from graph.workflow import build_graph
-from servers.rule_engine.scheme import SchemeRecord, live_conditions
 
 logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -267,25 +266,9 @@ class DemoService:
 
     @staticmethod
     def _rule_field_types(scheme_ids: list[str]) -> dict[str, tuple[type, ...]]:
-        expected: dict[str, set[type]] = {}
-        for directory in (
-            PROJECT_ROOT / "data" / "schemes",
-            PROJECT_ROOT / "data" / "rules",
-        ):
-            for path in directory.glob("*.json"):
-                payload = json.loads(path.read_text(encoding="utf-8"))
-                if "rules" not in payload or "sections" in payload:
-                    continue
-                scheme = SchemeRecord.model_validate(payload)
-                if scheme.scheme_id not in scheme_ids:
-                    continue
-                for rule in live_conditions(scheme).rules:
-                    operand = rule.value[0] if rule.op in {"in", "not_in"} else rule.value
-                    expected.setdefault(rule.field, set()).add(type(operand))
-        return {
-            field_name: tuple(field_types)
-            for field_name, field_types in expected.items()
-        }
+        # Ask the rule engine (live rules only) rather than re-reading its folders here.
+        kinds = {"number": (int, float), "bool": (bool,), "str": (str,)}
+        return {name: kinds[spec["type"]] for name, spec in tools.field_specs(scheme_ids).items()}
 
     @staticmethod
     def _valid_fact_value(value: Any, expected_types: tuple[type, ...]) -> bool:

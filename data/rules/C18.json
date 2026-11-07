@@ -1,0 +1,80 @@
+{
+  "scheme_id": "C18",
+  "name": "Pradhan Mantri Surakshit Matritva Abhiyan",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/pmsma",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant must be a pregnant woman in her 2nd or 3rd trimester of pregnancy."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant must be an Indian citizen residing in India."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant must be willing to visit designated government health facilities on the 9th of every month."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "Trimester Specific Criteria"
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The applicant must have completed the first trimester of pregnancy (beyond 12 weeks of gestation)."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "The applicant must be in 2nd trimester (13-28 weeks) or 3rd trimester (29-40 weeks) of pregnancy."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "Special Categories"
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "The applicant identified as high-risk pregnancy cases receive priority attention and follow-up care."
+    },
+    {
+      "clause_id": "elig-9",
+      "text": "The applicant who are dropouts from regular antenatal care services are encouraged to participate."
+    }
+  ],
+  "documents_required": [
+    "At Health Facility Visit",
+    "Mother And Child Protection Card (If Available).",
+    "Aadhaar Card Or Any Government Issued Identity Proof.",
+    "Previous Medical Records (If Any).",
+    "Antenatal Care Records From Previous Visits.",
+    "Prescription Slips From Previous Consultations (If Applicable).",
+    "For Registration at Facility",
+    "Address Proof (Ration Card/Voter Identity Card/Utility Bills).",
+    "Mobile Number For Communication.",
+    "Emergency Contact Details.",
+    "Optional Documents",
+    "Bank Account Details (For Direct Benefit Transfer if applicable in future).",
+    "Husband's Identity Proof (If Required by Local Guidelines)."
+  ],
+  "rules": [
+    {
+      "field": "is_pregnant_in_2nd_or_3rd_trimester",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}
