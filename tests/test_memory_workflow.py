@@ -15,9 +15,10 @@ from agents.contracts import (
     SupervisorPlan,
 )
 from agents.eligibility import EligibilityAgent
-from agents.memory import MemoryConsent, MemoryFact, MemoryScope
+from agents.memory import ApplicationReference, MemoryConsent, MemoryFact, MemoryScope
 from agents.memory_service import HouseholdAllowlist, InMemoryMemoryService
 from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
+from graph import tools
 from graph.agent_workflow import AgentSet, build_agent_graph
 from graph.memory_nodes import memory_config
 from graph.workflow import application_hash
@@ -578,3 +579,136 @@ def test_facts_edited_at_the_approval_step_are_remembered_like_confirm_edits(mon
 
     assert result["status"] == "draft_edited"
     assert service.read_facts(CITIZEN, ["age"]) == {"age": 31}
+
+
+# Tracking an application in chat
+
+FOLLOW_UP = "Track the status of my case"
+
+
+def saved_applications(service, scope=CITIZEN):
+    now = datetime.utcnow()
+    service.record_consent(
+        scope,
+        MemoryConsent(
+            purpose="application_references",
+            granted=True,
+            notice_version="1",
+            decided_at=now,
+            expires_at=now + timedelta(days=60),
+            consent_reference=f"refs-{scope.household_id}",
+        ),
+    )
+    for application_id, subject, relation, scheme in (
+        ("a1b2c3d4-0000-4000-8000-000000000001", "self", None, "C01"),
+        ("e5f6a7b8-0000-4000-8000-000000000002", "other", "mother", "C02"),
+    ):
+        service.save_application_reference(
+            scope,
+            ApplicationReference(
+                scheme_id=scheme,
+                application_id=application_id,
+                submitted_at=now,
+                expires_at=now + timedelta(days=90),
+                consent_reference=f"refs-{scope.household_id}",
+                subject=subject,
+                relation=relation,
+                submitted_by=scope.actor_id,
+            ),
+        )
+
+
+def test_a_follow_up_is_answered_from_the_persons_own_saved_applications(monkeypatch):
+    service = memory_service(consent_facts=False)
+    saved_applications(service)
+    looked_up = []
+    monkeypatch.setattr(
+        "graph.agent_workflow.tools.application_status",
+        lambda application_id: looked_up.append(application_id) or {"application_id": application_id, "status": "submitted"},
+    )
+    conversation = Conversation(ScriptedIntake(), memory=service)
+
+    result = conversation.send(FOLLOW_UP)
+
+    assert result["status"] == "applications_listed"
+    assert "C01: submitted" in result["response"]
+    assert "C02: submitted for your mother" in result["response"]
+    assert sorted(looked_up) == [
+        "a1b2c3d4-0000-4000-8000-000000000001",
+        "e5f6a7b8-0000-4000-8000-000000000002",
+    ]
+    assert "a1b2c3d4-0000" not in result["response"]  # only a short reference is shown
+    assert "a1b2c3d4" in result["response"]
+
+
+def test_an_application_id_in_the_message_is_never_looked_up(monkeypatch):
+    service = memory_service(consent_facts=False)
+    saved_applications(service)
+    other = MemoryScope(actor_id="user-2", household_id="hh2", actor_role="citizen")
+    service.record_consent(
+        other,
+        MemoryConsent(
+            purpose="application_references",
+            granted=True,
+            notice_version="1",
+            decided_at=datetime.utcnow(),
+            expires_at=datetime.utcnow() + timedelta(days=60),
+            consent_reference="refs-hh2",
+        ),
+    )
+    looked_up = []
+    monkeypatch.setattr(
+        "graph.agent_workflow.tools.application_status",
+        lambda application_id: looked_up.append(application_id) or {"status": "submitted"},
+    )
+    conversation = Conversation(ScriptedIntake(), memory=service, scope=other)
+
+    result = conversation.send("Track the status of case OTHER-HOUSEHOLD-APP")
+
+    assert result["status"] == "no_applications"
+    assert looked_up == []
+
+
+def test_a_follow_up_with_nothing_saved_says_so(monkeypatch):
+    monkeypatch.setattr("graph.agent_workflow.tools.application_status", lambda application_id: pytest.fail("no lookup"))
+    conversation = Conversation(ScriptedIntake(), memory=memory_service(consent_facts=False))
+    result = conversation.send(FOLLOW_UP)
+    assert result["status"] == "no_applications"
+    assert "only if you allowed it" in result["response"]
+
+
+def test_a_follow_up_without_a_scope_does_not_read_any_list():
+    service = memory_service(consent_facts=False)
+    saved_applications(service)
+    conversation = Conversation(ScriptedIntake(), memory=service, scope=None)
+    result = conversation.send(FOLLOW_UP)
+    assert result["status"] == "responded"
+    assert "not available" in result["response"]
+
+
+def test_an_application_the_portal_lost_or_cannot_reach_is_reported_per_application(monkeypatch):
+    service = memory_service(consent_facts=False)
+    saved_applications(service)
+
+    def status(application_id):
+        code = "application_not_found" if application_id.startswith("a1b2") else "transport_error"
+        raise tools.ToolCallError("mock-portal", "get_application_status", code, "x")
+
+    monkeypatch.setattr("graph.agent_workflow.tools.application_status", status)
+    result = Conversation(ScriptedIntake(), memory=service).send(FOLLOW_UP)
+
+    assert "C01: not found at the portal" in result["response"]
+    assert "C02: status unavailable right now" in result["response"]
+
+
+def test_without_memory_a_follow_up_is_routed_as_before():
+    conversation = Conversation(ScriptedIntake(IntakeExtraction()), next_agent="respond")
+    result = conversation.send(FOLLOW_UP)
+    assert result["status"] == "responded"
+    assert result["response"] == "Check."
+
+
+def test_the_tracking_wording_exists_in_every_language_with_the_same_keys():
+    from graph.agent_workflow import TRACK_TEXT
+
+    assert set(TRACK_TEXT["hi"]) == set(TRACK_TEXT["mr"]) == set(TRACK_TEXT["en"])

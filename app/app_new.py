@@ -21,12 +21,12 @@ import streamlit as st
 import uvicorn
 
 if __package__:
-    from . import ui_auth
+    from . import memory_text, ui_auth
     from .api import create_api
 else:
     # `streamlit run app/app_new.py` puts app/ on sys.path, but api.py imports `app.*`.
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-    from app import ui_auth
+    from app import memory_text, ui_auth
     from app.api import create_api
 
 CSS_PATH = Path(__file__).with_name("style.css")
@@ -392,6 +392,52 @@ def _field_label(field: str) -> str:
     return FIELD_LABELS.get(field, field.replace("_", " ").capitalize())
 
 
+def _t(key: str, **values: Any) -> str:
+    """Memory wording in the language the person chose on the consent screen."""
+    return memory_text.text(st.session_state.get("portal_language", "en"), key, **values)
+
+
+def _set_language() -> None:
+    st.session_state["portal_language"] = st.session_state.get("portal-language-choice", "en")
+
+
+def _subject_line(prefix: str, source: dict[str, Any]) -> str:
+    """"Checking for: ..." or "Applying for: ...", naming who the check or application is for."""
+    if source.get("subject") != "other":
+        return _t(f"{prefix}_self")
+    relation = source.get("relation")
+    return _t(f"{prefix}_other", relation=relation) if relation else _t(f"{prefix}_someone")
+
+
+def _short_date(value: Any) -> str:
+    try:
+        return datetime.fromisoformat(str(value)).strftime("%d %b %Y")
+    except ValueError:
+        return str(value)
+
+
+def _memory_request(
+    api_base: str, path: str, method: str = "GET", payload: dict[str, Any] | None = None
+) -> Any:
+    body = json.dumps(payload).encode("utf-8") if payload is not None else None
+    headers = {"Content-Type": "application/json"} if payload is not None else None
+    return _api_request(f"{api_base}{path}", method=method, body=body, headers=headers)
+
+
+@st.cache_data
+def _memory_policy() -> dict[str, Any]:
+    """The fields that may be remembered and for how long, read from the shared policy file."""
+    from agents.memory_service import HouseholdAllowlist
+
+    allowlist = HouseholdAllowlist.from_policy_file()
+    fields = []
+    for field, policy in allowlist.allowed_fields.items():
+        retention = policy.get("retention", {})
+        if retention.get("store", True) and {"reconfirm_days", "expiry_days"} <= retention.keys():
+            fields.append((field, retention["reconfirm_days"], retention["expiry_days"]))
+    return {"fields": fields, "reference_days": allowlist.application_reference_expiry_days}
+
+
 def _render_eligibility(result: dict[str, Any]) -> None:
     """Present each reviewed-rule verdict, what was checked, and its source clauses."""
     names = result.get("scheme_names", {})
@@ -495,6 +541,12 @@ def _reset_chat() -> bool:
     if not _delete_conversation(st.session_state.get("chat_session_id")):
         return False
 
+    _clear_chat_state()
+    return True
+
+
+def _clear_chat_state() -> None:
+    """Forget the chat and application held in this browser session, without calling the API."""
     st.session_state["chat_session_id"] = None
     st.session_state["chat_messages"] = []
     st.session_state["chat_known_facts"] = {}
@@ -503,6 +555,7 @@ def _reset_chat() -> bool:
     st.session_state["chat_show_partial"] = False
     st.session_state["chat_confirmation"] = None
     st.session_state["application_result"] = None
+    st.session_state["application_subject"] = None
     st.session_state["application_uploads"] = {}
     st.session_state["application_outcome"] = None
     st.session_state["application_editing"] = False
@@ -524,17 +577,21 @@ def _start_application(
         or eligibility_result.get("verdicts", {}).get(scheme_id, {}).get("verdict") != "eligible"
     ):
         raise ValueError("Choose a confirmed eligible scheme before preparing an application.")
+    data = eligibility_result.get("data") or {}
+    subject = "other" if data.get("subject") == "other" else "self"
+    relation = data.get("relation") if subject == "other" else None
+    payload: dict[str, Any] = {
+        "citizen": eligibility_result["profile"],
+        "scheme_ids": [scheme_id],
+    }
+    if subject == "other":
+        payload["subject"] = "other"
+        if isinstance(relation, str) and relation:
+            payload["relation"] = relation
     with st.status("Preparing the application workflow...", expanded=True) as progress:
-        application_result = _send_workflow(
-            api_base,
-            "/api/analyze",
-            {
-                "citizen": eligibility_result["profile"],
-                "scheme_ids": [scheme_id],
-            },
-            progress,
-        )
+        application_result = _send_workflow(api_base, "/api/analyze", payload, progress)
     st.session_state["application_result"] = application_result
+    st.session_state["application_subject"] = {"subject": subject, "relation": relation}
     st.session_state["application_uploads"] = {}
     st.session_state["application_outcome"] = None
 
@@ -690,6 +747,7 @@ def _render_review_step(
     """Let the user approve, edit, or reject the reviewed application draft."""
     st.markdown("#### Step 4 — Review and decide")
     st.caption("Check your profile and exact application draft before deciding.")
+    st.caption(_subject_line("applying_for", st.session_state.get("application_subject") or {}))
     profile_col, application_col = st.columns(2, gap="small")
     with profile_col:
         st.markdown("**Profile**")
@@ -974,6 +1032,16 @@ def _render_fact_confirmation(api_base: str) -> None:
         return
     with st.container(border=True, key="fact-confirmation"):
         st.subheader("Confirm the details")
+        st.markdown(f"**{_subject_line('checking_for', confirmation)}**")
+        remembered = [f for f in confirmation.get("remembered_fields") or [] if f in facts]
+        if remembered:
+            language = st.session_state.get("portal_language", "en")
+            st.info(
+                _t(
+                    "remembered_from_before",
+                    fields=", ".join(memory_text.field_name(language, f) for f in remembered),
+                )
+            )
         st.caption(
             "Ask the citizen to check these details. Confirm only if they are correct; "
             "otherwise return to chat to change them."
@@ -1431,6 +1499,11 @@ def _initialize_portal_state() -> None:
         "application_outcome": None,
         "application_editing": False,
         "application_edit_revision": 0,
+        "application_subject": None,
+        "portal_language": "en",
+        "memory_choice_error": None,
+        "memory_panel_open": False,
+        "memory_notice": None,
     }
     for key, value in defaults.items():
         st.session_state.setdefault(key, value)
@@ -1520,6 +1593,29 @@ def _render_access_page() -> None:
             )
 
 
+def _save_memory_choices() -> None:
+    """Record the memory choices made on the consent screen; both are off unless ticked."""
+    st.session_state["memory_choice_error"] = None
+    chosen = [
+        purpose
+        for purpose, key in (
+            ("profile_facts", "memory-consent-facts"),
+            ("application_references", "memory-consent-refs"),
+        )
+        if st.session_state.get(key)
+    ]
+    for purpose in chosen:
+        try:
+            _memory_request(
+                _api_base_url(),
+                "/api/memory/consent",
+                method="PUT",
+                payload={"purpose": purpose, "granted": True},
+            )
+        except RuntimeError as error:
+            st.session_state["memory_choice_error"] = _t("memory_failed", error=str(error))
+
+
 def _complete_consent() -> None:
     """Record an in-session consent decision and open the chat only on acceptance."""
     if not st.session_state.get("session-consent", False):
@@ -1532,6 +1628,29 @@ def _complete_consent() -> None:
     st.session_state["consent_recorded_at"] = datetime.now(timezone.utc).isoformat()
     st.session_state["consent_error"] = None
     st.session_state["portal_stage"] = "chat"
+    _save_memory_choices()
+
+
+def _render_memory_choices() -> None:
+    """The optional, separate choices to remember details and applications; both start unticked."""
+    language = st.session_state.get("portal_language", "en")
+    policy = _memory_policy()
+    st.markdown(f"**{_t('consent_heading')}**")
+    st.write(_t("consent_notice"))
+    for field, reconfirm_days, expiry_days in policy["fields"]:
+        st.caption(
+            "• "
+            + _t(
+                "retention_line",
+                field=memory_text.field_name(language, field),
+                reconfirm=reconfirm_days,
+                expiry=expiry_days,
+            )
+        )
+    st.checkbox(_t("choice_facts"), key="memory-consent-facts")
+    st.checkbox(_t("choice_refs"), key="memory-consent-refs")
+    st.caption(_t("refs_note", days=policy["reference_days"]))
+    st.caption(_t("leave_unticked"))
 
 
 def _decline_consent() -> None:
@@ -1601,12 +1720,25 @@ def _render_consent_page() -> None:
                 "deletes supporting documents for the active application."
             )
 
+            st.session_state.setdefault(
+                "portal-language-choice", st.session_state.get("portal_language", "en")
+            )
+            st.radio(
+                _t("language_label"),
+                options=list(memory_text.LANGUAGES),
+                format_func=memory_text.LANGUAGES.get,
+                horizontal=True,
+                key="portal-language-choice",
+                on_change=_set_language,
+            )
+
             with st.form("session-consent-form"):
                 st.checkbox(
                     "I have read this notice and agree to use my information "
                     "for this session.",
                     key="session-consent",
                 )
+                _render_memory_choices()
                 st.form_submit_button(
                     "Agree and continue",
                     type="primary",
@@ -1632,6 +1764,8 @@ def _withdraw_consent() -> bool:
     st.session_state["consent_given"] = False
     st.session_state["consent_recorded_at"] = None
     st.session_state["session-consent"] = False
+    st.session_state["memory-consent-facts"] = False
+    st.session_state["memory-consent-refs"] = False
     return True
 
 
@@ -1716,6 +1850,128 @@ def _render_api_reference() -> None:
                         st.write(summary)
 
 
+def _change_memory_consent(api_base: str, purpose: str, granted: bool) -> None:
+    try:
+        _memory_request(
+            api_base, "/api/memory/consent", method="PUT", payload={"purpose": purpose, "granted": granted}
+        )
+    except RuntimeError as error:
+        st.error(str(error))
+    else:
+        st.rerun()
+
+
+def _render_memory_consent(api_base: str, consent: dict[str, Any]) -> None:
+    for purpose, on_text, off_text in (
+        ("profile_facts", "facts_on", "facts_off"),
+        ("application_references", "refs_on", "refs_off"),
+    ):
+        granted = bool(consent.get("purposes", {}).get(purpose, {}).get("granted"))
+        label_column, button_column = st.columns([3, 2], vertical_alignment="center")
+        label_column.write(_t(on_text if granted else off_text))
+        if button_column.button(
+            _t("turn_off" if granted else "turn_on"), key=f"memory-consent-{purpose}"
+        ):
+            _change_memory_consent(api_base, purpose, not granted)
+
+
+def _display_fact(value: Any) -> str:
+    if isinstance(value, bool):
+        return _t("yes" if value else "no")
+    return str(value)
+
+
+def _render_remembered_facts(api_base: str, remembered: dict[str, Any]) -> None:
+    language = st.session_state.get("portal_language", "en")
+    facts = remembered.get("facts") or []
+    if not facts:
+        st.caption(_t("no_facts"))
+    for fact in facts:
+        field = str(fact.get("field", ""))
+        text_column, button_column = st.columns([4, 1], vertical_alignment="center")
+        text_column.markdown(f"**{memory_text.field_name(language, field)}:** {_display_fact(fact.get('value'))}")
+        text_column.caption(
+            _t("reconfirm_due")
+            if fact.get("reconfirm_due")
+            else _t("until", date=_short_date(fact.get("expires_at")))
+        )
+        if button_column.button(_t("forget_one"), key=f"forget-fact-{field}"):
+            try:
+                _memory_request(api_base, f"/api/memory/facts/{quote(field, safe='')}", method="DELETE")
+            except RuntimeError as error:
+                st.error(str(error))
+            else:
+                st.rerun()
+
+
+def _render_saved_applications(api_base: str, applications: dict[str, Any]) -> None:
+    st.markdown(f"**{_t('applications_title')}**")
+    names = _scheme_names(api_base)
+    for group, title in (("for_me", "for_me"), ("for_others", "for_others")):
+        st.caption(_t(title))
+        items = applications.get(group) or []
+        if not items:
+            st.caption(_t("none_saved"))
+        for item in items:
+            application_id = str(item.get("application_id", ""))
+            scheme_id = str(item.get("scheme_id", ""))
+            who = f" ({item['relation']})" if item.get("relation") else ""
+            st.markdown(f"{names.get(scheme_id, scheme_id)}{who}")
+            st.caption(f"`{application_id}` · {_short_date(item.get('submitted_at'))}")
+            check_column, remove_column = st.columns(2)
+            quoted = quote(application_id, safe="")
+            if check_column.button(_t("check_status"), key=f"status-{application_id}"):
+                try:
+                    status = _memory_request(api_base, f"/api/applications/{quoted}/status")
+                except RuntimeError as error:
+                    st.error(str(error))
+                else:
+                    if status.get("found_at_portal"):
+                        st.info(_t("status_is", status=status.get("status")))
+                    else:
+                        st.warning(_t("not_at_portal"))
+            if remove_column.button(_t("remove"), key=f"remove-{application_id}"):
+                try:
+                    _memory_request(api_base, f"/api/applications/{quoted}", method="DELETE")
+                except RuntimeError as error:
+                    st.error(str(error))
+                else:
+                    st.rerun()
+
+
+def _render_forget_everything(api_base: str) -> None:
+    st.divider()
+    st.caption(_t("forget_note"))
+    confirmed = st.checkbox(_t("forget_confirm"), key="memory-forget-confirm")
+    if st.button(_t("forget_all"), disabled=not confirmed, key="memory-forget-all"):
+        try:
+            _memory_request(api_base, "/api/memory", method="DELETE")
+        except RuntimeError as error:
+            st.error(str(error))
+            return
+        _clear_chat_state()
+        st.session_state["memory_panel_open"] = False
+        st.session_state["memory_notice"] = _t("forget_done")
+        st.rerun()
+
+
+def _render_memory_panel(api_base: str) -> None:
+    """What is remembered, the choices to change it, the saved applications, and forgetting it all."""
+    with st.container(border=True, key="memory-panel"):
+        st.subheader(_t("panel_title"))
+        try:
+            consent = _memory_request(api_base, "/api/memory/consent")
+            remembered = _memory_request(api_base, "/api/memory")
+            applications = _memory_request(api_base, "/api/applications")
+        except RuntimeError:
+            st.info(_t("unavailable"))
+            return
+        _render_memory_consent(api_base, consent)
+        _render_remembered_facts(api_base, remembered)
+        _render_saved_applications(api_base, applications)
+        _render_forget_everything(api_base)
+
+
 def _render_chat_page() -> None:
     """Run the consented chat intake and later application workflow."""
     st.session_state.setdefault("chat_actor_id", f"citizen-{uuid4().hex}")
@@ -1753,6 +2009,16 @@ def _render_chat_page() -> None:
                 if _reset_chat():
                     st.rerun()
             if st.button(
+                _t("panel_button"),
+                icon=":material/folder_managed:",
+                key="memory-panel-toggle",
+                width="stretch",
+            ):
+                st.session_state["memory_panel_open"] = not st.session_state.get(
+                    "memory_panel_open", False
+                )
+                st.rerun()
+            if st.button(
                 "Withdraw consent",
                 icon=":material/lock:",
                 key="withdraw-consent",
@@ -1780,6 +2046,15 @@ def _render_chat_page() -> None:
     except (RuntimeError, ValueError, OSError) as error:
         st.error(str(error), title="FastAPI is unavailable")
         st.stop()
+
+    if st.session_state.get("memory_choice_error"):
+        st.warning(st.session_state["memory_choice_error"])
+        st.session_state["memory_choice_error"] = None
+    if st.session_state.get("memory_notice"):
+        st.success(st.session_state["memory_notice"])
+        st.session_state["memory_notice"] = None
+    if st.session_state.get("memory_panel_open"):
+        _render_memory_panel(api_base)
 
     current_step, _ = _journey_step()
     _render_wizard(current_step)

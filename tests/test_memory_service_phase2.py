@@ -6,7 +6,7 @@ import pytest
 from langchain_core.runnables import RunnableLambda
 
 from agents.intake import IntakeAgent
-from agents.memory import MemoryConsent, MemoryFact, MemoryScope, clean_relation
+from agents.memory import ApplicationReference, MemoryConsent, MemoryFact, MemoryScope, clean_relation
 from agents.memory_service import HouseholdAllowlist, InMemoryMemoryService
 from graph.memory_nodes import memory_config, memory_context
 from servers.rule_engine.server import get_field_specs
@@ -144,6 +144,135 @@ def test_reconfirm_does_not_reach_another_households_facts(service):
 def test_the_application_reference_period_comes_from_the_policy():
     assert HouseholdAllowlist().application_reference_expiry_days == 90
     assert HouseholdAllowlist.from_policy_file().application_reference_expiry_days == 90
+
+
+def _reference(application_id="APP-1", reference="r1", **changes):
+    now = datetime.utcnow()
+    return ApplicationReference(
+        **{
+            "scheme_id": "C01",
+            "application_id": application_id,
+            "submitted_at": now,
+            "expires_at": now + timedelta(days=90),
+            "consent_reference": reference,
+            **changes,
+        }
+    )
+
+
+def test_listing_facts_shows_stored_consented_facts_including_those_due_again(service, monkeypatch):
+    service.record_consent(CITIZEN, _consent("c1", days=60))
+    service.save_confirmed_fact(CITIZEN, _fact("age", 34))
+    service.save_confirmed_fact(CITIZEN, _fact("state_code", "KA"))
+    assert [f.field for f in service.list_facts(CITIZEN)] == ["age", "state_code"]
+
+    later = datetime.utcnow() + timedelta(days=40)  # age is past reconfirm_by but not expired
+    from agents import memory_service as module
+
+    monkeypatch.setattr(module, "utc_now", lambda: later)
+    if hasattr(service, "facts_collection"):
+        from agents import chromadb_memory_service
+
+        monkeypatch.setattr(chromadb_memory_service, "utc_now", lambda: later)
+    assert [f.field for f in service.list_facts(CITIZEN)] == ["age", "state_code"]
+    assert service.read_facts(CITIZEN, ["age"]) == {}  # no longer used for eligibility
+
+
+def test_listing_facts_hides_expired_unconsented_and_other_households_facts(service):
+    service.record_consent(CITIZEN, _consent("c1", days=60))
+    service.save_confirmed_fact(CITIZEN, _fact("age", 34))
+    other = MemoryScope(actor_id="u2", household_id="hh2", actor_role="citizen")
+    assert service.list_facts(other) == []
+    service.withdraw_consent(CITIZEN, "c1")
+    assert service.list_facts(CITIZEN) == []
+
+
+def test_one_fact_can_be_deleted_and_only_that_one(service):
+    service.record_consent(CITIZEN, _consent("c1", days=60))
+    service.save_confirmed_fact(CITIZEN, _fact("age", 34))
+    service.save_confirmed_fact(CITIZEN, _fact("state_code", "KA"))
+    other = MemoryScope(actor_id="u2", household_id="hh2", actor_role="citizen")
+
+    assert service.delete_fact(other, "age") is False
+    assert service.delete_fact(CITIZEN, "age") is True
+    assert service.delete_fact(CITIZEN, "age") is False
+    assert [f.field for f in service.list_facts(CITIZEN)] == ["state_code"]
+
+
+def test_every_older_value_of_a_deleted_fact_goes_with_it(service):
+    service.record_consent(CITIZEN, _consent("c1", days=60))
+    service.save_confirmed_fact(CITIZEN, _fact("age", 33, confirmed_days_ago=2))
+    service.save_confirmed_fact(CITIZEN, _fact("age", 34))
+    service.delete_fact(CITIZEN, "age")
+    assert service.read_facts(CITIZEN, ["age"]) == {}
+    if isinstance(service, InMemoryMemoryService):
+        assert service.facts == {}
+
+
+def test_operators_cannot_delete_a_households_facts(service):
+    service.record_consent(CITIZEN, _consent("c1", days=60))
+    service.save_confirmed_fact(CITIZEN, _fact("age", 34))
+    with pytest.raises(ValueError, match="Operators cannot"):
+        service.delete_fact(OPERATOR, "age")
+    assert [f.field for f in service.list_facts(CITIZEN)] == ["age"]
+
+
+def test_one_application_can_be_removed_from_the_owners_list_only(service):
+    service.record_consent(CITIZEN, _consent("r1", purpose="application_references", days=60))
+    service.record_consent(OPERATOR, _consent("op", purpose="application_references", days=60))
+    service.save_application_reference(CITIZEN, _reference("APP-1", "r1"))
+    service.save_application_reference(CITIZEN, _reference("APP-2", "r1"))
+    service.save_application_reference(OPERATOR, _reference("APP-1", "op", subject="other"))
+
+    assert service.delete_application_reference(CITIZEN, "APP-1") is True
+    assert service.delete_application_reference(CITIZEN, "APP-1") is False
+    assert [r.application_id for r in service.read_application_references(CITIZEN)] == ["APP-2"]
+    # the operator's entry for the same application number is a separate record
+    assert [r.application_id for r in service.read_application_references(OPERATOR)] == ["APP-1"]
+    other = MemoryScope(actor_id="u2", household_id="hh2", actor_role="citizen")
+    assert service.delete_application_reference(other, "APP-2") is False
+
+
+def test_cleanup_runs_now_and_then_on_every_interval():
+    import threading
+
+    from app.memory_runtime import MemoryCleanup
+
+    done = threading.Event()
+    calls = []
+
+    class Service:
+        def purge_expired(self):
+            calls.append(1)
+            if len(calls) >= 3:
+                done.set()
+            return 0
+
+    cleanup = MemoryCleanup(Service(), interval=0.01)
+    assert done.wait(5)
+    cleanup.stop()
+    assert len(calls) >= 3
+
+
+def test_cleanup_keeps_running_after_a_failure():
+    import threading
+
+    from app.memory_runtime import MemoryCleanup
+
+    recovered = threading.Event()
+    calls = []
+
+    class Service:
+        def purge_expired(self):
+            calls.append(1)
+            if len(calls) == 1:
+                raise RuntimeError("storage hiccup")
+            recovered.set()
+            return 2
+
+    cleanup = MemoryCleanup(Service(), interval=0.01)
+    assert recovered.wait(5)
+    cleanup.stop()
 
 
 def test_clean_relation_keeps_a_short_word_and_drops_anything_else():

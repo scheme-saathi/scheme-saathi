@@ -612,6 +612,12 @@ HTTP API (`app/api.py`):
 
   A new message on a thread waiting for a confirmation or approval returns 409.
 - `POST /api/chat/{thread_id}/decision` takes `{"action": "approve" | "edit" | "reject", "payload_hash": "...", "changes": {}}` and resumes the graph, for the confirm step and the approval gate alike. It returns 404 for an unknown thread, 403 for another household, and 409 when nothing is waiting.
+- Long-term memory is opt-in and off until the person agrees. All of these routes take the household and the person from the access token only, never from the request, and return 503 when ChromaDB is not installed. Records are kept in `chroma_data/` (Git-ignored); set `SCHEME_SAATHI_MEMORY_DIR` to use another folder. Expired records are deleted every 5 minutes. The remembered fields and their periods are in `data/memory_policy.json`.
+  - `GET /api/memory/consent` returns what the person agreed to and the policy that applies. `PUT /api/memory/consent` with `{"purpose": "profile_facts" | "application_references", "granted": true | false}` records or withdraws one choice; withdrawing deletes what was saved under it, and agreeing again while it is active changes nothing.
+  - `GET /api/memory` lists the remembered details with their dates. `DELETE /api/memory/facts/{field}` forgets one.
+  - `DELETE /api/memory` is "Forget my data" and covers every session of the household: remembered details, saved applications and consents; application workflows with their saved state and uploaded documents; and conversations with their saved state. Every store is attempted and the response lists each one under `surfaces`. It returns 200 only when all were cleared, otherwise 500 naming the ones that were not; deleting again is safe. Applications already submitted to a portal are not deleted. Uploads made before this change do not record their household, so they are found only through threads still known to the server and otherwise expire after 30 days.
+  - `GET /api/applications` lists saved applications as `for_me` and `for_others`. `GET /api/applications/{application_id}/status` reads the live portal status, only for an application in the caller's own list. `DELETE /api/applications/{application_id}` removes one from the list.
+  - A submitted application is saved with the scheme, application number, date and whether it was for the person or someone else (with a relation word such as "mother"). `POST /api/analyze` takes optional `subject` and `relation` for this. Facts about someone else are never remembered. A chat message asking about the status of an application is answered from the caller's own saved list.
 
 Scheme questions ("What is the age limit for Atal Pension Yojana?") are answered from cited evidence:
 
@@ -622,7 +628,7 @@ Scheme questions ("What is the age limit for Atal Pension Yojana?") are answered
 
 This needs `data/chroma/` and the BGE-M3 model (Setup, steps 1 and 2). Without them every scheme question gets `answer_not_found`, and the cause appears only in the server log. The first question after startup also loads the model (about 15 seconds); later answers take about 6 to 7 seconds.
 
-Not wired in yet: authenticated household scoping, memory storage, document extraction, and persistent checkpoints (the API uses an in-memory checkpointer). Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
+Not wired in yet: operator access to a citizen's remembered details, document extraction, and persistent checkpoints (the API uses an in-memory checkpointer, so conversations and workflow state are lost on restart). Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
 
 ## Guides
 

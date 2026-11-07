@@ -493,6 +493,51 @@ class ChromaDBMemoryService:
                 if stored["ids"]:
                     collection.delete(ids=stored["ids"])
 
+    def list_facts(self, scope: MemoryScope) -> list[MemoryFact]:
+        """The household's stored, unexpired, consented facts, including ones due for reconfirmation."""
+        self._validate_scope(scope)
+
+        rows = self.facts_collection.get(where={"household_id": {"$eq": scope.household_id}})
+        now = _timestamp(utc_now())
+        consent_ok: dict[str, bool] = {}
+        facts: list[MemoryFact] = []
+        for meta, doc in zip(rows["metadatas"], rows["documents"]):
+            if meta["expires_at_ts"] <= now:
+                continue
+            reference = meta["consent_reference"]
+            if reference not in consent_ok:
+                consent_ok[reference] = self._has_active_consent(
+                    scope.household_id, reference, "profile_facts"
+                )
+            if consent_ok[reference]:
+                facts.append(MemoryFact(**json.loads(doc)))
+        return sorted(facts, key=lambda fact: fact.field)
+
+    def delete_fact(self, scope: MemoryScope, field: str) -> bool:
+        """Delete one remembered fact; False when none was stored."""
+        self._validate_scope(scope)
+
+        if scope.actor_role == "operator":
+            raise ValueError("Operators cannot delete a household's data")
+
+        fact_id = _record_id(scope.household_id, field)
+        with self._lock:
+            if not self.facts_collection.get(ids=[fact_id])["ids"]:
+                return False
+            self.facts_collection.delete(ids=[fact_id])
+        return True
+
+    def delete_application_reference(self, scope: MemoryScope, application_id: str) -> bool:
+        """Delete one application from the scope owner's list; False when it is not listed."""
+        self._validate_scope(scope)
+
+        reference_id = _record_id(scope.owner_key, application_id)
+        with self._lock:
+            if not self.applications_collection.get(ids=[reference_id])["ids"]:
+                return False
+            self.applications_collection.delete(ids=[reference_id])
+        return True
+
     def purge_expired(self) -> int:
         """
         Delete expired facts, references and consents, and what only an expired consent covered.

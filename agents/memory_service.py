@@ -481,6 +481,49 @@ class InMemoryMemoryService(MemoryService):
         # Delete household record
         del self.households[scope.household_id]
 
+    def list_facts(self, scope: MemoryScope) -> list[MemoryFact]:
+        """The household's stored, unexpired, consented facts, including ones due for reconfirmation."""
+        self._validate_scope(scope)
+
+        now = utc_now()
+        bucket = self.households.get(scope.household_id, {})
+        fields = sorted({self.facts[i].field for i in bucket.get("facts", []) if i in self.facts})
+        current = (self._current_fact(scope, field, now) for field in fields)
+        return [item[1] for item in current if item is not None]
+
+    def delete_fact(self, scope: MemoryScope, field: str) -> bool:
+        """Delete one remembered fact, including older values of it; False when none was stored."""
+        self._validate_scope(scope)
+
+        if scope.actor_role == "operator":
+            raise ValueError("Operators cannot delete a household's data")
+
+        bucket = self.households.get(scope.household_id)
+        if bucket is None:
+            return False
+        doomed = [i for i in bucket["facts"] if i in self.facts and self.facts[i].field == field]
+        for fact_id in doomed:
+            del self.facts[fact_id]
+        bucket["facts"] = [i for i in bucket["facts"] if i in self.facts]
+        return bool(doomed)
+
+    def delete_application_reference(self, scope: MemoryScope, application_id: str) -> bool:
+        """Delete one application from the scope owner's list; False when it is not listed."""
+        self._validate_scope(scope)
+
+        bucket = self.households.get(scope.owner_key)
+        if bucket is None:
+            return False
+        doomed = [
+            i
+            for i in bucket["application_refs"]
+            if i in self.application_refs and self.application_refs[i].application_id == application_id
+        ]
+        for ref_id in doomed:
+            del self.application_refs[ref_id]
+        bucket["application_refs"] = [i for i in bucket["application_refs"] if i in self.application_refs]
+        return bool(doomed)
+
     def purge_expired(self) -> int:
         """Delete expired facts, references and consents, and what only an expired consent covered."""
         now = utc_now()

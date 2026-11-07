@@ -19,6 +19,7 @@ from agents.base import StructuredGPTAgent
 from agents.contracts import IntakeResult
 from agents.model_factory import create_chat_model
 from app.document_storage import DocumentStorageError, LocalDocumentStore
+from app.forget import household_threads
 from graph import tools
 from graph.tools import ToolCallError
 from graph.workflow import build_graph
@@ -112,6 +113,7 @@ class DemoService:
         self._chat_sessions_lock = Lock()
         self._thread_owners: dict[str, str] = {}
         self._thread_owners_lock = Lock()
+        self._thread_subjects: dict[str, tuple[str, str | None]] = {}
 
     def chat_turn(
         self,
@@ -370,13 +372,20 @@ class DemoService:
         citizen: dict[str, Any],
         scheme_ids: list[str] | None = None,
         actor_id: str | None = None,
+        subject: str = "self",
+        relation: str | None = None,
     ) -> Iterator[tuple[str, dict[str, Any]]]:
-        """Validate schemes and return a stream for a new eligibility workflow."""
+        """Validate schemes and return a stream for a new eligibility workflow.
+
+        `subject` and `relation` say whose application this is, so a saved reference can
+        later be listed as the person's own or as someone else's.
+        """
         tools.search_schemes({}, scheme_ids)
         thread_id = str(uuid4())
         if actor_id is not None:
             with self._thread_owners_lock:
                 self._thread_owners[thread_id] = actor_id
+        self._thread_subjects[thread_id] = (subject, relation)
         config = {"configurable": {"thread_id": thread_id}}
         run_input: dict[str, Any] = {"simulated_citizen": citizen}
         if actor_id is not None:
@@ -384,6 +393,10 @@ class DemoService:
         if scheme_ids:
             run_input["scheme_ids"] = scheme_ids
         return self._stream_run(run_input, config, thread_id)
+
+    def thread_subject(self, thread_id: str) -> tuple[str, str | None]:
+        """Whose application a thread is for: ("self", None), or ("other", a relation word)."""
+        return self._thread_subjects.get(thread_id, ("self", None))
 
     def decide(
         self,
@@ -479,6 +492,7 @@ class DemoService:
             filename=safe_filename,
             content_type=mime_type or expected[0],
             content=content,
+            household_id=actor_id,
         )
         with self._uploads_lock:
             self._uploads.setdefault(thread_id, {}).setdefault(scheme_id, {})[
@@ -541,6 +555,43 @@ class DemoService:
         with self._uploads_lock:
             self._uploads.pop(thread_id, None)
         return deleted
+
+    def _household_threads(self, household_id: str) -> set[str]:
+        """Threads the household owns, from the owner table and from the saved workflow state."""
+        with self._thread_owners_lock:
+            threads = {thread for thread, owner in self._thread_owners.items() if owner == household_id}
+        return threads | household_threads(getattr(self.workflow, "checkpointer", None), household_id)
+
+    def forget_household_documents(self, household_id: str) -> int:
+        """Delete every retained upload of the household, from this session and from earlier ones."""
+        threads = self._household_threads(household_id)
+        manifest_path = LocalDocumentStore.configured_directory() / "manifest.json"
+        if self._document_store is None and not manifest_path.exists():
+            deleted = 0
+        else:
+            deleted = self._get_document_store().delete_household(household_id, threads)
+        with self._uploads_lock:
+            for thread_id in threads:
+                self._uploads.pop(thread_id, None)
+        return deleted
+
+    def forget_household_workflows(self, household_id: str) -> int:
+        """Forget the household's application workflows: saved state, owners and chat sessions."""
+        threads = self._household_threads(household_id)
+        saver = getattr(self.workflow, "checkpointer", None)
+        if saver is not None:
+            for thread_id in threads:
+                saver.delete_thread(thread_id)
+        with self._thread_owners_lock:
+            for thread_id in threads:
+                self._thread_owners.pop(thread_id, None)
+        for thread_id in threads:
+            self._thread_subjects.pop(thread_id, None)
+        with self._chat_sessions_lock:
+            sessions = [key for key, session in self._chat_sessions.items() if session.actor_id == household_id]
+            for key in sessions:
+                del self._chat_sessions[key]
+        return len(threads) + len(sessions)
 
     def _list_uploaded_documents(
         self, thread_id: str, scheme_id: str

@@ -166,6 +166,18 @@ class MemoryService(Protocol):
 
     def forget_household(self, scope: MemoryScope) -> None: ...
 
+    def list_facts(self, scope: MemoryScope) -> list[MemoryFact]:
+        """The household's stored, unexpired, consented facts, including ones due for reconfirmation."""
+        ...
+
+    def delete_fact(self, scope: MemoryScope, field: str) -> bool:
+        """Delete one remembered fact; False when none was stored. A citizen's action only."""
+        ...
+
+    def delete_application_reference(self, scope: MemoryScope, application_id: str) -> bool:
+        """Delete one remembered application from the scope owner's list; False when not listed."""
+        ...
+
     def purge_expired(self) -> int:
         """Delete expired facts, references and consents; return how many records went."""
         ...

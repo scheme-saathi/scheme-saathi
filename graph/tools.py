@@ -337,6 +337,11 @@ def list_documents(scheme_id: str) -> list[str]:
     return call_tool(SCHEMES_KB, "get_required_documents", scheme_id=scheme_id)
 
 
+def application_status(application_id: str) -> dict[str, Any]:
+    """The portal's current status of one application; it is read live and never stored."""
+    return call_tool(MOCK_PORTAL, "get_application_status", application_id=application_id)
+
+
 def compare_document_fields(
     document_a: dict[str, Any],
     document_b: dict[str, Any],

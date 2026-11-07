@@ -763,6 +763,89 @@ def _approval_end_node(state: AgentWorkflowState) -> dict[str, str]:
     return {"status": f"approval_{status}", "response": messages[status]}
 
 
+MAX_TRACKED = 10  # applications one status reply looks up
+TRACK_TEXT = {
+    "en": {
+        "head": "Your saved applications, with the status the portal shows now:",
+        "none": (
+            "I have no saved applications for you. An application is remembered only if "
+            "you allowed it before submitting."
+        ),
+        "off": "Remembering applications is not available right now.",
+        "other": "for your {relation}",
+        "someone": "for someone else",
+        "gone": "not found at the portal",
+        "unknown": "status unavailable right now",
+        "reference": "reference",
+    },
+    "hi": {
+        "head": "आपके सहेजे गए आवेदन और पोर्टल पर अभी दिख रही स्थिति:",
+        "none": (
+            "आपके लिए कोई आवेदन सहेजा हुआ नहीं है। आवेदन तभी याद रखा जाता है जब आपने "
+            "जमा करने से पहले अनुमति दी हो।"
+        ),
+        "off": "आवेदन याद रखने की सुविधा अभी उपलब्ध नहीं है।",
+        "other": "आपके {relation} के लिए",
+        "someone": "किसी और के लिए",
+        "gone": "पोर्टल पर नहीं मिला",
+        "unknown": "स्थिति अभी उपलब्ध नहीं है",
+        "reference": "संदर्भ",
+    },
+    "mr": {
+        "head": "तुमचे जतन केलेले अर्ज आणि पोर्टलवर आत्ता दिसणारी स्थिती:",
+        "none": (
+            "तुमच्यासाठी कोणताही अर्ज जतन केलेला नाही. सादर करण्यापूर्वी तुम्ही परवानगी दिली "
+            "असेल तरच अर्ज लक्षात ठेवला जातो."
+        ),
+        "off": "अर्ज लक्षात ठेवण्याची सुविधा सध्या उपलब्ध नाही.",
+        "other": "तुमच्या {relation} साठी",
+        "someone": "इतर कोणासाठी",
+        "gone": "पोर्टलवर सापडला नाही",
+        "unknown": "स्थिती सध्या उपलब्ध नाही",
+        "reference": "संदर्भ",
+    },
+}
+
+
+def _track_node(
+    agents: AgentSet, memory: MemoryService | None, state: AgentWorkflowState, config: dict[str, Any]
+) -> dict[str, str]:
+    """Answer "where is my application?" from the person's own saved list, with live portal status.
+
+    The applications come from the signed-in person's memory, never from an ID in the message,
+    so asking about a stranger's application finds nothing.
+    """
+    text = TRACK_TEXT.get(state.get("language", "unknown"), TRACK_TEXT["en"])
+    ctx = memory_context(memory, config)
+    if ctx is None:
+        return _guard_output(agents, state, {"status": "responded", "response": text["off"]}, "supervisor")
+    try:
+        references = ctx.service.read_application_references(ctx.scope)
+    except Exception:
+        logger.warning("Saved applications could not be read.")
+        return _guard_output(agents, state, {"status": "responded", "response": text["off"]}, "supervisor")
+    if not references:
+        return _guard_output(agents, state, {"status": "no_applications", "response": text["none"]}, "supervisor")
+
+    lines = []
+    for reference in references[:MAX_TRACKED]:
+        try:
+            status = tools.application_status(reference.application_id)["status"]
+        except tools.ToolCallError as error:
+            status = text["gone"] if error.code == "application_not_found" else text["unknown"]
+        except Exception:
+            status = text["unknown"]
+        for_whom = ""
+        if reference.subject == "other":
+            relation = reference.relation
+            for_whom = " " + (text["other"].format(relation=relation) if relation else text["someone"])
+        lines.append(
+            f"- {reference.scheme_id}: {status}{for_whom} ({text['reference']} {reference.application_id[:8]})"
+        )
+    update = {"status": "applications_listed", "response": text["head"] + "\n" + "\n".join(lines)}
+    return _guard_output(agents, state, update, "supervisor")
+
+
 def _remember_application(
     memory: MemoryService | None,
     state: AgentWorkflowState,
@@ -991,10 +1074,23 @@ def build_agent_graph(
         )
         builder.add_node("memory_save", lambda state, config: _memory_save_node(memory, state, config))
         builder.add_node("memory_save_edit", lambda state, config: _memory_save_node(memory, state, config))
+        builder.add_node("track", lambda state, config: _track_node(runtime, memory, state, config))
+        builder.add_edge("track", END)
     # Where a profile goal goes once intake has read the message, and where a confirmation goes next
     facts_ready = "memory_load" if memory is not None else "eligibility"
     after_confirmed = "memory_save" if memory is not None else "eligibility"
     after_edited = "memory_save_edit" if memory is not None else "approval_end"
+
+    def route_after_supervisor(state: AgentWorkflowState) -> str:
+        # A follow-up about an application is answered from the person's own saved list.
+        if (
+            memory is not None
+            and state.get("intent") == "follow_up"
+            and not state.get("validation_errors")
+            and not state.get("pending_field")
+        ):
+            return "track"
+        return _route_after_supervisor(state)
     
     # Entry point: Supervisor ALWAYS first
     builder.add_edge(START, "supervisor")
@@ -1002,13 +1098,14 @@ def build_agent_graph(
     # After Supervisor routes to: intake, eligibility, document_checker, application, or finish
     builder.add_conditional_edges(
         "supervisor",
-        _route_after_supervisor,
+        route_after_supervisor,
         {
             "intake": "intake",
             "eligibility": "intake",  # facts in the message come first
             "document_checker": "document_checker",
             "application": "intake",
             "respond": "respond",  # direct response without specialist
+            "track": "track" if memory is not None else "respond",
         },
     )
 

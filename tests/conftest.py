@@ -12,6 +12,17 @@ def mock_portal_test_secret(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def isolated_memory_store(monkeypatch, tmp_path):
+    """Point the API's memory store at a temporary folder, so no test writes to the real one."""
+    from app import memory_runtime
+
+    monkeypatch.setenv(memory_runtime.DIRECTORY_ENV, str(tmp_path / "memory"))
+    memory_runtime.get_memory_service.cache_clear()
+    yield
+    getattr(memory_runtime.get_memory_service, "cache_clear", lambda: None)()
+
+
+@pytest.fixture(autouse=True)
 def synthetic_scheme_fixture(monkeypatch):
     """Serve the test-only SYNTH-PENSION-001 record; it is not in data/, so users never see it."""
     from servers.rule_engine import server as rule_server
