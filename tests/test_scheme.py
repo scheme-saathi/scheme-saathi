@@ -7,7 +7,7 @@ from pydantic import ValidationError
 from servers.rule_engine.rules import Verdict, evaluate
 from servers.rule_engine.scheme import SchemeRecord, live_conditions
 
-EXAMPLE = Path(__file__).resolve().parents[1] / "data" / "schemes" / "SYNTH-PENSION-001.json"
+EXAMPLE = Path(__file__).resolve().parent / "fixtures" / "SYNTH-PENSION-001.json"
 PROFILE = {"age": 62, "is_widow": True, "income": 250000}
 
 

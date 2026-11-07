@@ -1,0 +1,124 @@
+{
+  "scheme_id": "M20",
+  "name": "Mahatma Jyotirao Phule Jan Arogya Yojana",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/mjpjay",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "Category A: Families holding Yellow, Antyodaya Anna Yojana (AAY), Annapurna Yojna and Orange Ration Card."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "Category B"
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "• White ration card holder families (including Govt./Semi Gov employees)."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "• A family without having any kind of ration card but having domicile certificate of Maharashtra"
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "Category C"
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "• Students in Govt. and Govt. recognized Ashram School"
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "• Children in Govt. and Govt. recognized Orphanages"
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "• Women in Govt. and Govt. recognized Women's Ashram"
+    },
+    {
+      "clause_id": "elig-9",
+      "text": "• Sr. citizens in Govt. and Govt. recognized old age homes"
+    },
+    {
+      "clause_id": "elig-10",
+      "text": "• Journalists and their dependent family members as per criteria of Directorate General of Information and Public Relations Office."
+    },
+    {
+      "clause_id": "elig-11",
+      "text": "• Construction workers and their families (who are resident of outside of Maharashtra) registered with Maharashtra Building and Other Construction Workers Board."
+    },
+    {
+      "clause_id": "elig-12",
+      "text": "Category D"
+    },
+    {
+      "clause_id": "elig-13",
+      "text": "Road traffic accident victims from outside Maharashtra and outside India who met with an accident on roads in Maharashtra"
+    },
+    {
+      "clause_id": "elig-14",
+      "text": "Category E"
+    },
+    {
+      "clause_id": "elig-15",
+      "text": "Families holding below mentioned ration cards from 865 villages of Belgaon, Karwar, Kalburgi and Bidar Districts of Maharashtra- Karnataka border"
+    },
+    {
+      "clause_id": "elig-16",
+      "text": "1) Antyodaya Anna Yojana (AAY)"
+    },
+    {
+      "clause_id": "elig-17",
+      "text": "2) Priority House Holder (PHH)"
+    },
+    {
+      "clause_id": "elig-18",
+      "text": "3) Annapurna Yojna"
+    }
+  ],
+  "documents_required": [
+    "List of valid photo ID proofs to be accepted along with document of eligible criteria:",
+    "1. Aadhaar Card or Aadhaar Registration Slip with a photo of the beneficiary. An Aadhaar Card would be insisted upon as an identification document and in the absence of an Aadhaar card/number; any document that is accepted for issuance of an Aadhaar card will also be accepted.",
+    "2. Pan Card",
+    "3. Voter ID",
+    "4. Driving License",
+    "5. School/College Id",
+    "6. Passport",
+    "7. Freedom Fighter ID card",
+    "8. Health Card of RGJAY / MJPJAY",
+    "9. Handicap Certificate",
+    "10. Nationalized Bank Passbook with Photo",
+    "11. Senior citizen card issued by the Central Government or State Government",
+    "12. Defense ex-servicemen card issued by Sainik Board",
+    "13. Marine Fishery Identity card (Issued by Ministry of Agriculture / Fisheries Department Government of Maharashtra).",
+    "14. Any photo ID proof issued by the Government of Maharashtra/ Government of India"
+  ],
+  "rules": [
+    {
+      "field": "ration_card_type",
+      "op": "in",
+      "value": [
+        "yellow",
+        "antyodaya",
+        "annapurna",
+        "orange",
+        "white"
+      ],
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_maharashtra_domicile_certificate",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "any"
+}

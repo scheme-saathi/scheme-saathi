@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 SHORTLIST_SIZE = 5  # schemes one intake asks about, so questions stay relevant to the person
-MAX_QUESTIONS = 8  # per intake, so a long tail of open schemes can't turn into an interview
+MAX_QUESTIONS = 12  # per intake, so a long tail of open schemes can't turn into an interview
 MAX_ATTEMPTS_PER_FIELD = 2  # a field asked twice without a usable answer counts as "don't know"
 PROFILE_GOALS = {"intake", "eligibility", "application"}
 
@@ -196,13 +196,14 @@ def _scheme_catalogue() -> tuple[tuple[str, str, str], ...]:
     return tuple(found.values())
 
 
-def _shortlist_schemes(agents: AgentSet, request: str) -> list[str]:
-    """Reviewed schemes the model judges relevant to the request; empty means check them all."""
+def _shortlist_schemes(agents: AgentSet, request: str, facts: FactMap | None = None) -> list[str]:
+    """Reviewed schemes the model judges relevant to the request and facts; empty means check them all."""
     options = [SchemeOption(scheme_id=i, name=n, description=d) for i, n, d in _scheme_catalogue()]
     if not options:
         return []
     try:
-        return agents.intake.choose_schemes(SchemeChoiceInput(request=request, schemes=options))[:SHORTLIST_SIZE]
+        choice = SchemeChoiceInput(request=request, known_facts=facts or {}, schemes=options)
+        return agents.intake.choose_schemes(choice)[:SHORTLIST_SIZE]
     except Exception:
         logger.warning("Scheme shortlisting failed; every reviewed scheme will be checked.")
         return []
@@ -222,7 +223,7 @@ def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
     """Read typed facts from the message into known_facts. They stay unconfirmed."""
     pending = state.get("pending_field")
     if pending is None and not state.get("selected_scheme_id"):
-        state = {**state, "shortlist": _shortlist_schemes(agents, state["request"])}
+        state = {**state, "shortlist": _shortlist_schemes(agents, state["request"], _facts_so_far(state))}
     with tools.acting_as("intake"):
         specs = tools.field_specs(_candidate_schemes(state))
     if not specs:  # no reviewed rule fields, so nothing the profile could hold
@@ -235,9 +236,14 @@ def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
         ),
         specs,
     )
+    shortlist = state.get("shortlist") or []
+    if pending is not None and result.facts and not state.get("selected_scheme_id"):
+        # An answer is new information, so re-pick; keep the old list if the re-pick fails or is empty.
+        facts = {**_facts_so_far(state), **result.facts}
+        shortlist = _shortlist_schemes(agents, state.get("intake_request", state["request"]), facts) or shortlist
     update: dict[str, Any] = {
         "known_facts": result.facts,
-        "shortlist": state.get("shortlist") or [],
+        "shortlist": shortlist,
         "pending_field": None,
         "pending_question": None,
         "reply_unanswered": pending is not None and not result.facts and not result.dont_know,
@@ -276,14 +282,22 @@ def _open_fields(state: AgentWorkflowState) -> list[str]:
 
 
 def _stop_intake(state: AgentWorkflowState, reason: str, declined: list[str]) -> dict[str, Any]:
-    open_fields = _open_fields(state)
+    if reason == "question_cap":
+        response = (
+            "You have reached your limit of questions. The eligible and other relevant schemes "
+            "are available in the list below."
+        )
+    else:
+        response = (
+            "I can't finish the eligibility check without these details: "
+            + ", ".join(f.replace("_", " ") for f in _open_fields(state))
+            + ". Tell me if you find out, and I'll check again."
+        )
     return {
         "intake_stopped": reason,
         "declined_fields": declined,
         "status": "intake_stopped",
-        "response": "I can't finish the eligibility check without these details: "
-        + ", ".join(f.replace("_", " ") for f in open_fields)
-        + ". Tell me if you find out, and I'll check again.",
+        "response": response,
     }
 
 

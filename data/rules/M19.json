@@ -1,0 +1,198 @@
+{
+  "scheme_id": "M19",
+  "name": "Mukhyamantri - Majhi Ladki Bahin Yojana",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/mmlby",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant should be a female."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant should be a resident of Maharashtra state."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant's age should be between 21-65 years."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant should have their bank account with an Aadhaar link."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The annual income of the applicant's family should not exceed ₹2,50,000/-."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "Outsourced employees, voluntary workers, and contract workers with income up to ₹2,50,000/- are eligible."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "The applicant should be any one of the following:"
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "Married Woman"
+    },
+    {
+      "clause_id": "elig-9",
+      "text": "Widowed"
+    },
+    {
+      "clause_id": "elig-10",
+      "text": "Divorced Woman"
+    },
+    {
+      "clause_id": "elig-11",
+      "text": "Abandoned and Destitute Women"
+    },
+    {
+      "clause_id": "elig-12",
+      "text": "One Unmarried Woman in the family"
+    },
+    {
+      "clause_id": "excl-1",
+      "text": "The combined annual family income is more than ₹2,50,000/-."
+    },
+    {
+      "clause_id": "excl-2",
+      "text": "The family member is an income taxpayer."
+    },
+    {
+      "clause_id": "excl-3",
+      "text": "The family members are working as regular/permanent employees in a government department/undertaking/board/government of India or local body of the state government or are drawing pensions after retirement."
+    },
+    {
+      "clause_id": "excl-4",
+      "text": "The beneficiary women received ₹1,500 per month through the financial scheme implemented by other departments of the government."
+    },
+    {
+      "clause_id": "excl-5",
+      "text": "The family member is a present or former MP/MLA."
+    },
+    {
+      "clause_id": "excl-6",
+      "text": "The family member is the Chairman/Vice-Chairman/Director/Member of the Board/Corporation/Undertaking of the Government of India or State Government."
+    },
+    {
+      "clause_id": "excl-7",
+      "text": "A person has a four-wheeler (excluding a tractor) registered in the name of their family members."
+    }
+  ],
+  "documents_required": [
+    "Photograph of the Beneficiary Woman",
+    "Aadhaar Card",
+    "Domicile Certificate (If the Domicile Certificate is not available, any one of the following can be submitted: Ration Card issued before 15 years, Voter ID card issued before 15 years, Birth Certificate, or School Leaving Certificate).",
+    "For Women Born Abroad (Submit the Husband's Ration Card issued before 15 years, Voter ID card issued before 15 years, Birth Certificate, School Leaving Certificate, or Domicile Certificate).",
+    "Income Certificate (Not required if the woman has a Yellow or Orange Ration Card. Required if the woman has a White Ration Card or no Ration Card).",
+    "Marriage Certificate (If your name is not listed on the Ration Card and you are newly married, your husband’s Ration Card can be used as proof of income)",
+    "Bank Account Details (account should be Aadhaar-linked)",
+    "Affirmation Letter"
+  ],
+  "rules": [
+    {
+      "field": "is_woman_or_girl",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_maharashtra_resident",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 21,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 65,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_aadhaar_linked_bank_account",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "annual_family_income",
+      "op": "lte",
+      "value": 250000,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "marital_status",
+      "op": "in",
+      "value": [
+        "married",
+        "widowed",
+        "divorced",
+        "abandoned or destitute",
+        "unmarried"
+      ],
+      "clause_id": "elig-7",
+      "status": "reviewed"
+    },
+    {
+      "field": "family_has_income_tax_payer",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "family_has_government_employee_or_government_pensioner",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "receives_1500_monthly_from_other_government_scheme",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "family_has_present_or_former_mp_or_mla",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "family_has_government_board_or_corporation_office_holder",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-6",
+      "status": "reviewed"
+    },
+    {
+      "field": "family_owns_four_wheeler_excluding_tractor",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-7",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

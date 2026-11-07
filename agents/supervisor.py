@@ -560,6 +560,19 @@ class RoutingEngine:
         )
 
 
+# shortcut: phrase list, covers en + common hi/mr wording; extend if reviews find misses.
+_VERDICT = re.compile(
+    r"\byou (are|are not|aren't|'re) (not )?eligible\b|\byou (do not |don't )?qualify\b"
+    r"|\b(you|application) (is|are|has been|have been) approved\b"
+)
+_VERDICT_PHRASES = ("आप पात्र हैं", "आप पात्र नहीं", "तुम्ही पात्र आहात", "तुम्ही पात्र नाही")
+
+
+def _decides_eligibility(text: str) -> bool:
+    """A personal verdict ("you are eligible"), not a question or a quoted criterion."""
+    return bool(_VERDICT.search(text.lower())) or any(p in text for p in _VERDICT_PHRASES)
+
+
 class OutputValidator:
     """Validates specialist agent responses before returning to user."""
 
@@ -612,8 +625,9 @@ class OutputValidator:
                 lang = response.get("language", "unknown")
                 if lang not in ["en", "hi", "mr", "unknown"]:
                     errors.append(f"Invalid language in response: {lang}")
-            # Intake should collect facts, not make decisions
-            if "eligible" in response_text.lower() or "approve" in response_text.lower():
+            # Intake should collect facts, not make decisions. A word match blocked fair questions
+            # such as "Is your institution approved by AICTE?", so only a personal verdict counts.
+            if _decides_eligibility(response_text):
                 errors.append("Intake agent should not make eligibility decisions")
 
         elif agent_name == "eligibility":
@@ -647,11 +661,7 @@ class OutputValidator:
 
         elif agent_name == "scheme_info":
             # Quoting a scheme's criteria is fine; deciding the user's own eligibility is not.
-            # shortcut: phrase list, covers en + common hi/mr wording; extend if reviews find misses.
-            if re.search(r"\byou (are|are not|aren't|'re) (not )?eligible\b|\byou (do not |don't )?qualify\b",
-                         response_text.lower()) or any(
-                phrase in response_text for phrase in ("आप पात्र हैं", "आप पात्र नहीं", "तुम्ही पात्र आहात", "तुम्ही पात्र नाही")
-            ):
+            if _decides_eligibility(response_text):
                 errors.append("Scheme answers must not decide the user's own eligibility")
 
         # 5. Response length sanity check

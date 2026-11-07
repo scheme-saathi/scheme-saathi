@@ -64,6 +64,7 @@ class SchemeOption(Contract):
 
 class SchemeChoiceInput(Contract):
     request: str = Field(min_length=1)
+    known_facts: FactMap = Field(default_factory=dict)  # answers so far, so the pick improves as they arrive
     schemes: list[SchemeOption]
 
 

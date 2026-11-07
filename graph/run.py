@@ -9,7 +9,7 @@ from graph.persona import load_persona_profile
 from graph.tools import ToolCallError
 from graph.workflow import build_graph, sqlite_checkpointer
 
-CITIZEN = {"age": 62, "is_widow": True, "income": 250000}
+CITIZEN = {"age": 62, "is_widow": True, "household_below_bpl": True, "is_remarried": False, "has_not_moved_above_bpl": True}  # eligible for C06
 DEFAULT_DB = Path("data/checkpoints.sqlite3")
 
 

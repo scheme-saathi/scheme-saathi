@@ -1,0 +1,83 @@
+{
+  "scheme_id": "M10",
+  "name": "Financial Assistance For Aids And Appliances For Disabled Persons",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/faaadp",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant should be a citizen of India."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant should be a permanent resident of Maharashtra State."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant should be a Person with Disability (Visually Handicapped, Low Vision, Hearing Impaired, Orthopedically Handicapped, etc)."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The percentage of the disability should be 40% or above."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "For financial assistance of 100% of the cost of the aids and appliances, the monthly income of the applicant should be less than ₹1,500/-."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "For financial assistance of 50% of the cost of the aids and appliances, the monthly income of the applicant should be between ₹1,500/- to ₹2,000/-."
+    }
+  ],
+  "documents_required": [
+    "Aadhaar Card.",
+    "Proof of Age (Birth Certificate, Marksheet of Class 10th/12th, etc).",
+    "2-Passport Sized Photograph (Signed Across).",
+    "Residential Certificate / Domicile Certificate of the State of Maharashtra.",
+    "Disability Certificate.",
+    "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+    "Any other document required by the District Social Welfare Office."
+  ],
+  "rules": [
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_maharashtra_resident",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_disability",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "disability_percent",
+      "op": "gte",
+      "value": 40,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "monthly_income",
+      "op": "lte",
+      "value": 2000,
+      "clause_id": "elig-6",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}
