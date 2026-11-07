@@ -1,6 +1,7 @@
 import json
 
 from fastapi.testclient import TestClient
+from streamlit.testing.v1 import AppTest
 
 from agents.contracts import CandidateFact, IntakeResult
 from app import app_new, business_logic
@@ -109,6 +110,74 @@ def parse_events(body):
         if data:
             events.append((name, json.loads("\n".join(data))))
     return events
+
+
+def document_upload_screen():
+    import streamlit as st
+    from app import app_new
+
+    app_new._render_document_step("http://testserver", st.session_state["application_result"])
+    st.write(f"Current step: {app_new._journey_step()[0]}")
+
+
+def test_document_screen_uploads_to_real_api_and_advances_to_review(tmp_path, monkeypatch):
+    class Upload:
+        name = "redacted.pdf"
+        type = "application/pdf"
+
+        def getvalue(self):
+            return b"%PDF-1.4\n%%EOF"
+
+    class Response:
+        def __init__(self, content):
+            self.content = content
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self):
+            return self.content
+
+    store = LocalDocumentStore(tmp_path, start_maintenance=False)
+    client = authenticated_client(create_api(DemoService(document_store=store)))
+    response = client.post(
+        "/api/analyze",
+        json={
+            "citizen": {
+                "age": 35, "has_bank_account": True, "consents_to_auto_debit": True,
+            },
+            "scheme_ids": ["C02"],
+        },
+    )
+    result = next(payload for name, payload in parse_events(response.content) if name == "result")
+    assert result["approval"]
+
+    def request_url(request, timeout):
+        response = client.request(
+            request.get_method(), request.full_url, content=request.data, headers=dict(request.header_items())
+        )
+        assert response.status_code == 200, response.text
+        return Response(response.content)
+
+    monkeypatch.setattr(app_new, "urlopen", request_url)
+    monkeypatch.setattr(app_new.st, "file_uploader", lambda *args, **kwargs: Upload())
+    ui = AppTest.from_function(document_upload_screen)
+    ui.session_state["application_result"] = result
+    ui.session_state["application_uploads"] = {}
+    ui.session_state["chat_eligibility_result"] = {"status": "eligibility_checked"}
+    ui.session_state["application_outcome"] = None
+    ui.run()
+    assert not ui.exception
+    assert ui.button[0].disabled
+    ui.checkbox[0].check().run()
+    ui.button[0].click().run()
+    assert not ui.exception
+    assert len(ui.session_state["application_uploads"]) == 1
+    assert any("Current step: 4" in text.value for text in ui.markdown)
+    store.close()
 
 
 def test_streamed_demo_workflow_requires_documents_before_approval(tmp_path):
@@ -220,6 +289,93 @@ def test_unknown_scheme_is_rejected_before_streaming():
 
     assert response.status_code == 422
     assert response.json()["detail"] == "The selected scheme is not available."
+
+
+def test_missing_mock_portal_secret_does_not_consume_approval(monkeypatch):
+    monkeypatch.setattr(
+        business_logic, "load_dotenv",
+        lambda: monkeypatch.delenv("MOCK_PORTAL_AUTH_SECRET", raising=False),
+    )
+    monkeypatch.delenv("MOCK_PORTAL_AUTH_SECRET", raising=False)
+    service = DemoService()
+    client = authenticated_client(create_api(service))
+    analyzed = client.post(
+        "/api/analyze",
+        json={"citizen": {"is_woman_or_girl": True}, "scheme_ids": ["C23"]},
+    )
+    result = next(payload for name, payload in parse_events(analyzed.content) if name == "result")
+    thread_id = result["thread_id"]
+    decision = {"action": "approve", "payload_hash": result["approval"]["payload_hash"]}
+    monkeypatch.delenv("MOCK_PORTAL_AUTH_SECRET", raising=False)
+
+    blocked = client.post(f"/api/threads/{thread_id}/decision", json=decision)
+
+    assert blocked.status_code == 409
+    assert "MOCK_PORTAL_AUTH_SECRET" in blocked.json()["detail"]
+    assert service._get_snapshot(thread_id).next == ("approval",)
+    monkeypatch.setattr(business_logic, "load_dotenv", lambda: None)
+    monkeypatch.setenv("MOCK_PORTAL_AUTH_SECRET", "test-only-mock-portal-secret")
+    approved = client.post(f"/api/threads/{thread_id}/decision", json=decision)
+    final = next(payload for name, payload in parse_events(approved.content) if name == "result")
+    assert final["submission"]["status"] == "submitted (mock)"
+    assert client.post(f"/api/threads/{thread_id}/decision", json=decision).status_code == 409
+
+
+def test_profile_edit_creates_new_approval_and_rechecks_eligibility(tmp_path):
+    store = LocalDocumentStore(tmp_path, start_maintenance=False)
+    client = authenticated_client(create_api(DemoService(document_store=store)))
+    analyzed = client.post(
+        "/api/analyze",
+        json={"citizen": {
+            "is_widow": True, "age": 55, "household_below_bpl": True,
+            "is_remarried": False, "has_not_moved_above_bpl": True,
+        }, "scheme_ids": ["C06"]},
+    )
+    initial = next(payload for name, payload in parse_events(analyzed.content) if name == "result")
+    thread_id = initial["thread_id"]
+    old_hash = initial["approval"]["payload_hash"]
+    edited = client.post(
+        f"/api/threads/{thread_id}/decision",
+        json={"action": "edit", "changes": {"age": 56}},
+    )
+    updated = next(payload for name, payload in parse_events(edited.content) if name == "result")
+    assert updated["application"]["applicant"]["age"] == 56
+    assert updated["verdicts"]["C06"]["verdict"] == "eligible"
+    assert updated["approval"]["payload_hash"] != old_hash
+    for document in updated["documents"]["C06"]:
+        uploaded = client.post(
+            f"/api/threads/{thread_id}/documents/upload",
+            data={"scheme_id": "C06", "document_type": document, "sensitive_ids_masked": "true"},
+            files={"file": ("sample.pdf", b"%PDF-1.4\n%%EOF", "application/pdf")},
+        )
+        assert uploaded.status_code == 200
+    response = client.post(
+        f"/api/threads/{thread_id}/decision", json={"action": "approve", "payload_hash": old_hash}
+    )
+    final = next(payload for name, payload in parse_events(response.content) if name == "result")
+    assert final["approval_status"] == "invalid"
+    assert not final["submission"]
+    store.close()
+
+
+def test_submission_tool_failure_reports_uncertain_outcome(monkeypatch):
+    def fail_submission(*args, **kwargs):
+        raise business_logic.ToolCallError("mock-portal", "create_application", "tool_error", "private")
+
+    monkeypatch.setattr(business_logic.tools, "submit_application", fail_submission)
+    client = authenticated_client(create_api(DemoService()))
+    analyzed = client.post(
+        "/api/analyze",
+        json={"citizen": {"is_woman_or_girl": True}, "scheme_ids": ["C23"]},
+    )
+    result = next(payload for name, payload in parse_events(analyzed.content) if name == "result")
+    response = client.post(
+        f"/api/threads/{result['thread_id']}/decision",
+        json={"action": "approve", "payload_hash": result["approval"]["payload_hash"]},
+    )
+    error = next(payload for name, payload in parse_events(response.content) if name == "error")
+    assert "outcome may be unknown" in error["detail"]
+    assert "private" not in error["detail"]
 
 
 def test_tool_errors_in_legacy_stream_do_not_expose_exception_text():

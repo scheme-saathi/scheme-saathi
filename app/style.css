@@ -111,10 +111,6 @@ div.stDownloadButton > button:disabled {
     opacity: 0.62;
 }
 
-.st-key-new-chat {
-    margin-top: 2rem;
-}
-
 .st-key-eligibility-summary {
     margin: 0.25rem 0 1.1rem;
     border: 1px solid #d5e5f1;
@@ -210,6 +206,27 @@ div.stDownloadButton > button:disabled {
     margin: 0.2rem 0 -0.3rem;
     font-size: 2.2rem;
     letter-spacing: -0.04em;
+}
+
+.st-key-auth-shell [data-testid="stLinkButton"] a {
+    background: #286da5;
+    border-color: #286da5;
+}
+
+.st-key-auth-shell [data-testid="stLinkButton"] a,
+.st-key-auth-shell [data-testid="stLinkButton"] a * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.st-key-auth-shell [data-testid="stLinkButton"] a:hover {
+    background: #205a89;
+    border-color: #205a89;
+}
+
+.st-key-auth-shell [data-testid="stLinkButton"] a:focus-visible {
+    outline: 3px solid #286da5;
+    outline-offset: 3px;
 }
 
 .st-key-auth-shell [data-testid="stCaptionContainer"]:first-child {
@@ -467,7 +484,7 @@ div.stDownloadButton > button:disabled {
     margin: 0;
     color: var(--ss-ink);
     font-size: 0.88rem;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
 }
 
 .st-key-workflow-wizard [data-testid="stProgressBar"] {
@@ -480,6 +497,54 @@ div.stDownloadButton > button:disabled {
 
 .st-key-workflow-screen > [data-testid="stVerticalBlock"] {
     gap: 0.7rem;
+}
+
+.st-key-conversation {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1rem;
+    border: 1px solid var(--ss-line);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.st-key-conversation [data-testid="stChatMessage"] {
+    border: 1px solid #e6eee9;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.st-key-chat-header {
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid var(--ss-line);
+    border-radius: 16px;
+    background: var(--ss-surface);
+}
+
+.st-key-chat-header h4 {
+    margin: 0;
+}
+
+.st-key-chat-header [data-testid="stVerticalBlock"] {
+    gap: 0.4rem;
+}
+
+.st-key-conversation [data-testid="stMarkdownContainer"] p,
+.st-key-eligibility-screen [data-testid="stMarkdownContainer"] p,
+.st-key-application-workflow [data-testid="stMarkdownContainer"] p {
+    color: var(--ss-ink);
+}
+
+.st-key-workflow-screen [data-testid="stTable"] {
+    overflow-x: auto;
+}
+
+.st-key-fact-confirmation {
+    max-width: 960px;
+    margin: 0 auto;
+    border-color: #b7d5e9;
+    background: #f1f8fd;
 }
 
 .st-key-eligibility-screen [data-testid="stVerticalBlock"],
@@ -507,6 +572,10 @@ div.stDownloadButton > button:disabled {
 
     .st-key-workflow-screen {
         min-height: 0;
+    }
+
+    .st-key-conversation {
+        padding: 0.7rem;
     }
 
     .st-key-auth-page {
