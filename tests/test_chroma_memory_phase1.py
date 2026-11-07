@@ -4,6 +4,8 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
+pytest.importorskip("chromadb")
+
 from agents import chromadb_memory_service
 from agents.chromadb_memory_service import PLACEHOLDER_VECTOR, ChromaDBMemoryService
 from agents.memory import ApplicationReference, MemoryConsent, MemoryFact, MemoryScope
