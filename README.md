@@ -275,6 +275,15 @@ If intake stops before confirmation, **Review preliminary results** shows
 the current rule results without enabling application preparation; return to
 chat to supply or correct details. Nothing is sent to a government portal.
 
+The portal header shows the signed-in account and provides **New chat**,
+**Saved details**, **Privacy & consent**, and **Sign out**. On smaller screens
+these are in the account menu. **Saved details** opens what is remembered, the
+saved and family applications, and "Forget my data". Opening the privacy notice
+does not withdraw consent; withdrawal, starting a new chat, and signing out
+require confirmation before clearing the active conversation and deleting the
+active application with its saved details and uploaded documents. Sign out
+clears the app session but does not explicitly end the Auth0 session.
+
 Mock submission requires `MOCK_PORTAL_AUTH_SECRET` in the API environment.
 If it is missing, approval is blocked without consuming the pending decision.
 If submission fails after approval, its outcome may be unknown; check the mock

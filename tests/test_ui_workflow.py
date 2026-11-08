@@ -44,6 +44,89 @@ def chat_screen():
     app_new._render_chat_page()
 
 
+def header_screen():
+    import streamlit as st
+    from app import app_new
+
+    app_new._initialize_portal_state()
+    st.session_state.setdefault("header_fixture", True)
+    if "header_fixture_loaded" not in st.session_state:
+        st.session_state["header_fixture_loaded"] = True
+        st.session_state["portal_stage"] = "chat"
+        st.session_state["consent_given"] = True
+        st.session_state["account_email"] = "citizen@example.test"
+        st.session_state["chat_session_id"] = "thread-1"
+        st.session_state["chat_messages"] = [{"role": "user", "content": "Hello"}]
+    app_new._render_chat_header()
+
+
+@pytest.mark.parametrize("prefix", ["desktop", "mobile"])
+def test_header_privacy_requires_explicit_withdrawal(monkeypatch, prefix):
+    calls = []
+    monkeypatch.setattr(app_new, "_withdraw_consent", lambda: calls.append("withdraw") or True)
+    app = AppTest.from_function(header_screen).run()
+    assert not app.exception
+    app.button(key=f"{prefix}-privacy").click().run()
+    assert not calls
+    assert any("How your information is used" in item.value for item in app.markdown)
+    app.button(key="header-withdraw-consent").click().run()
+    assert not calls
+    app.button(key="close-header-panel").click().run()
+    assert not calls
+    app.button(key=f"{prefix}-privacy").click().run()
+    app.button(key="header-withdraw-consent").click().run()
+    app.button(key="confirm-header-withdraw").click().run()
+    assert calls == ["withdraw"]
+
+
+@pytest.mark.parametrize("prefix", ["desktop", "mobile"])
+@pytest.mark.parametrize("action", ["new_chat", "sign_out"])
+def test_header_confirms_before_clearing_session(monkeypatch, prefix, action):
+    calls = []
+    monkeypatch.setattr(app_new, "_reset_chat", lambda: calls.append("reset") or True)
+    monkeypatch.setattr(app_new, "_sign_out", lambda: calls.append("signout"))
+    app = AppTest.from_function(header_screen).run()
+    app.button(key=f"{prefix}-{action}").click().run()
+    assert not calls
+    app.button(key="close-header-panel").click().run()
+    assert not calls
+    app.button(key=f"{prefix}-{action}").click().run()
+    app.button(key=f"confirm-header-{action}").click().run()
+    assert calls == (["reset", "signout"] if action == "sign_out" else ["reset"])
+
+
+@pytest.mark.parametrize("prefix", ["desktop", "mobile"])
+def test_the_saved_details_button_opens_and_closes_the_memory_panel_without_a_confirmation(prefix):
+    app = AppTest.from_function(header_screen).run()
+    assert app.session_state["memory_panel_open"] is False
+
+    app.button(key=f"{prefix}-memory").click().run()
+    assert app.session_state["memory_panel_open"] is True
+    assert app.session_state["header_panel"] is None  # it is not one of the confirmations
+
+    app.button(key=f"{prefix}-memory").click().run()
+    assert app.session_state["memory_panel_open"] is False
+
+
+@pytest.mark.parametrize("action", ["new_chat", "sign_out"])
+def test_the_session_actions_say_the_application_and_its_saved_details_are_deleted(action):
+    app = AppTest.from_function(header_screen).run()
+    app.button(key=f"desktop-{action}").click().run()
+    assert any("including its saved details and" in item.value for item in app.markdown)
+
+
+def test_failed_cleanup_does_not_sign_out(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app_new, "_reset_chat", lambda: False)
+    monkeypatch.setattr(app_new, "_sign_out", lambda: calls.append("signout"))
+    app = AppTest.from_function(header_screen).run()
+    app.button(key="desktop-sign_out").click().run()
+    app.button(key="confirm-header-sign_out").click().run()
+    assert calls == []
+    assert app.session_state["header_panel"] == "sign_out"
+    assert app.session_state["account_email"] == "citizen@example.test"
+
+
 def document_screen():
     import streamlit as st
     from app import app_new
@@ -67,10 +150,10 @@ def edit_screen():
     result = {
         "thread_id": "thread-1",
         "profile": {"is_widow": True, "age": 55, "household_below_bpl": True,
-                    "is_remarried": False, "has_not_moved_above_bpl": True},
+                    "is_remarried": False},
         "application": {"scheme_id": "C06", "applicant": {
             "is_widow": True, "age": 55, "household_below_bpl": True,
-            "is_remarried": False, "has_not_moved_above_bpl": True,
+            "is_remarried": False,
         }},
         "approval": {"payload_hash": "test-hash"},
     }
@@ -107,7 +190,6 @@ def test_edit_form_submits_changed_fields(monkeypatch):
     assert not app.exception
     assert {box.label for box in app.checkbox} >= {
         "Widow", "Household below poverty line (BPL)", "Remarried",
-        "Has not moved above the poverty line",
     }
     assert not app.text_input
     next(box for box in app.checkbox if box.label == "Widow").uncheck()
