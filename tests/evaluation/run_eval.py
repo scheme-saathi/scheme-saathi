@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import statistics
 import subprocess
 import sys
@@ -40,6 +41,7 @@ EVAL_DIR = Path(__file__).resolve().parent
 GOLD_DIR = EVAL_DIR / "eligibility_gold_v1"
 RUNS_DIR = ROOT / "data" / "evaluation-runs"
 SPLITS = ("development", "held_out")
+VERDICTS = {"eligible", "not_eligible", "cant_tell"}
 
 
 def load_cases(split: str) -> list[dict]:
@@ -141,8 +143,10 @@ def run_agent_team(case: dict, config: dict, graph: Any = None, citizen: Any = N
             stopped_at = status or "end"
             break
     values = graph.get_state(thread).values
+    working = {scheme: v["verdict"] for scheme, v in (values.get("verdicts") or {}).items()}
     return {
-        "verdicts": {scheme: v["verdict"] for scheme, v in (values.get("verdicts") or {}).items()},
+        **final_answer(working, confirmations, stopped_at),
+        "unbacked_eligibility_claims": eligibility_claims(transcript),
         "shortlist": values.get("shortlist", []),
         "questions_asked": questions,
         "confirmations": confirmations,
@@ -151,6 +155,59 @@ def run_agent_team(case: dict, config: dict, graph: Any = None, citizen: Any = N
         "tokens": {model: dict(u) for model, u in usage.usage_metadata.items()},
         "stopped_at": stopped_at,
         "transcript": transcript,
+    }
+
+
+# Statuses at which the person has been given the rule engine's answer on confirmed facts.
+FINAL_STATUSES = {"eligibility_checked", "awaiting_approval", "documents_checked", "draft_needs_information", "submitted"}
+
+
+def final_answer(working: dict[str, str], confirmations: int, stopped_at: str) -> dict:
+    """Split the verdicts the person was told from the graph's working verdicts.
+
+    A verdict counts only once the conversation reached a final, confirmed answer. When intake
+    stops or a question is answered elsewhere, the person hears no verdict, so none is scored.
+    """
+    told = confirmations > 0 and stopped_at in FINAL_STATUSES
+    return {"verdicts": dict(working) if told else {}, "working_verdicts": dict(working)}
+
+
+_ENGINE_LINE = re.compile(r"^\s*[CM]\d{2}:\s*(eligible|not_eligible|cant_tell)\b", re.M)
+_CLAIM_PATTERNS = [re.compile(p, re.I) for p in (
+    r"\b(?:you|she|he|they|your \w+|the applicant)\s+(?:can|could|will|may|should|would)\s+(?:also\s+)?"
+    r"(?:get|receive|avail|join|apply for|qualify|be eligible)\b",
+    r"\b(?:is|are|am)\s+(?:not\s+)?eligible\b",
+    r"\b(?:in)?eligible for\b",
+    r"\bqualif(?:y|ies)\b",
+    r"पात्र", r"मिल सकत", r"मिलेग[ीा]", r"मिळू शकत", r"मिळेल",
+)]
+
+
+def eligibility_claims(transcript: list[dict]) -> list[str]:
+    """Agent statements that tell the person they qualify (or don't) without the rule engine.
+
+    Rule-engine verdict lines ("C06: eligible: ...") and questions are not claims. This is a
+    keyword check, so it can miss a claim or flag a harmless sentence; an LLM judge can
+    confirm the flagged ones.
+    """
+    claims = []
+    for turn in transcript:
+        text = turn.get("text", "")
+        if turn.get("role") != "agent" or text.rstrip().endswith("?") or _ENGINE_LINE.search(text):
+            continue
+        if any(p.search(text) for p in _CLAIM_PATTERNS):
+            claims.append(text)
+    return claims
+
+
+def normalise_result(result: dict, system: str) -> dict:
+    """Bring a result saved by an older runner version up to the current scoring rules."""
+    if system != "agent_team" or "working_verdicts" in result:
+        return result
+    return {
+        **result,
+        **final_answer(result.get("verdicts", {}), result.get("confirmations", 0), result.get("stopped_at", "")),
+        "unbacked_eligibility_claims": eligibility_claims(result.get("transcript", [])),
     }
 
 
@@ -171,16 +228,24 @@ SYSTEMS: dict[str, Callable[[dict, dict], dict]] = {
 
 def score_case(case: dict, result: dict) -> dict:
     """Compare a system's verdicts with the gold labels, on the case's candidate schemes only."""
+    told = result.get("verdicts", {})
+    evaluated = result.get("working_verdicts", told)
     per_scheme = {}
     for scheme_id in case["candidate_scheme_ids"]:
         gold = case["expected"][scheme_id]["verdict"]
-        got = result.get("verdicts", {}).get(scheme_id, "missing")
-        per_scheme[scheme_id] = {"gold": gold, "got": got, "correct": gold == got}
+        if scheme_id in told:
+            got = told[scheme_id]
+        elif scheme_id in evaluated:
+            got = "no_final_answer"  # checked, but the person was never told a verdict
+        else:
+            got = "not_evaluated"  # never shortlisted or checked
+        per_scheme[scheme_id] = {"gold": gold, "got": got, "correct": gold == got,
+                                 "evaluated": scheme_id in evaluated}
     return {
         "per_scheme": per_scheme,
         "case_correct": bool(per_scheme) and all(s["correct"] for s in per_scheme.values()),
         # schemes the system evaluated beyond the gold candidates are reported, never scored
-        "unscored_schemes": sorted(set(result.get("verdicts", {})) - set(case["candidate_scheme_ids"])),
+        "unscored_schemes": sorted(set(evaluated) - set(case["candidate_scheme_ids"])),
     }
 
 
@@ -207,6 +272,8 @@ def summarise(rows: list[dict]) -> dict:
         if source and source in got_by_case:
             same = all(got_by_case[r["case_id"]].get(s) == got_by_case[source].get(s) for s in r["score"]["per_scheme"])
             consistency.append(same)
+    answered = [s for s in verdicts if s["got"] in VERDICTS]
+    claims = [r["case_id"] for r in scored if r["result"].get("unbacked_eligibility_claims")]
     latencies = [r["latency_ms"] for r in rows]
     questions = [r["result"]["questions_asked"] for r in scored]
     tool_calls = [r["result"]["tool_calls"] for r in scored if "tool_calls" in r["result"]]
@@ -219,6 +286,11 @@ def summarise(rows: list[dict]) -> dict:
         "case_success": sum(r["score"]["case_correct"] for r in scored),
         "case_success_rate": round(sum(r["score"]["case_correct"] for r in scored) / len(rows), 4) if rows else None,
         "cant_tell_rate": round(sum(s["got"] == "cant_tell" for s in verdicts) / len(verdicts), 4) if verdicts else None,
+        "shortlist_recall": round(sum(s["evaluated"] for s in verdicts) / len(verdicts), 4) if verdicts else None,
+        "answered_rate": round(len(answered) / len(verdicts), 4) if verdicts else None,
+        "accuracy_when_answered": round(sum(s["correct"] for s in answered) / len(answered), 4) if answered else None,
+        "cases_with_unbacked_eligibility_claims": len(claims),
+        "unbacked_eligibility_claim_cases": claims,
         "confusion": dict(sorted(confusion.items())),
         "accuracy_by_scheme": {k: round(sum(v) / len(v), 4) for k, v in sorted(by_scheme.items())},
         "wrong": [f"{r['case_id']} {k}: gold {s['gold']}, got {s['got']}"
@@ -283,13 +355,42 @@ def write_run(config: dict, split: str, rows: list[dict], summary: dict, runs_di
     return out
 
 
+def rescore(run_dir: str | Path) -> tuple[list[dict], dict]:
+    """Score a saved run again with the current rules; the model is not called."""
+    run_dir = Path(run_dir)
+    meta = json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
+    cases = {c["case_id"]: c for c in load_cases(meta["split"])}
+    rows = []
+    for line in (run_dir / "cases.jsonl").read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        row["result"] = normalise_result(row["result"], meta["config"]["system"])
+        row["score"] = score_case(cases[row["case_id"]], row["result"])
+        rows.append(row)
+    summary = summarise(rows)
+    (run_dir / "summary_rescored.json").write_text(
+        json.dumps({**meta, "rescored_at": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"),
+                    "rescored_with_commit": _git_commit(), "summary": summary}, indent=2, ensure_ascii=False),
+        encoding="utf-8")
+    return rows, summary
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--config", required=True)
+    parser.add_argument("--rescore", metavar="RUN_DIR", help="score a saved run again; writes summary_rescored.json")
+    parser.add_argument("--config")
     parser.add_argument("--split", choices=SPLITS, default="development")
     parser.add_argument("--final", action="store_true", help="required for the held-out split")
     parser.add_argument("--limit", type=int, help="run only the first N cases")
     args = parser.parse_args()
+    if args.rescore:
+        _, summary = rescore(args.rescore)
+        print(json.dumps(summary, indent=2, ensure_ascii=False))
+        print(f"\nWritten to {Path(args.rescore) / 'summary_rescored.json'}")
+        return 0
+    if not args.config:
+        parser.error("--config is required (or --rescore RUN_DIR)")
     if args.split == "held_out" and not args.final:
         parser.error("held-out cases are for the final evaluation only; add --final if this is it")
     config = load_config(args.config)

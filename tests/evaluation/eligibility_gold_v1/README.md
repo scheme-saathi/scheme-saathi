@@ -55,6 +55,8 @@ Each config in `tests/evaluation/configs/` is one experiment. The runner writes 
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c2_agent_team.json --limit 3
 ```
 
+For a conversation, a verdict counts only once the person was given the rule engine's answer on confirmed facts. Candidate schemes the system checked but never answered score `no_final_answer`; ones it never checked score `not_evaluated`. The summary separates these: `shortlist_recall` (candidates checked at all), `answered_rate` and `accuracy_when_answered`. `cases_with_unbacked_eligibility_claims` counts conversations where an agent told the person they qualify (or don't) without the rule engine. That is a keyword check, so an LLM judge should confirm the flagged cases. To score a saved run again under the current rules without calling a model, use `python tests/evaluation/run_eval.py --rescore data/evaluation-runs/<run>`.
+
 On top of the C0 measures, C2 also records the team's shortlist, facts it confirmed wrongly against the hidden profile, tokens by model and the full transcript of each case. The single-agent system (C1) is listed in the runner but not built yet.
 
 The pytest checks both splits for structure and consistency, but compares the rule engine with the gold labels only on `development`. Run `--split held_out` only in the final evaluation, and never tune rules, prompts or the playbook on held-out results. Agents and MCP servers must not read this folder.
