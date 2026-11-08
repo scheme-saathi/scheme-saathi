@@ -92,21 +92,21 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "is_maharashtra_resident",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "household_below_bpl_or_family_earns_at_most_21000_a_year",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "niradhar_category",
@@ -126,7 +126,7 @@
         "sickle cell disease"
       ],
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

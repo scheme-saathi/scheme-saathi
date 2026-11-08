@@ -5,10 +5,14 @@ from graph import tools
 from servers.rule_engine.server import _load_scheme
 
 ROOT = Path(__file__).resolve().parents[1]
+# Checked rule by rule against the scheme text by a person; the gold standard for rule extraction.
 EXPECTED_IDS = {
     "C01", "C02", "C04", "C05", "C06", "C10", "C13", "C17",
     "C19", "C23", "C30", "C38", "M13", "M16", "M18",
-    # AI-drafted from data/schemes and marked reviewed without a human check; see data/rules/REVIEW_NOTES.md
+}
+# AI-drafted from data/schemes and not yet checked by a person, so kept as draft
+# (no live verdicts) until reviewed; see data/rules/REVIEW_STATUS.md.
+AI_DRAFTED_IDS = {
     "C03", "C07", "C09", "C11", "C14", "C15", "C16", "C18", "C21", "C22", "C24", "C25", "C26", "C27",
     "C28", "C29", "C31", "C32", "C33", "C36", "M01", "M02", "M05", "M06", "M07", "M08", "M09", "M10",
     "M11", "M12", "M14", "M19", "M20", "M21",
@@ -18,14 +22,20 @@ EXPECTED_IDS = {
 def test_fifteen_hand_coded_scheme_records_are_source_linked_and_reviewed():
     paths = sorted((ROOT / "data/rules").glob("*.json"))
     records = {record["scheme_id"]: record for record in (json.loads(path.read_text()) for path in paths)}
-    assert set(records) == EXPECTED_IDS
+    assert set(records) == EXPECTED_IDS | AI_DRAFTED_IDS
     for record in records.values():
         clause_ids = {clause["clause_id"] for clause in record["clauses"]}
         assert record["source"]["url"].startswith("https://")
         assert record["source"]["collected_on"]
         assert record["rules"]
-        assert all(rule["status"] == "reviewed" for rule in record["rules"])
+        expected_status = "reviewed" if record["scheme_id"] in EXPECTED_IDS else "draft"
+        assert all(rule["status"] == expected_status for rule in record["rules"]), record["scheme_id"]
         assert all(rule["clause_id"] in clause_ids for rule in record["rules"])
+
+
+def test_ai_drafted_rules_are_not_live_until_reviewed():
+    assert not set(tools.search_schemes({})) & AI_DRAFTED_IDS
+    assert set(tools.search_schemes({}, sorted(AI_DRAFTED_IDS), include_draft=True)) == AI_DRAFTED_IDS
 
 
 def test_all_fifteen_reviewed_schemes_are_live_by_default():

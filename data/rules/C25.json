@@ -77,42 +77,42 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "has_phd_in_basic_or_applied_sciences",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "was_pi_of_at_least_2_rd_projects",
       "op": "eq",
       "value": true,
       "clause_id": "elig-5",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "research_publications_with_impact_factor",
       "op": "gte",
       "value": 10,
       "clause_id": "elig-12",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 45,
       "clause_id": "elig-9",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 62,
       "clause_id": "elig-3",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

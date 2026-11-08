@@ -44,35 +44,35 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "years_resident_in_maharashtra",
       "op": "gte",
       "value": 15,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "is_destitute",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 65,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "household_below_bpl_or_family_earns_at_most_21000_a_year",
       "op": "eq",
       "value": true,
       "clause_id": "elig-5",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

@@ -53,35 +53,35 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "has_phd_in_science_engineering_or_ms_md",
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "holds_regular_position_in_state_university_college_or_private_institution",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "has_ongoing_research_project_or_fellowship",
       "op": "eq",
       "value": false,
       "clause_id": "elig-3",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 45,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

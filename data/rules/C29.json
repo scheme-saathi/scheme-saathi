@@ -50,35 +50,35 @@
       "op": "gte",
       "value": 18,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "resides_in_india",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "has_disability",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "disability_percent",
       "op": "gt",
       "value": 80,
       "clause_id": "elig-5",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "household_below_bpl",
       "op": "eq",
       "value": true,
       "clause_id": "elig-7",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

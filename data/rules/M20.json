@@ -110,14 +110,14 @@
         "white"
       ],
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "has_maharashtra_domicile_certificate",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "any"

@@ -48,21 +48,21 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "has_iba_education_loan_from_scheduled_bank",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "annual_income",
       "op": "lte",
       "value": 800000,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

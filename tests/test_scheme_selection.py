@@ -9,7 +9,11 @@ from servers.rule_engine import server as rule_server
 from graph.workflow import build_graph
 
 ROOT = Path(__file__).resolve().parents[1]
-RULE_IDS = {json.loads(p.read_text())["scheme_id"] for p in (ROOT / "data/rules").glob("*.json")}
+RULE_IDS = {  # rule records whose rules are all reviewed, so they give live verdicts
+    record["scheme_id"]
+    for record in (json.loads(p.read_text()) for p in (ROOT / "data/rules").glob("*.json"))
+    if all(rule["status"] == "reviewed" for rule in record["rules"])
+}
 KHADI_OK = {"is_khadi_registered": True, "age": 40, "has_valid_id": True,
             "family_member_already_beneficiary": False, "availed_other_scheme_same_purpose": False}
 
