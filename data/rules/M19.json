@@ -101,42 +101,42 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_maharashtra_resident",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 21,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 65,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_aadhaar_linked_bank_account",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "annual_family_income",
       "op": "lte",
       "value": 250000,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "marital_status",
@@ -149,49 +149,63 @@
         "unmarried"
       ],
       "clause_id": "elig-7",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "marital_status",
+      "op": "ne",
+      "value": "unmarried",
+      "clause_id": "elig-12",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "another_unmarried_woman_in_family_already_benefits",
+          "op": "eq",
+          "value": false
+        }
+      ]
     },
     {
       "field": "family_has_income_tax_payer",
       "op": "eq",
       "value": false,
       "clause_id": "excl-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "family_has_government_employee_or_government_pensioner",
       "op": "eq",
       "value": false,
       "clause_id": "excl-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "receives_1500_monthly_from_other_government_scheme",
       "op": "eq",
       "value": false,
       "clause_id": "excl-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "family_has_present_or_former_mp_or_mla",
       "op": "eq",
       "value": false,
       "clause_id": "excl-5",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "family_has_government_board_or_corporation_office_holder",
       "op": "eq",
       "value": false,
       "clause_id": "excl-6",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "family_owns_four_wheeler_excluding_tractor",
       "op": "eq",
       "value": false,
       "clause_id": "excl-7",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

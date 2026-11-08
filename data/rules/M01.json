@@ -92,21 +92,28 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_maharashtra_resident",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
-      "field": "household_below_bpl_or_family_earns_at_most_21000_a_year",
+      "field": "household_below_bpl",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 21000
+        }
+      ]
     },
     {
       "field": "niradhar_category",
@@ -126,7 +133,21 @@
         "sickle cell disease"
       ],
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "niradhar_category",
+      "op": "ne",
+      "value": "destitute man or woman below 65",
+      "clause_id": "elig-5",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "age",
+          "op": "lt",
+          "value": 65
+        }
+      ]
     }
   ],
   "rule_logic": "all"

@@ -551,7 +551,7 @@ Run the rule-engine unit and integration tests:
 python -m pytest -q tests/test_scheme.py tests/test_rule_engine.py
 ```
 
-The current evaluator supports reviewed scalar comparisons and membership checks. A scheme's flat rules are combined with either `all` or `any`; nested mixed expressions are not supported. The synthetic pension fixture is the current executable example. Other scheme records contain source material and have not yet been converted into reviewed machine-readable eligibility rules, so the evaluator does not provide verified eligibility decisions for them.
+The current evaluator supports reviewed scalar comparisons and membership checks. A scheme's flat rules are combined with either `all` or `any`. One level of OR inside a rule is supported: a rule may list `or_conditions`, and it passes when its own condition or any alternative holds (for example "BPL card **or** family income ≤ ₹21,000"). Deeper nesting is not supported. The synthetic pension fixture is the current executable example. Other scheme records contain source material and have not yet been converted into reviewed machine-readable eligibility rules, so the evaluator does not provide verified eligibility decisions for them.
 
 ### GPT agent workflow
 

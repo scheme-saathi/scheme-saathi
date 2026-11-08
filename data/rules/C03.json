@@ -75,119 +75,119 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "cultivable_landholding_hectares",
       "op": "lte",
       "value": 2,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 18,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 40,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "name_in_land_records_on_2019_08_01",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_aadhaar",
       "op": "eq",
       "value": true,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_savings_or_pm_kisan_account",
       "op": "eq",
       "value": true,
       "clause_id": "elig-6",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_nps_member",
       "op": "eq",
       "value": false,
       "clause_id": "excl-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_esic_member",
       "op": "eq",
       "value": false,
       "clause_id": "excl-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_epfo_member",
       "op": "eq",
       "value": false,
       "clause_id": "excl-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "opted_for_pm_sym_or_pm_vyapari_maandhan",
       "op": "eq",
       "value": false,
       "clause_id": "excl-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_institutional_landholder",
       "op": "eq",
       "value": false,
       "clause_id": "excl-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_former_or_present_constitutional_post_holder",
       "op": "eq",
       "value": false,
       "clause_id": "excl-5",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_former_or_present_listed_political_office_holder",
       "op": "eq",
       "value": false,
       "clause_id": "excl-6",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_excluded_government_or_local_body_employee",
       "op": "eq",
       "value": false,
       "clause_id": "excl-7",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "paid_income_tax_in_last_assessment_year",
       "op": "eq",
       "value": false,
       "clause_id": "excl-8",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_practicing_registered_professional_in_listed_field",
       "op": "eq",
       "value": false,
       "clause_id": "excl-8",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

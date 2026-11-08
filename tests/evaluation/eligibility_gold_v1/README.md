@@ -47,7 +47,7 @@ Each config in `tests/evaluation/configs/` is one experiment. The runner writes 
 | Config | System | Development result (8 Nov) |
 | --- | --- | --- |
 | `c0_fixed_workflow` | C0, fixed workflow, no model, candidate schemes | 39/39 verdicts, 4.5 questions per case, 218 ms median |
-| `c0_fixed_workflow_all_schemes` | C0 checking all 15 live schemes | 39/39 verdicts, 45.8 questions per case, 1.8 s median |
+| `c0_fixed_workflow_all_schemes` | C0 checking all 22 live schemes | 39/39 verdicts, 80.2 questions per case, 3.7 s median (45.8 and 1.8 s with 15 live schemes) |
 
 `c2_agent_team` runs the real supervisor and specialist agents against the simulated citizen in `tests/evaluation/simulated_citizen.py`: a model that knows only the case's hidden profile and answers only what it is asked, in the case's language. Set `SUPERVISOR_MODEL`, `SPECIALIST_MODEL`, `CITIZEN_MODEL` (a different model family, as the brief requires) and `OPENROUTER_API_KEY` in `.env`, then:
 

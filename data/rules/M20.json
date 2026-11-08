@@ -106,18 +106,79 @@
         "yellow",
         "antyodaya",
         "annapurna",
-        "orange",
-        "white"
+        "orange"
       ],
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "ration_card_type",
+      "op": "eq",
+      "value": "white",
+      "clause_id": "elig-3",
+      "status": "reviewed"
     },
     {
       "field": "has_maharashtra_domicile_certificate",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "is_student_in_government_ashram_school",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-6",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "is_child_in_government_orphanage",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-7"
+        },
+        {
+          "field": "is_woman_in_government_womens_ashram",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-8"
+        },
+        {
+          "field": "is_senior_citizen_in_government_old_age_home",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-9"
+        }
+      ]
+    },
+    {
+      "field": "is_journalist_or_dependent_meeting_dgipr_criteria",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-10",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_out_of_state_construction_worker_registered_with_mbocww_board",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-11",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_out_of_state_road_accident_victim_injured_in_maharashtra",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-13",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_border_village_family_with_aay_phh_or_annapurna_card",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-15",
+      "status": "reviewed"
     }
   ],
   "rule_logic": "any"

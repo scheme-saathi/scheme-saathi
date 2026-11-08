@@ -87,21 +87,21 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_land_record_or_tenancy_agreement",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "received_compensation_for_same_crop_loss_elsewhere",
       "op": "eq",
       "value": false,
       "clause_id": "elig-6",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

@@ -53,7 +53,7 @@ def load_cases(split: str) -> list[dict]:
 
 
 def scheme_fields(record: SchemeRecord) -> list[str]:
-    return list(dict.fromkeys(rule.field for rule in record.rules))
+    return list(dict.fromkeys(c.field for rule in record.rules for c in rule.conditions()))
 
 
 def _type_ok(field: str, value: object, expected: object) -> bool:
@@ -79,7 +79,7 @@ def problems(case: dict, records: dict[str, SchemeRecord]) -> list[str]:
     if set(p) != set(needed):
         out.append(f"{cid}: profile fields differ from candidate-scheme fields: "
                    f"missing {sorted(set(needed) - set(p))}, extra {sorted(set(p) - set(needed))}")
-    expected_values = {r.field: r.value for rec in records.values() for r in rec.rules}
+    expected_values = {c.field: c.value for rec in records.values() for r in rec.rules for c in r.conditions()}
     for field, value in p.items():
         if field in expected_values and not _type_ok(field, value, expected_values[field]):
             out.append(f"{cid}: bad value {field}={value!r}")
