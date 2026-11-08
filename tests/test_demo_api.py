@@ -147,7 +147,8 @@ def test_document_screen_uploads_to_real_api_and_advances_to_review(tmp_path, mo
         "/api/analyze",
         json={
             "citizen": {
-                "age": 35, "has_bank_account": True, "consents_to_auto_debit": True,
+                "age": 35, "age_nearer_birthday": 35, "has_bank_account": True,
+                "consents_to_auto_debit": True,
             },
             "scheme_ids": ["C02"],
         },

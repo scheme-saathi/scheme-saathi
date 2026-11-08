@@ -522,7 +522,7 @@ The source clauses and rule conditions are stored with each record. Review must 
 `--include-draft` lets a rule author preview a draft ruleset without changing its stored status:
 
 ```bash
-python -m graph.run --include-draft --scheme-id C02 --citizen '{"has_bank_account": true, "age": 40, "consents_to_auto_debit": true}'
+python -m graph.run --include-draft --scheme-id C02 --citizen '{"has_bank_account": true, "age": 40, "age_nearer_birthday": 40, "consents_to_auto_debit": true}'
 python -m graph.run --include-draft --scheme-id C04 --citizen '{"has_savings_account": true, "age": 30, "is_or_was_income_tax_payer": false}'
 ```
 

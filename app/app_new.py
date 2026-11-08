@@ -377,6 +377,7 @@ VERDICT_BADGES = {
 CONDITION_MARKS = {"true": "✅", "false": "❌", "unknown": "❔"}
 FIELD_LABELS = {
     "age": "Age (years)",
+    "age_nearer_birthday": "Age at nearest birthday (years)",
     "income": "Income",
     "monthly_income": "Monthly income",
     "is_widow": "Widow",
