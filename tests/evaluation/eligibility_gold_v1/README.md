@@ -1,0 +1,39 @@
+# Eligibility gold set v1
+
+71 synthetic persona cases in 22 families, with human-labelled expected verdicts for every candidate scheme. They are used to evaluate eligibility outcomes (L13). All personas and facts are fictional; no case contains an ID number.
+
+| Split | Families | Cases | Verdicts |
+| --- | --- | --- | --- |
+| `development/` | 6 (F02, F04, F08, F10, F13, F18) | 21 | 39 (32 labelled, 7 copied to language versions) |
+| `held_out/` | 16 | 50 | 95 (71 labelled, 24 copied to language versions) |
+
+Languages: 58 English, 9 Marathi, 4 Hindi. A Hindi or Marathi case (`variant_of` set) copies its source case's profile and labels, so the same household must get the same verdicts in every language.
+
+## What a case holds
+
+- `opening_message`: the citizen's first message, for a simulated citizen.
+- `hidden_profile`: the facts the simulated citizen knows, as rule-engine fields. It holds exactly the fields of the case's `candidate_scheme_ids`. `null` means the citizen doesn't know.
+- `expected`: one verdict per candidate scheme, `eligible`, `not_eligible` or `cant_tell`. `review_item` links a verdict to the label review below.
+
+## How it was built
+
+1. **Rules.** The 15 rule files in `data/rules/` were drafted by Saurabh and verified rule by rule against the myScheme text by Sharika (7 Nov 2026). Seven interpretation decisions were recorded. C30 is a scheme for colleges, so it is not used here.
+2. **Fields.** The persona field list was frozen at 47 fields on 7 Nov. `age_nearer_birthday` was added on 8 Nov for C02's "70 years (age nearer birthday)" limit.
+3. **Cases.** Families were designed around rule boundaries (for example age 40 vs 41, income ₹15,000 vs ₹15,001), exclusions, multi-scheme households and unknown answers. Each case passed a field and consistency check (11 rules).
+4. **Labels.** Sharika labelled every case from the scheme source sentences, without running the engine.
+5. **Label review.** The 103 labels were compared once with the rule engine on 8 Nov, before any agent run. Three labels were corrected after rereading the source (R1 F05a, R2 F13c, R3 F19b). One rule was fixed (R4: C04 now requires auto-debit consent, found through F10b in the development split). Three ambiguous cases were rewritten and relabelled (R5 F12a, R6 F14d, R7 F16b). No label was copied from the engine.
+
+## Known limits
+
+- **One labeller.** The brief asks for two independent labellers. Only one labelled these cases because of time, so no inter-annotator agreement (Cohen's kappa) is reported. A second labelling of the held-out split would add it.
+- **C17 wording.** "notified on or after April 1, 2018, including those who are already being treated" can also mean that patients on treatment on that date qualify even if notified earlier. The rule follows the first reading only, and F16b avoids the ambiguous zone.
+- **Rule-based truth.** Labels follow the myScheme text captured on 28 Oct 2026, not current official policy.
+
+## Using it
+
+```bash
+python tests/evaluation/check_eligibility_gold.py --split development
+python -m pytest -q tests/test_eligibility_gold.py
+```
+
+The pytest checks both splits for structure and consistency, but compares the rule engine with the gold labels only on `development`. Run `--split held_out` only in the final evaluation, and never tune rules, prompts or the playbook on held-out results. Agents and MCP servers must not read this folder.
