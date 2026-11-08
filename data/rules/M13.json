@@ -63,7 +63,6 @@
   "rules": [
     {"field": "is_cultivable_landholding_farmer_family", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "held_qualifying_land_on_2019_02_01", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
-    {"field": "eligible_for_pm_kisan", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "is_institutional_landholder", "op": "eq", "value": false, "clause_id": "excl-2", "status": "reviewed"},
     {"field": "is_former_or_present_constitutional_post_holder", "op": "eq", "value": false, "clause_id": "excl-4", "status": "reviewed"},
     {"field": "is_former_or_present_listed_political_office_holder", "op": "eq", "value": false, "clause_id": "excl-5", "status": "reviewed"},

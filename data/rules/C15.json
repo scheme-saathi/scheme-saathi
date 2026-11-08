@@ -1,0 +1,120 @@
+{
+  "scheme_id": "C15",
+  "name": "Post Graduate Indira Gandhi Scholarship For Single Girl Child",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/pg-igssgc",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "1. The applicant must be a citizen of India."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "2. The applicant must be the only girl child in the family."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "3. Girl students without having any brothers or the girl student who are twin daughters/ fraternal daughters may also apply"
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "4. The age of the applicant should not be more than 30 years at the time of admission in the first year of PG"
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "course."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "5. The applicant must have taken admission to regular, full-time first-year Master's Degree courses in any designated university or a post-graduate college."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "6. The candidate should be pursuing a non-professional course and be taking regular classes from a recognized institution."
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "7. The applicant must not be [ursuing education through Distance education mode."
+    },
+    {
+      "clause_id": "excl-1",
+      "text": "1. Admission to PG Course in Distance education mode is not covered under the scheme."
+    },
+    {
+      "clause_id": "excl-2",
+      "text": "2. Those Deemed Universities which do not receive funds from the Central/ State Government are not eligible institutions under the scheme."
+    },
+    {
+      "clause_id": "excl-3",
+      "text": "3. In a family if one son and one daughter are available then the girl child will not be considered for scholarship under the scheme."
+    }
+  ],
+  "documents_required": [
+    "To be submitted by the Student",
+    "1. Aadhaar Card",
+    "2. Proof of admission into a recognized Master’s degree course in an institute located in India and recognized by the UGC.",
+    "3. Joining report (as per format given in Annexure-I)",
+    "4. Affidavit regarding Single girl child status (as per format given in Annexure-II)",
+    "5. Copy of the Bank Passbook",
+    "6. Birth Certificate or Class 10th Marksheet",
+    "To be submitted by the Institution",
+    "1. A progress Report after the completion of the first year along with the percentage of marks obtained by the candidates needs to be submitted by the institution.",
+    "2. Funds Utilization Certificate also needs to be submitted by the Institution Authorities after completion of the First Year."
+  ],
+  "rules": [
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_woman_or_girl",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_only_girl_child_without_brothers",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 30,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "admitted_full_time_first_year_masters",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-6",
+      "status": "reviewed"
+    },
+    {
+      "field": "course_is_non_professional",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-7",
+      "status": "reviewed"
+    },
+    {
+      "field": "studies_through_distance_education",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-8",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

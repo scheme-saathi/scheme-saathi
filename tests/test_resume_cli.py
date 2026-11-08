@@ -47,9 +47,9 @@ def test_reviewed_scheme_reports_verdict_without_approval():
 
 def test_persona_id_loads_profile_facts():
     """Load a saved persona and verify its facts are used by the workflow."""
-    result = run("--persona-id", "SS006")
+    result = run("--persona-id", "SS006", "--scheme-id", "C06")
     assert result.returncode == 0, result.stderr
-    assert "age gte (clause cl-1): TRUE" in result.stdout
+    assert "age gte (clause elig-1): TRUE" in result.stdout  # SS006 is 67
 
 
 def test_persona_id_and_citizen_cannot_be_combined():

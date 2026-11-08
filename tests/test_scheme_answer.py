@@ -91,6 +91,14 @@ def test_intake_output_rule_now_runs():
     assert not OutputValidator().validate_specialist_output("You are eligible.", "intake", "en").passed
 
 
+def test_intake_questions_may_name_approved_or_eligible():
+    """A word match blocked these C36 questions and showed the user a generic error."""
+    check = OutputValidator().validate_specialist_output
+    assert check("Is your institution approved by AICTE?", "intake", "en").passed
+    assert check("Are you currently an engineering student in an eligible year?", "intake", "en").passed
+    assert not check("Your application has been approved.", "intake", "en").passed
+
+
 def test_evidence_tool_drops_low_rerank_scores_and_strips_tables(monkeypatch):
     rows = [
         {**PASSAGE, "kind": "text", "rank_score": 9.0},

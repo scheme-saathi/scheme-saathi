@@ -1,0 +1,133 @@
+{
+  "scheme_id": "M01",
+  "name": "Sanjay Gandhi Niradhar Grant Scheme",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/sgngs",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant should be a citizen of India."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant should be a domicile / permanent resident of the state of Maharashtra."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The name of the applicant should be in the list of Below Poverty Line (BPL) families OR the annual income of the family should be less than or equal to ₹ 21,000/-."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant should be one of the following:"
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "a) Destitute Men and Women below 65 Years of Age."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "b) Orphan Children."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "c) All categories of Person with Disability (PwD)."
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "d) Men and Women Who Are Unable to Sustain Themselves Due to Diseases Like Tuberculosis, Cancer, Aids, Leprosy."
+    },
+    {
+      "clause_id": "elig-9",
+      "text": "e) Destitute Widows (including widows of farmers who committed suicide)."
+    },
+    {
+      "clause_id": "elig-10",
+      "text": "f) Women in the Divorce Process and Divorced but Not Alimony."
+    },
+    {
+      "clause_id": "elig-11",
+      "text": "g) Women Who Have Been Tortured and Released From Prostitution."
+    },
+    {
+      "clause_id": "elig-12",
+      "text": "h) Transgender."
+    },
+    {
+      "clause_id": "elig-13",
+      "text": "i) Devadasi."
+    },
+    {
+      "clause_id": "elig-14",
+      "text": "j) Unmarried Women Above 35 Years of Age."
+    },
+    {
+      "clause_id": "elig-15",
+      "text": "k) The Wives of Prisoners Serving Sentences in Jail."
+    },
+    {
+      "clause_id": "elig-16",
+      "text": "l) Those Suffering From Sickle Cell Disease."
+    }
+  ],
+  "documents_required": [
+    "Aadhaar Card.",
+    "2-Passport Sized Photograph (Signed Across).",
+    "Residential Certificate / Domicile Certificate of the State of Maharashtra.",
+    "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+    "Any other document required by the District Social Welfare Office.",
+    "Medical Certificate OR Certificate of Incapacity/Disease (issued by the Civil Surgeon and Medical Superintendent of the Government Hospital) (In the case of major illness)",
+    "Proof of Age",
+    "Income Certificate / BPL Card of the Family",
+    "Disability Certificate",
+    "Transgender Certificate (in case the applicant is Transgender)",
+    "Marriage Certificate, and Death Certificate of Husband (in the case of Widow applicants)"
+  ],
+  "rules": [
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_maharashtra_resident",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "household_below_bpl_or_family_earns_at_most_21000_a_year",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "niradhar_category",
+      "op": "in",
+      "value": [
+        "destitute man or woman below 65",
+        "orphan child",
+        "person with disability",
+        "unable to sustain due to tb, cancer, aids or leprosy",
+        "destitute widow",
+        "woman in divorce process or divorced without alimony",
+        "woman released from prostitution",
+        "transgender",
+        "devadasi",
+        "unmarried woman above 35",
+        "wife of a serving prisoner",
+        "sickle cell disease"
+      ],
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

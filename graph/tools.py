@@ -39,7 +39,7 @@ _SERVERS = {
     MOCK_PORTAL: portal_server,
     DOC_CHECK: document_check_server,
 }
-DEFAULT_TOOL_CALL_BUDGET = 40
+DEFAULT_TOOL_CALL_BUDGET = 150  # one turn can evaluate every live scheme (50) twice, plus lookups
 _KNOWN_ACTORS = {"application", "baseline", "document_checker", "eligibility", "intake", "supervisor"}
 
 # Pre-tool hook: only these agents may call a write tool. "baseline" is the single-agent

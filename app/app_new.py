@@ -159,6 +159,9 @@ def _auth_headers(headers: dict[str, str] | None = None) -> dict[str, str]:
 
 def _sign_out() -> None:
     st.session_state["access_token"] = None
+    st.session_state["account_email"] = None
+    st.session_state["account_email_error"] = None
+    st.session_state["header_panel"] = None
     st.session_state["portal_stage"] = "access"
     st.session_state["consent_given"] = False
 
@@ -382,7 +385,6 @@ FIELD_LABELS = {
     "is_widow": "Widow",
     "household_below_bpl": "Household below poverty line (BPL)",
     "is_remarried": "Remarried",
-    "has_not_moved_above_bpl": "Has not moved above the poverty line",
 }
 
 
@@ -1410,6 +1412,8 @@ def _initialize_portal_state() -> None:
         "portal_stage": "access",
         "access_error": None,
         "access_token": None,
+        "account_email": None,
+        "account_email_error": None,
         "auth_url": None,
         "consent_given": False,
         "consent_recorded_at": None,
@@ -1427,6 +1431,7 @@ def _initialize_portal_state() -> None:
         "application_outcome": None,
         "application_editing": False,
         "application_edit_revision": 0,
+        "header_panel": None,
     }
     for key, value in defaults.items():
         st.session_state.setdefault(key, value)
@@ -1449,11 +1454,23 @@ def _handle_sign_in_callback(settings: Any) -> None:
     code, state = params.get("code"), params.get("state")
     if not code or not state:
         return
+    st.session_state["account_email"] = None
+    st.session_state["account_email_error"] = None
     try:
-        st.session_state["access_token"] = ui_auth.complete_sign_in(settings, code, state)
+        token = ui_auth.complete_sign_in(settings, code, state)
     except ui_auth.SignInError as error:
         st.session_state["access_error"] = str(error)
     else:
+        st.session_state["access_token"] = token
+        try:
+            st.session_state["account_email"] = ui_auth.user_email(settings, token)
+        except ui_auth.SignInError as error:
+            st.session_state["account_email_error"] = str(error)
+        else:
+            if st.session_state["account_email"] is None:
+                st.session_state["account_email_error"] = (
+                    "Your account has no email available for display."
+                )
         st.session_state["access_error"] = None
         st.session_state["portal_stage"] = "consent"
     finally:
@@ -1474,9 +1491,8 @@ def _render_access_page() -> None:
             st.caption("PUBLIC SUPPORT, MADE SIMPLE")
             st.title("Welcome")
             st.write(
-                "Sign in to explore support schemes for your household. Your "
-                "household identity is verified by Auth0, so only you can see "
-                "your conversation and applications."
+                "Sign in or create an account to explore support schemes for your "
+                "household. Your sign-in helps protect your conversation and applications."
             )
 
             if settings is None:
@@ -1490,7 +1506,7 @@ def _render_access_page() -> None:
                 if not st.session_state.get("auth_url"):
                     st.session_state["auth_url"] = ui_auth.authorize_url(settings)
                 st.link_button(
-                    "Sign in with Auth0",
+                    "Sign in / Create account",
                     st.session_state["auth_url"],
                     type="primary",
                     icon=":material/login:",
@@ -1521,9 +1537,47 @@ def _complete_consent() -> None:
 
 def _decline_consent() -> None:
     """Return to the access screen without enabling chat."""
-    st.session_state["portal_stage"] = "access"
-    st.session_state["consent_given"] = False
+    _sign_out()
     st.session_state["session-consent"] = False
+
+
+def _render_signed_in_account() -> None:
+    email = st.session_state.get("account_email")
+    if email:
+        st.text(f"Signed in as: {email}")
+    elif st.session_state.get("account_email_error"):
+        st.warning(st.session_state["account_email_error"])
+
+
+def _render_privacy_notice() -> None:
+    use_col, handling_col = st.columns(2, gap="medium")
+    with use_col:
+        with st.container(border=True, key="consent-use-card"):
+            st.markdown("**How your information is used**")
+            st.write(
+                "Details you choose to share help the service ask relevant "
+                "follow-up questions and check reviewed scheme rules."
+            )
+    with handling_col:
+        with st.container(border=True, key="consent-handling-card"):
+            st.markdown("**How it is handled**")
+            st.write(
+                "Your responses are processed by this application to provide "
+                "the current workflow. Redacted supporting documents are "
+                "stored locally without encryption for up to 30 days. This screen "
+                "does not submit information to a government portal."
+            )
+
+    with st.container(key="consent-sensitive-notice"):
+        st.warning(
+            "For your safety, do not enter Aadhaar numbers, bank-account "
+            "details, passwords, OTPs, or other sensitive identifiers."
+        )
+    st.caption(
+        "Your consent choice applies to this active application session. "
+        "You may withdraw it later; doing so clears the conversation and "
+        "deletes supporting documents for the active application."
+    )
 
 
 def _render_consent_page() -> None:
@@ -1541,6 +1595,7 @@ def _render_consent_page() -> None:
                 st.caption("Privacy and consent")
 
         with st.container(border=True, key="consent-shell"):
+            _render_signed_in_account()
             st.markdown(":material/verified_user: PRIVACY & CONSENT")
             st.title("Your information. Your choice.")
             st.write(
@@ -1548,35 +1603,7 @@ def _render_consent_page() -> None:
                 "your scheme search."
             )
 
-            use_col, handling_col = st.columns(2, gap="medium")
-            with use_col:
-                with st.container(border=True, key="consent-use-card"):
-                    st.markdown("**How your information is used**")
-                    st.write(
-                        "Details you choose to share help the service ask relevant "
-                        "follow-up questions and check reviewed scheme rules."
-                    )
-            with handling_col:
-                with st.container(border=True, key="consent-handling-card"):
-                    st.markdown("**How it is handled**")
-                    st.write(
-                        "Your responses are processed by this application to provide "
-                        "the current workflow. Redacted supporting documents are "
-                        "stored locally without encryption for up to 30 days. This screen "
-                        "does not submit information to a government portal."
-                    )
-
-            with st.container(key="consent-sensitive-notice"):
-                st.warning(
-                    "For your safety, do not enter Aadhaar numbers, bank-account "
-                    "details, passwords, OTPs, or other sensitive identifiers."
-                )
-
-            st.caption(
-                "Your consent choice applies to this active application session. "
-                "You may withdraw it later; doing so clears the conversation and "
-                "deletes supporting documents for the active application."
-            )
+            _render_privacy_notice()
 
             with st.form("session-consent-form"):
                 st.checkbox(
@@ -1612,26 +1639,122 @@ def _withdraw_consent() -> bool:
     return True
 
 
+def _render_header_actions(prefix: str, *, columns: bool = False) -> None:
+    has_chat = bool(
+        st.session_state.get("chat_messages")
+        or st.session_state.get("chat_session_id")
+        or st.session_state.get("application_result")
+    )
+    actions = (
+        ("New chat", ":material/add:", "new_chat", not has_chat),
+        ("Privacy & consent", ":material/shield:", "privacy", False),
+        ("Sign out", ":material/logout:", "sign_out", False),
+    )
+    containers = st.columns(3, gap="small") if columns else [st.container() for _ in actions]
+    for container, (label, icon, panel, disabled) in zip(containers, actions):
+        with container:
+            if st.button(
+                label, icon=icon, disabled=disabled,
+                key=f"{prefix}-{panel}", width="stretch",
+            ):
+                st.session_state["header_panel"] = panel
+
+
+def _render_header_panel() -> None:
+    panel = st.session_state.get("header_panel")
+    if not panel:
+        return
+    with st.container(border=True, key="header-panel"):
+        if panel == "privacy":
+            st.subheader("Privacy & consent")
+            _render_privacy_notice()
+            if st.button("Withdraw consent", key="header-withdraw-consent"):
+                st.session_state["header_panel"] = "withdraw"
+                st.rerun()
+        else:
+            if panel == "new_chat":
+                st.subheader("Start a new chat?")
+                st.write(
+                    "This clears the current conversation and deletes uploaded "
+                    "documents for the active application."
+                )
+                label = "Yes, start a new chat"
+            elif panel == "sign_out":
+                st.subheader("Sign out?")
+                st.write(
+                    "This clears the current conversation and deletes uploaded "
+                    "documents for the active application. It does not sign you "
+                    "out of Auth0."
+                )
+                label = "Yes, sign out"
+            else:
+                st.subheader("Withdraw consent?")
+                st.write(
+                    "This clears the current conversation and deletes uploaded "
+                    "documents for the active application."
+                )
+                label = "Yes, withdraw consent"
+            if st.button(label, type="primary", key=f"confirm-header-{panel}"):
+                if panel == "withdraw":
+                    succeeded = _withdraw_consent()
+                else:
+                    succeeded = _reset_chat()
+                    if succeeded and panel == "sign_out":
+                        _sign_out()
+                if succeeded:
+                    st.session_state["header_panel"] = None
+                    st.rerun()
+        if st.button("Close" if panel == "privacy" else "Cancel", key="close-header-panel"):
+            st.session_state["header_panel"] = None
+            st.rerun()
+
+
+def _render_chat_header() -> None:
+    with st.container(key="chat-header"):
+        with st.container(key="header-main"):
+            image_col, title_col, account_col = st.columns(
+                [1.4, 1.6, 1.4], gap="medium", vertical_alignment="center"
+            )
+            with image_col:
+                _render_brand_image()
+            with title_col:
+                st.markdown("#### Scheme Saathi")
+                st.caption("Your guide to government schemes")
+            with account_col:
+                with st.container(key="header-desktop-account"):
+                    _render_signed_in_account()
+                with st.container(key="header-mobile-menu"):
+                    with st.popover("Account & actions", icon=":material/account_circle:", width="stretch"):
+                        _render_signed_in_account()
+                        _render_header_actions("mobile")
+        with st.container(key="header-desktop-actions"):
+            _render_header_actions("desktop", columns=True)
+    _render_header_panel()
+
+
 def _render_wizard(current_step: int) -> None:
     """Keep the five-step workflow tracker visible above each active screen."""
     with st.container(key="workflow-wizard"):
         st.caption("APPLICATION WORKFLOW")
-        step_columns = st.columns(len(JOURNEY_STEPS), gap="small")
-        for index, (column, label) in enumerate(
-            zip(step_columns, JOURNEY_STEPS), start=1
-        ):
-            if index < current_step:
-                state = "complete"
-                marker = ":material/check_circle:"
-            elif index == current_step:
-                state = "current"
-                marker = ":material/radio_button_checked:"
-            else:
-                state = "upcoming"
-                marker = ":material/radio_button_unchecked:"
-            with column:
-                with st.container(key=f"wizard-step-{state}-{index}"):
-                    st.markdown(f"{marker} **{label}**")
+        with st.container(key="wizard-desktop"):
+            step_columns = st.columns(len(JOURNEY_STEPS), gap="small")
+            for index, (column, label) in enumerate(
+                zip(step_columns, JOURNEY_STEPS), start=1
+            ):
+                if index < current_step:
+                    state = "complete"
+                    marker = ":material/check_circle:"
+                elif index == current_step:
+                    state = "current"
+                    marker = ":material/radio_button_checked:"
+                else:
+                    state = "upcoming"
+                    marker = ":material/radio_button_unchecked:"
+                with column:
+                    with st.container(key=f"wizard-step-{state}-{index}"):
+                        st.markdown(f"{marker} **{label}**")
+        with st.container(key="wizard-mobile"):
+            st.markdown(f"**{current_step} / {len(JOURNEY_STEPS)} · {JOURNEY_STEPS[current_step - 1]}**")
         st.progress(
             current_step / len(JOURNEY_STEPS),
             text=f"Step {current_step} of {len(JOURNEY_STEPS)}",
@@ -1709,42 +1832,7 @@ def _render_chat_page() -> None:
     st.session_state.setdefault("application_editing", False)
     st.session_state.setdefault("application_edit_revision", 0)
 
-    with st.container(key="chat-header"):
-        image_col, title_col, action_col = st.columns(
-            [1.6, 1.9, 1.35], gap="small", vertical_alignment="center"
-        )
-        with image_col:
-            _render_brand_image()
-        with title_col:
-            st.markdown("#### Support for every household")
-            st.caption("Explore schemes, check eligibility, and prepare a mock application.")
-        with action_col:
-            if st.button(
-                "New chat",
-                icon=":material/add:",
-                disabled=not st.session_state["chat_messages"],
-                key="new-chat",
-                width="stretch",
-            ):
-                if _reset_chat():
-                    st.rerun()
-            if st.button(
-                "Withdraw consent",
-                icon=":material/lock:",
-                key="withdraw-consent",
-                width="stretch",
-            ):
-                if _withdraw_consent():
-                    st.rerun()
-            if st.button(
-                "Sign out",
-                icon=":material/logout:",
-                key="sign-out",
-                width="stretch",
-            ):
-                if _reset_chat():
-                    _sign_out()
-                    st.rerun()
+    _render_chat_header()
 
     try:
         api_base = _api_base_url()
@@ -1828,8 +1916,8 @@ def _render_citizen_portal() -> None:
     """Route the citizen through access, consent, then the chat workflow."""
     stage = st.session_state["portal_stage"]
     if stage != "access" and _access_token() is None:
-        st.session_state["portal_stage"] = stage = "access"
-        st.session_state["consent_given"] = False
+        _sign_out()
+        stage = "access"
         st.session_state["access_error"] = (
             st.session_state.get("access_error") or "Please sign in to continue."
         )

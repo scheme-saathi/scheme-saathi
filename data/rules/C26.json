@@ -1,0 +1,88 @@
+{
+  "scheme_id": "C26",
+  "name": "Teachers Associateship for Research Excellence",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/tare",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "Indian citizens residing in India holding a Ph.D. degree in Science/Engineering or MS/MD in Medicine are eligible to apply."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant(s) must hold a regular academic/research position in State Universities/ Colleges and private Academic Institutions."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "Applicant should not hold any ongoing research projects or any fellowship at the time of submission of application."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The upper age limit for the award is 45 years at the time of the submission of the application. Age relaxation of 5 (five) years will be given to candidates belonging to SC/ST/OBC/Physically Challenged & Women candidates."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "Mentor should be at the level of Associate Professor/Scientist E, or higher level."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "Only one candidate will be allowed to work with a mentor at any given point of time."
+    }
+  ],
+  "documents_required": [
+    "1.\tPassport size photograph",
+    "2.\tBiodata of the applicant (under the user profile section)",
+    "3.\tOther technical details of the proposal",
+    "4.\tCertificate from the Investigator",
+    "5.\tEndorsement certificate from the Head of Parent Institution",
+    "6.\tEndorsement Letter from the Head of the host Institution",
+    "7.\tCV of the Mentor",
+    "8.\tCategory certificate",
+    "9.\tAge proof certificate",
+    "10.\tJoining report",
+    "11.\tMandatory 90 days attendance certificate by the end of the financial year",
+    "12.\tPlagiarism undertaking"
+  ],
+  "rules": [
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_phd_in_science_engineering_or_ms_md",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "holds_regular_position_in_state_university_college_or_private_institution",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_ongoing_research_project_or_fellowship",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 45,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

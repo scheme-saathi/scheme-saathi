@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 from streamlit.testing.v1 import AppTest
@@ -328,7 +329,7 @@ def test_profile_edit_creates_new_approval_and_rechecks_eligibility(tmp_path):
         "/api/analyze",
         json={"citizen": {
             "is_widow": True, "age": 55, "household_below_bpl": True,
-            "is_remarried": False, "has_not_moved_above_bpl": True,
+            "is_remarried": False,
         }, "scheme_ids": ["C06"]},
     )
     initial = next(payload for name, payload in parse_events(analyzed.content) if name == "result")
@@ -435,7 +436,7 @@ class FakeChatIntakeAgent:
 
 
 def test_chat_requests_missing_details_before_checking_eligibility(monkeypatch):
-    monkeypatch.setattr(rule_server, "RULE_DIRS", [rule_server.SCHEME_DIR])
+    monkeypatch.setattr(rule_server, "RULE_DIRS", [rule_server.SCHEME_DIR, Path(__file__).resolve().parent / "fixtures"])
     evaluated_schemes = []
     evaluate_scheme = business_logic.tools.evaluate_scheme
 
