@@ -219,12 +219,13 @@ def test_dont_know_counts_only_for_an_unanswered_pending_field(pension_specs):
 
 
 def test_a_missed_pending_answer_is_read_again_against_that_field_alone(pension_specs):
-    """gpt-4o-mini read "No" as dont_know against a wide schema, which stopped intake."""
+    """gpt-4o-mini read "No" as dont_know against a wide schema, which stopped intake.
+    A bare "No" is now read by code (direct_answer); this covers replies code can't read."""
     model = FakeModel(
         {"facts": {"age": 67}, "reply_kind": "dont_know"},
         {"facts": {"is_widow": False}, "reply_kind": "answer"},
     )
-    result = IntakeAgent(model).extract({"request": "No", "pending_field": "is_widow"}, pension_specs)
+    result = IntakeAgent(model).extract({"request": "She lost her husband? not really", "pending_field": "is_widow"}, pension_specs)
 
     assert result.facts == {"age": 67, "is_widow": False}
     assert not result.dont_know
@@ -634,3 +635,50 @@ def test_ui_confirm_details_resumes_real_api_and_graph(monkeypatch, correct_firs
     assert ui.session_state["chat_eligibility_result"]["verdicts"][PENSION]["verdict"] == "eligible"
     assert ui.session_state["chat_eligibility_result"]["profile"] == expected
     assert ui.selectbox[0].options == [f"Synthetic pension ({PENSION})"]
+
+
+# Direct answers to the pending question, read by code (agent-team evaluation, 8 Nov)
+
+from agents.intake import NONE_OF_THESE, direct_answer  # noqa: E402
+
+BOOL = {"type": "bool", "known_values": []}
+CATEGORY = {"type": "str", "known_values": ["individual owner cultivator", "tenant farmer"]}
+
+
+@pytest.mark.parametrize("reply, spec, value", [
+    ("No.", BOOL, False),
+    ("No, she is not remarried.", BOOL, False),
+    ("No, I am not a government or local body employee.", BOOL, False),  # was read as True
+    ("Yes, I consent to auto debit.", BOOL, True),
+    ("नाही, मी नाही.", BOOL, False),
+    ("होय, माझ्याकडे बचत खाते आहे.", BOOL, True),
+    ("हाँ", BOOL, True),
+    ("नहीं", BOOL, False),
+    ("I am not a farmer.", CATEGORY, NONE_OF_THESE),
+    ("I don't fall into any of these categories.", CATEGORY, NONE_OF_THESE),
+    ("No", CATEGORY, NONE_OF_THESE),
+])
+def test_plain_answers_are_read_by_code(reply, spec, value):
+    assert direct_answer(reply, spec) == value
+
+
+@pytest.mark.parametrize("reply, spec", [
+    ("I don't know.", BOOL),
+    ("I have a savings account.", BOOL),          # not a yes/no: left to the model
+    ("Not sure", BOOL),
+    ("I am a tenant farmer.", CATEGORY),
+    ("Nobody told me", BOOL),                      # "nobody" is not "no"
+    ("No", {"type": "number", "known_values": []}),
+])
+def test_other_replies_are_left_to_the_model(reply, spec):
+    assert direct_answer(reply, spec) is None
+
+
+def test_a_plain_no_overrides_the_models_reading(pension_specs):
+    """The model flipped "No" for a field whose name says "excluded"; code reads it."""
+    model = FakeModel({"facts": {"is_widow": True}, "reply_kind": "answer"})
+    result = IntakeAgent(model).extract(
+        {"request": "No, she is not.", "pending_field": "is_widow", "pending_question": "Is she a widow?"},
+        pension_specs,
+    )
+    assert result.facts["is_widow"] is False and not result.dont_know

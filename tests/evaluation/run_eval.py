@@ -96,6 +96,19 @@ def _pending(graph: Any, thread: dict) -> dict | None:
     return None
 
 
+def apply_rate_limit(agents: Any, config: dict) -> Any:
+    """Raise the supervisor's per-user rate limit to the config's rate_limit_per_minute.
+
+    The simulated citizen replies in a second or two; a person types far slower. The app's limit
+    (10 a minute) is a security control, tested separately (E2), not a reason for a task
+    conversation to fail with validation_error."""
+    if config.get("rate_limit_per_minute"):
+        from agents.supervisor import RateLimitTracker
+        agents.supervisor.input_validator.rate_limiter = RateLimitTracker(
+            max_requests=config["rate_limit_per_minute"], window_seconds=60)
+    return agents
+
+
 def run_agent_team(case: dict, config: dict, graph: Any = None, citizen: Any = None) -> dict:
     """C2: the agent team holds the whole conversation with the simulated citizen."""
     from langchain_core.callbacks import get_usage_metadata_callback
@@ -103,8 +116,9 @@ def run_agent_team(case: dict, config: dict, graph: Any = None, citizen: Any = N
 
     if graph is None:
         from langgraph.checkpoint.memory import MemorySaver
-        from graph.agent_workflow import build_agent_graph
-        graph = build_agent_graph(checkpointer=MemorySaver())
+        from graph.agent_workflow import AgentSet, build_agent_graph
+        agents = apply_rate_limit(AgentSet.from_environment(), config)
+        graph = build_agent_graph(agents=agents, checkpointer=MemorySaver())
     if citizen is None:
         sys.path.insert(0, str(EVAL_DIR))
         from simulated_citizen import SimulatedCitizen

@@ -348,6 +348,9 @@ A cant_tell verdict that an answer could settle?
   `monthly_income`). Questions ask in the field's own period, so a bare amount answering one is
   read in that period. With no question to anchor it, the amount is rejected and asked again.
   Income fields are recognised by name (a `shortcut:` in `agents/intake.py`).
+- **Plain answers.** When the pending question is yes/no and the reply starts with yes or no
+  (हाँ/नहीं, होय/नाही), code records it, whatever the model read. For a list question,
+  a leading "no" or "none of these" / "I am not a …" is recorded as `none of these`.
 - **Stop rules.** The model classifies each reply as `answer`, `dont_know` or `other`.
   "Don't know" skips that one fact, and so does a field asked twice without a usable answer;
   intake goes on with the questions that can still change a verdict. When none is left, the
