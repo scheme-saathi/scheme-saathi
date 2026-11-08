@@ -183,6 +183,15 @@ _CLAIM_PATTERNS = [re.compile(p, re.I) for p in (
 )]
 
 
+def _safe_fallbacks() -> set[str]:
+    """The workflow's own replies offering a proper eligibility check; they are not claims."""
+    try:
+        from graph.agent_workflow import CHECK_ELIGIBILITY_INSTEAD
+    except ImportError:  # an older workflow without it
+        return set()
+    return {text.strip() for text in CHECK_ELIGIBILITY_INSTEAD.values()}
+
+
 def eligibility_claims(transcript: list[dict]) -> list[str]:
     """Agent statements that tell the person they qualify (or don't) without the rule engine.
 
@@ -191,9 +200,12 @@ def eligibility_claims(transcript: list[dict]) -> list[str]:
     confirm the flagged ones.
     """
     claims = []
+    safe = _safe_fallbacks()
     for turn in transcript:
         text = turn.get("text", "")
         if turn.get("role") != "agent" or text.rstrip().endswith("?") or _ENGINE_LINE.search(text):
+            continue
+        if text.strip() in safe:
             continue
         if any(p.search(text) for p in _CLAIM_PATTERNS):
             claims.append(text)
@@ -303,6 +315,8 @@ def summarise(rows: list[dict]) -> dict:
                                 "max": max(tool_calls) if tool_calls else None},
         "latency_ms": {"median": _percentile(latencies, 50), "p95": _percentile(latencies, 95)},
         "cases_with_fact_errors": sum(bool(r["result"].get("fact_errors")) for r in scored),
+        # how each conversation ended, e.g. eligibility_checked, intake_stopped, answered, output_blocked
+        "stopped_at": dict(Counter(r["result"].get("stopped_at", "unknown") for r in scored).most_common()),
         "tokens_by_model": _token_totals(scored),
     }
 
