@@ -80,7 +80,9 @@ def test_blocked_scheme_answer_offers_a_proper_eligibility_check(monkeypatch, la
     plan = SupervisorPlan(next_agent="respond", reason="Scheme question.", scheme_question=True, language=language)
     intake = AnsweringIntake("Yes, your grandmother can get a pension under IGNWPS.")
     graph = build_agent_graph(build_agents(intake=intake, plan=StubSupervisor(plan)))
-    result = graph.invoke({"request": "My grandmother is 80 and a widow. Is there a pension for her?"})
+    # A factual question (so it stays on scheme Q&A), answered with a verdict about a relative:
+    # the guard must still block it. Personal questions are rerouted to intake earlier (issue 2).
+    result = graph.invoke({"request": "How much pension does the widow pension scheme pay?"})
     assert result["status"] == "output_blocked"
     assert result["response"] == CHECK_ELIGIBILITY_INSTEAD[language]
     assert "grandmother can get" not in result["response"]

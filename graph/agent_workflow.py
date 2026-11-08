@@ -33,7 +33,7 @@ from agents.intake import IntakeAgent, income_period
 from agents.family import family_relation, relation_in_text
 from agents.memory import MemoryService, clean_relation
 from agents.model_factory import create_chat_model
-from agents.supervisor import SupervisorAgent
+from agents.supervisor import SupervisorAgent, asks_about_own_eligibility
 from graph import tools
 from graph.memory_nodes import (
     load_remembered,
@@ -166,6 +166,14 @@ def _supervisor_node(
             selected_scheme_id=state.get("selected_scheme_id"),
         )
     )
+    if plan.next_agent == "respond" and asks_about_own_eligibility(state["request"]):
+        # Code, not the model, keeps personal eligibility questions on the rule-engine path.
+        logger.info("Rerouted a personal eligibility question from respond to intake.")
+        plan = plan.model_copy(update={
+            "next_agent": "intake",
+            "scheme_question": False,
+            "reason": f"{plan.reason} (Rerouted: the user asks about their own eligibility.)",
+        })
     update["plan"] = plan.model_dump(mode="json")
     if plan.language != "unknown":
         update["language"] = plan.language

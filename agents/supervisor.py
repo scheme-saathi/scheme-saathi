@@ -610,6 +610,43 @@ def _decides_eligibility(text: str) -> bool:
     return False
 
 
+# shortcut: phrase lists for en + common hi/mr wording; extend from routing misses in evaluation.
+# "Can she get a pension?", "Is there a scheme for me?", "Which schemes can I join?" ask about the
+# person's own eligibility, so intake and the rule engine must answer them, not scheme Q&A.
+_ASKER = r"(?:i|we|she|he|they|my(?:\s+[a-z\-]+){1,2}|our(?:\s+[a-z\-]+){1,2})"
+_OWN_ELIGIBILITY = re.compile(
+    rf"\b(?:can|could|will|would|do|does|may|should)\s+{_ASKER}\s+(?:still\s+|also\s+|ever\s+)?"
+    r"(?:get|join|qualify|be eligible|receive|avail|claim|benefit)\b"
+    rf"|\b(?:am|is|are)\s+{_ASKER}\s+(?:still\s+|also\s+)?(?:eligible|entitled|qualified)\b"
+    r"|\bfor (?:me|us|her|him|them|my(?:\s+[a-z\-]+){1,2}|our(?:\s+[a-z\-]+){1,2})\b"
+    rf"|\b(?:what|which)\b[^.?!]*\b(?:can|could|should|do|will)\s+{_ASKER}\s+(?:get|join|apply|claim|receive)\b"
+)
+_PROCEDURAL_START = re.compile(r"^\s*(?:how|where|when|what documents|which documents)\b")
+_HI_ASKER = ("मुझे", "मेरे", "मेरी", "मेरा", "हमें", "हमारे", "उन्हें", "उनको", "उसे", "उसके", "मैं")
+_HI_SEEK = ("मिल सकत", "मिलेग", "मिलती", "मिलता", "पात्र", "जुड़ सकत", "ले सकत", "मेरे लिए", "हमारे लिए")
+_MR_ASKER = ("मला", "माझ्या", "माझी", "माझे", "आम्हाला", "तिला", "त्याला", "त्यांना", "मी")
+_MR_SEEK = ("मिळू शकत", "मिळेल", "मिळते", "मिळतो", "पात्र", "सामील होऊ शकत", "घेऊ शकत")
+
+
+def asks_about_own_eligibility(text: str) -> bool:
+    """Does the message ask whether the person, or someone they speak for, can get a benefit?
+
+    A factual question about a scheme ("What is the age limit for APY?", "How do I apply?")
+    is not one, even when it says "I".
+    """
+    for sentence in re.split(r"(?<=[.!?।])\s+|\n+", text.strip()):
+        lower = sentence.lower()
+        if not lower or _PROCEDURAL_START.search(lower):
+            continue
+        if _OWN_ELIGIBILITY.search(lower):
+            return True
+        words = set(re.findall(r"[\u0900-\u097F]+", sentence))
+        for askers, seeks in ((_HI_ASKER, _HI_SEEK), (_MR_ASKER, _MR_SEEK)):
+            if (words & set(askers) or "मेरे लिए" in sentence) and any(s in sentence for s in seeks):
+                return True
+    return False
+
+
 class OutputValidator:
     """Validates specialist agent responses before returning to user."""
 
@@ -751,6 +788,10 @@ Your job is to validate and route requests intelligently:
    - Status update → Respond (this is Phase 4, not yet available)
    - Factual question about a scheme (benefits, limits, how to apply) that does not ask to check
      the user's own eligibility → Respond with scheme_question true; it is answered from cited documents
+   - A question whether the user or someone they speak for can get something is an eligibility
+     check, not a scheme question: "Is there a widow pension for me?", "Can my mother get a pension?",
+     "Which schemes can I join?", "मुझे कौन सी योजना मिल सकती है?", "मला कोणती योजना मिळू शकते?"
+     → Intake, even when it names a scheme
 
 3. VALIDATE OUTPUT:
    - Ensure specialist responses follow contracts
