@@ -126,7 +126,7 @@ Branch `feature/long-term-memory` off `develop`. One PR per phase into `develop`
 Differences from the plan as first written:
 
 - **Forget:** the full "forget across every surface" work shipped in Phase 3, not Phase 4. Phase 4 added operator handling and the thread registry to it.
-- **Workflow state:** `SqliteSaver` is opt-in through `SCHEME_SAATHI_CHECKPOINT_DB`, not a replacement for `MemorySaver`. Without the variable, state stays in memory and is lost on restart. The team has not yet approved the storage exception (section 10, item 1).
+- **Workflow state:** `SqliteSaver` is opt-in through `SCHEME_SAATHI_CHECKPOINT_DB`, not a replacement for `MemorySaver`. Without the variable, state stays in memory and is lost on restart. The team has not yet approved the storage exception (section 10, item 1). Expiry is enforced when a thread is used, not only by the 5-minute timer: `touch()` never refreshes an expired thread (a review found it could be revived before cleanup ran), and the API answers 404 and deletes it then.
 - **Application flow:** the UI's application flow (`graph/workflow.py`) saves application references but does not load remembered facts. Prefill and fact saving run only in the chat flow.
 - **Portal:** `get_application_status` still accepts a call with no household, for existing contract tests.
 - **Operators:** they work only under their own `operator:<sub>` account. Access inside a citizen's household stays deferred (section 9). Their consent is per application at the approval step, as in section 7, after a review found the first version (one standing consent) did not match the plan.
@@ -226,7 +226,7 @@ Run with `pytest --cov`. The Chroma tests need `chromadb` (installed in CI throu
 | Cleanup removes expired records | `test_memory_service_phase2.py`, `test_chroma_memory_phase1.py` | Covered for `purge_expired`. The 5-minute timer class `MemoryCleanup` has no direct test. |
 | No personal values in logs or audit entries | None | Not written. |
 | Memory-on versus memory-off question count on personas | `evaluation/memory_eval.py`, `test_memory_eval.py` | Built on a development set. Not yet run in full. No held-out set. |
-| Workflow state, expiry, thread ownership | `test_thread_registry.py`, `test_workflow_expiry.py` | Covered |
+| Workflow state, expiry, thread ownership | `test_thread_registry.py`, `test_workflow_expiry.py` | Covered, including refusing an expired thread when it is used (review fix); new tests not yet reported as passing |
 | Family members | `test_family.py`, `test_memory_api.py`, `test_memory_ui.py` | Covered, tests not yet reported as passing |
 
 ## 9. Out of scope and deferred

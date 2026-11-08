@@ -30,7 +30,7 @@ from app.forget import all_deleted, household_threads, run_forgetting, unfinishe
 from app.memory_api import FORGET_NOTE, optional_memory, remember_submission, router as memory_router
 from app.memory_runtime import forget_memory, memory_scope
 from app.periodic import PeriodicTask
-from app.thread_registry import ThreadRegistry
+from app.thread_registry import ThreadRegistry, TouchResult
 from graph.memory_nodes import memory_config
 
 if __package__:
@@ -238,14 +238,27 @@ class AgentWorkflowService:
             logger.info("Agent graph initialized successfully")
         return self._agent_graph
         
+    def _use_thread(self, thread_id: str, actor_id: str) -> None:
+        """Mark a thread as used by its owner, refusing an expired one or another household's.
+
+        An expired thread is deleted when it is refused, not left for the cleanup timer, and
+        looks exactly like an unknown one to the caller.
+        """
+        outcome = self.registry.touch(thread_id, actor_id)
+        if outcome is TouchResult.EXPIRED:
+            self._drop({thread_id})
+            raise ThreadNotFoundError(thread_id)
+        if outcome is TouchResult.NOT_OWNER:
+            raise ThreadAccessError(thread_id)
+
     def create_thread(self, actor_id: str, thread_id: str | None = None) -> str:
         """Create new conversation thread, or restore one after a restart.
 
-        A thread another household owns is refused, even when its conversation record is gone.
+        A thread another household owns is refused, even when its conversation record is gone,
+        and so is one that has expired.
         """
         thread_id = thread_id or f"conv_{uuid4().hex[:12]}"
-        if not self.registry.touch(thread_id, actor_id):
-            raise ThreadAccessError(thread_id)
+        self._use_thread(thread_id, actor_id)
         self.conversations[thread_id] = {
             "thread_id": thread_id,
             "actor_id": actor_id,
@@ -275,8 +288,9 @@ class AgentWorkflowService:
             thread_id = self.create_thread(actor_id)
         elif thread_id not in self.conversations:
             self.create_thread(actor_id, thread_id)
+        else:
+            self._use_thread(thread_id, actor_id)
         self._check_owner(thread_id, actor_id)
-        self.registry.touch(thread_id, actor_id)
 
         config = self._config(thread_id, memory_scope)
         if self._pending_approval(config) is not None:
@@ -310,12 +324,15 @@ class AgentWorkflowService:
         citizen_agreed: bool = False,
     ) -> dict[str, Any]:
         """Resume the paused graph with the person's decision on the exact form."""
+        if thread_id not in self.conversations and self.registry.owner_of(thread_id) is None:
+            if self.registry.is_expired(thread_id):
+                self._drop({thread_id})  # expired: delete what is left, and report it as unknown
+            raise ThreadNotFoundError(thread_id)
         if thread_id not in self.conversations:
-            if self.registry.owner_of(thread_id) is None:
-                raise ThreadNotFoundError(thread_id)
             self.create_thread(actor_id, thread_id)  # a thread from before a restart, if it is theirs
+        else:
+            self._use_thread(thread_id, actor_id)
         self._check_owner(thread_id, actor_id)
-        self.registry.touch(thread_id, actor_id)
         config = self._config(thread_id, memory_scope)
         if self._pending_approval(config) is None:
             raise NoPendingApprovalError("There is no draft waiting for approval in this conversation.")
@@ -607,6 +624,8 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 data=result.get("data", {}),
                 rate_limit=RateLimit(remaining_requests=9, reset_in_seconds=60),
             )
+        except ThreadNotFoundError:
+            raise HTTPException(status_code=404, detail="Thread not found")
         except ThreadAccessError:
             raise HTTPException(status_code=403, detail="This conversation belongs to another user.")
         except ApprovalPendingError as e:

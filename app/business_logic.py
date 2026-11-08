@@ -21,7 +21,7 @@ from agents.contracts import IntakeResult
 from agents.model_factory import create_chat_model
 from app.document_storage import DocumentStorageError, LocalDocumentStore
 from app.forget import household_threads
-from app.thread_registry import ThreadRegistry
+from app.thread_registry import ThreadRegistry, TouchResult
 from graph import tools
 from graph.tools import ToolCallError
 from graph.workflow import build_graph
@@ -231,11 +231,14 @@ class DemoService:
         if session_id:
             with self._chat_sessions_lock:
                 session = self._chat_sessions.get(session_id)
+                if session is not None and self._chat_session_expired(session):
+                    del self._chat_sessions[session_id]  # expired: never revived by use
+                    session = None
             if session is None:
                 raise SessionNotFoundError("The chat session was not found.")
             if session.actor_id != actor_id:
                 raise ThreadAccessError("The chat session belongs to another household.")
-            session.last_used = time.time()
+            session.last_used = self.registry.now()
             return session_id, session
 
         schemes = self.available_schemes()
@@ -521,6 +524,9 @@ class DemoService:
     def _check_thread_owner(self, thread_id: str, actor_id: str | None) -> None:
         if actor_id is None:
             return
+        if self.registry.is_expired(thread_id):
+            self._delete_expired({thread_id})  # delete it now, and report it as unknown
+            raise SessionNotFoundError("The application session was not found.")
         with self._thread_owners_lock:
             owner = self._thread_owners.get(thread_id)
         if owner is None:
@@ -531,9 +537,18 @@ class DemoService:
             raise ThreadAccessError("The application session belongs to another household.")
 
     def _touch(self, thread_id: str, actor_id: str | None) -> None:
-        """Note that the thread was used, which keeps it from expiring as idle."""
-        if actor_id is not None:
-            self.registry.touch(thread_id, actor_id)
+        """Note that the thread was used, which keeps it from expiring as idle.
+
+        A thread that expired in the meantime is deleted and refused instead of being revived.
+        """
+        if actor_id is None:
+            return
+        outcome = self.registry.touch(thread_id, actor_id)
+        if outcome is TouchResult.EXPIRED:
+            self._delete_expired({thread_id})
+            raise SessionNotFoundError("The application session was not found.")
+        if outcome is TouchResult.NOT_OWNER:
+            raise ThreadAccessError("The application session belongs to another household.")
 
     def _missing_documents(self, thread_id: str, scheme_id: str | None) -> list[str]:
         if not scheme_id:
@@ -624,23 +639,28 @@ class DemoService:
                 del self._chat_sessions[key]
         return len(threads) + len(sessions)
 
+    def _delete_expired(self, threads: set[str]) -> None:
+        """Delete expired workflows with their uploads, saved state and owners."""
+        store = self._existing_document_store()
+        if store is not None:
+            for thread_id in threads:
+                store.delete_thread(thread_id)
+        self._drop_threads(threads)
+
+    def _chat_session_expired(self, session: ChatSession) -> bool:
+        now = self.registry.now()
+        return (
+            now - session.last_used > self.registry.idle_seconds
+            or now - session.created_at > self.registry.absolute_seconds
+        )
+
     def expire_idle(self) -> int:
         """Delete workflows idle for 24 hours or started 7 days ago, with their uploads and chat sessions."""
         threads = set(self.registry.expired())
         if threads:
-            store = self._existing_document_store()
-            if store is not None:
-                for thread_id in threads:
-                    store.delete_thread(thread_id)
-            self._drop_threads(threads)
-        now = self.registry.now()
+            self._delete_expired(threads)
         with self._chat_sessions_lock:
-            stale = [
-                key
-                for key, session in self._chat_sessions.items()
-                if now - session.last_used > self.registry.idle_seconds
-                or now - session.created_at > self.registry.absolute_seconds
-            ]
+            stale = [key for key, session in self._chat_sessions.items() if self._chat_session_expired(session)]
             for key in stale:
                 del self._chat_sessions[key]
         return len(threads) + len(stale)
