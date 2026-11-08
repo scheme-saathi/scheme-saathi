@@ -1,0 +1,80 @@
+{
+  "scheme_id": "C36",
+  "name": "AICTE-INAE Travel Grant Scheme For Engineering Students From AICTE Approved Engineering College/Institution",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/ai-tgses",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant must EITHER be a Pre-final/final year student of B.E./B.Tech, OR Integrated M.Tech and first/second-year student of M.E./M. Tech, OR Students pursuing MS Research, M.Sc. in Engineering, dual degree B.Tech and M.Tech or any degree with a minimum of 4 years of engineering studies."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant must be pursuing the degree course from an AICTE-approved Engineering Institution."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant must have scored a minimum of 7 CGPA or 65% in the previous year's annual examination."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant must possess a letter of acceptance for presenting a research paper accepted in a conference/seminar/symposium/workshop/exhibition abroad."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "NOTE: A student is eligible only once during the course of his/her study for finance al support under the subject scheme."
+    }
+  ],
+  "documents_required": [
+    "Curriculum Vitae containing the Date of Birth and Age, Awards, Scholarships, Educational Qualification, Research Experience, and List of Publications.",
+    "Passport Size Photograph.",
+    "A copy of the Letter of Acceptance from the organizers of the event.",
+    "Abstract/Full text of paperas submitted for the event.",
+    "A brief on the Project Impact of the paper presented.",
+    "A brief on Expected Outcome from the paper presented.",
+    "A scanned copy of the Certificate by the student.",
+    "A scanned copy of the Endorsement by the Head of the Institution."
+  ],
+  "rules": [
+    {
+      "field": "is_engineering_student_in_eligible_year",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "institution_is_aicte_approved",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "previous_year_score_at_least_7_cgpa_or_65_percent",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_paper_accepted_at_event_abroad",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_availed_aicte_inae_travel_grant_before",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

@@ -1,0 +1,72 @@
+{
+  "scheme_id": "C22",
+  "name": "Nyaya Mitra Scheme",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/nms",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "For Nyaya Mitras"
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant must be a retired judicial officer or a retired executive officer."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant must possess legal experience or an educational background in law."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "For Beneficiaries (Litigants)"
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The applicant must be a litigant whose case has been languishing in the subordinate courts for more than ten years."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "The applicant must be an individual for whom quality legal aid is not available due to social and economic barriers."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "The applicant must be suffering due to a delay in investigations or trial."
+    }
+  ],
+  "documents_required": [
+    "*The following list of documents has been inferred from the eligibility criteria.",
+    "Proof of Retirement as a Judicial Officer or Executive Officer.",
+    "Proof of Legal Experience or Legal Background.",
+    "Pending Case Details and Case History from the National Judicial Data Grid.",
+    "Proof of Socio-Economic Status or Income Certificate.",
+    "Valid Identity Proof of the Applicant."
+  ],
+  "rules": [
+    {
+      "field": "case_pending_in_subordinate_courts_over_10_years",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "lacks_legal_aid_due_to_social_or_economic_barriers",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-6",
+      "status": "reviewed"
+    },
+    {
+      "field": "suffering_delay_in_investigation_or_trial",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-7",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

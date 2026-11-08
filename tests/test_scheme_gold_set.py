@@ -8,6 +8,10 @@ ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_IDS = {
     "C01", "C02", "C04", "C05", "C06", "C10", "C13", "C17",
     "C19", "C23", "C30", "C38", "M13", "M16", "M18",
+    # AI-drafted from data/schemes and marked reviewed without a human check; see data/rules/REVIEW_NOTES.md
+    "C03", "C07", "C09", "C11", "C14", "C15", "C16", "C18", "C21", "C22", "C24", "C25", "C26", "C27",
+    "C28", "C29", "C31", "C32", "C33", "C36", "M01", "M02", "M05", "M06", "M07", "M08", "M09", "M10",
+    "M11", "M12", "M14", "M19", "M20", "M21",
 }
 
 
@@ -38,6 +42,8 @@ def test_each_reviewed_record_evaluates_live_when_its_rules_are_satisfied():
                 profile[rule.field] = rule.value[0]
             elif rule.op == "not_in":
                 profile[rule.field] = "__not_listed__"
+            elif rule.op in {"gt", "lt"}:  # strict bounds: step just inside
+                profile[rule.field] = rule.value + (1 if rule.op == "gt" else -1)
             else:
                 profile[rule.field] = rule.value
         result = tools.evaluate_scheme(profile, scheme_id)
@@ -55,3 +61,4 @@ def test_c05_exclusions_reject_members_and_tax_payers():
     assert verdict(is_epfo_member=True) == "not_eligible"
     assert verdict(monthly_income=15001) == "not_eligible"
     assert verdict(age=41) == "not_eligible"
+

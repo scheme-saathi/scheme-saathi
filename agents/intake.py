@@ -40,16 +40,28 @@ each field's type. For an income field, give the amount in rupees exactly as the
 it (1 lakh = 100000, 15 hazaar = 15000, 10k = 10000) and its period: "month" or "year" when
 the user says so or pending_question asked for that period, otherwise "unstated". Never
 convert between periods or multiply by 12; that is done for you. Classify the reply to
-pending_question in reply_kind. Never record Aadhaar, bank-account numbers or other sensitive
+pending_question in reply_kind. Set subject to "other" when the request is about someone
+else (your mother, a neighbour, a client) or when it is unclear whose facts these are, and
+"self" only when the user clearly speaks about themselves. For "other", give relation as one
+lowercase word such as "mother" or "neighbour"; never a name or a number. For "self", relation
+is null. Never record Aadhaar, bank-account numbers or other sensitive
 identifiers. Never decide eligibility or claim that a fact has been saved."""
 
 ASK_INSTRUCTIONS = """You write the next question for Scheme Saathi's intake. Ask exactly
 one short, polite question that collects only the given field. Write it in the given
 language (en English, hi Hindi, mr Marathi); if it is unknown, use the language of the
-request. Refer to the person the way the request does (for example "she" for a mother).
-For a bool field, ask a yes/no question. When period is given, ask for the amount per that
-period ("per month" or "per year") and say so in the question. Do not mention eligibility, schemes, rules or
-field names, and never ask for Aadhaar, bank-account numbers or other sensitive
+request. Keep the question gender neutral: never use he, she, him, her, his or hers. Use
+"you" when the request is about the user, and the relation the request names when it is
+about someone else ("your mother", "your son"). Any amount is in Indian rupees: write it
+with ₹ or "rupees", never $ or another currency.
+Never show the raw field name; say in everyday words what it means, keeping every part of
+it (social_category is "social (caste) category", not just "category").
+For a bool field, ask a yes/no question. For a number field, ask for one number and name its
+unit (years, rupees, people). For a str field, never ask a yes/no question: when
+known_values are given, list them as the choices in plain words and let the person say
+another answer. When period is given, ask for the amount per that
+period ("per month" or "per year") and say so in the question. Do not mention eligibility, schemes or
+rules, and never ask for Aadhaar, bank-account numbers or other sensitive
 identifiers."""
 
 ANSWER_INSTRUCTIONS = """You answer a question about Indian government schemes using only the
@@ -63,7 +75,8 @@ identifiers."""
 CHOOSE_INSTRUCTIONS = """You pick which government schemes are worth checking for a person.
 Given the person's request and a list of schemes (scheme_id, name, description), return the
 scheme_ids of the schemes that plausibly fit what the person describes or asks about (their
-occupation, age, gender, family, need). Return only ids from the list, best fit first, at most
+occupation, age, gender, family, need). known_facts holds what the person has already answered
+(field: value); use it together with the request. Return only ids from the list, best fit first, at most
 8. Return an empty list when none fit. You never decide eligibility; rules do that later."""
 
 _FIELD_TYPES = {"number": int | float, "bool": bool, "str": str}
@@ -141,8 +154,29 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
         """Typed facts from the message. Each field is checked on its own, so one bad value
         is dropped without losing the rest."""
         request = IntakeExtractInput.model_validate(value)
+        result = self._extract_once(request, specs)
+        pending = request.pending_field
+        if pending in specs and pending not in result.facts and len(specs) > 1:
+            # Against a wide schema the model read a bare "No" as dont_know; one field alone it reads reliably.
+            narrow = self._extract_once(request, {pending: specs[pending]})
+            result = IntakeExtraction(
+                facts={**result.facts, **narrow.facts},
+                rejected_fields=result.rejected_fields + narrow.rejected_fields,
+                dont_know=narrow.dont_know,
+                subject=result.subject,
+                relation=result.relation,
+            )
+        return result
+
+    def _extract_once(self, request: IntakeExtractInput, specs: dict[str, dict[str, Any]]) -> IntakeExtraction:
         profile = profile_model(specs)
-        output = create_model("IntakeExtractionOutput", facts=(profile, ...), reply_kind=(ReplyKind, "other"))
+        output = create_model(
+            "IntakeExtractionOutput",
+            facts=(profile, ...),
+            reply_kind=(ReplyKind, "other"),
+            subject=(Literal["self", "other"], ...),
+            relation=(str | None, None),
+        )
         # A JSON schema, not the model class: the reply comes back as a dict and is validated below.
         chain = untrusted_prompt(EXTRACT_INSTRUCTIONS) | self._model.with_structured_output(
             output.model_json_schema()
@@ -167,7 +201,16 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
                     continue
             facts[field] = value
         dont_know = raw.get("reply_kind") == "dont_know" and pending is not None and pending not in facts
-        return IntakeExtraction(facts=facts, rejected_fields=rejected, dont_know=dont_know)
+        # A missing or unrecognised subject counts as someone else, so nothing is remembered by mistake.
+        subject = raw.get("subject") if raw.get("subject") in ("self", "other") else "other"
+        relation = raw.get("relation") if isinstance(raw.get("relation"), str) else None
+        return IntakeExtraction(
+            facts=facts,
+            rejected_fields=rejected,
+            dont_know=dont_know,
+            subject=subject,
+            relation=relation,
+        )
 
     def ask(self, value: IntakeAskInput | dict) -> IntakeQuestion:
         """One question for one field; the field comes from the caller, never from the model."""

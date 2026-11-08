@@ -45,6 +45,8 @@ class IntakeExtraction(Contract):
     facts: FactMap = Field(default_factory=dict)  # typed rule-field values; unconfirmed
     rejected_fields: list[str] = Field(default_factory=list)
     dont_know: bool = False  # the user can't or won't answer pending_field
+    subject: Literal["self", "other"] = "self"  # whose facts these are; "other" when in doubt
+    relation: str | None = None  # a short word such as "mother"; only meaningful for "other"
 
 
 class IntakeAskInput(Contract):
@@ -64,6 +66,7 @@ class SchemeOption(Contract):
 
 class SchemeChoiceInput(Contract):
     request: str = Field(min_length=1)
+    known_facts: FactMap = Field(default_factory=dict)  # answers so far, so the pick improves as they arrive
     schemes: list[SchemeOption]
 
 

@@ -44,6 +44,89 @@ def chat_screen():
     app_new._render_chat_page()
 
 
+def header_screen():
+    import streamlit as st
+    from app import app_new
+
+    app_new._initialize_portal_state()
+    st.session_state.setdefault("header_fixture", True)
+    if "header_fixture_loaded" not in st.session_state:
+        st.session_state["header_fixture_loaded"] = True
+        st.session_state["portal_stage"] = "chat"
+        st.session_state["consent_given"] = True
+        st.session_state["account_email"] = "citizen@example.test"
+        st.session_state["chat_session_id"] = "thread-1"
+        st.session_state["chat_messages"] = [{"role": "user", "content": "Hello"}]
+    app_new._render_chat_header()
+
+
+@pytest.mark.parametrize("prefix", ["desktop", "mobile"])
+def test_header_privacy_requires_explicit_withdrawal(monkeypatch, prefix):
+    calls = []
+    monkeypatch.setattr(app_new, "_withdraw_consent", lambda: calls.append("withdraw") or True)
+    app = AppTest.from_function(header_screen).run()
+    assert not app.exception
+    app.button(key=f"{prefix}-privacy").click().run()
+    assert not calls
+    assert any("How your information is used" in item.value for item in app.markdown)
+    app.button(key="header-withdraw-consent").click().run()
+    assert not calls
+    app.button(key="close-header-panel").click().run()
+    assert not calls
+    app.button(key=f"{prefix}-privacy").click().run()
+    app.button(key="header-withdraw-consent").click().run()
+    app.button(key="confirm-header-withdraw").click().run()
+    assert calls == ["withdraw"]
+
+
+@pytest.mark.parametrize("prefix", ["desktop", "mobile"])
+@pytest.mark.parametrize("action", ["new_chat", "sign_out"])
+def test_header_confirms_before_clearing_session(monkeypatch, prefix, action):
+    calls = []
+    monkeypatch.setattr(app_new, "_reset_chat", lambda: calls.append("reset") or True)
+    monkeypatch.setattr(app_new, "_sign_out", lambda: calls.append("signout"))
+    app = AppTest.from_function(header_screen).run()
+    app.button(key=f"{prefix}-{action}").click().run()
+    assert not calls
+    app.button(key="close-header-panel").click().run()
+    assert not calls
+    app.button(key=f"{prefix}-{action}").click().run()
+    app.button(key=f"confirm-header-{action}").click().run()
+    assert calls == (["reset", "signout"] if action == "sign_out" else ["reset"])
+
+
+@pytest.mark.parametrize("prefix", ["desktop", "mobile"])
+def test_the_saved_details_button_opens_and_closes_the_memory_panel_without_a_confirmation(prefix):
+    app = AppTest.from_function(header_screen).run()
+    assert app.session_state["memory_panel_open"] is False
+
+    app.button(key=f"{prefix}-memory").click().run()
+    assert app.session_state["memory_panel_open"] is True
+    assert app.session_state["header_panel"] is None  # it is not one of the confirmations
+
+    app.button(key=f"{prefix}-memory").click().run()
+    assert app.session_state["memory_panel_open"] is False
+
+
+@pytest.mark.parametrize("action", ["new_chat", "sign_out"])
+def test_the_session_actions_say_the_application_and_its_saved_details_are_deleted(action):
+    app = AppTest.from_function(header_screen).run()
+    app.button(key=f"desktop-{action}").click().run()
+    assert any("including its saved details and" in item.value for item in app.markdown)
+
+
+def test_failed_cleanup_does_not_sign_out(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app_new, "_reset_chat", lambda: False)
+    monkeypatch.setattr(app_new, "_sign_out", lambda: calls.append("signout"))
+    app = AppTest.from_function(header_screen).run()
+    app.button(key="desktop-sign_out").click().run()
+    app.button(key="confirm-header-sign_out").click().run()
+    assert calls == []
+    assert app.session_state["header_panel"] == "sign_out"
+    assert app.session_state["account_email"] == "citizen@example.test"
+
+
 def document_screen():
     import streamlit as st
     from app import app_new
@@ -149,6 +232,53 @@ def test_approval_requires_review_and_uses_exact_draft_hash(monkeypatch):
     approve.click().run()
     assert not app.exception
     assert calls == [{"action": "approve", "payload_hash": "test-hash"}]
+
+
+def operator_review_screen():
+    import streamlit as st
+    from app import app_new
+
+    st.session_state["account_role"] = "operator"
+    st.session_state.setdefault("application_editing", False)
+    st.session_state.setdefault("application_edit_revision", 0)
+    result = {
+        "thread_id": "thread-1",
+        "profile": {"age": 55},
+        "application": {"scheme_id": "C06", "applicant": {"age": 55}},
+        "approval": {"payload_hash": "test-hash"},
+    }
+    app_new._render_review_step("http://api", result, documents_complete=True)
+
+
+def test_a_citizen_is_not_asked_for_anyone_elses_agreement(monkeypatch):
+    app = AppTest.from_function(edit_screen).run()
+    assert not any(box.label.startswith("The person I am helping") for box in app.checkbox)
+
+
+def test_an_operator_must_choose_the_persons_agreement_each_time_and_it_starts_unticked(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app_new, "_finish_application", lambda api, result, decision: calls.append(decision))
+    app = AppTest.from_function(operator_review_screen).run()
+    assert not app.exception
+    agreement = next(box for box in app.checkbox if box.label.startswith("The person I am helping agrees"))
+    assert agreement.value is False
+    assert "90 days" in agreement.label
+
+    next(box for box in app.checkbox if box.label.startswith("I reviewed this draft")).check().run()
+    next(button for button in app.button if button.label == "Approve").click().run()
+
+    assert calls == [{"action": "approve", "payload_hash": "test-hash", "citizen_agreed": False}]
+
+
+def test_ticking_the_agreement_is_sent_with_the_approval_of_that_application(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app_new, "_finish_application", lambda api, result, decision: calls.append(decision))
+    app = AppTest.from_function(operator_review_screen).run()
+    next(box for box in app.checkbox if box.label.startswith("The person I am helping agrees")).check().run()
+    next(box for box in app.checkbox if box.label.startswith("I reviewed this draft")).check().run()
+    next(button for button in app.button if button.label == "Approve").click().run()
+
+    assert calls == [{"action": "approve", "payload_hash": "test-hash", "citizen_agreed": True}]
 
 
 def test_edit_form_without_changes_does_not_send_decision(monkeypatch):

@@ -15,7 +15,7 @@ def service():
     svc = InMemoryMemoryService(
         HouseholdAllowlist(allowed_fields={"state_code": {"type": "string"}})
     )
-    now = datetime.now()
+    now = datetime.utcnow()
     svc.record_consent(
         SCOPE,
         MemoryConsent(
@@ -36,21 +36,21 @@ def _fact(value: str, confirmed_at: datetime) -> MemoryFact:
         value=value,
         source="user",
         confirmed_at=confirmed_at,
-        reconfirm_by=datetime.now() + timedelta(days=10),
-        expires_at=datetime.now() + timedelta(days=20),
+        reconfirm_by=datetime.utcnow() + timedelta(days=10),
+        expires_at=datetime.utcnow() + timedelta(days=20),
         consent_reference="c1",
     )
 
 
 def test_updated_value_replaces_old_one(service):
-    now = datetime.now()
+    now = datetime.utcnow()
     service.save_confirmed_fact(SCOPE, _fact("KA", now - timedelta(days=1)))
     service.save_confirmed_fact(SCOPE, _fact("TN", now))
     assert service.read_facts(SCOPE, ["state_code"]) == {"state_code": "TN"}
 
 
 def test_newest_wins_regardless_of_save_order(service):
-    now = datetime.now()
+    now = datetime.utcnow()
     service.save_confirmed_fact(SCOPE, _fact("TN", now))
     service.save_confirmed_fact(SCOPE, _fact("KA", now - timedelta(days=1)))
     assert service.read_facts(SCOPE, ["state_code"]) == {"state_code": "TN"}

@@ -15,7 +15,7 @@ def service():
     svc = InMemoryMemoryService(
         HouseholdAllowlist(allowed_fields={"state_code": {"type": "string"}})
     )
-    now = datetime.now()
+    now = datetime.utcnow()
     svc.record_consent(
         SCOPE,
         MemoryConsent(
@@ -31,7 +31,7 @@ def service():
 
 
 def _fact(reconfirm_by: datetime) -> MemoryFact:
-    now = datetime.now()
+    now = datetime.utcnow()
     return MemoryFact(
         field="state_code",
         value="KA",
@@ -44,11 +44,11 @@ def _fact(reconfirm_by: datetime) -> MemoryFact:
 
 
 def test_fact_past_reconfirm_deadline_is_not_returned(service):
-    service.save_confirmed_fact(SCOPE, _fact(datetime.now() + timedelta(seconds=1)))
-    service.facts[next(iter(service.facts))] = _fact(datetime.now() - timedelta(seconds=1))
+    service.save_confirmed_fact(SCOPE, _fact(datetime.utcnow() + timedelta(seconds=1)))
+    service.facts[next(iter(service.facts))] = _fact(datetime.utcnow() - timedelta(seconds=1))
     assert service.read_facts(SCOPE, ["state_code"]) == {}
 
 
 def test_fact_before_reconfirm_deadline_is_returned(service):
-    service.save_confirmed_fact(SCOPE, _fact(datetime.now() + timedelta(days=5)))
+    service.save_confirmed_fact(SCOPE, _fact(datetime.utcnow() + timedelta(days=5)))
     assert service.read_facts(SCOPE, ["state_code"]) == {"state_code": "KA"}

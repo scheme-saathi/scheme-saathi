@@ -17,8 +17,8 @@ class SchemeLoadingChecks(unittest.TestCase):
     def test_real_scheme_and_synthetic_fixture_can_coexist(self):
         with tempfile.TemporaryDirectory() as folder:
             directory = Path(folder)
-            for name in ['rkvp.json', 'SYNTH-PENSION-001.json']:
-                (directory / name).write_bytes((PROJECT_ROOT / 'data/schemes' / name).read_bytes())
+            for source in [PROJECT_ROOT / 'data/schemes/rkvp.json', PROJECT_ROOT / 'tests/fixtures/SYNTH-PENSION-001.json']:
+                (directory / source.name).write_bytes(source.read_bytes())
             records = list(load_schemes(directory))
             self.assertEqual([r.scheme_id for r in records], ['C07'])
 

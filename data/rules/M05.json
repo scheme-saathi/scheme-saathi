@@ -1,0 +1,108 @@
+{
+  "scheme_id": "M05",
+  "name": "State Post-metric Scholarship For Disabled",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/spmsd",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant should be a citizen of India."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant should be a domicile / permanent resident of the state of Maharashtra."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant should be a student admitted/enrolled in a school recognized by the Govt. of Maharashtra."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant should be a Person with Disability (Visually Handicapped, Low Vision, Hearing Impaired, Orthopedically Handicapped, etc)."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The percentage of the disability should be 40% or above."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "The applicant should have passed class 10th."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "The applicant should not have failed in the last qualifying examination."
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "The applicant should be pursuing a post-metric qualification, i.e. Higher Secondary School (Class 11th, Class 12th), or a Technical/Professional Degree in Medical, Engineering, etc."
+    }
+  ],
+  "documents_required": [
+    "Aadhaar Card.",
+    "2-Passport Sized Photograph (Signed Across).",
+    "Residential Certificate / Domicile Certificate of the State of Maharashtra.",
+    "Disability Certificate.",
+    "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+    "Proof of the Latest Educational Qualification (Passing Certificate or Marksheet)",
+    "Proof of Passing Class 10th.",
+    "Bonafide Certificate from the School/College",
+    "Proof of Pursuance of a Post-Matric Qualification (Fee Receipt, etc)",
+    "Any other document required by the School/College or the District Social Welfare Office."
+  ],
+  "rules": [
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_maharashtra_resident",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_disability",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "disability_percent",
+      "op": "gte",
+      "value": 40,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_passed_class_10",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-6",
+      "status": "reviewed"
+    },
+    {
+      "field": "failed_last_qualifying_exam",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-7",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_pursuing_post_matric_course",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-8",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

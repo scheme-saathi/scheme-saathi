@@ -39,7 +39,7 @@ _SERVERS = {
     MOCK_PORTAL: portal_server,
     DOC_CHECK: document_check_server,
 }
-DEFAULT_TOOL_CALL_BUDGET = 40
+DEFAULT_TOOL_CALL_BUDGET = 150  # one turn can evaluate every live scheme (50) twice, plus lookups
 _KNOWN_ACTORS = {"application", "baseline", "document_checker", "eligibility", "intake", "supervisor"}
 
 # Pre-tool hook: only these agents may call a write tool. "baseline" is the single-agent
@@ -335,6 +335,16 @@ def next_question(verdicts: dict[str, dict], declined: Collection[str] = ()) -> 
 
 def list_documents(scheme_id: str) -> list[str]:
     return call_tool(SCHEMES_KB, "get_required_documents", scheme_id=scheme_id)
+
+
+def application_status(application_id: str, household_id: str) -> dict[str, Any]:
+    """The portal's current status of one application, for the household that owns it.
+
+    It is read live and never stored. The portal answers "not found" to any other household.
+    """
+    return call_tool(
+        MOCK_PORTAL, "get_application_status", application_id=application_id, household_id=household_id
+    )
 
 
 def compare_document_fields(

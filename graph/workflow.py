@@ -22,6 +22,7 @@ class GraphState(TypedDict, total=False):
     include_draft: bool
     profile: dict[str, Any]
     questions_asked: int
+    last_asked: str  # the field intake just filled; only verdicts waiting on it can change
     plan: list[str]
     verdicts: dict[str, dict[str, Any]]
     documents: dict[str, list[str]]
@@ -51,13 +52,20 @@ def plan_node(state: GraphState) -> dict[str, Any]:
     }
 
 
+def _next_field(state: GraphState) -> str | None:
+    """The field that settles the most open verdicts; fields already asked are skipped."""
+    return tools.next_question(state["verdicts"], declined=list(state["profile"]))
+
+
 def intake_node(state: GraphState) -> dict[str, Any]:
-    pending = unanswered(state)
-    if not pending:
+    if state.get("verdicts"):
+        field = _next_field(state)
+    else:  # first question, before any verdict exists
+        field = next(iter(unanswered(state)), None)
+    if field is None:
         return {}
-    field = pending[0]
     profile = {**state["profile"], field: state["simulated_citizen"].get(field)}
-    return {"profile": profile, "questions_asked": state["questions_asked"] + 1}
+    return {"profile": profile, "questions_asked": state["questions_asked"] + 1, "last_asked": field}
 
 
 def eligibility_node(state: GraphState) -> dict[str, Any]:
@@ -66,16 +74,26 @@ def eligibility_node(state: GraphState) -> dict[str, Any]:
         schemes = tools.search_schemes(
             state["profile"], state.get("scheme_ids"), preview
         )
+        # Answers only add facts: a decided verdict stays decided, and an open one can change
+        # only if it was waiting on the field just asked. An edit clears verdicts, forcing a full check.
+        earlier = state.get("verdicts") or {}
+        asked = state.get("last_asked")
+
+        def stale(scheme: str) -> bool:
+            verdict = earlier.get(scheme)
+            return verdict is None or (
+                verdict["verdict"] == "cant_tell" and asked in verdict.get("unresolved_fields", [])
+            )
+
         verdicts = {
-            scheme: tools.evaluate_scheme(state["profile"], scheme, preview)
+            scheme: tools.evaluate_scheme(state["profile"], scheme, preview) if stale(scheme) else earlier[scheme]
             for scheme in schemes
         }
     return {"verdicts": verdicts}
 
 
 def route_after_eligibility(state: GraphState) -> str:
-    unresolved = any(v["verdict"] == "cant_tell" for v in state["verdicts"].values())
-    return "intake" if unresolved and unanswered(state) else "documents"
+    return "intake" if _next_field(state) else "documents"
 
 
 def documents_node(state: GraphState) -> dict[str, Any]:
@@ -171,7 +189,8 @@ def approval_node(state: GraphState) -> dict[str, Any]:
         return {"approved": False, "approval_status": "invalid"}
     if action == "edit" and isinstance(decision.get("changes"), dict):
         tools.audit_approval_event("edit", "accepted", authenticated)
-        return {"profile": {**state["profile"], **decision["changes"]}, "approved": False,
+        # An edit can change an answer, so earlier verdicts no longer hold.
+        return {"profile": {**state["profile"], **decision["changes"]}, "verdicts": {}, "approved": False,
                 "approved_hash": "", "approval_status": "edited", "draft_attempts": 0}
     tools.audit_approval_event(
         "reject" if action == "reject" else "invalid",

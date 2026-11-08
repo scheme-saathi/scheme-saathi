@@ -1,0 +1,63 @@
+{
+  "fields": {
+    "is_maharashtra_resident": {
+      "type": "bool",
+      "purpose": "State-residence rules",
+      "retention": {"store": true, "reconfirm_days": 90, "expiry_days": 180}
+    },
+    "is_indian_citizen": {
+      "type": "bool",
+      "purpose": "Citizenship rules",
+      "retention": {"store": true, "reconfirm_days": 90, "expiry_days": 180}
+    },
+    "age": {
+      "type": "number",
+      "purpose": "Age rules; it changes, so it is reconfirmed soon",
+      "retention": {"store": true, "reconfirm_days": 30, "expiry_days": 90}
+    },
+    "annual_income": {
+      "type": "number",
+      "purpose": "Income thresholds; shown for confirmation in every assessment",
+      "retention": {"store": true, "reconfirm_days": 30, "expiry_days": 30}
+    },
+    "annual_family_income": {
+      "type": "number",
+      "purpose": "Family income thresholds; shown for confirmation in every assessment",
+      "retention": {"store": true, "reconfirm_days": 30, "expiry_days": 30}
+    },
+    "is_woman_or_girl": {
+      "type": "bool",
+      "purpose": "Gender-specific schemes",
+      "retention": {"store": true, "reconfirm_days": 90, "expiry_days": 180}
+    },
+    "marital_status": {
+      "type": "str",
+      "purpose": "Marital-status rules",
+      "known_values": ["married", "widowed", "divorced", "abandoned or destitute", "unmarried"],
+      "retention": {"store": true, "reconfirm_days": 90, "expiry_days": 180}
+    },
+    "household_below_bpl": {
+      "type": "bool",
+      "purpose": "Below-poverty-line rules",
+      "retention": {"store": true, "reconfirm_days": 90, "expiry_days": 180}
+    },
+    "ration_card_type": {
+      "type": "str",
+      "purpose": "Ration-card rules",
+      "known_values": ["yellow", "antyodaya", "annapurna", "orange", "white"],
+      "retention": {"store": true, "reconfirm_days": 90, "expiry_days": 180}
+    }
+  },
+  "application_reference": {
+    "expiry_days": 90
+  },
+  "temporary_only": [
+    "has_disability",
+    "disability_percent",
+    "has_orthopedic_disability",
+    "is_child_with_intellectual_disability_needing_care",
+    "social_category",
+    "has_tuberculosis",
+    "worker_or_family_member_undergoing_critical_treatment"
+  ]
+}

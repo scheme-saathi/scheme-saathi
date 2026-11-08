@@ -1,0 +1,108 @@
+{
+  "scheme_id": "C14",
+  "name": "Pradhan Mantri Fasal Bima Yojna (PMFBY)",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/pmfby",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "All farmers, including tenant farmers and sharecroppers growing notified crops in notified areas."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "Farmers must have an insurable interest in the insured crops."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "Farmers must possess a valid and authenticated land ownership certificate or a valid land tenure agreement."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The farmer must be a cultivator or sharecropper on the insured land."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The farmer must apply for insurance coverage within the prescribed time frame, usually within 2 weeks of the start of the sowing season."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "Farmers must not have received compensation for the same crop loss from any other medium or source."
+    },
+    {
+      "clause_id": "excl-1",
+      "text": "Non-Notified Areas"
+    },
+    {
+      "clause_id": "excl-2",
+      "text": "PMFBY applies to notified areas, and crop losses in non-notified areas are generally not covered. Farmers in areas not designated under the scheme may not receive compensation."
+    },
+    {
+      "clause_id": "excl-3",
+      "text": "Losses Outside the Crop Cycle"
+    },
+    {
+      "clause_id": "excl-4",
+      "text": "Crop losses occurring outside the specified crop cycle are often excluded from coverage. If a loss is not directly related to the growing season, it may not be eligible for compensation."
+    },
+    {
+      "clause_id": "excl-5",
+      "text": "Negligence and Non-Compliance"
+    },
+    {
+      "clause_id": "excl-6",
+      "text": "Losses resulting from farmer negligence, non-compliance with recommended agricultural practices, or failure to protect the crop adequately may be excluded."
+    },
+    {
+      "clause_id": "excl-7",
+      "text": "Losses Beyond Specified Limits"
+    },
+    {
+      "clause_id": "excl-8",
+      "text": "Some losses beyond specified limits or thresholds may not be covered. The scheme may have predefined criteria for determining the extent of loss that qualifies for compensation."
+    },
+    {
+      "clause_id": "excl-9",
+      "text": "Non-Premium Payment"
+    },
+    {
+      "clause_id": "excl-10",
+      "text": "Farmers who fail to pay their premium contributions as required may not be eligible for coverage. Non-payment of premiums can result in the cancellation of insurance."
+    }
+  ],
+  "documents_required": [
+    "Passport–sized Photograph",
+    "Passbook",
+    "Identity Proof (Aadhaar Card/PAN Card/Voter ID/Bank Passbook with Photo, Kisan Photo Book/NREGA Job Card)",
+    "Address Proof (Aadhaar Card/PAN Card/Voter ID/Electricity Bill/Bank Passbook with Photo).",
+    "Evidence of Land records, as per the State Records of Right (RoR), Land Possession Certificate (LPC), and other applicable agreements, contracts notified or permitted by the state.",
+    "Declaration about the crop sown/intended to be sown."
+  ],
+  "rules": [
+    {
+      "field": "grows_notified_crop_in_notified_area",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_land_record_or_tenancy_agreement",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "received_compensation_for_same_crop_loss_elsewhere",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-6",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}
