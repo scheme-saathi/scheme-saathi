@@ -17,6 +17,7 @@ from agents.memory import (
     MemoryScope,
     MemoryService,
     as_utc,
+    remove_application,
 )
 
 _ALIASES: dict[str, tuple[str, ...]] = {
@@ -122,5 +123,5 @@ def delete_family_member(service: MemoryService, scope: MemoryScope, relation: s
     """
     references = _of_member(service, scope, relation)
     for reference in references:
-        service.delete_application_reference(scope, reference.application_id)
+        remove_application(service, scope, reference.application_id)
     return len(references)

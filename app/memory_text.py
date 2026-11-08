@@ -48,6 +48,16 @@ TEXT: dict[str, dict[str, str]] = {
         "nickname_save": "Save nickname",
         "family_remove": "Remove this person and their saved applications",
         "nickname_invalid": "A nickname can only use letters.",
+        "operator_agreement": "The person I am helping agrees to this application being kept on my list for {days} days",
+        "operator_agreement_help": (
+            "Optional. Leave it unticked and nothing is kept; the application is still submitted. If ticked, only "
+            "the application number, scheme and date are kept, with no personal details. The person's own "
+            "\"Forget my data\" cannot reach it, but you can remove it from your list at any time."
+        ),
+        "operator_note": (
+            "As an operator you keep no household details. When you approve an application, tick the box "
+            "only if the person you are helping agrees to it being kept on your list."
+        ),
         "none_saved": "No applications are saved.",
         "check_status": "Check status",
         "status_is": "Status at the portal: {status}",
@@ -114,6 +124,18 @@ TEXT: dict[str, dict[str, str]] = {
         "nickname_save": "उपनाम सहेजें",
         "family_remove": "इस व्यक्ति और उनके सहेजे गए आवेदन हटाएँ",
         "nickname_invalid": "उपनाम में केवल अक्षर हो सकते हैं।",
+        "operator_agreement": (
+            "जिस व्यक्ति की मैं मदद कर रहा/रही हूँ, वह इस आवेदन को {days} दिनों तक मेरी सूची में रखे जाने के लिए सहमत है"
+        ),
+        "operator_agreement_help": (
+            "वैकल्पिक। टिक न करने पर कुछ भी नहीं रखा जाएगा; आवेदन फिर भी जमा होगा। टिक करने पर केवल आवेदन संख्या, योजना और "
+            "तारीख रखी जाती है, कोई व्यक्तिगत जानकारी नहीं। उस व्यक्ति का अपना \"मेरा डेटा भूल जाएँ\" इस तक नहीं पहुँच सकता, पर "
+            "आप इसे कभी भी अपनी सूची से हटा सकते हैं।"
+        ),
+        "operator_note": (
+            "ऑपरेटर के रूप में आप परिवार की कोई जानकारी नहीं रखते। आवेदन मंज़ूर करते समय, बॉक्स तभी टिक करें जब आप "
+            "जिस व्यक्ति की मदद कर रहे हैं वह उसे आपकी सूची में रखे जाने के लिए सहमत हो।"
+        ),
         "none_saved": "कोई आवेदन सहेजा नहीं गया है।",
         "check_status": "स्थिति देखें",
         "status_is": "पोर्टल पर स्थिति: {status}",
@@ -180,6 +202,18 @@ TEXT: dict[str, dict[str, str]] = {
         "nickname_save": "टोपणनाव जतन करा",
         "family_remove": "ही व्यक्ती आणि त्यांचे जतन केलेले अर्ज काढा",
         "nickname_invalid": "टोपणनावात फक्त अक्षरे असू शकतात.",
+        "operator_agreement": (
+            "मी ज्या व्यक्तीला मदत करत आहे ती व्यक्ती हा अर्ज {days} दिवस माझ्या यादीत ठेवण्यास सहमत आहे"
+        ),
+        "operator_agreement_help": (
+            "ऐच्छिक. टिक न केल्यास काहीही ठेवले जाणार नाही; अर्ज तरीही सादर होईल. टिक केल्यास फक्त अर्ज क्रमांक, योजना आणि "
+            "तारीख ठेवली जाते, कोणतीही वैयक्तिक माहिती नाही. त्या व्यक्तीचे स्वतःचे \"माझा डेटा विसरा\" तिथपर्यंत पोहोचू शकत नाही, "
+            "पण तुम्ही ते कधीही तुमच्या यादीतून काढू शकता."
+        ),
+        "operator_note": (
+            "ऑपरेटर म्हणून तुम्ही कुटुंबाची कोणतीही माहिती ठेवत नाही. अर्ज मंजूर करताना, तुम्ही ज्या व्यक्तीला मदत "
+            "करत आहात ती व्यक्ती तो तुमच्या यादीत ठेवण्यास सहमत असेल तरच बॉक्स टिक करा."
+        ),
         "none_saved": "कोणताही अर्ज जतन केलेला नाही.",
         "check_status": "स्थिती पहा",
         "status_is": "पोर्टलवरील स्थिती: {status}",

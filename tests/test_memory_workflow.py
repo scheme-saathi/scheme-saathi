@@ -454,7 +454,7 @@ def application_conversation(service, scope=CITIZEN):
     return conversation, facts
 
 
-def run_to_submission(monkeypatch, service, scope=CITIZEN, subject="self", relation=None):
+def run_to_submission(monkeypatch, service, scope=CITIZEN, subject="self", relation=None, citizen_agreed=None):
     monkeypatch.setattr(
         "graph.agent_workflow.tools.submit_application",
         lambda form, application_id=None, write_capability=None, household_id=None: {
@@ -481,7 +481,10 @@ def run_to_submission(monkeypatch, service, scope=CITIZEN, subject="self", relat
     }
     paused = conversation.graph.invoke(seeded, conversation.config)
     pending = paused["__interrupt__"][0].value
-    final = conversation.approve(pending)
+    decision = {"action": "approve", "payload_hash": pending["payload_hash"]}
+    if citizen_agreed is not None:
+        decision["citizen_agreed"] = citizen_agreed
+    final = conversation.resume(**decision)
     return pending, final
 
 
@@ -517,11 +520,11 @@ def test_without_reference_consent_nothing_is_remembered_but_the_application_goe
     assert service.read_application_references(CITIZEN) == []
 
 
-def test_an_operators_submission_goes_to_the_operators_own_list(monkeypatch):
-    service = InMemoryMemoryService(ALLOWLIST)
+def blanket_operator_consent(service, scope=OPERATOR):
+    """The standing consent operators used to hold. It must no longer let anything be saved."""
     now = datetime.utcnow()
     service.record_consent(
-        OPERATOR,
+        scope,
         MemoryConsent(
             purpose="application_references",
             granted=True,
@@ -533,10 +536,69 @@ def test_an_operators_submission_goes_to_the_operators_own_list(monkeypatch):
             recorded_by="op-1",
         ),
     )
-    run_to_submission(monkeypatch, service, scope=OPERATOR, subject="self")
+
+
+def test_an_operators_submission_is_saved_only_when_the_person_helped_agrees(monkeypatch):
+    service = InMemoryMemoryService(ALLOWLIST)
+    _, final = run_to_submission(monkeypatch, service, scope=OPERATOR, subject="self", citizen_agreed=True)
+
+    assert final["status"] == "submitted" and final["reference_saved"] is True
     [reference] = service.read_application_references(OPERATOR)
     assert (reference.subject, reference.submitted_by) == ("other", "op-1")
     assert service.read_application_references(CITIZEN) == []
+
+
+def test_the_agreement_is_recorded_for_that_application_alone_and_in_person(monkeypatch):
+    service = InMemoryMemoryService(ALLOWLIST)
+    run_to_submission(monkeypatch, service, scope=OPERATOR, citizen_agreed=True)
+
+    [reference] = service.read_application_references(OPERATOR)
+    consent = service.consents[reference.consent_reference]
+    assert reference.consent_reference.startswith("in-person-")
+    assert (consent.obtained_via, consent.recorded_by, consent.purpose) == ("in_person", "op-1", "application_references")
+    assert consent.expires_at == reference.expires_at
+
+
+@pytest.mark.parametrize("citizen_agreed", [None, False])
+def test_without_the_agreement_the_operator_keeps_nothing_but_the_application_goes_through(monkeypatch, citizen_agreed):
+    service = InMemoryMemoryService(ALLOWLIST)
+    _, final = run_to_submission(monkeypatch, service, scope=OPERATOR, citizen_agreed=citizen_agreed)
+
+    assert final["status"] == "submitted"
+    assert final["submission"]["application_id"] == "APP-1"
+    assert final["reference_saved"] is False
+    assert service.read_application_references(OPERATOR) == []
+    assert service.consents == {}
+
+
+def test_an_operators_old_standing_consent_no_longer_lets_anything_be_saved(monkeypatch):
+    service = InMemoryMemoryService(ALLOWLIST)
+    blanket_operator_consent(service)
+    _, final = run_to_submission(monkeypatch, service, scope=OPERATOR, citizen_agreed=False)
+    assert final["reference_saved"] is False
+    assert service.read_application_references(OPERATOR) == []
+
+
+def test_the_agreement_flag_changes_nothing_for_a_citizen(monkeypatch):
+    without_consent = memory_service(consent_references=False)
+    _, final = run_to_submission(monkeypatch, without_consent, citizen_agreed=True)
+    assert final["reference_saved"] is False  # a citizen's own consent is the only one that counts
+
+    with_consent = memory_service(consent_references=True)
+    _, final = run_to_submission(monkeypatch, with_consent, citizen_agreed=False)
+    assert final["reference_saved"] is True
+    [reference] = with_consent.read_application_references(CITIZEN)
+    assert reference.consent_reference == "c-refs"
+
+
+def test_a_failure_saving_an_operators_reference_leaves_no_agreement_behind(monkeypatch):
+    service = InMemoryMemoryService(ALLOWLIST)
+    monkeypatch.setattr(
+        service, "save_application_reference", lambda scope, reference: (_ for _ in ()).throw(RuntimeError("down"))
+    )
+    _, final = run_to_submission(monkeypatch, service, scope=OPERATOR, citizen_agreed=True)
+    assert final["status"] == "submitted" and final["reference_saved"] is False
+    assert service.consents == {}
 
 
 def test_a_failure_saving_the_reference_does_not_undo_the_submission(monkeypatch):

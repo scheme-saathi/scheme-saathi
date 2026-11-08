@@ -66,6 +66,10 @@ class DecisionRequest(BaseModel):
     action: Literal["approve", "edit", "reject"]
     payload_hash: str | None = None
     changes: dict[str, Any] = Field(default_factory=dict)
+    citizen_agreed: bool = Field(
+        False,
+        description="Operators only: the person being helped agrees to this application being kept on the operator's list",
+    )
 
 
 class ChatRequest(BaseModel):
@@ -97,6 +101,10 @@ class ApprovalDecisionRequest(BaseModel):
     action: Literal["approve", "edit", "reject"]
     payload_hash: str | None = Field(None, description="Hash of the form being approved")
     changes: dict[str, Any] = Field(default_factory=dict, description="Fact changes for an edit")
+    citizen_agreed: bool = Field(
+        False,
+        description="Operators only: the person being helped agrees to this application being kept on the operator's list",
+    )
 
 
 class Plan(BaseModel):
@@ -299,6 +307,7 @@ class AgentWorkflowService:
         payload_hash: str | None,
         changes: dict[str, Any],
         memory_scope: MemoryScope | None = None,
+        citizen_agreed: bool = False,
     ) -> dict[str, Any]:
         """Resume the paused graph with the person's decision on the exact form."""
         if thread_id not in self.conversations:
@@ -311,7 +320,12 @@ class AgentWorkflowService:
         if self._pending_approval(config) is None:
             raise NoPendingApprovalError("There is no draft waiting for approval in this conversation.")
 
-        decision = {"action": action, "payload_hash": payload_hash, "changes": changes}
+        decision = {
+            "action": action,
+            "payload_hash": payload_hash,
+            "changes": changes,
+            "citizen_agreed": citizen_agreed,
+        }
         result = self.agent_graph.invoke(Command(resume=decision), config)
         return self._finish_run(thread_id, f"[decision: {action}]", result)
 
@@ -493,6 +507,7 @@ def _remembering_submission(
     thread_id: str,
     principal: AuthenticatedHousehold,
     events: Any,
+    citizen_agreed: bool = False,
 ):
     """Pass workflow events through, remembering a submitted application when the person agreed.
 
@@ -505,7 +520,10 @@ def _remembering_submission(
             memory = memory_runtime.get_memory_service()
             if memory is not None:
                 subject, relation = demo.thread_subject(thread_id)
-                payload = {**payload, **remember_submission(memory, principal, payload, subject, relation)}
+                payload = {
+                    **payload,
+                    **remember_submission(memory, principal, payload, subject, relation, citizen_agreed),
+                }
         yield name, payload
 
 
@@ -623,6 +641,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 decision.payload_hash,
                 decision.changes,
                 memory_scope=memory_scope(principal),
+                citizen_agreed=decision.citizen_agreed,
             )
         except ThreadNotFoundError:
             raise HTTPException(status_code=404, detail="Thread not found")
@@ -964,7 +983,9 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             raise HTTPException(
                 status_code=500, detail="Could not check stored documents."
             ) from error
-        return _event_stream(_remembering_submission(demo, thread_id, principal, events))
+        return _event_stream(
+            _remembering_submission(demo, thread_id, principal, events, citizen_agreed=payload.citizen_agreed)
+        )
 
     @application.delete("/api/memory", tags=["Memory"])
     def forget_my_data(

@@ -152,6 +152,53 @@ def test_approval_requires_review_and_uses_exact_draft_hash(monkeypatch):
     assert calls == [{"action": "approve", "payload_hash": "test-hash"}]
 
 
+def operator_review_screen():
+    import streamlit as st
+    from app import app_new
+
+    st.session_state["account_role"] = "operator"
+    st.session_state.setdefault("application_editing", False)
+    st.session_state.setdefault("application_edit_revision", 0)
+    result = {
+        "thread_id": "thread-1",
+        "profile": {"age": 55},
+        "application": {"scheme_id": "C06", "applicant": {"age": 55}},
+        "approval": {"payload_hash": "test-hash"},
+    }
+    app_new._render_review_step("http://api", result, documents_complete=True)
+
+
+def test_a_citizen_is_not_asked_for_anyone_elses_agreement(monkeypatch):
+    app = AppTest.from_function(edit_screen).run()
+    assert not any(box.label.startswith("The person I am helping") for box in app.checkbox)
+
+
+def test_an_operator_must_choose_the_persons_agreement_each_time_and_it_starts_unticked(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app_new, "_finish_application", lambda api, result, decision: calls.append(decision))
+    app = AppTest.from_function(operator_review_screen).run()
+    assert not app.exception
+    agreement = next(box for box in app.checkbox if box.label.startswith("The person I am helping agrees"))
+    assert agreement.value is False
+    assert "90 days" in agreement.label
+
+    next(box for box in app.checkbox if box.label.startswith("I reviewed this draft")).check().run()
+    next(button for button in app.button if button.label == "Approve").click().run()
+
+    assert calls == [{"action": "approve", "payload_hash": "test-hash", "citizen_agreed": False}]
+
+
+def test_ticking_the_agreement_is_sent_with_the_approval_of_that_application(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app_new, "_finish_application", lambda api, result, decision: calls.append(decision))
+    app = AppTest.from_function(operator_review_screen).run()
+    next(box for box in app.checkbox if box.label.startswith("The person I am helping agrees")).check().run()
+    next(box for box in app.checkbox if box.label.startswith("I reviewed this draft")).check().run()
+    next(button for button in app.button if button.label == "Approve").click().run()
+
+    assert calls == [{"action": "approve", "payload_hash": "test-hash", "citizen_agreed": True}]
+
+
 def test_edit_form_without_changes_does_not_send_decision(monkeypatch):
     calls = []
     monkeypatch.setattr(app_new, "_send_workflow", lambda *args: calls.append(args))

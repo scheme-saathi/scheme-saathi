@@ -15,22 +15,30 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from agents.family import delete_family_member, family_members, family_relation, rename_family_member
-from agents.memory import ApplicationReference, MemoryConsent, MemoryService, Purpose, as_utc, utc_now
+from agents.memory import (
+    ApplicationReference,
+    MemoryConsent,
+    MemoryService,
+    Purpose,
+    as_utc,
+    utc_now,
+)
+from agents.memory import remove_application as remove_saved_application
 from app import memory_runtime
 from app.auth import AuthenticatedHousehold, authenticated_household
 from app.memory_runtime import memory_scope
 from graph import tools
-from graph.memory_nodes import MemoryContext, save_application_reference
+from graph.memory_nodes import NOTICE_VERSION, MemoryContext, save_application_reference
 
 logger = logging.getLogger(__name__)
 
-NOTICE_VERSION = "1"
 CONSENT_EXPIRY_DAYS = 180
 PURPOSES: tuple[Purpose, ...] = ("profile_facts", "application_references")
-# An operator keeps no household details; they can only keep a list of the applications they submitted.
+# An operator keeps no household details and has no standing consent. The person being helped
+# agrees for each application when it is approved, and that agreement is recorded for it alone.
 PURPOSES_BY_ROLE: dict[str, tuple[Purpose, ...]] = {
     "citizen": PURPOSES,
-    "operator": ("application_references",),
+    "operator": (),
 }
 MAX_WITHDRAWALS = 10  # one person should never hold more than one active consent per purpose
 FORGET_NOTE = "Applications already submitted to a government portal are not deleted."
@@ -111,13 +119,15 @@ def change_consent(
     """Agree to remember, or stop remembering and delete what was saved under that agreement.
 
     Agreeing when an agreement is already active changes nothing, so retention is never
-    extended silently. An operator can only keep their own list of submitted applications,
-    and their agreement is recorded as taken in person, with who recorded it.
+    extended silently. An operator has no standing agreement to set: the person being helped
+    agrees for each application when it is approved.
     """
     if change.purpose not in PURPOSES_BY_ROLE[principal.role]:
-        raise HTTPException(status_code=403, detail="Operators cannot remember household details.")
+        raise HTTPException(
+            status_code=403,
+            detail="Operators record the agreement of the person they help for each application, when it is approved.",
+        )
     scope = memory_scope(principal)
-    in_person = principal.role == "operator"
     try:
         if change.granted:
             if service.active_consent(scope, change.purpose) is None:
@@ -131,8 +141,6 @@ def change_consent(
                         decided_at=now,
                         expires_at=now + timedelta(days=CONSENT_EXPIRY_DAYS),
                         consent_reference=f"consent-{uuid4().hex}",
-                        obtained_via="in_person" if in_person else "self_service",
-                        recorded_by=principal.subject if in_person else None,
                     ),
                 )
         else:
@@ -296,7 +304,7 @@ def remove_application(
     service: MemoryService = Depends(require_memory),
 ) -> dict[str, Any]:
     """Remove an application from the saved list. The application at the portal is not touched."""
-    if not service.delete_application_reference(memory_scope(principal), application_id):
+    if not remove_saved_application(service, memory_scope(principal), application_id):
         raise HTTPException(status_code=404, detail="This application is not in your list.")
     return {"status": "success", "application_id": application_id}
 
@@ -307,6 +315,7 @@ def remember_submission(
     result: dict[str, Any],
     subject: str,
     relation: str | None,
+    citizen_agreed: bool = False,
 ) -> dict[str, Any]:
     """Save a submitted application from a workflow result, if the person agreed. Never raises."""
     submission = result.get("submission")
@@ -320,6 +329,7 @@ def remember_submission(
             submission["application_id"],
             subject,
             relation,
+            citizen_agreed=citizen_agreed,
         )
     except Exception:
         logger.warning("The submitted application could not be remembered.")

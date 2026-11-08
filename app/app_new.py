@@ -159,6 +159,7 @@ def _auth_headers(headers: dict[str, str] | None = None) -> dict[str, str]:
 
 def _sign_out() -> None:
     st.session_state["access_token"] = None
+    st.session_state["account_role"] = None
     st.session_state["account_email"] = None
     st.session_state["account_email_error"] = None
     st.session_state["portal_stage"] = "access"
@@ -422,6 +423,18 @@ def _memory_request(
     body = json.dumps(payload).encode("utf-8") if payload is not None else None
     headers = {"Content-Type": "application/json"} if payload is not None else None
     return _api_request(f"{api_base}{path}", method=method, body=body, headers=headers)
+
+
+def _account_role(api_base: str) -> str:
+    """"operator" or "citizen", read from the API (which takes it from the token) once per sign-in."""
+    role = st.session_state.get("account_role")
+    if role is None and st.session_state.get("access_token"):
+        try:
+            role = _memory_request(api_base, "/api/memory/consent").get("role", "citizen")
+        except RuntimeError:
+            return "citizen"  # remembering is unavailable, so there is nothing to agree to; ask again later
+        st.session_state["account_role"] = role
+    return role or "citizen"
 
 
 @st.cache_data
@@ -778,6 +791,15 @@ def _render_review_step(
         "I reviewed this draft and understand that this is a mock submission.",
         key=f"confirm-application-submission-{approval_hash}",
     )
+    approval = {"action": "approve", "payload_hash": approval_hash}
+    if _account_role(api_base) == "operator":
+        # Each application needs the agreement of the person being helped, never a standing one.
+        agreed = st.checkbox(
+            _t("operator_agreement", days=_memory_policy()["reference_days"]),
+            key=f"operator-citizen-agreed-{approval_hash}",
+        )
+        st.caption(_t("operator_agreement_help"))
+        approval["citizen_agreed"] = agreed
     approve_col, edit_col, reject_col = st.columns(3)
     if approve_col.button(
         "Approve",
@@ -785,11 +807,7 @@ def _render_review_step(
         disabled=not documents_complete or not confirmed,
         key="approve-mock-application",
     ):
-        _finish_application(
-            api_base,
-            result,
-            {"action": "approve", "payload_hash": approval_hash},
-        )
+        _finish_application(api_base, result, approval)
     if edit_col.button("Edit", key="edit-mock-application"):
         st.session_state["application_editing"] = True
         st.rerun()
@@ -1526,6 +1544,7 @@ def _handle_sign_in_callback(settings: Any) -> None:
     code, state = params.get("code"), params.get("state")
     if not code or not state:
         return
+    st.session_state["account_role"] = None
     st.session_state["account_email"] = None
     st.session_state["account_email_error"] = None
     try:
@@ -1863,6 +1882,8 @@ def _change_memory_consent(api_base: str, purpose: str, granted: bool) -> None:
 
 def _render_memory_consent(api_base: str, consent: dict[str, Any]) -> None:
     purposes = consent.get("purposes", {})
+    if consent.get("role") == "operator":
+        st.caption(_t("operator_note"))
     for purpose, on_text, off_text in (
         ("profile_facts", "facts_on", "facts_off"),
         ("application_references", "refs_on", "refs_off"),

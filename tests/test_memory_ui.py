@@ -106,7 +106,7 @@ class PanelApi:
             raise RuntimeError("Remembering details is not available.")
         if path == "/api/memory/consent":
             if self.role == "operator":
-                return {"role": "operator", "purposes": {"application_references": {"granted": True}}}
+                return {"role": "operator", "purposes": {}}
             return {
                 "purposes": {
                     "profile_facts": {"granted": self.granted},
@@ -244,7 +244,7 @@ def test_a_response_without_a_family_group_still_renders(monkeypatch):
     assert not AppTest.from_function(panel_screen).run().exception
 
 
-def test_an_operator_sees_only_the_applications_list_choice(monkeypatch):
+def test_an_operator_has_no_standing_consent_choice_and_is_told_how_agreement_works(monkeypatch):
     api = PanelApi(role="operator")
     monkeypatch.setattr(app_new, "_memory_request", api)
     monkeypatch.setattr(app_new, "_scheme_names", lambda api_base: {})
@@ -253,8 +253,8 @@ def test_an_operator_sees_only_the_applications_list_choice(monkeypatch):
 
     assert not app.exception
     keys = {b.key for b in app.button}
-    assert "memory-consent-application_references" in keys
-    assert "memory-consent-profile_facts" not in keys
+    assert not any(key.startswith("memory-consent-") for key in keys)
+    assert any("tick the box only if the person you are helping agrees" in c.value for c in app.caption)
 
 
 def test_the_panel_says_so_when_remembering_is_unavailable(monkeypatch):

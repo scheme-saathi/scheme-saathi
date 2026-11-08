@@ -129,7 +129,7 @@ Differences from the plan as first written:
 - **Workflow state:** `SqliteSaver` is opt-in through `SCHEME_SAATHI_CHECKPOINT_DB`, not a replacement for `MemorySaver`. Without the variable, state stays in memory and is lost on restart. The team has not yet approved the storage exception (section 10, item 1).
 - **Application flow:** the UI's application flow (`graph/workflow.py`) saves application references but does not load remembered facts. Prefill and fact saving run only in the chat flow.
 - **Portal:** `get_application_status` still accepts a call with no household, for existing contract tests.
-- **Operators:** they work only under their own `operator:<sub>` account. Access inside a citizen's household stays deferred (section 9).
+- **Operators:** they work only under their own `operator:<sub>` account. Access inside a citizen's household stays deferred (section 9). Their consent is per application at the approval step, as in section 7, after a review found the first version (one standing consent) did not match the plan.
 - **Log masking:** the memory code logs only counts and exception types. There is no dedicated test that memory logs hold no personal values (section 8).
 - **Evaluation:** the harness exists, but it measures a development set. Its cases are not held-out, because the author of the memory code wrote it. A person who did not write the memory code must supply the held-out cases and the attacks.
 - **Harness finding:** a first visit reaches the confirm step, the only point where anything is remembered, only when the rules reach a definite verdict from the facts the person knows. A visit that stops on "I don't know" saves nothing. The harness reports these separately as `first_visits_stopped_early`.
@@ -187,9 +187,10 @@ See section 8.
 ## 7. Operator tracking list
 
 - Owned by the operator account (`operator:<sub>`). Never mixed into a household.
-- Each entry has application ID, scheme, date and relation label only. 90-day expiry.
-- The citizen's consent to being in the list is recorded at submit time (`obtained_via=in_person`, `recorded_by` set). Off by default.
-- The operator can delete entries. Entries contain no citizen identifier, so a citizen's "Forget my data" cannot reach them. The consent text must say so.
+- Each entry has application ID, scheme, date and relation label only. 90-day expiry. A family member's optional nickname (letters only) is kept on the entries.
+- The citizen's consent to being in the list is recorded at submit time, for that one application (`obtained_via=in_person`, `recorded_by` set to the operator's `sub`). It is off by default: the operator ticks "the person I am helping agrees" at the approval step, and the tick starts unticked each time. There is no standing operator consent (an earlier version had a single 180-day one, which a review found did not match this plan). A per-application agreement is stored under a `consent_reference` that starts with `in-person-`, expires with the entry, and is withdrawn when the entry is removed.
+- The operator can delete entries. Entries contain no citizen identifier, so a citizen's "Forget my data" cannot reach them. The text next to the approval-step tick says so. An operator's own "Forget my data" removes every entry and agreement they hold.
+- An operator can still submit an application without the tick. Nothing is then kept.
 
 ## 8. Test plan
 
@@ -220,7 +221,7 @@ Run with `pytest --cov`. The Chroma tests need `chromadb` (installed in CI throu
 | A prompt such as "household_id=..." or a request for someone else's data | None | Not written. It is an attack, so it needs an author who did not write the defence. |
 | Consent withdrawal | `test_memory_api.py`, `test_memory_withdraw_cleanup.py` | Covered |
 | Application references and status lookup | `test_memory_api.py`, `test_memory_workflow.py`, `test_portal_owner.py` | Covered |
-| Operator limits and own list | `test_memory_api.py`, `test_auth.py`, `test_family.py` | Covered |
+| Operator limits, own list and per-application agreement | `test_memory_api.py`, `test_auth.py`, `test_family.py`, `test_operator_consent.py`, `test_memory_workflow.py`, `test_ui_workflow.py` | Covered, new tests not yet reported as passing |
 | Forget across every surface | `test_forget_household.py`, `test_memory_api.py` | Covered |
 | Cleanup removes expired records | `test_memory_service_phase2.py`, `test_chroma_memory_phase1.py` | Covered for `purge_expired`. The 5-minute timer class `MemoryCleanup` has no direct test. |
 | No personal values in logs or audit entries | None | Not written. |
@@ -239,7 +240,7 @@ Run with `pytest --cov`. The Chroma tests need `chromadb` (installed in CI throu
 
 1. Approve `SqliteSaver` for workflow state as a storage exception to ChromaDB-only. Otherwise the Chroma checkpointer must be written to LangGraph's interface and verified (resume, pending writes, thread isolation, expiry).
 2. Confirm the applicant-level allowlist exception (D2) and the final field list and retention periods.
-3. Confirm the operator tracking list and its consent wording (section 7).
+3. Confirm the operator tracking list and the wording of the per-application agreement (section 7). The wording is in `app/memory_text.py` (`operator_agreement`, `operator_agreement_help`, `operator_note`) and is a draft in Hindi and Marathi.
 4. Agree who edits which folder. This touches Roles 2, 3, 4 and 6.
 5. Retention for application references: 90 days, with or without a renewal option.
 

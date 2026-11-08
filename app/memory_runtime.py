@@ -9,7 +9,7 @@ from threading import Event, Thread
 
 from dotenv import load_dotenv
 
-from agents.memory import MemoryScope, MemoryService
+from agents.memory import MemoryScope, MemoryService, remove_application
 from app.auth import AuthenticatedHousehold
 
 logger = logging.getLogger(__name__)
@@ -69,15 +69,16 @@ def forget_memory(service: MemoryService, scope: MemoryScope) -> None:
     """Delete what the signed-in person's memory holds.
 
     A citizen's whole household goes. An operator has no household memory to delete, only the
-    list of applications they chose to keep, which is cleared by withdrawing its consent.
+    applications the people they helped agreed to keep, each with its own agreement, and any
+    earlier standing agreement.
     """
     if scope.actor_role == "citizen":
         service.forget_household(scope)
         return
-    for _ in range(10):  # a person holds at most one active consent per purpose
+    for reference in service.read_application_references(scope):
+        remove_application(service, scope, reference.application_id)
+    for _ in range(1000):  # whatever agreements are left, each withdrawn once
         consent = service.active_consent(scope, "application_references")
         if consent is None:
             break
         service.withdraw_consent(scope, consent.consent_reference)
-    for reference in service.read_application_references(scope):
-        service.delete_application_reference(scope, reference.application_id)

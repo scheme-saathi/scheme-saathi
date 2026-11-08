@@ -187,3 +187,26 @@ class MemoryService(Protocol):
     def purge_expired(self) -> int:
         """Delete expired facts, references and consents; return how many records went."""
         ...
+
+
+# An operator's consent is not one blanket agreement: the person being helped agrees for each
+# application, and that agreement is recorded under a reference with this prefix and ends with it.
+PER_APPLICATION_CONSENT_PREFIX = "in-person-"
+
+
+def remove_application(service: MemoryService, scope: MemoryScope, application_id: str) -> bool:
+    """Remove one saved application, and the in-person agreement recorded for it alone.
+
+    An agreement that covers more than one application (a citizen's, or an operator's earlier
+    blanket one) is left in place, because withdrawing it would delete the others too.
+    """
+    reference = next(
+        (r for r in service.read_application_references(scope) if r.application_id == application_id), None
+    )
+    removed = service.delete_application_reference(scope, application_id)
+    if removed and reference and reference.consent_reference.startswith(PER_APPLICATION_CONSENT_PREFIX):
+        try:
+            service.withdraw_consent(scope, reference.consent_reference)
+        except ValueError:
+            pass  # already gone, which is what was wanted
+    return removed

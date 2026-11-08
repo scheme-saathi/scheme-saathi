@@ -269,10 +269,22 @@ def test_a_person_who_is_not_family_gets_no_nickname_and_stays_in_others(service
 
 
 def test_an_operator_helping_a_family_relation_gets_a_member_under_their_own_account(service):
-    consent(service, OPERATOR)
-    save_application_reference(context(service, OPERATOR), "C01", "OP1", "self", "mother")
+    save_application_reference(context(service, OPERATOR), "C01", "OP1", "self", "mother", citizen_agreed=True)
     [member] = family_members(service.read_application_references(OPERATOR))
     assert member.relation == "mother"
+
+
+def test_an_operator_keeps_a_family_members_nickname_across_applications(service):
+    ctx = context(service, OPERATOR)
+    save_application_reference(ctx, "C01", "OP1", "other", "mother", citizen_agreed=True)
+    rename_family_member(service, OPERATOR, "mother", "Amma")
+
+    save_application_reference(ctx, "C02", "OP2", "other", "mom", citizen_agreed=True)
+
+    assert {r.application_id: r.nickname for r in service.read_application_references(OPERATOR)} == {
+        "OP1": "Amma",
+        "OP2": "Amma",
+    }
 
 
 def test_without_consent_nothing_is_saved_and_no_member_exists(service):

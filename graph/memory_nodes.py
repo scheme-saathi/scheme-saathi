@@ -9,11 +9,14 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Mapping
+from uuid import uuid4
 
 from agents.contracts import FactMap
 from agents.family import family_members, family_relation
 from agents.memory import (
+    PER_APPLICATION_CONSENT_PREFIX,
     ApplicationReference,
+    MemoryConsent,
     MemoryFact,
     MemoryScope,
     MemoryService,
@@ -24,6 +27,7 @@ from agents.memory_service import HouseholdAllowlist
 
 logger = logging.getLogger(__name__)
 
+NOTICE_VERSION = "1"
 SCOPE_KEYS = ("memory_actor_id", "memory_household_id", "memory_role")
 
 
@@ -123,32 +127,68 @@ def save_application_reference(
     subject: str,
     relation: str | None,
     now: datetime | None = None,
+    citizen_agreed: bool = False,
 ) -> bool:
-    """Remember a submitted application for later status checks; False when there is no consent."""
-    consent = ctx.service.active_consent(ctx.scope, "application_references")
-    if consent is None:
-        return False
+    """Remember a submitted application for later status checks; False when there is no consent.
+
+    A citizen's own consent covers their applications. An operator has no blanket consent: the
+    person being helped must agree for this one application, and that in-person agreement is
+    recorded for it alone and ends with the saved entry.
+    """
     now = now or utc_now()
-    for_other = ctx.scope.actor_role == "operator" or subject == "other"
-    label = (family_relation(relation) or clean_relation(relation)) if for_other else None
-    nickname = None
-    if label and family_relation(label):  # a returning family member keeps their nickname
-        nickname = next(
-            (m.nickname for m in family_members(ctx.service.read_application_references(ctx.scope)) if m.relation == label),
-            None,
+    expires_at = now + timedelta(days=ctx.allowlist.application_reference_expiry_days)
+    operator = ctx.scope.actor_role == "operator"
+    if operator:
+        if not citizen_agreed:
+            return False
+        consent_reference = f"{PER_APPLICATION_CONSENT_PREFIX}{uuid4().hex}"
+        ctx.service.record_consent(
+            ctx.scope,
+            MemoryConsent(
+                purpose="application_references",
+                granted=True,
+                notice_version=NOTICE_VERSION,
+                decided_at=now,
+                expires_at=expires_at,
+                consent_reference=consent_reference,
+                obtained_via="in_person",
+                recorded_by=ctx.scope.actor_id,
+            ),
         )
-    ctx.service.save_application_reference(
-        ctx.scope,
-        ApplicationReference(
-            scheme_id=scheme_id,
-            application_id=application_id,
-            submitted_at=now,
-            expires_at=now + timedelta(days=ctx.allowlist.application_reference_expiry_days),
-            consent_reference=consent.consent_reference,
-            subject="other" if for_other else "self",
-            relation=label,
-            submitted_by=ctx.scope.actor_id,
-            nickname=nickname,
-        ),
-    )
+    else:
+        consent = ctx.service.active_consent(ctx.scope, "application_references")
+        if consent is None:
+            return False
+        consent_reference = consent.consent_reference
+
+    for_other = operator or subject == "other"
+    label = (family_relation(relation) or clean_relation(relation)) if for_other else None
+    try:
+        nickname = None
+        if label and family_relation(label):  # a returning family member keeps their nickname
+            nickname = next(
+                (m.nickname for m in family_members(ctx.service.read_application_references(ctx.scope)) if m.relation == label),
+                None,
+            )
+        ctx.service.save_application_reference(
+            ctx.scope,
+            ApplicationReference(
+                scheme_id=scheme_id,
+                application_id=application_id,
+                submitted_at=now,
+                expires_at=expires_at,
+                consent_reference=consent_reference,
+                subject="other" if for_other else "self",
+                relation=label,
+                submitted_by=ctx.scope.actor_id,
+                nickname=nickname,
+            ),
+        )
+    except Exception:
+        if operator:  # do not leave an agreement behind for something that was not saved
+            try:
+                ctx.service.withdraw_consent(ctx.scope, consent_reference)
+            except ValueError:
+                pass
+        raise
     return True

@@ -11,6 +11,7 @@ from app import api, memory_runtime
 from app.auth import AuthenticatedHousehold, authenticated_household
 from app.memory_api import optional_memory
 from graph import tools
+from graph.memory_nodes import MemoryContext, save_application_reference
 
 
 @pytest.fixture
@@ -534,24 +535,12 @@ def operator_scope(sub="op-1"):
     return MemoryScope(actor_id=sub, household_id=f"operator:{sub}", actor_role="operator")
 
 
-def operator_remembers(client, memory, application_id, sub="op-1"):
-    """Agree through the API, then save an application the way a submission would."""
-    assert client.put("/api/memory/consent", json={"purpose": "application_references", "granted": True}).status_code == 200
-    scope_ = operator_scope(sub)
-    now = datetime.utcnow()
-    memory.save_application_reference(
-        scope_,
-        ApplicationReference(
-            scheme_id="C01",
-            application_id=application_id,
-            submitted_at=now,
-            expires_at=now + timedelta(days=90),
-            consent_reference=memory.active_consent(scope_, "application_references").consent_reference,
-            subject="other",
-            relation="neighbour",
-            submitted_by=sub,
-        ),
+def operator_remembers(client, memory, application_id, sub="op-1", relation="neighbour"):
+    """Save an application the way an approved submission does, with the person helped agreeing."""
+    saved = save_application_reference(
+        MemoryContext(memory, operator_scope(sub)), "C01", application_id, "other", relation, citizen_agreed=True
     )
+    assert saved is True
 
 
 def test_a_citizen_is_told_their_role_and_sees_both_choices(client):
@@ -560,25 +549,39 @@ def test_a_citizen_is_told_their_role_and_sees_both_choices(client):
     assert set(body["purposes"]) == {"profile_facts", "application_references"}
 
 
-def test_an_operator_is_offered_only_their_own_list_of_applications(client, operator):
+def test_an_operator_has_no_standing_consent_to_set(client, operator):
     body = client.get("/api/memory/consent").json()
     assert body["role"] == "operator"
-    assert set(body["purposes"]) == {"application_references"}
+    assert body["purposes"] == {}
 
 
-def test_an_operator_cannot_agree_to_remember_household_details(client, operator, memory):
-    response = client.put("/api/memory/consent", json={"purpose": "profile_facts", "granted": True})
+@pytest.mark.parametrize("purpose", ["profile_facts", "application_references"])
+def test_an_operator_cannot_set_a_standing_consent(client, operator, memory, purpose):
+    response = client.put("/api/memory/consent", json={"purpose": purpose, "granted": True})
 
     assert response.status_code == 403
-    assert memory.active_consent(operator_scope(), "profile_facts") is None
+    assert "each application" in response.json()["detail"]
+    assert memory.active_consent(operator_scope(), purpose) is None
 
 
-def test_an_operators_agreement_is_recorded_as_taken_in_person_and_by_whom(client, operator, memory):
-    body = client.put("/api/memory/consent", json={"purpose": "application_references", "granted": True}).json()
+def test_an_operators_agreement_is_recorded_per_application_in_person_and_by_whom(client, operator, memory):
+    operator_remembers(client, memory, "OP-APP")
 
-    assert body["purposes"]["application_references"]["granted"] is True
-    consent = memory.active_consent(operator_scope(), "application_references")
+    [reference] = memory.read_application_references(operator_scope())
+    consent = memory.consents[reference.consent_reference]
+    assert reference.consent_reference.startswith("in-person-")
     assert (consent.obtained_via, consent.recorded_by) == ("in_person", "op-1")
+
+
+def test_removing_an_operators_entry_withdraws_the_agreement_recorded_for_it(client, operator, memory):
+    operator_remembers(client, memory, "OP-1")
+    operator_remembers(client, memory, "OP-2")
+    keep = next(r for r in memory.read_application_references(operator_scope()) if r.application_id == "OP-2")
+
+    assert client.delete("/api/applications/OP-1").status_code == 200
+
+    assert [r.application_id for r in memory.read_application_references(operator_scope())] == ["OP-2"]
+    assert set(memory.consents) == {keep.consent_reference}
 
 
 def test_a_citizens_agreement_is_self_service(client, memory):
@@ -639,14 +642,37 @@ def test_an_operator_forgetting_clears_only_their_own_list(client, operator, mem
     remember_fact(memory, household="hh1")
     remember_application(memory, "CITIZEN-APP", household="hh1")
     operator_remembers(client, memory, "OP-APP")
+    operator_remembers(client, memory, "OP-APP-2")
 
     assert client.delete("/api/memory").json()["status"] == "success"
 
     assert memory.read_application_references(operator_scope()) == []
     assert memory.active_consent(operator_scope(), "application_references") is None
+    assert not any(ref.startswith("in-person-") for ref in memory.consents)
     assert len(memory.list_facts(scope("hh1"))) == 1
     assert [r.application_id for r in memory.read_application_references(scope("hh1"))] == ["CITIZEN-APP"]
     assert ("conversations", "operator:op-1") in surfaces.calls
+
+
+def test_forgetting_also_clears_an_operators_earlier_standing_consent(client, operator, memory):
+    now = datetime.utcnow()
+    memory.record_consent(
+        operator_scope(),
+        MemoryConsent(
+            purpose="application_references",
+            granted=True,
+            notice_version="1",
+            decided_at=now,
+            expires_at=now + timedelta(days=60),
+            consent_reference="old-blanket",
+            obtained_via="in_person",
+            recorded_by="op-1",
+        ),
+    )
+    operator_remembers(client, memory, "OP-APP")
+
+    assert client.delete("/api/memory").json()["status"] == "success"
+    assert memory.consents == {} and memory.read_application_references(operator_scope()) == []
 
 
 def test_a_citizen_forgetting_leaves_an_operators_list_alone(client, memory, who, surfaces):
@@ -753,24 +779,75 @@ def test_family_endpoints_need_a_signed_in_person(memory):
 
 
 def test_an_operator_has_family_members_under_their_own_account(client, operator, memory):
-    operator_remembers(client, memory, "OP-APP")  # saves a "neighbour"
-    now = datetime.utcnow()
-    memory.save_application_reference(
-        operator_scope(),
-        ApplicationReference(
-            scheme_id="C01",
-            application_id="OP-MOTHER",
-            submitted_at=now,
-            expires_at=now + timedelta(days=90),
-            consent_reference=memory.active_consent(operator_scope(), "application_references").consent_reference,
-            subject="other",
-            relation="mother",
-            submitted_by="op-1",
-        ),
-    )
+    operator_remembers(client, memory, "OP-APP")  # a neighbour, who is not family
+    operator_remembers(client, memory, "OP-MOTHER", relation="mother")
 
     assert set(family_apps(client)) == {"mother"}
     assert client.patch("/api/family/mother", json={"nickname": "Client"}).status_code == 200
     assert client.delete("/api/family/mother").json()["applications_removed"] == 1
     assert [a["application_id"] for a in client.get("/api/applications").json()["for_others"]] == ["OP-APP"]
+    assert len(memory.consents) == 1  # the removed member's agreement went with them
+
+
+# An operator's per-application agreement through the application flow
+
+
+OPERATOR_PRINCIPAL = AuthenticatedHousehold("operator:op-1", "op-1", "operator")
+
+
+def run_operator_events(memory, monkeypatch, citizen_agreed, principal=OPERATOR_PRINCIPAL):
+    monkeypatch.setattr(memory_runtime, "get_memory_service", lambda: memory)
+    events = [("result", dict(SUBMITTED))]
+    return list(
+        api._remembering_submission(
+            FakeDemo("other", "mother"), "t1", principal, iter(events), citizen_agreed=citizen_agreed
+        )
+    )
+
+
+def test_an_operators_submission_is_remembered_only_with_the_persons_agreement(memory, monkeypatch):
+    events = run_operator_events(memory, monkeypatch, citizen_agreed=True)
+
+    assert events[0][1]["reference_saved"] is True
+    [reference] = memory.read_application_references(operator_scope())
+    assert (reference.application_id, reference.relation) == ("APP-9", "mother")
+    assert memory.consents[reference.consent_reference].obtained_via == "in_person"
+
+
+def test_without_the_agreement_an_operators_submission_goes_through_but_nothing_is_kept(memory, monkeypatch):
+    events = run_operator_events(memory, monkeypatch, citizen_agreed=False)
+
+    assert events[0][1]["reference_saved"] is False
+    assert events[0][1]["submission"]["application_id"] == "APP-9"
+    assert memory.read_application_references(operator_scope()) == [] and memory.consents == {}
+
+
+def test_the_decision_requests_carry_the_choice_and_default_to_no():
+    assert api.DecisionRequest(action="approve", payload_hash="h").citizen_agreed is False
+    assert api.ApprovalDecisionRequest(action="approve", payload_hash="h").citizen_agreed is False
+    assert api.DecisionRequest(action="approve", payload_hash="h", citizen_agreed=True).citizen_agreed is True
+
+
+def test_the_agent_service_passes_the_choice_into_the_resumed_decision(memory):
+    seen = {}
+
+    class Graph:
+        checkpointer = None
+
+        def get_state(self, config):
+            from types import SimpleNamespace
+
+            return SimpleNamespace(tasks=[SimpleNamespace(interrupts=[SimpleNamespace(value={"kind": "approval"})])])
+
+        def invoke(self, command, config):
+            seen["decision"] = command.resume
+            return {"status": "submitted", "response": "done"}
+
+    service = api.AgentWorkflowService(memory=memory)
+    service._agent_graph = Graph()
+    service.create_thread("operator:op-1", "t1")
+
+    service.submit_decision("t1", "operator:op-1", "approve", "h", {}, citizen_agreed=True)
+
+    assert seen["decision"] == {"action": "approve", "payload_hash": "h", "changes": {}, "citizen_agreed": True}
 

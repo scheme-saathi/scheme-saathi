@@ -105,6 +105,7 @@ class AgentWorkflowState(TypedDict, total=False):
     document_check: dict[str, Any]
     application_draft: dict[str, Any]
     approval_status: str
+    citizen_agreed: bool  # an operator's per-application tick: the person helped agrees to be on their list
     portal_draft: dict[str, Any]
     approved_hash: str
     submission: dict[str, Any]
@@ -723,6 +724,7 @@ def _approval_node(state: AgentWorkflowState) -> dict[str, Any]:
             return {
                 "approval_status": "approved",
                 "approved_hash": current,
+                "citizen_agreed": decision.get("citizen_agreed") is True,
             }
         tools.audit_approval_event("approve", "invalid", authenticated)
         return {"approval_status": "invalid", "approved_hash": ""}
@@ -874,7 +876,12 @@ def _remember_application(
         return {}
     try:
         saved = save_application_reference(
-            ctx, form["scheme_id"], submission["application_id"], _subject(state), state.get("relation")
+            ctx,
+            form["scheme_id"],
+            submission["application_id"],
+            _subject(state),
+            state.get("relation"),
+            citizen_agreed=state.get("citizen_agreed") is True,
         )
     except Exception:
         logger.warning("The submitted application could not be remembered.")
