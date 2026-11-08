@@ -560,17 +560,54 @@ class RoutingEngine:
         )
 
 
-# shortcut: phrase list, covers en + common hi/mr wording; extend if reviews find misses.
+# shortcut: phrase lists, covering en + common hi/mr wording; extend if reviews find misses.
+# A claim is about the person or a relative ("you", "she", "your grandmother"); a criterion
+# quoted for everyone ("Widows aged 40-79 can get Rs 300") names no one and stays allowed.
+_PERSON = r"(?:you|she|he|your(?:\s+[a-z\-]+){1,2})"
+# "get/receive/avail" counts only with a benefit after it: "you can get the form" is procedure.
+_BENEFIT = (r"(?:pension|benefits?|assistance|subsidy|scholarships?|insurance|cover|loans?|card|money"
+            r"|grant|allowance|stipend|amount|rs\.?|rupees|help|support|aid)")
 _VERDICT = re.compile(
-    r"\byou (are|are not|aren't|'re) (not )?eligible\b|\byou (do not |don't )?qualify\b"
-    r"|\b(you|application) (is|are|has been|have been) approved\b"
+    rf"\b{_PERSON}\s+(?:can|could|will|may|might|should|would)\s+(?:also\s+|still\s+)?"
+    rf"(?:join|qualify|be eligible|benefit|(?:get|receive|avail)\b(?:\s+\S+){{0,4}}?\s+{_BENEFIT})\b"
+    rf"|\b{_PERSON}\s+(?:is|are|'re|'s)\s+(?:not\s+|also\s+)?(?:eligible|entitled|qualified)\b"
+    rf"|\b{_PERSON}\s+(?:do not |don't |does not |doesn't )?qualif(?:y|ies)\b"
+    r"|\b(?:you|application) (?:is|are|has been|have been) approved\b"
 )
-_VERDICT_PHRASES = ("आप पात्र हैं", "आप पात्र नहीं", "तुम्ही पात्र आहात", "तुम्ही पात्र नाही")
+# "Yes, there is a pension for your grandmother": a yes/no answer about the person.
+_YES_NO_ABOUT_PERSON = re.compile(r"^(?:yes|no)\b.*\b(?:you|your|she|her|he|him)\b")
+_HI_PERSON = ("आप", "आपको", "आपके", "आपकी", "उन्हें", "उनको", "वह", "वे")
+_HI_VERDICT = ("पात्र", "हकदार", "लाभ ले सकत")
+_HI_GET = ("मिल सकत", "मिलेग", "मिल जाएग")
+_HI_BENEFIT = ("पेंशन", "लाभ", "सहायता", "राशि", "रुपये", "सब्सिडी", "छात्रवृत्ति", "कार्ड", "बीमा", "ऋण", "मदद")
+_MR_PERSON = ("तुम्ही", "तुम्हाला", "तुमच्या", "त्यांना", "तिला", "त्याला")
+_MR_VERDICT = ("पात्र", "हक्कदार", "लाभ घेऊ शकत")
+_MR_GET = ("मिळू शकत", "मिळेल")
+_MR_BENEFIT = ("पेन्शन", "लाभ", "मदत", "सहाय्य", "रक्कम", "रुपये", "अनुदान", "शिष्यवृत्ती", "कार्ड", "विमा", "कर्ज")
+_SENTENCE = re.compile(r"(?<=[.!?।])\s+|\n+")
 
 
 def _decides_eligibility(text: str) -> bool:
-    """A personal verdict ("you are eligible"), not a question or a quoted criterion."""
-    return bool(_VERDICT.search(text.lower())) or any(p in text for p in _VERDICT_PHRASES)
+    """A personal verdict ("you are eligible", "your mother can get it"), not a question or
+    a criterion quoted for everyone."""
+    for sentence in _SENTENCE.split(text.strip()):
+        sentence = sentence.strip()
+        if not sentence or sentence.endswith("?"):
+            continue
+        lower = sentence.lower()
+        if _VERDICT.search(lower) or _YES_NO_ABOUT_PERSON.search(lower):
+            return True
+        words = set(re.findall(r"[\u0900-\u097F]+", sentence))
+        for person, verdict, get, benefit in (
+            (_HI_PERSON, _HI_VERDICT, _HI_GET, _HI_BENEFIT),
+            (_MR_PERSON, _MR_VERDICT, _MR_GET, _MR_BENEFIT),
+        ):
+            if words & set(person) and (
+                any(v in sentence for v in verdict)
+                or (any(g in sentence for g in get) and any(b in sentence for b in benefit))
+            ):
+                return True
+    return False
 
 
 class OutputValidator:

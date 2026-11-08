@@ -177,13 +177,24 @@ def _supervisor_node(
 
 
 def _guard_output(
-    agents: AgentSet, state: AgentWorkflowState, update: dict[str, str], agent_name: str
+    agents: AgentSet,
+    state: AgentWorkflowState,
+    update: dict[str, str],
+    agent_name: str,
+    blocked_message: dict[str, str] | None = None,
 ) -> dict[str, str]:
-    """Supervisor output check: nothing leaves the graph unless it passes."""
+    """Supervisor output check: nothing leaves the graph unless it passes.
+
+    `blocked_message`, by language, replaces the generic error when a block has a known,
+    safe next step to offer the person.
+    """
     language = state.get("language", "unknown")
     result = agents.supervisor.validate_output(update["response"], agent_name, language)
     if result.passed:
         return update
+    logger.warning("Output from %s blocked: %s", agent_name, "; ".join(result.errors))
+    if blocked_message:
+        return {"status": "output_blocked", "response": blocked_message.get(language, blocked_message["en"])}
     blocked = agents.supervisor.handle_validation_error(result, language)
     return {"status": "output_blocked", "response": blocked["user_message"]}
 
@@ -927,6 +938,19 @@ def _submit_node(
     }
 
 
+# A scheme answer that decided the person's own eligibility is replaced by an offer to check
+# it properly: only the rule engine, on confirmed facts, may say who qualifies.
+CHECK_ELIGIBILITY_INSTEAD = {
+    "hi": "मैं योजना दस्तावेज़ों से यह तय नहीं कर सकता कि आप या आपके परिजन पात्र हैं या नहीं। "
+          "अगर आप मुझे उस व्यक्ति के बारे में बताएँ, जैसे उम्र और परिवार के पास बीपीएल कार्ड है या नहीं, "
+          "तो मैं नियमों से जाँच कर दूँगा।",
+    "mr": "योजनेच्या कागदपत्रांवरून तुम्ही किंवा तुमचे नातेवाईक पात्र आहात की नाही हे मी ठरवू शकत नाही. "
+          "त्या व्यक्तीबद्दल सांगा, जसे वय आणि कुटुंबाकडे बीपीएल कार्ड आहे का, म्हणजे मी नियमांनुसार तपासतो.",
+    "en": "I can't decide from the scheme documents whether you or your family member qualify. "
+          "If you tell me about the person, such as their age and whether the family has a BPL card, "
+          "I'll check the scheme rules for you.",
+}
+
 NOT_FOUND = {
     "hi": "मुझे यह जानकारी समीक्षित योजना दस्तावेज़ों में नहीं मिली।",
     "mr": "मला ही माहिती तपासलेल्या योजना कागदपत्रांमध्ये सापडली नाही.",
@@ -966,7 +990,9 @@ def _respond_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]
     if state.get("validation_errors"):
         return {"status": "validation_error", "response": " ".join(state["validation_errors"])}
     if state["plan"].get("scheme_question"):
-        return _guard_output(agents, state, _scheme_answer(agents, state), "scheme_info")
+        return _guard_output(
+            agents, state, _scheme_answer(agents, state), "scheme_info", CHECK_ELIGIBILITY_INSTEAD
+        )
     return _guard_output(
         agents, state, {"status": "responded", "response": state["plan"]["reason"]}, "supervisor"
     )
