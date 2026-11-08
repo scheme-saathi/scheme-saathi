@@ -1,0 +1,92 @@
+{
+  "scheme_id": "C32",
+  "name": "Free Education For Sports Medal Winners / Participants Of National/ International Events",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/fesmwpnie",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "(i) The Scholarship will be provided to the Medal winners of National games and participants in recognized international sporting events recognized by the World University Service, International Olympic Committee, and Olympic Committee of Asia (OCA) who have taken admitted to the Universities/Colleges/Institutions as indicated below:"
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "Universities/Institutions/Colleges included under sections 2(f) and 12(b) of the UGC Act, 1956."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "Deemed to be Universities under section 3 of the UGC Act, 1956 which are eligible to receive grants"
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "in aid from UGC."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "Universities/Institutions/Colleges funded by Central/ State Govt."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "Institutes of National Importance."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "(ii) In the subsequent years this scholarship shall depend on their subsequent sports performance."
+    },
+    {
+      "clause_id": "excl-1",
+      "text": "CANCELLATION OF SCHOLARSHIP"
+    },
+    {
+      "clause_id": "excl-2",
+      "text": "UGC may terminate the scholarship of any student in the case of the:"
+    },
+    {
+      "clause_id": "excl-3",
+      "text": "(i) Misconduct of the candidate, if any, reported by the University/College/Institution."
+    },
+    {
+      "clause_id": "excl-4",
+      "text": "(ii) Unsatisfactory progress report i.e. if the candidate frequently fails in his/her examination will not be given further assistance."
+    },
+    {
+      "clause_id": "excl-5",
+      "text": "(iii) The scholarship may be terminated by the Commission, on the recommendation of the University at"
+    },
+    {
+      "clause_id": "excl-6",
+      "text": "anytime during the tenure and the decision of the Commission will be final and binding."
+    }
+  ],
+  "documents_required": [
+    "To Be Submitted by the Candidate through University/College -",
+    "1. The candidate is required to submit an application in the prescribed format for availing of the scholarship.",
+    "2. A Certificate of the participation/medal winner as per the eligibility mentioned above as proof (Attested By Registrar/Principal).",
+    "To Be Submitted by the concerned University/College/Institution to the UGC -",
+    "Every year University/Institution will submit a complete statement of the following:",
+    "1. Statement giving the names of the students selected for the scholarship along with their receipt of the scholarship amount.",
+    "2. Progress Report to be submitted after the completion of the first year in terms of sports performance and academics.",
+    "3. Utilization certificate for the previous grant released.",
+    "4. A certificate giving justification for the continuance of the scholarship issued by the Director/Head of the Department duly forwarded by the Registrar/Principal."
+  ],
+  "rules": [
+    {
+      "field": "is_national_games_medalist_or_international_event_participant",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "institution_is_ugc_recognized_or_government_funded",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

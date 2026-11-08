@@ -126,7 +126,7 @@ erDiagram
     }
 ```
 
-The field-by-field structure of one scheme record is in [docs/scheme-data-relationships.md](docs/scheme-data-relationships.md). Only rule records whose rules are all `reviewed` give live verdicts; today that is the synthetic `SYNTH-PENSION-001`, whose record sits in `data/schemes/`.
+The field-by-field structure of one scheme record is in [docs/scheme-data-relationships.md](docs/scheme-data-relationships.md). Only rule records whose rules are all `reviewed` give live verdicts; those are the records in `data/rules/`. The synthetic `SYNTH-PENSION-001` is a test-only fixture in `tests/fixtures/`, loaded by `tests/conftest.py`; users never see it.
 
 ### Step 1: Download the embedding model (once per machine)
 
@@ -347,7 +347,7 @@ A cant_tell verdict that an answer could settle?
   Income fields are recognised by name (a `shortcut:` in `agents/intake.py`).
 - **Stop rules.** The model classifies each reply as `answer`, `dont_know` or `other`.
   "Don't know" stops intake, a field asked twice without a usable answer counts as "don't
-  know", and at most 8 questions are asked (`MAX_QUESTIONS`). A reply with no facts at all
+  know", and at most 12 questions are asked (`MAX_QUESTIONS`). A reply with no facts at all
   goes back to the Supervisor, so a new request ("what documents do I need?") is routed rather
   than the question repeated. A new intake resets these counters.
 - **Confirm step.** Once the verdicts settle, the graph pauses with `interrupt()` and shows the

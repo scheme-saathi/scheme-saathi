@@ -1,0 +1,86 @@
+{
+  "scheme_id": "M21",
+  "name": "Mukhyamantri Yuva Karya Prashikshan Yojana",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/mmykpy",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The candidate should be a resident of Maharashtra."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The candidate's age should be between 18 to 35."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The candidate should have minimum education criteria of 12th Pass/ITI/Diploma/Graduation/Post Graduation."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The candidate should be registered with Aadhaar."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The candidate's bank accounts should be linked with Aadhaar."
+    }
+  ],
+  "documents_required": [
+    "Passport-size Photograph",
+    "Aadhaar Card",
+    "Bank Passbook or Cancelled Cheque",
+    "Living Certificate",
+    "Birth Certificate",
+    "Education Certificate",
+    "Domicile Certificate or SSC Passing Certificate"
+  ],
+  "rules": [
+    {
+      "field": "is_maharashtra_resident",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 18,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 35,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_passed_12th_iti_diploma_or_higher",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_aadhaar",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_aadhaar_linked_bank_account",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

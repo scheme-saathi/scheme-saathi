@@ -47,3 +47,12 @@ def test_sqlite_checkpoint_resumes_with_a_fresh_graph(tmp_path):
         assert graph.get_state(config).next == ("approval",)
         final = graph.invoke(approve(graph, config), config)
     assert final["submission"]["status"].startswith("submitted")
+
+
+def test_rechecking_only_open_verdicts_matches_a_full_evaluation():
+    from graph import tools
+
+    graph = build_graph()
+    state = graph.invoke({"simulated_citizen": {"age": 30, "is_woman_or_girl": True}}, {"configurable": {"thread_id": "full"}})
+    full = {scheme: tools.evaluate_scheme(state["profile"], scheme)["verdict"] for scheme in state["verdicts"]}
+    assert full == {scheme: verdict["verdict"] for scheme, verdict in state["verdicts"].items()}

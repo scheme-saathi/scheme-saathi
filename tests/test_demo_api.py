@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 from streamlit.testing.v1 import AppTest
@@ -435,7 +436,7 @@ class FakeChatIntakeAgent:
 
 
 def test_chat_requests_missing_details_before_checking_eligibility(monkeypatch):
-    monkeypatch.setattr(rule_server, "RULE_DIRS", [rule_server.SCHEME_DIR])
+    monkeypatch.setattr(rule_server, "RULE_DIRS", [rule_server.SCHEME_DIR, Path(__file__).resolve().parent / "fixtures"])
     evaluated_schemes = []
     evaluate_scheme = business_logic.tools.evaluate_scheme
 

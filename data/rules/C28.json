@@ -1,0 +1,89 @@
+{
+  "scheme_id": "C28",
+  "name": "Agnipath Yojana",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/ay",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant must be a citizen of India."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "For the 2022 intake, the age of the applicant should be between 17.5 to 23 years. For the subsequent intakes, the age of the applicant should be between 17.5 to 21 years."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant must fulfill the educational qualifications and physical and medical standards set by the Indian Army / Indian Navy / Indian Air Force."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "Note 01: The Agniveers will be enrolled in the Forces under respective Service Acts for a period of four years. They would form a distinct rank in the Armed Forces, different from any other existing ranks."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "Note 02: Upon the completion of four years of service, based on organizational requirements and policies promulgated by the Armed Forces from time to time, Agniveers will be offered an opportunity to apply for permanent enrolment in the Armed Forces."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "Note 03: The applications for permanent enrolment will be considered in a centralized manner based on objective criteria including performance during their four-year engagement period and up to 25% of each specific batch of Agniveers will be enrolled in the regular cadre of the Armed Forces. The selection will be the exclusive jurisdiction of the Armed Forces."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "Note 04: Agniveers will meet the medical eligibility conditions laid down for enrolment in the armed forces as applicable to respective categories/trades."
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "Note 05: The educational qualification for Agniveers will remain as in vogue for enrollment in various categories."
+    },
+    {
+      "clause_id": "excl-1",
+      "text": "The scheme is applicable at the soldier (jawan) level, and not the officer level."
+    }
+  ],
+  "documents_required": [
+    "Proof of Identity i.e. Aadhaar Card",
+    "Proof of Address",
+    "Proof of Highest Educational Qualifications",
+    "Proof of Medical Category",
+    "Passport-size photograph",
+    "Domicile Certificate",
+    "The applicants will have to submit a written pledge that they were not involved in the violent protests against the Agnipath scheme.",
+    "Note: The list of documents required is tentative, the ministry shall release the complete list of the required documents in the public domain in the future."
+  ],
+  "rules": [
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 17.5,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 21,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "meets_armed_forces_education_physical_and_medical_standards",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}
