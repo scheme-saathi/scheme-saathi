@@ -1,4 +1,4 @@
-﻿"""GPT agent orchestration skeleton, separate from the deterministic demo graph."""
+"""GPT agent orchestration skeleton, separate from the deterministic demo graph."""
 
 import json
 import logging
@@ -921,8 +921,8 @@ def _submit_node(
 
 
 NOT_FOUND = {
-    "hi": "à¤®à¥à¤à¥‡ à¤¯à¤¹ à¤œà¤¾à¤¨à¤•à¤¾à¤°à¥€ à¤¸à¤®à¥€à¤•à¥à¤·à¤¿à¤¤ à¤¯à¥‹à¤œà¤¨à¤¾ à¤¦à¤¸à¥à¤¤à¤¾à¤µà¥‡à¤œà¤¼à¥‹à¤‚ à¤®à¥‡à¤‚ à¤¨à¤¹à¥€à¤‚ à¤®à¤¿à¤²à¥€à¥¤",
-    "mr": "à¤®à¤²à¤¾ à¤¹à¥€ à¤®à¤¾à¤¹à¤¿à¤¤à¥€ à¤¤à¤ªà¤¾à¤¸à¤²à¥‡à¤²à¥à¤¯à¤¾ à¤¯à¥‹à¤œà¤¨à¤¾ à¤•à¤¾à¤—à¤¦à¤ªà¤¤à¥à¤°à¤¾à¤‚à¤®à¤§à¥à¤¯à¥‡ à¤¸à¤¾à¤ªà¤¡à¤²à¥€ à¤¨à¤¾à¤¹à¥€.",
+    "hi": "मुझे यह जानकारी समीक्षित योजना दस्तावेज़ों में नहीं मिली।",
+    "mr": "मला ही माहिती तपासलेल्या योजना कागदपत्रांमध्ये सापडली नाही.",
     "en": "I couldn't find this in the reviewed scheme documents.",
 }
 
@@ -1032,14 +1032,14 @@ def build_agent_graph(
     """Build agent workflow with Supervisor as entry point.
     
     Graph Flow:
-    START â†’ Supervisor (detect language/intent and route; a pending question skips the model)
-            â”œâ†’ intake (message â†’ typed known_facts) â†’ eligibility (verdicts for candidate schemes)
-            â”‚       â”œâ†’ intake_question (one question that settles the most open verdicts) â†’ END
-            â”‚       â””â†’ document_checker â†’ application â†’ approval â†’ submit, or finish
-            â”œâ†’ document_checker
-            â””â†’ respond (direct response without specialist)
-    â†’ finish (format response)
-    â†’ END
+    START → Supervisor (detect language/intent and route; a pending question skips the model)
+            ├→ intake (message → typed known_facts) → eligibility (verdicts for candidate schemes)
+            │       ├→ intake_question (one question that settles the most open verdicts) → END
+            │       └→ document_checker → application → approval → submit, or finish
+            ├→ document_checker
+            └→ respond (direct response without specialist)
+    → finish (format response)
+    → END
 
     With `memory`, remembered facts are prefilled after intake (memory_load) and confirmed facts
     are remembered after the confirm step and after an edit at approval (memory_save); submit
@@ -1137,7 +1137,7 @@ def build_agent_graph(
         builder.add_edge("memory_save", "eligibility")
         builder.add_edge("memory_save_edit", "approval_end")
 
-    # Eligibility â†’ one intake question while a verdict is open, else Document Checker â†’ Finish
+    # Eligibility → one intake question while a verdict is open, else Document Checker → Finish
     builder.add_conditional_edges(
         "eligibility",
         _route_after_eligibility,
@@ -1155,14 +1155,14 @@ def build_agent_graph(
     )
     builder.add_edge("intake_question", END)
     
-    # Document Checker â†’ Application (if needed) â†’ Finish
+    # Document Checker → Application (if needed) → Finish
     builder.add_conditional_edges(
         "document_checker",
         _route_after_documents,
         {"application": "application", "finish": "finish"},
     )
     
-    # Application â†’ human approval of the exact form â†’ submit (the only write)
+    # Application → human approval of the exact form → submit (the only write)
     builder.add_conditional_edges(
         "application",
         _route_after_application,
@@ -1176,10 +1176,10 @@ def build_agent_graph(
     builder.add_edge("approval_end", END)
     builder.add_edge("submit", END)
     
-    # Respond â†’ END (respond node handles its own final output)
+    # Respond → END (respond node handles its own final output)
     builder.add_edge("respond", END)
     
-    # Finish â†’ END
+    # Finish → END
     builder.add_edge("finish", END)
     
     return tools.budget_graph(builder.compile(checkpointer=checkpointer))
