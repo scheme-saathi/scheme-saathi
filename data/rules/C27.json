@@ -32,14 +32,14 @@
       "op": "gte",
       "value": 14,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 45,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

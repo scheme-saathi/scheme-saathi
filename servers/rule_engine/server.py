@@ -81,8 +81,9 @@ def get_rule_fields(scheme_ids: list[str], include_draft: bool = False) -> dict[
         if scheme_id not in records:
             return _error("scheme_not_found", f"No rule record for scheme '{scheme_id}'.")
         for rule in _conditions(records[scheme_id], include_draft).rules:
-            if rule.field not in fields:
-                fields.append(rule.field)
+            for condition in rule.conditions():
+                if condition.field not in fields:
+                    fields.append(condition.field)
     return {"ok": True, "access": "read", "data": fields}
 
 
@@ -99,12 +100,12 @@ def get_field_specs(scheme_ids: list[str], include_draft: bool = False) -> dict[
     for scheme_id in scheme_ids:
         if scheme_id not in records:
             return _error("scheme_not_found", f"No rule record for scheme '{scheme_id}'.")
-        for rule in _conditions(records[scheme_id], include_draft).rules:
-            values = rule.value if rule.op in {"in", "not_in"} else [rule.value]
+        for condition in (c for rule in _conditions(records[scheme_id], include_draft).rules for c in rule.conditions()):
+            values = condition.value if condition.op in {"in", "not_in"} else [condition.value]
             kind = "bool" if isinstance(values[0], bool) else "str" if isinstance(values[0], str) else "number"
-            spec = specs.setdefault(rule.field, {"type": kind, "known_values": []})
+            spec = specs.setdefault(condition.field, {"type": kind, "known_values": []})
             if spec["type"] != kind:
-                return _error("field_type_conflict", f"Rules use '{rule.field}' as both {spec['type']} and {kind}.")
+                return _error("field_type_conflict", f"Rules use '{condition.field}' as both {spec['type']} and {kind}.")
             if kind == "str":
                 spec["known_values"] += [v for v in values if v not in spec["known_values"]]
     return {"ok": True, "access": "read", "data": specs}

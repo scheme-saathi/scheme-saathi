@@ -160,7 +160,7 @@
       "op": "gte",
       "value": 60,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "senior_care_need",
@@ -170,7 +170,7 @@
         "dementia or needs continuous nursing care"
       ],
       "clause_id": "elig-3",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

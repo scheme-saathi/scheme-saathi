@@ -36,14 +36,14 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "disability_percent",
       "op": "gte",
       "value": 40,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

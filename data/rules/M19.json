@@ -152,6 +152,20 @@
       "status": "reviewed"
     },
     {
+      "field": "marital_status",
+      "op": "ne",
+      "value": "unmarried",
+      "clause_id": "elig-12",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "another_unmarried_woman_in_family_already_benefits",
+          "op": "eq",
+          "value": false
+        }
+      ]
+    },
+    {
       "field": "family_has_income_tax_payer",
       "op": "eq",
       "value": false,

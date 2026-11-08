@@ -63,35 +63,35 @@
       "op": "gte",
       "value": 15,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "annual_income",
       "op": "lte",
       "value": 200000,
       "clause_id": "elig-5",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "family_member_already_beneficiary",
       "op": "eq",
       "value": false,
       "clause_id": "elig-6",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "owns_land_for_house",
       "op": "eq",
       "value": true,
       "clause_id": "elig-7",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "receives_other_government_housing_benefit",
       "op": "eq",
       "value": false,
       "clause_id": "elig-8",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

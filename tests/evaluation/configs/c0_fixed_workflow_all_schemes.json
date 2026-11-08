@@ -1,0 +1,7 @@
+{
+  "name": "c0_fixed_workflow_all_schemes",
+  "description": "C0 without a shortlist: the fixed workflow checks every live (reviewed) scheme, as an agent that picks its own schemes would face. Only the case's candidate schemes are scored; the rest are reported as unscored.",
+  "system": "fixed_workflow",
+  "scheme_selection": "system",
+  "tool_call_limit": 1200
+}

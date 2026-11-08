@@ -6,7 +6,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .scheme import Clause, Rule, RuleSet
+from .scheme import Clause, Condition, Rule, RuleSet
 
 
 class Verdict(StrEnum):
@@ -44,7 +44,7 @@ def _same_value_type(actual: object, expected: object) -> bool:
     return type(actual) is type(expected)
 
 
-def _condition(rule: Rule, profile: Mapping[str, object]) -> tuple[str, bool]:
+def _condition(rule: Rule | Condition, profile: Mapping[str, object]) -> tuple[str, bool]:
     if rule.field not in profile or profile[rule.field] is None:
         return "unknown", True
 
@@ -117,22 +117,31 @@ def evaluate(
     rows: list[ConditionResult] = []
     missing: set[str] = set()
     unresolved: set[str] = set()
+    rule_outcomes: list[str] = []
     for rule in rules:
-        outcome, is_missing = _condition(rule, profile)
-        rows.append(
-            ConditionResult(
-                field=rule.field,
-                op=rule.op,
-                clause_id=rule.clause_id,
-                outcome=outcome,
+        # A rule holds when its own condition or any alternative holds (three-valued OR).
+        results = []
+        for condition in rule.conditions():
+            outcome, is_missing = _condition(condition, profile)
+            rows.append(
+                ConditionResult(
+                    field=condition.field,
+                    op=condition.op,
+                    clause_id=condition.clause_id,
+                    outcome=outcome,
+                )
             )
-        )
-        if outcome == "unknown":
-            unresolved.add(rule.field)
-            if is_missing:
-                missing.add(rule.field)
+            results.append((condition.field, outcome, is_missing))
+        rule_outcome = _combine([outcome for _, outcome, _ in results], "any")
+        rule_outcomes.append(rule_outcome)
+        if rule_outcome == "unknown":  # only facts that could still settle this rule are open
+            for field, outcome, is_missing in results:
+                if outcome == "unknown":
+                    unresolved.add(field)
+                    if is_missing:
+                        missing.add(field)
 
-    combined = _combine([row.outcome for row in rows], logic)
+    combined = _combine(rule_outcomes, logic)
     verdict = {
         "true": Verdict.ELIGIBLE,
         "false": Verdict.NOT_ELIGIBLE,

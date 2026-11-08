@@ -71,7 +71,15 @@
       "op": "gt",
       "value": 80,
       "clause_id": "elig-5",
-      "status": "reviewed"
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "is_person_with_dwarfism",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-6"
+        }
+      ]
     },
     {
       "field": "household_below_bpl",

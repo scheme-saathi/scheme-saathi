@@ -68,11 +68,18 @@
       "status": "reviewed"
     },
     {
-      "field": "household_below_bpl_or_family_earns_at_most_21000_a_year",
+      "field": "household_below_bpl",
       "op": "eq",
       "value": true,
       "clause_id": "elig-5",
-      "status": "reviewed"
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 21000
+        }
+      ]
     }
   ],
   "rule_logic": "all"
