@@ -36,4 +36,19 @@ python tests/evaluation/check_eligibility_gold.py --split development
 python -m pytest -q tests/test_eligibility_gold.py
 ```
 
+To score a whole system against the gold set, run an experiment config:
+
+```bash
+python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_workflow.json
+```
+
+Each config in `tests/evaluation/configs/` is one experiment. The runner writes `cases.jsonl` and `summary.json` to the git-ignored `data/evaluation-runs/`. The summary holds verdict accuracy, case success, can't-tell rate, a confusion table, per-scheme accuracy, Hindi/Marathi consistency, questions, tool calls, latency and errors. Only each case's candidate schemes are scored. The held-out split needs `--final`.
+
+| Config | System | Development result (8 Nov) |
+| --- | --- | --- |
+| `c0_fixed_workflow` | C0, fixed workflow, no model, candidate schemes | 39/39 verdicts, 4.5 questions per case, 218 ms median |
+| `c0_fixed_workflow_all_schemes` | C0 checking all 15 live schemes | 39/39 verdicts, 45.8 questions per case, 1.8 s median |
+
+The agent-team (C2) and single-agent (C1) systems are listed in the runner but not built yet.
+
 The pytest checks both splits for structure and consistency, but compares the rule engine with the gold labels only on `development`. Run `--split held_out` only in the final evaluation, and never tune rules, prompts or the playbook on held-out results. Agents and MCP servers must not read this folder.
