@@ -49,6 +49,12 @@ Each config in `tests/evaluation/configs/` is one experiment. The runner writes 
 | `c0_fixed_workflow` | C0, fixed workflow, no model, candidate schemes | 39/39 verdicts, 4.5 questions per case, 218 ms median |
 | `c0_fixed_workflow_all_schemes` | C0 checking all 15 live schemes | 39/39 verdicts, 45.8 questions per case, 1.8 s median |
 
-The agent-team (C2) and single-agent (C1) systems are listed in the runner but not built yet.
+`c2_agent_team` runs the real supervisor and specialist agents against the simulated citizen in `tests/evaluation/simulated_citizen.py`: a model that knows only the case's hidden profile and answers only what it is asked, in the case's language. Set `SUPERVISOR_MODEL`, `SPECIALIST_MODEL`, `CITIZEN_MODEL` (a different model family, as the brief requires) and `OPENROUTER_API_KEY` in `.env`, then:
+
+```bash
+python tests/evaluation/run_eval.py --config tests/evaluation/configs/c2_agent_team.json --limit 3
+```
+
+On top of the C0 measures, C2 also records the team's shortlist, facts it confirmed wrongly against the hidden profile, tokens by model and the full transcript of each case. The single-agent system (C1) is listed in the runner but not built yet.
 
 The pytest checks both splits for structure and consistency, but compares the rule engine with the gold labels only on `development`. Run `--split held_out` only in the final evaluation, and never tune rules, prompts or the playbook on held-out results. Agents and MCP servers must not read this folder.

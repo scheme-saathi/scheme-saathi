@@ -11,7 +11,10 @@ Systems
     fixed_workflow  C0: graph/workflow.py, no model. Code picks each question (the one that
                     settles most open verdicts) and the answer comes straight from the case's
                     hidden profile; a null answer is "don't know".
-    agent_team      C2: supervisor and specialists with a simulated citizen (not built yet).
+    agent_team      C2: graph/agent_workflow.py (supervisor + specialists) talking to the
+                    simulated citizen in simulated_citizen.py. The team picks its own schemes
+                    (scheme_selection "system"); the confirm step is approved as shown, and any
+                    confirmed fact that differs from the hidden profile is recorded.
     single_agent    C1: graph/baseline.py with the same tools (not built yet).
 """
 from __future__ import annotations
@@ -51,6 +54,8 @@ def load_config(path: str | Path) -> dict:
             raise ValueError(f"config {path} is missing '{key}'")
     if config["scheme_selection"] not in {"candidates", "system"}:
         raise ValueError("scheme_selection must be 'candidates' or 'system'")
+    if config["system"] == "agent_team" and config["scheme_selection"] != "system":
+        raise ValueError("agent_team picks its own schemes: use scheme_selection 'system'")
     return config
 
 
@@ -78,6 +83,77 @@ def run_fixed_workflow(case: dict, config: dict) -> dict:
     }
 
 
+ACTOR_ID = "eval-runner"
+
+
+def _pending(graph: Any, thread: dict) -> dict | None:
+    """What the graph is waiting for (confirm step or approval gate), or None."""
+    for task in graph.get_state(thread).tasks:
+        for pending in task.interrupts:
+            return pending.value
+    return None
+
+
+def run_agent_team(case: dict, config: dict, graph: Any = None, citizen: Any = None) -> dict:
+    """C2: the agent team holds the whole conversation with the simulated citizen."""
+    from langchain_core.callbacks import get_usage_metadata_callback
+    from langgraph.types import Command
+
+    if graph is None:
+        from langgraph.checkpoint.memory import MemorySaver
+        from graph.agent_workflow import build_agent_graph
+        graph = build_agent_graph(checkpointer=MemorySaver())
+    if citizen is None:
+        sys.path.insert(0, str(EVAL_DIR))
+        from simulated_citizen import SimulatedCitizen
+        citizen = SimulatedCitizen.from_environment(case, config.get("allow_same_model_family", False))
+    thread = {"configurable": {"thread_id": f"eval-{case['case_id']}-{uuid.uuid4().hex[:8]}"}}
+    transcript = [{"role": "citizen", "text": case["opening_message"]}]
+    questions = confirmations = 0
+    fact_errors: list[str] = []
+    stopped_at = "max_turns"
+    with tools.tool_call_budget(config.get("tool_call_limit", 400)) as budget, \
+            get_usage_metadata_callback() as usage:
+        result = graph.invoke({"request": case["opening_message"], "actor_id": ACTOR_ID}, thread)
+        for _ in range(config.get("max_turns", 20)):
+            pending = _pending(graph, thread)
+            if pending is not None and pending.get("kind") == "confirm_facts":
+                confirmations += 1
+                for field, value in pending.get("facts", {}).items():
+                    truth = case["hidden_profile"].get(field)
+                    if field in case["hidden_profile"] and value != truth:
+                        fact_errors.append(f"{field}: confirmed {value!r}, hidden profile {truth!r}")
+                transcript.append({"role": "confirm", "text": json.dumps(pending.get("facts", {}), ensure_ascii=False)})
+                result = graph.invoke(Command(resume={"action": "approve", "payload_hash": pending["payload_hash"]}), thread)
+                continue
+            if pending is not None:
+                stopped_at = "awaiting_approval"
+                break
+            status = result.get("status")
+            if status == "needs_information":
+                questions += 1
+                question = result.get("response", "")
+                answer = citizen.answer(question)
+                transcript += [{"role": "agent", "text": question}, {"role": "citizen", "text": answer}]
+                result = graph.invoke({"request": answer, "actor_id": ACTOR_ID}, thread)
+                continue
+            transcript.append({"role": "agent", "text": result.get("response", "")})
+            stopped_at = status or "end"
+            break
+    values = graph.get_state(thread).values
+    return {
+        "verdicts": {scheme: v["verdict"] for scheme, v in (values.get("verdicts") or {}).items()},
+        "shortlist": values.get("shortlist", []),
+        "questions_asked": questions,
+        "confirmations": confirmations,
+        "fact_errors": fact_errors,
+        "tool_calls": budget.used,
+        "tokens": {model: dict(u) for model, u in usage.usage_metadata.items()},
+        "stopped_at": stopped_at,
+        "transcript": transcript,
+    }
+
+
 def _not_built(name: str) -> Callable[[dict, dict], dict]:
     def run(case: dict, config: dict) -> dict:
         raise NotImplementedError(f"system '{name}' is not built yet")
@@ -86,7 +162,7 @@ def _not_built(name: str) -> Callable[[dict, dict], dict]:
 
 SYSTEMS: dict[str, Callable[[dict, dict], dict]] = {
     "fixed_workflow": run_fixed_workflow,
-    "agent_team": _not_built("agent_team"),
+    "agent_team": run_agent_team,
     "single_agent": _not_built("single_agent"),
 }
 
@@ -154,7 +230,17 @@ def summarise(rows: list[dict]) -> dict:
         "tool_calls_per_case": {"mean": round(statistics.mean(tool_calls), 2) if tool_calls else None,
                                 "max": max(tool_calls) if tool_calls else None},
         "latency_ms": {"median": _percentile(latencies, 50), "p95": _percentile(latencies, 95)},
+        "cases_with_fact_errors": sum(bool(r["result"].get("fact_errors")) for r in scored),
+        "tokens_by_model": _token_totals(scored),
     }
+
+
+def _token_totals(rows: list[dict]) -> dict:
+    totals: dict[str, Counter] = defaultdict(Counter)
+    for r in rows:
+        for model, used in r["result"].get("tokens", {}).items():
+            totals[model].update({k: v for k, v in used.items() if isinstance(v, int)})
+    return {model: dict(c) for model, c in totals.items()}
 
 
 # ---------------------------------------------------------------- running
