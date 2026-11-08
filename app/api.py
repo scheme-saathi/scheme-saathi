@@ -22,7 +22,16 @@ from langgraph.types import Command
 
 from agents.supervisor import SupervisorAgent
 from agents.contracts import Language
+from agents.memory import MemoryScope, MemoryService, clean_relation
+from app import memory_runtime
 from app.auth import AuthenticatedHousehold, authenticated_household
+from app.checkpoints import get_checkpointer, thread_registry
+from app.forget import all_deleted, household_threads, run_forgetting, unfinished
+from app.memory_api import FORGET_NOTE, optional_memory, remember_submission, router as memory_router
+from app.memory_runtime import forget_memory, memory_scope
+from app.periodic import PeriodicTask
+from app.thread_registry import ThreadRegistry, TouchResult
+from graph.memory_nodes import memory_config
 
 if __package__:
     from .business_logic import (
@@ -49,12 +58,18 @@ logger = logging.getLogger(__name__)
 class AnalysisRequest(BaseModel):
     citizen: dict[str, Any]
     scheme_ids: list[str] | None = Field(default=None, min_length=1)
+    subject: Literal["self", "other"] = "self"
+    relation: str | None = Field(default=None, max_length=40)
 
 
 class DecisionRequest(BaseModel):
     action: Literal["approve", "edit", "reject"]
     payload_hash: str | None = None
     changes: dict[str, Any] = Field(default_factory=dict)
+    citizen_agreed: bool = Field(
+        False,
+        description="Operators only: the person being helped agrees to this application being kept on the operator's list",
+    )
 
 
 class ChatRequest(BaseModel):
@@ -86,6 +101,10 @@ class ApprovalDecisionRequest(BaseModel):
     action: Literal["approve", "edit", "reject"]
     payload_hash: str | None = Field(None, description="Hash of the form being approved")
     changes: dict[str, Any] = Field(default_factory=dict, description="Fact changes for an edit")
+    citizen_agreed: bool = Field(
+        False,
+        description="Operators only: the person being helped agrees to this application being kept on the operator's list",
+    )
 
 
 class Plan(BaseModel):
@@ -168,8 +187,10 @@ class LanguageInfo(BaseModel):
 
 @lru_cache(maxsize=1)
 def get_service() -> DemoService:
-    """Share one in-memory demo workflow across requests."""
-    return DemoService()
+    """Share one demo workflow across requests; its state is durable only when a database is configured."""
+    service = DemoService(checkpointer=get_checkpointer(), registry=thread_registry("application"))
+    PeriodicTask("application-workflow-expiry", service.expire_idle)
+    return service
 
 
 # ============================================================================
@@ -195,7 +216,15 @@ class ApprovalPendingError(RuntimeError):
 class AgentWorkflowService:
     """Service to manage agent workflow execution."""
     
-    def __init__(self):
+    def __init__(
+        self,
+        memory: MemoryService | None = None,
+        checkpointer: Any | None = None,
+        registry: ThreadRegistry | None = None,
+    ):
+        self.memory = memory
+        self._saver = checkpointer  # durable saver, or None for one kept in memory
+        self.registry = registry or ThreadRegistry("agent")
         self._agent_graph = None  # Lazy-loaded on first use
         self.conversations: dict[str, dict[str, Any]] = {}  # thread_id -> conversation data
         self.session_contexts: dict[str, dict[str, Any]] = {}  # thread_id -> context
@@ -205,13 +234,31 @@ class AgentWorkflowService:
         """Lazy-load the agent graph on first access."""
         if self._agent_graph is None:
             logger.info("Initializing agent graph (lazy-loaded)...")
-            self._agent_graph = build_agent_graph(checkpointer=MemorySaver())
+            self._agent_graph = build_agent_graph(checkpointer=self._saver or MemorySaver(), memory=self.memory)
             logger.info("Agent graph initialized successfully")
         return self._agent_graph
         
+    def _use_thread(self, thread_id: str, actor_id: str) -> None:
+        """Mark a thread as used by its owner, refusing an expired one or another household's.
+
+        An expired thread is deleted when it is refused, not left for the cleanup timer, and
+        looks exactly like an unknown one to the caller.
+        """
+        outcome = self.registry.touch(thread_id, actor_id)
+        if outcome is TouchResult.EXPIRED:
+            self._drop({thread_id})
+            raise ThreadNotFoundError(thread_id)
+        if outcome is TouchResult.NOT_OWNER:
+            raise ThreadAccessError(thread_id)
+
     def create_thread(self, actor_id: str, thread_id: str | None = None) -> str:
-        """Create new conversation thread."""
+        """Create new conversation thread, or restore one after a restart.
+
+        A thread another household owns is refused, even when its conversation record is gone,
+        and so is one that has expired.
+        """
         thread_id = thread_id or f"conv_{uuid4().hex[:12]}"
+        self._use_thread(thread_id, actor_id)
         self.conversations[thread_id] = {
             "thread_id": thread_id,
             "actor_id": actor_id,
@@ -234,15 +281,18 @@ class AgentWorkflowService:
         known_facts: dict[str, Any] | None = None,
         selected_scheme_id: str | None = None,
         confirmed_facts: dict[str, Any] | None = None,
+        memory_scope: MemoryScope | None = None,
     ) -> dict[str, Any]:
         """Execute agent workflow."""
         if thread_id is None:
             thread_id = self.create_thread(actor_id)
         elif thread_id not in self.conversations:
             self.create_thread(actor_id, thread_id)
+        else:
+            self._use_thread(thread_id, actor_id)
         self._check_owner(thread_id, actor_id)
 
-        config = self._config(thread_id)
+        config = self._config(thread_id, memory_scope)
         if self._pending_approval(config) is not None:
             raise ApprovalPendingError(
                 "This conversation is waiting for you to approve, edit or reject what was shown."
@@ -270,21 +320,38 @@ class AgentWorkflowService:
         action: str,
         payload_hash: str | None,
         changes: dict[str, Any],
+        memory_scope: MemoryScope | None = None,
+        citizen_agreed: bool = False,
     ) -> dict[str, Any]:
         """Resume the paused graph with the person's decision on the exact form."""
-        if thread_id not in self.conversations:
+        if thread_id not in self.conversations and self.registry.owner_of(thread_id) is None:
+            if self.registry.is_expired(thread_id):
+                self._drop({thread_id})  # expired: delete what is left, and report it as unknown
             raise ThreadNotFoundError(thread_id)
+        if thread_id not in self.conversations:
+            self.create_thread(actor_id, thread_id)  # a thread from before a restart, if it is theirs
+        else:
+            self._use_thread(thread_id, actor_id)
         self._check_owner(thread_id, actor_id)
-        config = self._config(thread_id)
+        config = self._config(thread_id, memory_scope)
         if self._pending_approval(config) is None:
             raise NoPendingApprovalError("There is no draft waiting for approval in this conversation.")
 
-        decision = {"action": action, "payload_hash": payload_hash, "changes": changes}
+        decision = {
+            "action": action,
+            "payload_hash": payload_hash,
+            "changes": changes,
+            "citizen_agreed": citizen_agreed,
+        }
         result = self.agent_graph.invoke(Command(resume=decision), config)
         return self._finish_run(thread_id, f"[decision: {action}]", result)
 
-    def _config(self, thread_id: str) -> dict[str, Any]:
-        return {"configurable": {"thread_id": thread_id}}
+    def _config(self, thread_id: str, memory_scope: MemoryScope | None = None) -> dict[str, Any]:
+        """The run config; the scope, when memory is on, comes from the verified token."""
+        configurable: dict[str, Any] = {"thread_id": thread_id}
+        if memory_scope is not None and self.memory is not None:
+            configurable.update(memory_config(memory_scope))
+        return {"configurable": configurable}
 
     def _pending_approval(self, config: dict[str, Any]) -> dict[str, Any] | None:
         """The form waiting for a person, or None when the graph is not paused."""
@@ -352,17 +419,63 @@ class AgentWorkflowService:
             }
     
     def delete_conversation(self, thread_id: str) -> None:
-        """Delete conversation (GDPR)."""
+        """Delete entire conversation (GDPR), including its saved workflow state."""
         if thread_id in self.conversations:
             del self.conversations[thread_id]
         if thread_id in self.session_contexts:
             del self.session_contexts[thread_id]
+        self._delete_checkpoints({thread_id})
+        self.registry.forget({thread_id})
+
+    def _checkpointer(self) -> Any:
+        return self._saver or getattr(self._agent_graph, "checkpointer", None)
+
+    def _delete_checkpoints(self, thread_ids: set[str]) -> None:
+        saver = self._checkpointer()
+        if saver is not None:
+            for thread_id in thread_ids:
+                saver.delete_thread(thread_id)
+
+    def forget_household(self, household_id: str) -> int:
+        """Delete every conversation, context and saved workflow state of one household.
+
+        The registry and the saved state are searched as well as the conversation table, so a
+        thread whose conversation was deleted earlier, or lost in a restart, is still found.
+        """
+        threads = {
+            thread_id
+            for thread_id, conversation in self.conversations.items()
+            if conversation.get("actor_id") == household_id
+        }
+        threads |= self.registry.threads_of(household_id)
+        threads |= household_threads(self._checkpointer(), household_id)
+        self._drop(threads)
+        return len(threads)
+
+    def expire_idle(self) -> int:
+        """Delete conversations idle for 24 hours or started 7 days ago, with their saved state."""
+        threads = set(self.registry.expired())
+        self._drop(threads)
+        return len(threads)
+
+    def _drop(self, threads: set[str]) -> None:
+        for thread_id in threads:
+            self.conversations.pop(thread_id, None)
+            self.session_contexts.pop(thread_id, None)
+        self._delete_checkpoints(threads)
+        self.registry.forget(threads)
 
 
 @lru_cache(maxsize=1)
 def get_workflow_service() -> AgentWorkflowService:
     """Get singleton workflow service."""
-    return AgentWorkflowService()
+    service = AgentWorkflowService(
+        memory=memory_runtime.get_memory_service(),
+        checkpointer=get_checkpointer(),
+        registry=thread_registry("agent"),
+    )
+    PeriodicTask("agent-workflow-expiry", service.expire_idle)
+    return service
 
 
 def _owned_conversation(
@@ -404,6 +517,31 @@ def _event_stream(
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+def _remembering_submission(
+    demo: Any,
+    thread_id: str,
+    principal: AuthenticatedHousehold,
+    events: Any,
+    citizen_agreed: bool = False,
+):
+    """Pass workflow events through, remembering a submitted application when the person agreed.
+
+    The store is opened only once a submission appears, and a failure to remember never
+    changes or hides the workflow result.
+    """
+    for name, payload in events:
+        submission = payload.get("submission") if name == "result" and isinstance(payload, dict) else None
+        if isinstance(submission, dict) and submission.get("application_id"):
+            memory = memory_runtime.get_memory_service()
+            if memory is not None:
+                subject, relation = demo.thread_subject(thread_id)
+                payload = {
+                    **payload,
+                    **remember_submission(memory, principal, payload, subject, relation, citizen_agreed),
+                }
+        yield name, payload
 
 
 # ============================================================================
@@ -473,6 +611,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 known_facts=request.known_facts,
                 selected_scheme_id=request.selected_scheme_id,
                 confirmed_facts=request.confirmed_facts,
+                memory_scope=memory_scope(principal),
             )
             
             return SupervisorChatResponse(
@@ -485,6 +624,8 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 data=result.get("data", {}),
                 rate_limit=RateLimit(remaining_requests=9, reset_in_seconds=60),
             )
+        except ThreadNotFoundError:
+            raise HTTPException(status_code=404, detail="Thread not found")
         except ThreadAccessError:
             raise HTTPException(status_code=403, detail="This conversation belongs to another user.")
         except ApprovalPendingError as e:
@@ -518,6 +659,8 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 decision.action,
                 decision.payload_hash,
                 decision.changes,
+                memory_scope=memory_scope(principal),
+                citizen_agreed=decision.citizen_agreed,
             )
         except ThreadNotFoundError:
             raise HTTPException(status_code=404, detail="Thread not found")
@@ -696,7 +839,11 @@ def create_api(service: DemoService | None = None) -> FastAPI:
     ) -> StreamingResponse:
         try:
             events = demo.analyze(
-                payload.citizen, payload.scheme_ids, principal.household_id
+                payload.citizen,
+                payload.scheme_ids,
+                principal.household_id,
+                payload.subject,
+                clean_relation(payload.relation) if payload.subject == "other" else None,
             )
         except ToolCallError as error:
             raise _tool_call_http_error(error) from error
@@ -823,6 +970,29 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             ) from error
         return {"status": "success", "deleted_documents": deleted}
 
+    @application.delete("/api/threads/{thread_id}", tags=["Demo"])
+    def delete_workflow(
+        thread_id: str,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> dict[str, Any]:
+        """Delete one application workflow the caller owns, with its saved state and uploads."""
+        try:
+            deleted = demo.delete_workflow(thread_id, principal.household_id)
+        except DemoThreadAccessError:
+            raise HTTPException(
+                status_code=403,
+                detail="This application belongs to another household.",
+            )
+        except SessionNotFoundError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except DocumentStorageError as error:
+            logger.exception("Could not delete supporting documents.")
+            raise HTTPException(
+                status_code=500,
+                detail="Could not securely delete supporting documents.",
+            ) from error
+        return {"status": "success", "deleted_documents": deleted}
+
     @application.post("/api/threads/{thread_id}/decision", tags=["Demo"])
     def decide(
         thread_id: str,
@@ -855,7 +1025,48 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             raise HTTPException(
                 status_code=500, detail="Could not check stored documents."
             ) from error
-        return _event_stream(events)
+        return _event_stream(
+            _remembering_submission(demo, thread_id, principal, events, citizen_agreed=payload.citizen_agreed)
+        )
+
+    @application.delete("/api/memory", tags=["Memory"])
+    def forget_my_data(
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+        memory: MemoryService | None = Depends(optional_memory),
+    ) -> dict[str, Any]:
+        """Delete everything held for the signed-in person, across every session.
+
+        For a citizen that is the remembered details, saved applications and consents, the
+        application workflows with their uploaded documents, and the conversations with their
+        saved state. An operator's own list of saved applications, workflows and conversations go
+        the same way; no household's details are theirs to delete. Every store is attempted.
+        Success is reported only when all of them were cleared; deleting again is safe.
+        """
+        household_id = principal.household_id
+        steps: list[tuple[str, Any]] = []
+        if memory is not None:
+            steps.append(("memory", lambda: forget_memory(memory, memory_scope(principal))))
+        steps += [
+            ("documents", lambda: demo.forget_household_documents(household_id)),
+            ("application_workflows", lambda: demo.forget_household_workflows(household_id)),
+            ("conversations", lambda: get_workflow_service().forget_household(household_id)),
+        ]
+        results = run_forgetting(steps, {"application_workflows": "documents"})
+        if memory is None:
+            results["memory"] = {"status": "not_applicable"}
+        if not all_deleted(results):
+            logger.error("Forgetting a household did not finish: %s", ", ".join(unfinished(results)))
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    "Some of your data could not be deleted ("
+                    + ", ".join(unfinished(results))
+                    + "). Nothing is reported as deleted for those parts. Please try again."
+                ),
+            )
+        return {"status": "success", "surfaces": results, "note": FORGET_NOTE}
+
+    application.include_router(memory_router)
 
     return application
 

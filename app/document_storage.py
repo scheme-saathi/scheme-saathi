@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+from collections.abc import Iterable
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from threading import Event, Lock, Thread
@@ -83,6 +84,7 @@ class LocalDocumentStore:
         filename: str,
         content_type: str,
         content: bytes,
+        household_id: str | None = None,
     ) -> dict[str, Any]:
         record_key = self._record_key(thread_id, scheme_id, document_type)
         now = datetime.now(timezone.utc)
@@ -99,6 +101,8 @@ class LocalDocumentStore:
             "expires_at": expires_at.isoformat(),
             "file_id": file_id,
         }
+        if household_id:
+            metadata["household_id"] = household_id
         with self._lock:
             records = self._read_records()
             self._purge_locked(records, now)
@@ -161,6 +165,28 @@ class LocalDocumentStore:
                 if metadata["thread_id"] == thread_id
             ]
             for record_key, metadata in matches:
+                del records[record_key]
+            if matches:
+                self._write_records(records)
+                for _, metadata in matches:
+                    self._unlink(self._file_path(metadata["file_id"]))
+            return len(matches)
+
+    def delete_household(self, household_id: str, thread_ids: Iterable[str] = ()) -> int:
+        """Delete every upload recorded for the household, from any session.
+
+        Uploads made before the household was recorded are found through `thread_ids`, the
+        threads known to be the household's own.
+        """
+        threads = set(thread_ids)
+        with self._lock:
+            records = self._read_records()
+            matches = [
+                (record_key, metadata)
+                for record_key, metadata in records.items()
+                if metadata.get("household_id") == household_id or metadata["thread_id"] in threads
+            ]
+            for record_key, _ in matches:
                 del records[record_key]
             if matches:
                 self._write_records(records)
@@ -251,7 +277,7 @@ class LocalDocumentStore:
         return {
             key: value
             for key, value in metadata.items()
-            if key != "file_id"
+            if key not in {"file_id", "household_id"}
         }
 
     @staticmethod

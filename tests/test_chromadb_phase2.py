@@ -15,7 +15,12 @@ from pydantic import ValidationError
 
 from agents.chromadb_memory_service import ChromaDBMemoryService
 from agents.memory import MemoryFact, MemoryScope, MemoryConsent, ApplicationReference
+from agents.memory_service import HouseholdAllowlist
 from graph.chromadb_checkpointer import ChromaDBCheckpointer
+
+ALLOWLIST = HouseholdAllowlist(
+    allowed_fields={"state_code": {"type": "string"}, "district_code": {"type": "string"}}
+)
 
 
 def grant(service, scope, purpose="profile_facts"):
@@ -47,7 +52,7 @@ class TestChromaDBMemoryServiceBasics:
     @pytest.fixture
     def service(self, temp_db_dir):
         """Create memory service with temporary storage."""
-        return ChromaDBMemoryService(persist_directory=temp_db_dir)
+        return ChromaDBMemoryService(persist_directory=temp_db_dir, allowlist=ALLOWLIST)
 
     @pytest.fixture
     def scope_1(self):
@@ -55,7 +60,7 @@ class TestChromaDBMemoryServiceBasics:
         return MemoryScope(
             actor_id="actor_001",
             household_id="hh_001",
-            actor_role="operator",
+            actor_role="citizen",
         )
 
     def test_initialization(self, service, temp_db_dir):
@@ -119,9 +124,8 @@ class TestChromaDBMemoryServiceBasics:
 
         assert facts == {}
 
-    def test_read_facts_with_expiry_check(self, service, scope_1):
-        """Test that expired facts are not returned."""
-        # Save expired fact
+    def test_expired_fact_is_rejected(self, service, scope_1):
+        """A fact already past its retention window cannot be saved."""
         confirmed_at = datetime.utcnow() - timedelta(days=400)
         reconfirm_by = confirmed_at + timedelta(days=90)
         expires_at = confirmed_at + timedelta(days=365)  # Expired
@@ -137,15 +141,10 @@ class TestChromaDBMemoryServiceBasics:
         )
 
         grant(service, scope_1)
-        service.save_confirmed_fact(scope=scope_1, fact=fact)
+        with pytest.raises(ValueError, match="already expired"):
+            service.save_confirmed_fact(scope=scope_1, fact=fact)
 
-        # Read should not return expired fact
-        facts = service.read_facts(
-            scope=scope_1,
-            fields=["state_code"],
-        )
-
-        assert "state_code" not in facts
+        assert service.read_facts(scope=scope_1, fields=["state_code"]) == {}
 
     def test_forget_household(self, service, scope_1):
         """Test household deletion (GDPR)."""
@@ -212,7 +211,7 @@ class TestConcurrentAccess:
     @pytest.fixture
     def service(self, temp_db_dir):
         """Create memory service with temporary storage."""
-        return ChromaDBMemoryService(persist_directory=temp_db_dir)
+        return ChromaDBMemoryService(persist_directory=temp_db_dir, allowlist=ALLOWLIST)
 
     def test_concurrent_household_isolation(self, service):
         """Test that concurrent users for different households are isolated."""
@@ -228,7 +227,17 @@ class TestConcurrentAccess:
                 actor_role="operator",
             )
 
-            grant(service, scope)
+            service.record_consent(
+                scope,
+                MemoryConsent(
+                    purpose="profile_facts",
+                    granted=True,
+                    notice_version="v1.0",
+                    decided_at=confirmed_at,
+                    expires_at=confirmed_at + timedelta(days=30),
+                    consent_reference=f"consent_{hh_id}",
+                ),
+            )
             for i in range(5):
                 fact = MemoryFact(
                     field="state_code",
@@ -237,7 +246,7 @@ class TestConcurrentAccess:
                     reconfirm_by=reconfirm_by,
                     expires_at=expires_at,
                     source="household_intake",
-                    consent_reference="consent_001",
+                    consent_reference=f"consent_{hh_id}",
                 )
                 service.save_confirmed_fact(scope=scope, fact=fact)
 
@@ -325,7 +334,7 @@ class TestScopeIsolation:
     @pytest.fixture
     def service(self, temp_db_dir):
         """Create memory service with temporary storage."""
-        return ChromaDBMemoryService(persist_directory=temp_db_dir)
+        return ChromaDBMemoryService(persist_directory=temp_db_dir, allowlist=ALLOWLIST)
 
     def test_different_actors_same_household(self, service):
         """Test that different actors can read same household data."""

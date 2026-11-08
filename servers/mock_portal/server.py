@@ -136,17 +136,21 @@ def submit_draft(application_id: str, write_capability: str = "") -> dict[str, A
 
 
 @mcp.tool()
-def get_application_status(application_id: str) -> dict[str, Any]:
+def get_application_status(application_id: str, household_id: str | None = None) -> dict[str, Any]:
     """Read-only lookup of a submitted or draft application status.
 
     Args:
         application_id: The unique application identifier.
+        household_id: The household (or operator) asking. When given, only the application's
+            own owner gets an answer; anyone else is told it was not found.
 
     Returns:
         A JSON object with the current application status.
     """
     application = APPLICATIONS.get(application_id)
-    if application is None:
+    if application is None or (
+        household_id is not None and application.get("household_id") != household_id
+    ):
         return {
             "ok": False,
             "access": "read",
@@ -186,7 +190,7 @@ def get_application_route(
         raise HTTPException(status_code=404, detail="Application not found.")
     if application.get("household_id") != principal.household_id:
         raise HTTPException(status_code=403, detail="Application belongs to another household.")
-    return get_application_status(application_id)
+    return get_application_status(application_id, principal.household_id)
 
 
 if __name__ == "__main__":

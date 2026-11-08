@@ -562,7 +562,7 @@ class TestForgetHousehold:
         for field, value in [
             ("state_code", "MH"),
             ("district_code", "Pune"),
-            ("household_size", "5"),
+            ("household_size", 5),
         ]:
             fact = MemoryFact(
                 field=field,
