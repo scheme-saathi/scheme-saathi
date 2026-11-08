@@ -639,13 +639,24 @@ class DemoService:
                 del self._chat_sessions[key]
         return len(threads) + len(sessions)
 
-    def _delete_expired(self, threads: set[str]) -> None:
-        """Delete expired workflows with their uploads, saved state and owners."""
+    def _delete_expired(self, threads: set[str]) -> int:
+        """Delete workflows with their uploads, saved state and owners; returns the uploads deleted."""
+        deleted = 0
         store = self._existing_document_store()
         if store is not None:
             for thread_id in threads:
-                store.delete_thread(thread_id)
+                deleted += store.delete_thread(thread_id)
         self._drop_threads(threads)
+        return deleted
+
+    def delete_workflow(self, thread_id: str, actor_id: str | None = None) -> int:
+        """Delete one application workflow the caller owns: saved state, uploads, owner and subject.
+
+        An unknown or expired thread is reported as not found, and another household's is refused.
+        Returns how many uploaded documents were deleted.
+        """
+        self._check_thread_owner(thread_id, actor_id)
+        return self._delete_expired({thread_id})
 
     def _chat_session_expired(self, session: ChatSession) -> bool:
         now = self.registry.now()

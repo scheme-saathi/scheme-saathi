@@ -509,7 +509,7 @@ def _render_message(message: dict[str, Any]) -> None:
 def _delete_uploaded_documents(
     thread_id: str | None, api_base: str | None = None
 ) -> bool:
-    """Delete retained supporting files before clearing their workflow context."""
+    """Delete retained supporting files only; the application workflow itself stays."""
     if not thread_id:
         return True
     try:
@@ -520,6 +520,24 @@ def _delete_uploaded_documents(
         )
     except RuntimeError as error:
         st.error(str(error), title="Could not delete uploaded documents")
+        return False
+    return True
+
+
+def _delete_application_workflow(thread_id: str | None, api_base: str | None = None) -> bool:
+    """Delete the application workflow, its saved state and its uploads; one already gone counts as deleted."""
+    if not thread_id:
+        return True
+    try:
+        base_url = api_base or _api_base_url()
+        _api_request(
+            f"{base_url}/api/threads/{quote(thread_id, safe='')}",
+            method="DELETE",
+        )
+    except RuntimeError as error:
+        if "not found" in str(error).lower():
+            return True
+        st.error(str(error), title="Could not delete the application")
         return False
     return True
 
@@ -549,7 +567,7 @@ def _reset_chat() -> bool:
         if isinstance(application_result, dict)
         else None
     )
-    if not _delete_uploaded_documents(thread_id):
+    if not _delete_application_workflow(thread_id):
         return False
     if not _delete_conversation(st.session_state.get("chat_session_id")):
         return False

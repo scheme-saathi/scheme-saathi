@@ -970,6 +970,29 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             ) from error
         return {"status": "success", "deleted_documents": deleted}
 
+    @application.delete("/api/threads/{thread_id}", tags=["Demo"])
+    def delete_workflow(
+        thread_id: str,
+        principal: AuthenticatedHousehold = Depends(authenticated_household),
+    ) -> dict[str, Any]:
+        """Delete one application workflow the caller owns, with its saved state and uploads."""
+        try:
+            deleted = demo.delete_workflow(thread_id, principal.household_id)
+        except DemoThreadAccessError:
+            raise HTTPException(
+                status_code=403,
+                detail="This application belongs to another household.",
+            )
+        except SessionNotFoundError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except DocumentStorageError as error:
+            logger.exception("Could not delete supporting documents.")
+            raise HTTPException(
+                status_code=500,
+                detail="Could not securely delete supporting documents.",
+            ) from error
+        return {"status": "success", "deleted_documents": deleted}
+
     @application.post("/api/threads/{thread_id}/decision", tags=["Demo"])
     def decide(
         thread_id: str,
