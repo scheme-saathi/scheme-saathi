@@ -44,6 +44,69 @@ def chat_screen():
     app_new._render_chat_page()
 
 
+def header_screen():
+    import streamlit as st
+    from app import app_new
+
+    app_new._initialize_portal_state()
+    st.session_state.setdefault("header_fixture", True)
+    if "header_fixture_loaded" not in st.session_state:
+        st.session_state["header_fixture_loaded"] = True
+        st.session_state["portal_stage"] = "chat"
+        st.session_state["consent_given"] = True
+        st.session_state["account_email"] = "citizen@example.test"
+        st.session_state["chat_session_id"] = "thread-1"
+        st.session_state["chat_messages"] = [{"role": "user", "content": "Hello"}]
+    app_new._render_chat_header()
+
+
+@pytest.mark.parametrize("prefix", ["desktop", "mobile"])
+def test_header_privacy_requires_explicit_withdrawal(monkeypatch, prefix):
+    calls = []
+    monkeypatch.setattr(app_new, "_withdraw_consent", lambda: calls.append("withdraw") or True)
+    app = AppTest.from_function(header_screen).run()
+    assert not app.exception
+    app.button(key=f"{prefix}-privacy").click().run()
+    assert not calls
+    assert any("How your information is used" in item.value for item in app.markdown)
+    app.button(key="header-withdraw-consent").click().run()
+    assert not calls
+    app.button(key="close-header-panel").click().run()
+    assert not calls
+    app.button(key=f"{prefix}-privacy").click().run()
+    app.button(key="header-withdraw-consent").click().run()
+    app.button(key="confirm-header-withdraw").click().run()
+    assert calls == ["withdraw"]
+
+
+@pytest.mark.parametrize("prefix", ["desktop", "mobile"])
+@pytest.mark.parametrize("action", ["new_chat", "sign_out"])
+def test_header_confirms_before_clearing_session(monkeypatch, prefix, action):
+    calls = []
+    monkeypatch.setattr(app_new, "_reset_chat", lambda: calls.append("reset") or True)
+    monkeypatch.setattr(app_new, "_sign_out", lambda: calls.append("signout"))
+    app = AppTest.from_function(header_screen).run()
+    app.button(key=f"{prefix}-{action}").click().run()
+    assert not calls
+    app.button(key="close-header-panel").click().run()
+    assert not calls
+    app.button(key=f"{prefix}-{action}").click().run()
+    app.button(key=f"confirm-header-{action}").click().run()
+    assert calls == (["reset", "signout"] if action == "sign_out" else ["reset"])
+
+
+def test_failed_cleanup_does_not_sign_out(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app_new, "_reset_chat", lambda: False)
+    monkeypatch.setattr(app_new, "_sign_out", lambda: calls.append("signout"))
+    app = AppTest.from_function(header_screen).run()
+    app.button(key="desktop-sign_out").click().run()
+    app.button(key="confirm-header-sign_out").click().run()
+    assert calls == []
+    assert app.session_state["header_panel"] == "sign_out"
+    assert app.session_state["account_email"] == "citizen@example.test"
+
+
 def document_screen():
     import streamlit as st
     from app import app_new

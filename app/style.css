@@ -491,6 +491,10 @@ div.stDownloadButton > button:disabled {
     height: 0.28rem;
 }
 
+.st-key-wizard-mobile {
+    display: none;
+}
+
 .st-key-workflow-screen {
     min-height: calc(100vh - 19rem);
 }
@@ -530,6 +534,47 @@ div.stDownloadButton > button:disabled {
     gap: 0.4rem;
 }
 
+.st-key-header-desktop-actions {
+    max-width: 640px;
+    margin-left: auto;
+}
+
+.st-key-header-desktop-account [data-testid="stText"] {
+    overflow-wrap: anywhere;
+}
+
+.st-key-header-mobile-menu {
+    display: none;
+}
+
+.st-key-header-panel {
+    margin-bottom: 0.8rem;
+    background: var(--ss-surface);
+    border-color: var(--ss-line);
+    border-radius: 14px;
+    padding: 1rem;
+}
+
+.st-key-header-desktop-actions .st-key-desktop-privacy button,
+.st-key-header-desktop-actions .st-key-desktop-sign_out button {
+    background: #f3f8f5 !important;
+    border-color: #b7cfc0 !important;
+}
+
+.st-key-header-desktop-actions .st-key-desktop-privacy button,
+.st-key-header-desktop-actions .st-key-desktop-privacy button *,
+.st-key-header-desktop-actions .st-key-desktop-sign_out button,
+.st-key-header-desktop-actions .st-key-desktop-sign_out button * {
+    color: #17352e !important;
+    -webkit-text-fill-color: #17352e !important;
+}
+
+.st-key-header-desktop-actions button:focus-visible,
+.st-key-header-mobile-menu button:focus-visible {
+    outline: 3px solid #286da5 !important;
+    outline-offset: 2px;
+}
+
 .st-key-conversation [data-testid="stMarkdownContainer"] p,
 .st-key-eligibility-screen [data-testid="stMarkdownContainer"] p,
 .st-key-application-workflow [data-testid="stMarkdownContainer"] p {
@@ -564,6 +609,34 @@ div.stDownloadButton > button:disabled {
 
     .st-key-workflow-wizard [class*="st-key-wizard-step-"] {
         padding: 0.45rem 0.3rem;
+    }
+
+    .st-key-header-desktop-account,
+    .st-key-header-desktop-actions {
+        display: none;
+    }
+
+    .st-key-header-mobile-menu {
+        display: block;
+    }
+
+    .st-key-wizard-desktop {
+        display: none;
+    }
+
+    .st-key-wizard-mobile {
+        display: block;
+        border-radius: 9px;
+        background: #edf6fc;
+        padding: 0.5rem 0.65rem;
+    }
+
+    .st-key-header-main [data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap;
+    }
+
+    .st-key-header-panel [data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap;
     }
 
     .st-key-workflow-wizard [class*="st-key-wizard-step-"] p {
