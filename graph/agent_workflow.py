@@ -50,7 +50,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 SHORTLIST_SIZE = 5  # schemes one intake asks about, so questions stay relevant to the person
 MAX_QUESTIONS = 12  # per intake, so a long tail of open schemes can't turn into an interview
-MAX_ATTEMPTS_PER_FIELD = 2  # a field asked twice without a usable answer counts as "don't know"
+MAX_ATTEMPTS_PER_FIELD = 2  # a field asked twice without a usable answer is skipped, like "don't know"
 PROFILE_GOALS = {"intake", "eligibility", "application"}
 RESET_FACTS = "__reset__"  # in a facts update: drop what is held and start from the rest
 
@@ -95,7 +95,7 @@ class AgentWorkflowState(TypedDict, total=False):
     declined_fields: list[str]  # fields the user said they don't know
     question_attempts: dict[str, int]  # field -> times asked in this intake
     questions_asked: int
-    intake_stopped: str | None  # "dont_know", "no_answer" or "question_cap"
+    intake_stopped: str | None  # "question_cap" when intake has asked its maximum
     reply_unanswered: bool  # the reply to a question held no facts at all
     confirm_status: str  # "confirmed", "edit_rejected", "rejected" or "invalid"
     rejected_edits: list[str]  # edited fields that were unknown or the wrong type
@@ -359,8 +359,8 @@ def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
         }
     update |= _subject_update(agents, state, result, replying=pending is not None)
     if result.dont_know:
+        # Skip only this fact: intake goes on with the questions that can still change a verdict.
         update["declined_fields"] = [*state.get("declined_fields", []), pending]
-        update["intake_stopped"] = "dont_know"
     return update
 
 
@@ -381,6 +381,12 @@ def _open_fields(state: AgentWorkflowState) -> list[str]:
     return sorted(
         {f for v in state["verdicts"].values() if v["verdict"] == "cant_tell" for f in v["unresolved_fields"]}
     )
+
+
+def _skipped_fields(state: AgentWorkflowState) -> list[str]:
+    """Fields not to ask again: declined ("don't know"), or asked twice without a usable answer."""
+    tired = [f for f, n in state.get("question_attempts", {}).items() if n >= MAX_ATTEMPTS_PER_FIELD]
+    return list(dict.fromkeys([*state.get("declined_fields", []), *tired]))
 
 
 def _stop_intake(state: AgentWorkflowState, reason: str, declined: list[str]) -> dict[str, Any]:
@@ -406,17 +412,16 @@ def _stop_intake(state: AgentWorkflowState, reason: str, declined: list[str]) ->
 def _intake_question_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
     """Ask for the one field that settles the most open verdicts, then wait for the reply.
 
-    Stops instead when that field has had its attempts or the question cap is reached.
+    Facts the person doesn't know, or couldn't answer twice, are skipped rather than ending
+    intake. Intake stops only at the question cap.
     """
     declined = state.get("declined_fields", [])
     if state.get("intake_stopped"):
         return _stop_intake(state, state["intake_stopped"], declined)
-    field = tools.next_question(state["verdicts"], declined)
-    attempts = state.get("question_attempts", {})
-    if attempts.get(field, 0) >= MAX_ATTEMPTS_PER_FIELD:
-        return _stop_intake(state, "no_answer", [*declined, field])
     if state.get("questions_asked", 0) >= MAX_QUESTIONS:
         return _stop_intake(state, "question_cap", declined)
+    field = tools.next_question(state["verdicts"], _skipped_fields(state))
+    attempts = state.get("question_attempts", {})
     spec = tools.field_specs(_candidate_schemes(state))[field]
     question = agents.intake.ask(
         IntakeAskInput(
@@ -530,8 +535,9 @@ def _selected_scheme_eligibility(
 
 def _route_after_eligibility(state: AgentWorkflowState) -> str:
     # Still open: ask the next question, or, once intake has stopped, say what is missing.
+    # Once nothing left to ask can change a verdict, the open ones become a final "can't tell".
     if _open_fields(state) and (
-        state.get("intake_stopped") or tools.next_question(state["verdicts"], state.get("declined_fields", []))
+        state.get("intake_stopped") or tools.next_question(state["verdicts"], _skipped_fields(state))
     ):
         return "intake_question"
     if _unconfirmed(state):
