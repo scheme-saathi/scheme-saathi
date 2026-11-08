@@ -130,10 +130,10 @@ def edit_screen():
     result = {
         "thread_id": "thread-1",
         "profile": {"is_widow": True, "age": 55, "household_below_bpl": True,
-                    "is_remarried": False, "has_not_moved_above_bpl": True},
+                    "is_remarried": False},
         "application": {"scheme_id": "C06", "applicant": {
             "is_widow": True, "age": 55, "household_below_bpl": True,
-            "is_remarried": False, "has_not_moved_above_bpl": True,
+            "is_remarried": False,
         }},
         "approval": {"payload_hash": "test-hash"},
     }
@@ -170,7 +170,6 @@ def test_edit_form_submits_changed_fields(monkeypatch):
     assert not app.exception
     assert {box.label for box in app.checkbox} >= {
         "Widow", "Household below poverty line (BPL)", "Remarried",
-        "Has not moved above the poverty line",
     }
     assert not app.text_input
     next(box for box in app.checkbox if box.label == "Widow").uncheck()
