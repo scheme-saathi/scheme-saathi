@@ -166,6 +166,81 @@ def test_an_in_date_thread_is_found_by_owner_of(registry, clock):
     assert registry.is_expired("unknown") is False
 
 
+# Whose application a thread is for is kept with the thread
+
+
+def test_a_thread_keeps_whose_application_it_is_for(registry):
+    registry.touch("t1", "h1")
+    registry.touch("t2", "h1")
+    registry.set_subject("t1", "h1", "other", "mother")
+    registry.set_subject("t2", "h1", "self", None)
+
+    assert registry.subject_of("t1") == ("other", "mother")
+    assert registry.subject_of("t2") == ("self", None)
+
+
+def test_a_thread_with_no_subject_kept_and_an_unknown_thread_have_none(registry):
+    registry.touch("t1", "h1")
+    assert registry.subject_of("t1") is None
+    assert registry.subject_of("unknown") is None
+
+
+def test_only_the_owner_can_set_the_subject(registry):
+    registry.touch("t1", "h1")
+    registry.set_subject("t1", "h2", "other", "son")
+    assert registry.subject_of("t1") is None
+    registry.set_subject("t1", "h1", "other", "mother")
+    registry.set_subject("t1", "h2", "self", None)
+    assert registry.subject_of("t1") == ("other", "mother")
+
+
+def test_the_subject_survives_a_restart_and_goes_with_the_thread(tmp_path, clock):
+    path = tmp_path / "workflow.sqlite"
+    first = ThreadRegistry("application", path, clock=clock)
+    first.touch("t1", "h1")
+    first.set_subject("t1", "h1", "other", "mother")
+    first.close()
+
+    second = ThreadRegistry("application", path, clock=clock)
+    assert second.subject_of("t1") == ("other", "mother")
+    second.forget(["t1"])
+    assert second.subject_of("t1") is None
+    second.close()
+
+
+def test_the_subject_of_a_thread_is_per_kind(tmp_path, clock):
+    path = tmp_path / "workflow.sqlite"
+    agent = ThreadRegistry("agent", path, clock=clock)
+    application = ThreadRegistry("application", path, clock=clock)
+    application.touch("t1", "h1")
+    application.set_subject("t1", "h1", "other", "mother")
+    assert agent.subject_of("t1") is None
+    agent.close()
+    application.close()
+
+
+def test_a_file_made_before_the_subject_was_kept_is_upgraded_without_losing_owners(tmp_path, clock):
+    import sqlite3
+
+    path = tmp_path / "workflow.sqlite"
+    old = sqlite3.connect(str(path))
+    old.execute(
+        "CREATE TABLE workflow_threads (kind TEXT NOT NULL, thread_id TEXT NOT NULL, household_id TEXT NOT NULL, "
+        "created_at REAL NOT NULL, last_active REAL NOT NULL, PRIMARY KEY (kind, thread_id))"
+    )
+    old.execute("INSERT INTO workflow_threads VALUES ('application', 'old-thread', 'h1', ?, ?)", (clock(), clock()))
+    old.commit()
+    old.close()
+
+    registry = ThreadRegistry("application", path, clock=clock)
+
+    assert registry.owner_of("old-thread") == "h1"
+    assert registry.subject_of("old-thread") is None  # nothing was kept for it
+    registry.set_subject("old-thread", "h1", "other", "father")
+    assert registry.subject_of("old-thread") == ("other", "father")
+    registry.close()
+
+
 def test_forgotten_threads_are_gone(registry):
     registry.touch("t1", "h1")
     registry.touch("t2", "h1")

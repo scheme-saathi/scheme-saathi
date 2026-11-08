@@ -54,8 +54,13 @@ class ThreadRegistry:
             self._connection.execute(
                 "CREATE TABLE IF NOT EXISTS workflow_threads ("
                 "kind TEXT NOT NULL, thread_id TEXT NOT NULL, household_id TEXT NOT NULL, "
-                "created_at REAL NOT NULL, last_active REAL NOT NULL, PRIMARY KEY (kind, thread_id))"
+                "created_at REAL NOT NULL, last_active REAL NOT NULL, subject TEXT, relation TEXT, "
+                "PRIMARY KEY (kind, thread_id))"
             )
+            existing = {row[1] for row in self._connection.execute("PRAGMA table_info(workflow_threads)")}
+            for column in ("subject", "relation"):  # a file made before these were kept
+                if column not in existing:
+                    self._connection.execute(f"ALTER TABLE workflow_threads ADD COLUMN {column} TEXT")
             self._connection.execute(
                 "CREATE INDEX IF NOT EXISTS workflow_threads_household ON workflow_threads (kind, household_id)"
             )
@@ -114,6 +119,28 @@ class ThreadRegistry:
                 (self.kind, thread_id, now - self.idle_seconds, now - self.absolute_seconds),
             ).fetchone()
         return row is not None
+
+    def set_subject(self, thread_id: str, household_id: str, subject: str, relation: str | None) -> None:
+        """Keep whose application a thread is for ("self", or "other" with a relation word).
+
+        It is stored with the thread, so it survives a restart as the workflow state does and goes
+        when the thread does. Only the owner's thread is changed.
+        """
+        with self._lock, self._connection:
+            self._connection.execute(
+                "UPDATE workflow_threads SET subject = ?, relation = ? "
+                "WHERE kind = ? AND thread_id = ? AND household_id = ?",
+                (subject, relation, self.kind, thread_id, household_id),
+            )
+
+    def subject_of(self, thread_id: str) -> tuple[str, str | None] | None:
+        """Whose application a thread is for, or None when none was kept (an unknown or older thread)."""
+        with self._lock:
+            row = self._connection.execute(
+                "SELECT subject, relation FROM workflow_threads WHERE kind = ? AND thread_id = ?",
+                (self.kind, thread_id),
+            ).fetchone()
+        return (row[0], row[1]) if row and row[0] else None
 
     def threads_of(self, household_id: str) -> set[str]:
         """Every thread the household owns, expired ones included, so forgetting finds them."""

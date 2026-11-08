@@ -851,3 +851,93 @@ def test_the_agent_service_passes_the_choice_into_the_resumed_decision(memory):
 
     assert seen["decision"] == {"action": "approve", "payload_hash": "h", "changes": {}, "citizen_agreed": True}
 
+
+# Whose application it is survives a restart, as the workflow state does
+
+
+@pytest.fixture
+def registry_file(tmp_path):
+    return tmp_path / "state" / "workflow.sqlite"
+
+
+def started_application(registry_file, actor_id, subject, relation):
+    """Start an application the way the API does, then 'restart': a new service on the same file."""
+    from app.business_logic import DemoService
+    from app.thread_registry import ThreadRegistry
+
+    first = DemoService(registry=ThreadRegistry("application", registry_file))
+    first.analyze({"age": 62}, None, actor_id, subject, relation)
+    [thread_id] = first._thread_subjects
+    first.registry.close()
+    restarted = DemoService(registry=ThreadRegistry("application", registry_file))
+    assert restarted._thread_subjects == {}  # nothing is held in the new process
+    return restarted, thread_id
+
+
+def submit_after_restart(memory, monkeypatch, restarted, thread_id, principal, citizen_agreed=False):
+    monkeypatch.setattr(memory_runtime, "get_memory_service", lambda: memory)
+    events = [("result", dict(SUBMITTED))]
+    return list(
+        api._remembering_submission(restarted, thread_id, principal, iter(events), citizen_agreed=citizen_agreed)
+    )
+
+
+def test_a_family_members_application_is_still_theirs_after_a_restart(memory, monkeypatch, registry_file):
+    restarted, thread_id = started_application(registry_file, "hh1", "other", "mother")
+    grant(memory, "application_references")
+
+    assert restarted.thread_subject(thread_id) == ("other", "mother")
+    events = submit_after_restart(memory, monkeypatch, restarted, thread_id, AuthenticatedHousehold("hh1", "user-1"))
+
+    assert events[0][1]["reference_saved"] is True
+    [reference] = memory.read_application_references(scope())
+    assert (reference.application_id, reference.subject, reference.relation) == ("APP-9", "other", "mother")
+
+
+def test_the_restarted_application_can_still_be_resumed_by_its_owner_only(memory, monkeypatch, registry_file):
+    from app.business_logic import ThreadAccessError
+
+    restarted, thread_id = started_application(registry_file, "hh1", "other", "mother")
+    restarted._check_thread_owner(thread_id, "hh1")
+    with pytest.raises(ThreadAccessError):
+        restarted._check_thread_owner(thread_id, "hh2")
+
+
+def test_an_application_for_oneself_is_still_the_persons_own_after_a_restart(memory, monkeypatch, registry_file):
+    restarted, thread_id = started_application(registry_file, "hh1", "self", None)
+    grant(memory, "application_references")
+
+    submit_after_restart(memory, monkeypatch, restarted, thread_id, AuthenticatedHousehold("hh1", "user-1"))
+
+    [reference] = memory.read_application_references(scope())
+    assert (reference.subject, reference.relation) == ("self", None)
+
+
+def test_an_operators_relation_is_kept_across_a_restart(memory, monkeypatch, registry_file):
+    restarted, thread_id = started_application(registry_file, "operator:op-1", "other", "mother")
+    principal = AuthenticatedHousehold("operator:op-1", "op-1", "operator")
+
+    submit_after_restart(memory, monkeypatch, restarted, thread_id, principal, citizen_agreed=True)
+
+    [reference] = memory.read_application_references(operator_scope())
+    assert (reference.subject, reference.relation) == ("other", "mother")
+
+
+def test_a_thread_with_no_subject_kept_is_treated_as_the_persons_own(registry_file):
+    from app.business_logic import DemoService
+    from app.thread_registry import ThreadRegistry
+
+    registry = ThreadRegistry("application", registry_file)
+    registry.touch("older-thread", "hh1")  # made before the subject was kept
+    assert DemoService(registry=registry).thread_subject("older-thread") == ("self", None)
+
+
+def test_deleting_the_workflow_also_forgets_its_subject(registry_file):
+    restarted, thread_id = started_application(registry_file, "hh1", "other", "mother")
+    assert restarted.thread_subject(thread_id) == ("other", "mother")
+
+    restarted.delete_workflow(thread_id, "hh1")
+
+    assert restarted.thread_subject(thread_id) == ("self", None)
+    assert restarted.registry.subject_of(thread_id) is None
+

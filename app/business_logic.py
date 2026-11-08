@@ -397,6 +397,7 @@ class DemoService:
             with self._thread_owners_lock:
                 self._thread_owners[thread_id] = actor_id
             self.registry.touch(thread_id, actor_id)
+            self.registry.set_subject(thread_id, actor_id, subject, relation)  # kept with the thread, so a restart keeps it
         self._thread_subjects[thread_id] = (subject, relation)
         config = {"configurable": {"thread_id": thread_id}}
         run_input: dict[str, Any] = {"simulated_citizen": citizen}
@@ -407,8 +408,17 @@ class DemoService:
         return self._stream_run(run_input, config, thread_id)
 
     def thread_subject(self, thread_id: str) -> tuple[str, str | None]:
-        """Whose application a thread is for: ("self", None), or ("other", a relation word)."""
-        return self._thread_subjects.get(thread_id, ("self", None))
+        """Whose application a thread is for: ("self", None), or ("other", a relation word).
+
+        After a restart it is read back from the thread record kept with the workflow, so a
+        family member's application is not taken for the signed-in person's own.
+        """
+        subject = self._thread_subjects.get(thread_id)
+        if subject is None:
+            subject = self.registry.subject_of(thread_id)
+            if subject is not None:
+                self._thread_subjects[thread_id] = subject
+        return subject or ("self", None)
 
     def decide(
         self,
