@@ -6,13 +6,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY pyproject.toml ./
+COPY .streamlit/ ./.streamlit/
 COPY app/ ./app/
 COPY agents/ ./agents/
 COPY graph/ ./graph/
 COPY servers/ ./servers/
 COPY data/ ./data/
 
-RUN python -m pip install --no-cache-dir . \
+RUN python -m pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch \
+    && python -m pip install --no-cache-dir ".[rag]" \
     && mkdir -p data/private_documents \
     && addgroup --system app \
     && adduser --system --ingroup app app \

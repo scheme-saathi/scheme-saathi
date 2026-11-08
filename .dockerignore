@@ -9,6 +9,7 @@ __pycache__/
 *.db
 *.sqlite3
 data/chroma/
+data/chroma.old*/
 data/private_documents/
 data/raw/
 data/pdfs/
