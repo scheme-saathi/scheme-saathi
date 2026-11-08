@@ -11,7 +11,8 @@ from servers.rule_engine import server as rule_server
 
 ROOT = Path(__file__).resolve().parents[1]
 PMSBY_OK = {"has_bank_account": True, "age": 40, "age_nearer_birthday": 40, "consents_to_auto_debit": True}
-APY_OK = {"has_savings_account": True, "age": 30, "is_or_was_income_tax_payer": False}
+APY_OK = {"has_savings_account": True, "age": 30, "is_or_was_income_tax_payer": False,
+          "consents_to_auto_debit": True}
 
 
 @pytest.fixture
@@ -92,6 +93,7 @@ def test_apy_draft_preview_observes_age_and_tax_payer_rules(draft_rule_records):
         "not_eligible", "eligible", "eligible", "not_eligible"
     ]
     assert verdict(is_or_was_income_tax_payer=True) == "not_eligible"
+    assert verdict(consents_to_auto_debit=False) == "not_eligible"
 
 
 def test_apy_drafts_fail_closed_without_preview_and_do_not_mutate(draft_rule_records):
