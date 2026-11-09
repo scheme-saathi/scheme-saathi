@@ -1,9 +1,31 @@
 import json
+import sys
 from pathlib import Path
 
 import pytest
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+
+@pytest.fixture(autouse=True)
+def close_chroma_clients():
+    """Stop every ChromaDB client a test opened.
+
+    ChromaDB keeps each PersistentClient's database open in a process-wide cache until it is
+    stopped, about 15-20 open files per memory-store test. On macOS (256 open files by default)
+    the suite then failed with "Too many open files" after about 60 such tests.
+    """
+    yield
+    if "chromadb" not in sys.modules:
+        return
+    from chromadb.api.shared_system_client import SharedSystemClient
+
+    for system in list(SharedSystemClient._identifier_to_system.values()):
+        try:
+            system.stop()
+        except Exception:  # a system already stopped by its test
+            pass
+    SharedSystemClient.clear_system_cache()
 
 
 @pytest.fixture(autouse=True)
