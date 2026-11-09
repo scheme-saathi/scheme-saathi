@@ -25,6 +25,7 @@ import re
 import statistics
 import subprocess
 import sys
+import threading
 import time
 import uuid
 from collections import Counter, defaultdict
@@ -345,23 +346,90 @@ def _token_totals(rows: list[dict]) -> dict:
 
 # ---------------------------------------------------------------- running
 
-def run(config: dict, split: str, limit: int | None = None) -> tuple[list[dict], dict]:
+def _progress(message: str) -> None:
+    """One line per case on stderr, so a long model run visibly makes progress."""
+    print(message, file=sys.stderr, flush=True)
+
+
+def _minutes(seconds: float) -> str:
+    return f"{int(seconds // 60)}m {int(seconds % 60):02d}s"
+
+
+class Heartbeat:
+    """Every ``every`` seconds, a line saying the run is alive: cases done, the case running, time left.
+
+    The per-case lines can be minutes apart in an agent run; this tells the tester it isn't stuck.
+    """
+
+    def __init__(self, total: int, every: float, emit: Callable[[str], None] = _progress) -> None:
+        self.total, self.every, self.emit = total, every, emit
+        self.done, self.case_id, self.case_started = 0, None, None
+        self.started = time.perf_counter()
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._loop, daemon=True)
+
+    def __enter__(self) -> "Heartbeat":
+        if self.every > 0:
+            self._thread.start()
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self._stop.set()
+
+    def case(self, case_id: str) -> None:
+        self.case_id, self.case_started = case_id, time.perf_counter()
+
+    def finished(self) -> None:
+        self.done += 1
+
+    def line(self) -> str:
+        now = time.perf_counter()
+        elapsed = now - self.started
+        parts = [f"... still running: {self.done}/{self.total} cases done, {_minutes(elapsed)} elapsed"]
+        if self.case_id:
+            parts.append(f"{self.case_id} running for {_minutes(now - self.case_started)}")
+        if self.done:
+            parts.append(f"about {_minutes(elapsed / self.done * (self.total - self.done))} left")
+        return "; ".join(parts)
+
+    def _loop(self) -> None:
+        while not self._stop.wait(self.every):
+            self.emit(self.line())
+
+
+def run(config: dict, split: str, limit: int | None = None, quiet: bool = False,
+        heartbeat_seconds: float = 0) -> tuple[list[dict], dict]:
     system = SYSTEMS[config["system"]]
     cases = load_cases(split)[:limit] if limit else load_cases(split)
     rows = []
-    for case in cases:
+    if not quiet:
+        _progress(f"Running {config['name']} on {len(cases)} {split} cases...")
+    with Heartbeat(len(cases), 0 if quiet else heartbeat_seconds) as beat:
+        rows = _run_cases(system, config, cases, quiet, beat)
+    return rows, summarise(rows)
+
+
+def _run_cases(system: Callable, config: dict, cases: list[dict], quiet: bool, beat: Heartbeat) -> list[dict]:
+    rows = []
+    for number, case in enumerate(cases, 1):
+        beat.case(case["case_id"])
         started = time.perf_counter()
         try:
             result, error = system(case, config), None
         except Exception as exc:  # a failed or timed-out run is reported, never dropped
             result, error = {"verdicts": {}, "questions_asked": 0}, f"{type(exc).__name__}: {exc}"
         latency_ms = round((time.perf_counter() - started) * 1000, 1)
+        if not quiet:
+            outcome = f"ERROR {error}" if error else (
+                f"{result.get('stopped_at', 'done')}, {result.get('questions_asked', 0)} questions")
+            _progress(f"[{number}/{len(cases)}] {case['case_id']}: {outcome} ({latency_ms / 1000:.1f} s)")
         rows.append({
             "case_id": case["case_id"], "family_id": case["family_id"], "language": case["language"],
             "variant_of": case.get("variant_of"), "result": result, "error": error,
             "score": score_case(case, result), "latency_ms": latency_ms,
         })
-    return rows, summarise(rows)
+        beat.finished()
+    return rows
 
 
 def _git_commit() -> str | None:
@@ -411,6 +479,8 @@ def main() -> int:
     parser.add_argument("--split", choices=SPLITS, default="development")
     parser.add_argument("--final", action="store_true", help="required for the held-out split")
     parser.add_argument("--limit", type=int, help="run only the first N cases")
+    parser.add_argument("--heartbeat", type=float, default=60, metavar="SECONDS",
+                        help="print a 'still running' line this often (default 60; 0 turns it off)")
     args = parser.parse_args()
     if args.rescore:
         _, summary = rescore(args.rescore)
@@ -422,7 +492,7 @@ def main() -> int:
     if args.split == "held_out" and not args.final:
         parser.error("held-out cases are for the final evaluation only; add --final if this is it")
     config = load_config(args.config)
-    rows, summary = run(config, args.split, args.limit)
+    rows, summary = run(config, args.split, args.limit, heartbeat_seconds=args.heartbeat)
     out = write_run(config, args.split, rows, summary)
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     print(f"\nWritten to {out.relative_to(ROOT)}")
