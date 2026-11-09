@@ -375,8 +375,9 @@ ID from your environment):
 
 Cost is the provider's figure when it reports one. For OpenRouter the app asks for it (`usage.include`)
 while observability is on. Otherwise it is tokens times the price in `observability/model_prices.json`,
-which ships **empty**: fill it in from your provider's price list, or point `MODEL_PRICES_FILE` at your
-own copy. A model that is not listed counts as unpriced, never as free. Only token counts and cost are
+which lists `openai/gpt-4o-mini` with hand-entered prices that you should confirm against your provider's
+price list (add a line for any other model, or point `MODEL_PRICES_FILE` at your own copy). A model that is
+not listed counts as unpriced, never as free. Only token counts and cost are
 recorded, never a prompt or a response.
 
 ### Tracing (LangSmith)

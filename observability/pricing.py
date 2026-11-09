@@ -1,6 +1,7 @@
 """The price table: US dollars per million tokens for each model, used when the provider reports no cost.
 
-The file holds no real prices by default. A model that is missing, or has a malformed entry, is
+The shipped file lists the models this project is configured with, and none of its prices are verified
+against a provider. A model that is missing, or has a malformed entry, is
 treated as unpriced, and its calls are counted separately instead of being costed at zero.
 """
 

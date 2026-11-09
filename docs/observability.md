@@ -244,7 +244,8 @@ dashboard can be traced to the runs behind it. Traces are metadata only; leave `
 
 ## Known limits
 
-- **Cost depends on a price source.** `observability/model_prices.json` ships empty. A call is priced from
+- **Cost depends on a price source.** `observability/model_prices.json` lists `openai/gpt-4o-mini` with prices entered
+  by hand and not verified: confirm them against your provider. A call is priced from
   the provider's reported cost, else from that file, else counted as unpriced. Provider-reported cost from
   OpenRouter is requested but not yet confirmed against the real service.
 - **Failed calls cost nothing here.** A model call that fails is counted and timed but has no cost.

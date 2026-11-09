@@ -204,9 +204,11 @@ def test_labels_are_restricted_to_plain_values():
     assert role_label("household-42") == "other"
 
 
-def test_the_price_file_ships_empty_and_a_missing_model_has_no_price(monkeypatch):
-    assert load_prices() == {}
-    assert price_for(MODEL) is None
+def test_the_shipped_price_file_is_valid_and_an_unlisted_model_has_no_price():
+    shipped = load_prices()
+
+    assert shipped and all(isinstance(price, Price) for price in shipped.values())
+    assert price_for("vendor/model-one") is None
 
 
 def test_the_price_table_ignores_bad_entries_and_follows_file_changes(prices):

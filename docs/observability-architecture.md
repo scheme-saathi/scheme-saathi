@@ -98,7 +98,8 @@ Observability is optional in three ways, and none of them can stop the core appl
 ### Model cost
 
 Cost comes from the provider when it reports one (OpenRouter is asked to, while observability is on). Otherwise it is
-tokens times the price in [observability/model_prices.json](../observability/model_prices.json), which ships empty. A
+tokens times the price in [observability/model_prices.json](../observability/model_prices.json), which lists the
+configured model with hand-entered prices. A
 successful call with neither is counted as **unpriced**, never as free, so spend is never silently understated.
 A failed call has no cost.
 
