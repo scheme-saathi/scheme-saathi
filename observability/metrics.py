@@ -10,15 +10,20 @@ from __future__ import annotations
 from importlib import metadata
 from typing import Sequence
 
-from prometheus_client import (
-    CollectorRegistry,
-    Counter,
-    Gauge,
-    GCCollector,
-    Histogram,
-    PlatformCollector,
-    ProcessCollector,
-)
+try:
+    from prometheus_client import (
+        CollectorRegistry,
+        Counter,
+        Gauge,
+        GCCollector,
+        Histogram,
+        PlatformCollector,
+        ProcessCollector,
+    )
+
+    PROMETHEUS_AVAILABLE = True
+except ImportError:  # the app must still start; install_observability reports it and stays off
+    PROMETHEUS_AVAILABLE = False
 
 PREFIX = "scheme_saathi_"
 
@@ -70,6 +75,8 @@ class Metrics:
     """One registry of metrics. Tests build their own so counts never leak between them."""
 
     def __init__(self) -> None:
+        if not PROMETHEUS_AVAILABLE:
+            raise RuntimeError("prometheus-client is not installed.")
         self.registry = CollectorRegistry()
         ProcessCollector(registry=self.registry)
         PlatformCollector(registry=self.registry)

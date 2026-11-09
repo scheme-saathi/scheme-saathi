@@ -16,6 +16,7 @@ from typing import Any
 from observability.metrics import active_metrics
 from observability.pricing import number, price_for
 from observability.runs import current_run, error_type
+from observability.safety import guarded
 from observability.tracing import Span
 
 # The agent roles that call a model. Anything else is "other".
@@ -40,6 +41,7 @@ def count(value: Any) -> int:
     return int(number_) if number_ is not None else 0
 
 
+@guarded
 def record_llm_call(
     role: str,
     model: str,

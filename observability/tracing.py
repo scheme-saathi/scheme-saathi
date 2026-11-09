@@ -26,6 +26,7 @@ from typing import Any
 
 from observability.config import Settings
 from observability.metrics import active_metrics
+from observability.safety import guarded
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +142,7 @@ class Tracer:
                 self._queue.task_done()
 
     @staticmethod
+    @guarded
     def _count(result: str) -> None:
         metrics = active_metrics()
         if metrics is not None:

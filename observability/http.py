@@ -8,11 +8,11 @@ import time
 from typing import Any
 
 from fastapi import FastAPI, Request, Response
-from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from observability.config import settings
-from observability.metrics import HTTP_METHODS, Metrics, activate, get_metrics, set_metrics
-from observability.tracing import configure_tracing
+from observability.metrics import PROMETHEUS_AVAILABLE, HTTP_METHODS, Metrics, activate, get_metrics, set_metrics
+from observability.safety import guarded
+from observability.tracing import configure_tracing, set_tracer
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,21 @@ class MetricsMiddleware:
         self.app = app
         self.metrics = metrics
 
+    @guarded
+    def _begin(self) -> None:
+        self.metrics.http_in_progress.inc()
+
+    @guarded
+    def _failed(self, scope: dict[str, Any], error: Exception) -> None:
+        self.metrics.http_exceptions.labels(route=_route_template(scope), error_type=type(error).__name__).inc()
+
+    @guarded
+    def _end(self, scope: dict[str, Any], method: str, status: int, started: float) -> None:
+        route = _route_template(scope)
+        self.metrics.http_in_progress.dec()
+        self.metrics.http_requests.labels(method=method, route=route, status_class=f"{status // 100}xx").inc()
+        self.metrics.http_duration.labels(method=method, route=route).observe(time.perf_counter() - started)
+
     async def __call__(self, scope: dict[str, Any], receive: Any, send: Any) -> None:
         if scope["type"] != "http" or scope.get("path") == METRICS_PATH:
             await self.app(scope, receive, send)
@@ -47,7 +62,7 @@ class MetricsMiddleware:
         method = method if method in HTTP_METHODS else "OTHER"
         status = 500  # what a caller sees if the app fails before it starts a response
         started = time.perf_counter()
-        self.metrics.http_in_progress.inc()
+        self._begin()
 
         async def send_wrapper(message: dict[str, Any]) -> None:
             nonlocal status
@@ -58,13 +73,10 @@ class MetricsMiddleware:
         try:
             await self.app(scope, receive, send_wrapper)
         except Exception as error:
-            self.metrics.http_exceptions.labels(route=_route_template(scope), error_type=type(error).__name__).inc()
+            self._failed(scope, error)
             raise
         finally:
-            route = _route_template(scope)
-            self.metrics.http_in_progress.dec()
-            self.metrics.http_requests.labels(method=method, route=route, status_class=f"{status // 100}xx").inc()
-            self.metrics.http_duration.labels(method=method, route=route).observe(time.perf_counter() - started)
+            self._end(scope, method, status, started)
 
 
 def _authorized(request: Request, token: str) -> bool:
@@ -82,6 +94,24 @@ def install_observability(application: FastAPI, metrics: Metrics | None = None) 
     config = settings()
     if not config.enabled:
         return False
+    if not PROMETHEUS_AVAILABLE:
+        logger.warning(
+            'OBSERVABILITY_ENABLED is on but prometheus-client is not installed (run pip install -e ".[dev]"), '
+            "so observability stays off."
+        )
+        return False
+    try:
+        return _install(application, metrics, config)
+    except Exception as error:
+        set_metrics(None)  # switches recording off again
+        set_tracer(None)
+        logger.warning("Observability could not be set up (%s), so it stays off.", type(error).__name__)
+        return False
+
+
+def _install(application: FastAPI, metrics: Metrics | None, config: Any) -> bool:
+    from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+
     if metrics is not None:
         set_metrics(metrics)
     metrics = get_metrics()

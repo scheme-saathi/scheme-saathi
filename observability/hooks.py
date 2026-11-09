@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 
 from observability.metrics import active_metrics
 from observability.runs import current_run, error_type, outcome_for_exception
+from observability.safety import guarded
 from observability.tracing import Span
 
 # The values the app reports, by label. A value outside a set is recorded as "other", so a call site that
@@ -28,6 +29,7 @@ def bounded(value: object, allowed: frozenset[str]) -> str:
     return value if isinstance(value, str) and value in allowed else "other"
 
 
+@guarded
 def record_tool_call(server: str, tool: str, outcome: str, duration_seconds: float, error_code: str = "") -> None:
     """One tool call (an MCP server tool). It also counts toward the run it was made in."""
     outcome = bounded(outcome, TOOL_OUTCOMES)
@@ -57,6 +59,7 @@ def record_tool_call(server: str, tool: str, outcome: str, duration_seconds: flo
         metrics.tool_errors.labels(server=server, tool=tool, error_code=error_code).inc()
 
 
+@guarded
 def record_approval(action: str, result: str) -> None:
     """An approval decision on an application form: approve, edit, reject or invalid, and how it ended."""
     metrics = active_metrics()
@@ -66,6 +69,7 @@ def record_approval(action: str, result: str) -> None:
         ).inc()
 
 
+@guarded
 def record_memory_operation(operation: str, result: str) -> None:
     """A long-term memory operation: load, save, reference, consent or forget, and how it ended."""
     metrics = active_metrics()
@@ -75,6 +79,7 @@ def record_memory_operation(operation: str, result: str) -> None:
         ).inc()
 
 
+@guarded
 def record_thread_expired(kind: str, reason: str, count: int = 1) -> None:
     """Workflow threads or chat sessions that expired; `reason` is "cleanup" (the timer) or "on_use"."""
     metrics = active_metrics()
@@ -84,6 +89,7 @@ def record_thread_expired(kind: str, reason: str, count: int = 1) -> None:
         ).inc(count)
 
 
+@guarded
 def note_run_error(error: BaseException) -> None:
     """Tell the current run why it failed, for a failure that is sent as an event rather than raised."""
     run = current_run()

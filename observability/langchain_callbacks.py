@@ -17,6 +17,7 @@ from langchain_core.callbacks import BaseCallbackHandler
 from observability.llm import record_llm_call
 from observability.metrics import active_metrics
 from observability.runs import current_run
+from observability.safety import guarded
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +60,7 @@ class ModelCallRecorder(BaseCallbackHandler):
         self._started: dict[UUID, float] = {}
         self._lock = threading.Lock()
 
+    @guarded
     def _begin(self, run_id: UUID) -> None:
         if active_metrics() is None and current_run() is None:
             return

@@ -66,6 +66,19 @@ flowchart LR
 7. **Prometheus** scrapes `GET /metrics` with the bearer token. Recording rules precompute error ratios,
    percentiles and spend. Alert rules flag problems. Grafana reads from Prometheus.
 
+## Failure isolation
+
+Observability is optional in three ways, and none of them can stop the core application:
+
+- **No Prometheus container.** The app never contacts Prometheus. It keeps counters in memory and serves them on
+  `/metrics` when asked.
+- **A failure while recording.** Every recording step is guarded (`observability/safety.py`). A failure is skipped
+  and logged once as a warning with the exception class name only, and the application's own errors still propagate
+  unchanged.
+- **A missing or failing dependency.** Without `prometheus-client`, or if set-up fails, the app starts with
+  observability off and logs why. A slow, unreachable or failing tracing backend only drops or fails traces, which are
+  counted.
+
 ## What is recorded
 
 | Source | What | Metrics | Trace |
@@ -126,6 +139,7 @@ The app warns at start-up if either is on.
 | Metrics and label allowlist | [observability/metrics.py](../observability/metrics.py) |
 | Runs, outcomes, per-run totals | [observability/runs.py](../observability/runs.py) |
 | Hooks and closed label sets | [observability/hooks.py](../observability/hooks.py) |
+| Failure isolation | [observability/safety.py](../observability/safety.py) |
 | Model calls, cost, pricing | [observability/llm.py](../observability/llm.py), [observability/langchain_callbacks.py](../observability/langchain_callbacks.py), [observability/pricing.py](../observability/pricing.py) |
 | LangSmith tracer | [observability/tracing.py](../observability/tracing.py) |
 | Middleware and `/metrics` | [observability/http.py](../observability/http.py) |

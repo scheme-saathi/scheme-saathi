@@ -23,6 +23,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from observability.metrics import Metrics, active_metrics
+from observability.safety import guarded
 from observability.tracing import Span, TraceItem, active_tracer
 
 logger = logging.getLogger(__name__)
@@ -218,21 +219,37 @@ def current_run() -> RunRecord | None:
     return _current.get()
 
 
+def _reset_context(token: contextvars.Token) -> None:
+    try:
+        _current.reset(token)
+    except (ValueError, RuntimeError):  # reset from a different context: nothing to undo there
+        pass
+
+
 class RunRecorder:
     """Records one run. Use it as a context manager for a plain call, or `attach()` plus `watch()` for a stream."""
 
     def __init__(self, kind: str) -> None:
         self.kind = kind if kind in RUN_KINDS else "other"
-        self._metrics: Metrics | None = active_metrics()
+        self._metrics: Metrics | None = None
         self._record = RunRecord(self.kind)
-        self._tracer = active_tracer()
-        self._record.keep_spans = self._tracer is not None
+        self._tracer = None
         self._started = time.perf_counter()
         self._finished = False
         self._lock = threading.Lock()
         self._token: contextvars.Token | None = None
-        if self._metrics is not None:
-            self._metrics.runs_in_progress.labels(kind=self.kind).inc()
+        self._begin()
+
+    @guarded
+    def _begin(self) -> None:
+        metrics = active_metrics()
+        if metrics is None:
+            return
+        metrics.runs_in_progress.labels(kind=self.kind).inc()
+        # Set only once the run is counted, so a recording failure leaves the run unrecorded rather than half-recorded.
+        self._metrics = metrics
+        self._tracer = active_tracer()
+        self._record.keep_spans = self._tracer is not None
 
     @property
     def active(self) -> bool:
@@ -247,7 +264,7 @@ class RunRecorder:
 
     def __exit__(self, exc_type: Any, error: BaseException | None, traceback: Any) -> bool:
         if self._token is not None:
-            _current.reset(self._token)
+            _reset_context(self._token)
             self._token = None
         if error is not None:
             self.fail(error)
@@ -257,19 +274,23 @@ class RunRecorder:
 
     # What the run reports -------------------------------------------------------------------
 
+    @guarded
     def set_outcome(self, status: Any) -> None:
         if self.active and status is not None:
             self._record.outcome = normalise_outcome(status)
 
+    @guarded
     def set_verdicts(self, verdicts: Any) -> None:
         if self.active:
             self._record.verdicts = verdicts
 
+    @guarded
     def set_thread(self, thread_id: Any) -> None:
         """The conversation this run belongs to. It is hashed before it goes to a tracing backend."""
         if self.active and isinstance(thread_id, str) and thread_id:
             self._record.thread = thread_id
 
+    @guarded
     def note_error(self, error: BaseException) -> None:
         """Say why a run failed when the failure is reported as an event rather than raised."""
         if not self.active:
@@ -277,6 +298,7 @@ class RunRecorder:
         self._record.outcome = outcome_for_exception(error)
         self._record.error_type = error_type(error)
 
+    @guarded
     def fail(self, error: BaseException) -> None:
         if not self.active:
             return
@@ -284,6 +306,7 @@ class RunRecorder:
             self.note_error(error)
         self.finish()
 
+    @guarded
     def finish(self, outcome: Any = None) -> None:
         """End the run once; a second call changes nothing."""
         with self._lock:
@@ -294,10 +317,16 @@ class RunRecorder:
         if metrics is None:
             return
         final = normalise_outcome(outcome) if outcome else (self._record.outcome or "completed")
+        duration = time.perf_counter() - self._started
+        self._record_metrics(metrics, final, duration)
+        self._export_trace(final, duration)
+
+    @guarded
+    def _record_metrics(self, metrics: Metrics, final: str, duration: float) -> None:
         kind = self.kind
         metrics.runs_in_progress.labels(kind=kind).dec()
         metrics.runs.labels(kind=kind, outcome=final).inc()
-        metrics.run_duration.labels(kind=kind).observe(time.perf_counter() - self._started)
+        metrics.run_duration.labels(kind=kind).observe(duration)
         metrics.run_tool_calls.labels(kind=kind).observe(self._record.tool_calls)
         self._observe_models(metrics)
         if final in SERVER_SIDE_ERRORS:
@@ -311,7 +340,6 @@ class RunRecorder:
                 name = verdict.get("verdict") if isinstance(verdict, dict) else None
                 if name in VERDICTS:
                     metrics.verdicts.labels(verdict=name).inc()
-        self._export_trace(final, time.perf_counter() - self._started)
 
     def _export_trace(self, outcome: str, duration: float) -> None:
         tracer = self._tracer
@@ -342,6 +370,8 @@ class RunRecorder:
             tracer.submit(item)
         except Exception:
             logger.warning("A run trace could not be prepared.")
+
+    @guarded
     def _observe_models(self, metrics: Metrics) -> None:
         record, kind = self._record, self.kind
         with record._lock:
@@ -371,7 +401,7 @@ class RunRecorder:
             self.fail(error)
             raise
         finally:
-            _current.reset(token)
+            _reset_context(token)
 
     def watch(self, events: Iterable[tuple[str, Any]]) -> Iterable[tuple[str, Any]]:
         """Pass a stream of (name, payload) events through unchanged, recording the run as it goes.
@@ -401,10 +431,10 @@ class RunRecorder:
                 except StopIteration:
                     break
                 finally:
-                    _current.reset(token)
+                    _reset_context(token)
                 if first:
                     first = False
-                    self._metrics.stream_first_event.labels(kind=self.kind).observe(time.perf_counter() - self._started)
+                    self._first_event()
                 self._see(name, payload)
                 yield name, payload
         except GeneratorExit:
@@ -415,6 +445,11 @@ class RunRecorder:
             raise
         self.finish()
 
+    @guarded
+    def _first_event(self) -> None:
+        self._metrics.stream_first_event.labels(kind=self.kind).observe(time.perf_counter() - self._started)
+
+    @guarded
     def _see(self, name: str, payload: Any) -> None:
         if not isinstance(payload, dict):
             return

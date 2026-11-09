@@ -220,6 +220,14 @@ dashboard can be traced to the runs behind it. Traces are metadata only; leave `
 
 ## Hardening
 
+- **It cannot break the app.** Every recording step the app calls (the run recorder, the hooks, the model-call
+  recorder, the request middleware and the trace exporter) is wrapped so a failure is skipped and logged as a
+  warning with the exception class name only, then at debug level so a persistent fault cannot flood the log. The
+  application's own errors still propagate unchanged. If setting observability up fails, the app starts with it off.
+- **`prometheus-client` is optional at start-up.** If the package is missing, `OBSERVABILITY_ENABLED=true` logs a
+  warning and stays off instead of stopping the app. Install it with `pip install -e ".[dev]"`.
+- **Prometheus is optional.** The app only keeps counters in memory and serves them on `/metrics`. It never contacts
+  Prometheus, so running without the container has no effect on the app.
 - **Labels are closed.** The run kind and outcome, tool outcome and error code, approval action and result, memory
   operation and result, and thread expiry kind and reason each come from a fixed list (`observability/runs.py` and
   `observability/hooks.py`). Any other value is recorded as `other`, so a call site that passes an identifier or text
