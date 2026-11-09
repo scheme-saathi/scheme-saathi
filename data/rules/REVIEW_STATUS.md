@@ -69,7 +69,7 @@ Decided by Snehal Patel. They set the rules for Phases 1–4; they are not revie
 ### F7 answers (checked against the official sources by Snehal Patel, 9 Nov 2026)
 
 - **C02:** the upper age of 70 (age nearer birthday) is exclusive.
-- **C16:** the ₹8 lakh limit is on total family income, so the rule uses `annual_family_income`. The record's elig-4 still says "total income of the applicant", so a reviewer should cite the income-criteria amendment (https://socialjustice.gov.in/writereaddata/UploadFile/RICfor%20ISSC.pdf) once its text is in the record.
+- **C16:** the ₹8 lakh limit is on total family income, so the rule uses `annual_family_income`. The applicant is a student with no income of their own, so elig-4's "total income of the applicant" means the family's income. The income-criteria amendment (https://socialjustice.gov.in/writereaddata/UploadFile/RICfor%20ISSC.pdf) can be added to the record as a second source.
 - **C19:** local body schools are not covered. Bal Vatika is covered.
 
 ## Engine and intake changes (Phase 3 of `docs/rule-fix-plan.md`, 9 Nov 2026)
