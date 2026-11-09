@@ -243,17 +243,22 @@ so you can start it again as a rollback.
 
 ## 6. Deploy from GitHub to AWS
 
-This example uses GitHub Actions to build a Linux container, push it to Amazon
-Elastic Container Registry (ECR), and update an Amazon Elastic Container
-Service (ECS) service running on Fargate. It deploys the image; AWS resources,
-networking, secrets, domain, and persistent storage must be configured first.
+This example uses GitHub Actions to build a Linux container, push it to Docker
+Hub, and update an Amazon Elastic Container Service (ECS) service running on
+Fargate. It deploys the image; AWS resources, networking, secrets, domain, and
+persistent storage must be configured first.
+
+For step-by-step instructions to configure GitHub credentials, AWS OIDC, and
+application secrets, see [AWS CI/CD credentials setup](aws-cicd-credentials-setup.md).
 
 ### 6.1 Prepare AWS resources
 
-1. Choose an AWS region and create an ECR repository, for example
-   `scheme-saathi`. Keep the repository private.
-2. Create an ECS cluster and a Fargate task definition with a container named
-   `scheme-saathi`. Configure it to:
+1. Choose an AWS region and create an ECS cluster. Create a Docker Hub
+   repository for the image. A public repository can be pulled by ECS without
+   extra credentials; for a private repository, configure ECS repository
+   credentials as described below.
+2. Create a Fargate task definition with a container named `scheme-saathi`.
+   Configure it to:
    - listen on container port `8501` using TCP;
    - allocate enough CPU and memory for Streamlit, ChromaDB, and (if included)
      the BGE-M3 model;
@@ -284,17 +289,21 @@ networking, secrets, domain, and persistent storage must be configured first.
 6. Create an IAM role for GitHub Actions using GitHub's OIDC provider. Its trust
    policy should restrict `token.actions.githubusercontent.com` to this
    repository and the deployment branch or GitHub Environment. Grant only the
-   permissions needed to push to the selected ECR repository and update the
-   selected ECS service/task definition. The ECS task execution role separately
-   needs permission to pull from ECR and read the referenced secrets.
+   permissions needed to register task definitions, update the selected ECS
+   service, and pass its task roles. The ECS task execution role separately
+   needs permission to read the referenced secrets.
 
 ### 6.2 Configure GitHub
 
 In repository **Settings → Secrets and variables → Actions**, add:
 
 - Secret `AWS_ROLE_TO_ASSUME`: the ARN of the GitHub OIDC deployment role.
-- Variables `AWS_REGION`, `ECR_REPOSITORY`, `ECS_CLUSTER`, `ECS_SERVICE`,
+- Secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`: Docker Hub credentials
+  for a token that can push to the repository.
+- Variables `AWS_REGION`, `DOCKERHUB_REPOSITORY`, `ECS_CLUSTER`, `ECS_SERVICE`,
   `ECS_TASK_DEFINITION`, and `ECS_CONTAINER_NAME`.
+- Set `DOCKERHUB_REPOSITORY` to the full image name, such as
+  `your-dockerhub-user/scheme-saathi`.
 
 For example, `ECS_TASK_DEFINITION` can be `aws/task-definition.json` and
 `ECS_CONTAINER_NAME` can be `scheme-saathi`. Protect the deployment branch and
@@ -306,6 +315,13 @@ for the service. It must include the same container name as
 and `secrets` references for the environment variables needed by the app. Do
 not put secret values in this file. ECS deployment needs these settings and
 resources defined before the workflow can successfully start a task.
+
+For a private Docker Hub repository, add `repositoryCredentials` to the ECS
+container definition, pointing to an AWS Secrets Manager secret whose JSON
+value has `username` and `password` fields. Use a Docker Hub read-only token
+for this secret, and allow the ECS task execution role to read it. This is
+separate from the GitHub `DOCKERHUB_TOKEN`, which needs permission to push.
+Public Docker Hub repositories do not need `repositoryCredentials`.
 
 For example, the container definition can follow this pattern; replace the
 account, region, role, log-group, and secret ARN placeholders with real AWS
@@ -363,67 +379,33 @@ key) for only the referenced secrets.
 
 ### 6.3 Add the GitHub Actions workflow
 
-Create `.github/workflows/deploy-aws.yml`:
+The repository workflow is `.github/workflows/cicd.yaml`. It runs the test
+suite on pull requests to `main`, and on pushes to `main`.
+Deployment runs only after tests pass, on a push to `main` (or a manual run
+started from `main`). It builds and pushes the image to Docker Hub, then
+authenticates to AWS with GitHub OIDC and updates the ECS service.
 
-```yaml
-name: Build and deploy to AWS
+Configure these GitHub Actions values before running the workflow:
 
-on:
-  push:
-    branches: [main]
+- Secret `AWS_ROLE_TO_ASSUME`: the ARN of the GitHub OIDC deployment role.
+- Secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`: Docker Hub push
+  credentials.
+- Variables `AWS_REGION`, `DOCKERHUB_REPOSITORY`, `ECS_CLUSTER`, `ECS_SERVICE`,
+  `ECS_TASK_DEFINITION`, and `ECS_CONTAINER_NAME`.
+- `DOCKERHUB_REPOSITORY` must be the full `namespace/image` name.
+  `ECS_TASK_DEFINITION` should point to the task definition JSON file in the
+  repository, and `ECS_CONTAINER_NAME` must match its container name.
 
-permissions:
-  contents: read
-  id-token: write
+Before logging in or deploying, the workflow checks that all required secrets
+and variables are non-empty and that the task-definition file exists. This
+preflight verifies configuration presence, not whether credentials are valid;
+Docker Hub login and AWS authentication verify those during the run.
 
-concurrency:
-  group: deploy-production
-  cancel-in-progress: false
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials with OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Sign in to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build and push image
-        id: build-image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:latest
-
-      - name: Render ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ vars.ECS_TASK_DEFINITION }}
-          container-name: ${{ vars.ECS_CONTAINER_NAME }}
-          image: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:${{ github.sha }}
-
-      - name: Deploy ECS service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ vars.ECS_SERVICE }}
-          cluster: ${{ vars.ECS_CLUSTER }}
-          wait-for-service-stability: true
-```
+The `production` GitHub Environment can require approval before deployment.
+Restrict the OIDC role trust policy to this repository and the `production`
+environment, and grant it only the ECS deployment permissions needed for this
+service. The deploy job uses the shared `deploy-production` concurrency group
+with cancellation disabled, so only one production deployment runs at a time.
 
 The commit SHA tag identifies exactly what was deployed; `latest` is convenient
 for browsing but should not be used as the production rollback reference. A
@@ -434,8 +416,9 @@ Keep a previous task definition revision and image tag for rollback.
 ### 6.4 Deploy and verify
 
 Commit and push the workflow, task definition, and application changes to the
-configured deployment branch. In GitHub, open **Actions → Build and deploy to
-AWS** and confirm the build, ECR push, and ECS deployment steps pass.
+configured deployment branch. In GitHub, open **Actions → CI/CD to AWS ECS**,
+confirm the tests pass, then confirm the image build, Docker Hub push, and ECS
+deployment steps pass.
 
 Then verify that:
 
