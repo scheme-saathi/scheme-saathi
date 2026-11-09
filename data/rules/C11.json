@@ -1,0 +1,88 @@
+{
+  "scheme_id": "C11",
+  "name": "Stand-Up India",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/sui",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "Finance is  provided for Greenfield Enterprises."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "If the applicant is a male, he must be from SC / ST category."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The age of the applicant must be at least 18 years."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant must not be in default to any bank/financial institution."
+    }
+  ],
+  "documents_required": [
+    "Proof of Identity: Voter’s ID Card / Passport / Driving License / PAN Card / Signature identification from present bankers of proprietor, partner of director ( if a company)",
+    "Proof of Residence: Recent telephone bills, electricity bill, property tax receipt /Passport / voter’s ID Card of Proprietor, partner of Director (if a company)",
+    "Proof of Business Address",
+    "Proof that the applicant is not a defaulter in any Bank / Financial Institution",
+    "Memorandum and articles of association of the Company / Partnership Deed of partners etc.",
+    "Assets and liabilities statement of promoters and guarantors along with latest income tax returns.",
+    "Rent Agreement (if business premises on rent) and clearance from pollution control board if applicable.",
+    "SSI / MSME registration (if applicable)",
+    "Projected balance sheets for the next two years in case of working capital limits and for the period of the loan in case of term loan.",
+    "Photocopies of lease deeds/ title deeds of all the properties being offered as primary and collateral securities.",
+    "Documents to establish whether the applicant belongs to SC/ST Category, wherever applicable.",
+    "Certificate of incorporation from ROC to establish whether majority stake holding in the company is in the hands of a person who belongs to SC/ST/Woman category.",
+    "For cases with exposure above ₹ 25 Lakhs:",
+    "Profile of the unit (includes names of promoters, other directors in the company, the activity being undertaken addresses of all offices and plants, shareholding pattern etc.",
+    "Last three years balance sheets of the Associate / Group Companies (if any).",
+    "Project report (for the proposed project if term funding is required) containing details of the machinery to be acquired, from whom to be acquired, price, names of suppliers, financial details like capacity of machines, capacity of utilization assumed, production, sales, projected profit and loss and balance sheets for the tenor of the loan, the details of labour, staff to be hired, basis of assumption of such financial details etc.",
+    "Manufacturing process if applicable, major profile of executives in the company, any tie-ups, details about raw material used and their suppliers, details about the buyers, details about major-competitors and the company’s strength and weaknesses as compared to their competitors etc."
+  ],
+  "rules": [
+    {
+      "field": "is_starting_greenfield_enterprise",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_woman_or_girl",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "social_category",
+          "op": "in",
+          "value": [
+            "SC",
+            "ST"
+          ]
+        }
+      ]
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 18,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_bank_loan_defaulter",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

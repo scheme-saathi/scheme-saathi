@@ -8,8 +8,7 @@ The supervisor acts as a gatekeeper with three layers:
 This ensures safe, controlled information flow across all agents.
 
  Unified Classification Strategy:
-- Primary: gpt-4o-mini via OpenRouter (language + intent in single call)
-- Latency: ~50-100ms (one round-trip)
+- Primary: configured OpenRouter model (language + intent in single call)
 - Fallback: Character-based language + keyword intent detection (<1ms)
 - Hybrid approach ensures resilience if API is unavailable
 """
@@ -37,8 +36,8 @@ logger = logging.getLogger(__name__)
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1"
 SUPERVISOR_MODEL_ENV = "SUPERVISOR_MODEL"
+ROUTER_MODEL_ENV = "ROUTER_MODEL"
 OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
-UNIFIED_ROUTER_MODEL = "openai/gpt-4o-mini"  # Fast, cost-effective unified classification
 
 
 class ClassificationResult(TypedDict):
@@ -89,7 +88,7 @@ class RateLimitTracker:
 
 
 class UnifiedRouter:
-    """Unified language + intent classification via gpt-4o-mini.
+    """Unified language + intent classification via OpenRouter.
     
     Extracts both language and intent in a single API call to minimize latency
     and API costs. Includes automatic fallback to character-based detection
@@ -122,13 +121,14 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
 
     def __init__(self):
         self.openrouter_api_key = os.getenv(OPENROUTER_API_KEY_ENV)
-        self.api_available = bool(self.openrouter_api_key)
+        self.model = os.getenv(ROUTER_MODEL_ENV, "").strip() or os.getenv(SUPERVISOR_MODEL_ENV, "").strip()
+        self.api_available = bool(self.openrouter_api_key and self.model)
 
         if self.api_available:
-            logger.info(f"OpenRouter configured for {UNIFIED_ROUTER_MODEL} unified classification")
+            logger.info("OpenRouter configured for unified classification")
         else:
             logger.warning(
-                "OpenRouter API key not configured. "
+                "OpenRouter API key or classifier model not configured. "
                 "Will use character-based language detection + keyword intent matching."
             )
 
@@ -136,7 +136,7 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
         """Classify language and intent in a single API call with fallback.
         
         Strategy:
-        1. Try unified gpt-4o-mini classification via OpenRouter
+        1. Try unified classification via the configured OpenRouter model
         2. On failure: Fall back to character-based + keyword methods
         3. Always returns valid ClassificationResult
         
@@ -156,7 +156,7 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
         return self._classify_with_fallback(text)
 
     def _classify_with_api(self, text: str) -> ClassificationResult | None:
-        """Try unified classification via gpt-4o-mini on OpenRouter.
+        """Try unified classification via the configured OpenRouter model.
         
         Args:
             text: Input text to classify
@@ -173,7 +173,7 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
             }
 
             payload = {
-                "model": UNIFIED_ROUTER_MODEL,
+                "model": self.model,
                 "messages": [
                     {
                         "role": "system",
@@ -560,6 +560,93 @@ class RoutingEngine:
         )
 
 
+# shortcut: phrase lists, covering en + common hi/mr wording; extend if reviews find misses.
+# A claim is about the person or a relative ("you", "she", "your grandmother"); a criterion
+# quoted for everyone ("Widows aged 40-79 can get Rs 300") names no one and stays allowed.
+_PERSON = r"(?:you|she|he|your(?:\s+[a-z\-]+){1,2})"
+# "get/receive/avail" counts only with a benefit after it: "you can get the form" is procedure.
+_BENEFIT = (r"(?:pension|benefits?|assistance|subsidy|scholarships?|insurance|cover|loans?|card|money"
+            r"|grant|allowance|stipend|amount|rs\.?|rupees|help|support|aid)")
+_VERDICT = re.compile(
+    rf"\b{_PERSON}\s+(?:can|could|will|may|might|should|would)\s+(?:also\s+|still\s+)?"
+    rf"(?:join|qualify|be eligible|benefit|(?:get|receive|avail)\b(?:\s+\S+){{0,4}}?\s+{_BENEFIT})\b"
+    rf"|\b{_PERSON}\s+(?:is|are|'re|'s)\s+(?:not\s+|also\s+)?(?:eligible|entitled|qualified)\b"
+    rf"|\b{_PERSON}\s+(?:do not |don't |does not |doesn't )?qualif(?:y|ies)\b"
+    r"|\b(?:you|application) (?:is|are|has been|have been) approved\b"
+)
+# "Yes, there is a pension for your grandmother": a yes/no answer about the person.
+_YES_NO_ABOUT_PERSON = re.compile(r"^(?:yes|no)\b.*\b(?:you|your|she|her|he|him)\b")
+_HI_PERSON = ("आप", "आपको", "आपके", "आपकी", "उन्हें", "उनको", "वह", "वे")
+_HI_VERDICT = ("पात्र", "हकदार", "लाभ ले सकत")
+_HI_GET = ("मिल सकत", "मिलेग", "मिल जाएग")
+_HI_BENEFIT = ("पेंशन", "लाभ", "सहायता", "राशि", "रुपये", "सब्सिडी", "छात्रवृत्ति", "कार्ड", "बीमा", "ऋण", "मदद")
+_MR_PERSON = ("तुम्ही", "तुम्हाला", "तुमच्या", "त्यांना", "तिला", "त्याला")
+_MR_VERDICT = ("पात्र", "हक्कदार", "लाभ घेऊ शकत")
+_MR_GET = ("मिळू शकत", "मिळेल")
+_MR_BENEFIT = ("पेन्शन", "लाभ", "मदत", "सहाय्य", "रक्कम", "रुपये", "अनुदान", "शिष्यवृत्ती", "कार्ड", "विमा", "कर्ज")
+_SENTENCE = re.compile(r"(?<=[.!?।])\s+|\n+")
+
+
+def _decides_eligibility(text: str) -> bool:
+    """A personal verdict ("you are eligible", "your mother can get it"), not a question or
+    a criterion quoted for everyone."""
+    for sentence in _SENTENCE.split(text.strip()):
+        sentence = sentence.strip()
+        if not sentence or sentence.endswith("?"):
+            continue
+        lower = sentence.lower()
+        if _VERDICT.search(lower) or _YES_NO_ABOUT_PERSON.search(lower):
+            return True
+        words = set(re.findall(r"[\u0900-\u097F]+", sentence))
+        for person, verdict, get, benefit in (
+            (_HI_PERSON, _HI_VERDICT, _HI_GET, _HI_BENEFIT),
+            (_MR_PERSON, _MR_VERDICT, _MR_GET, _MR_BENEFIT),
+        ):
+            if words & set(person) and (
+                any(v in sentence for v in verdict)
+                or (any(g in sentence for g in get) and any(b in sentence for b in benefit))
+            ):
+                return True
+    return False
+
+
+# shortcut: phrase lists for en + common hi/mr wording; extend from routing misses in evaluation.
+# "Can she get a pension?", "Is there a scheme for me?", "Which schemes can I join?" ask about the
+# person's own eligibility, so intake and the rule engine must answer them, not scheme Q&A.
+_ASKER = r"(?:i|we|she|he|they|my(?:\s+[a-z\-]+){1,2}|our(?:\s+[a-z\-]+){1,2})"
+_OWN_ELIGIBILITY = re.compile(
+    rf"\b(?:can|could|will|would|do|does|may|should)\s+{_ASKER}\s+(?:still\s+|also\s+|ever\s+)?"
+    r"(?:get|join|qualify|be eligible|receive|avail|claim|benefit)\b"
+    rf"|\b(?:am|is|are)\s+{_ASKER}\s+(?:still\s+|also\s+)?(?:eligible|entitled|qualified)\b"
+    r"|\bfor (?:me|us|her|him|them|my(?:\s+[a-z\-]+){1,2}|our(?:\s+[a-z\-]+){1,2})\b"
+    rf"|\b(?:what|which)\b[^.?!]*\b(?:can|could|should|do|will)\s+{_ASKER}\s+(?:get|join|apply|claim|receive)\b"
+)
+_PROCEDURAL_START = re.compile(r"^\s*(?:how|where|when|what documents|which documents)\b")
+_HI_ASKER = ("मुझे", "मेरे", "मेरी", "मेरा", "हमें", "हमारे", "उन्हें", "उनको", "उसे", "उसके", "मैं")
+_HI_SEEK = ("मिल सकत", "मिलेग", "मिलती", "मिलता", "पात्र", "जुड़ सकत", "ले सकत", "मेरे लिए", "हमारे लिए")
+_MR_ASKER = ("मला", "माझ्या", "माझी", "माझे", "आम्हाला", "तिला", "त्याला", "त्यांना", "मी")
+_MR_SEEK = ("मिळू शकत", "मिळेल", "मिळते", "मिळतो", "पात्र", "सामील होऊ शकत", "घेऊ शकत")
+
+
+def asks_about_own_eligibility(text: str) -> bool:
+    """Does the message ask whether the person, or someone they speak for, can get a benefit?
+
+    A factual question about a scheme ("What is the age limit for APY?", "How do I apply?")
+    is not one, even when it says "I".
+    """
+    for sentence in re.split(r"(?<=[.!?।])\s+|\n+", text.strip()):
+        lower = sentence.lower()
+        if not lower or _PROCEDURAL_START.search(lower):
+            continue
+        if _OWN_ELIGIBILITY.search(lower):
+            return True
+        words = set(re.findall(r"[\u0900-\u097F]+", sentence))
+        for askers, seeks in ((_HI_ASKER, _HI_SEEK), (_MR_ASKER, _MR_SEEK)):
+            if (words & set(askers) or "मेरे लिए" in sentence) and any(s in sentence for s in seeks):
+                return True
+    return False
+
+
 class OutputValidator:
     """Validates specialist agent responses before returning to user."""
 
@@ -612,6 +699,10 @@ class OutputValidator:
                 lang = response.get("language", "unknown")
                 if lang not in ["en", "hi", "mr", "unknown"]:
                     errors.append(f"Invalid language in response: {lang}")
+            # Intake should collect facts, not make decisions. A word match blocked fair questions
+            # such as "Is your institution approved by AICTE?", so only a personal verdict counts.
+            if _decides_eligibility(response_text):
+                errors.append("Intake agent should not make eligibility decisions")
 
         elif agent_name == "eligibility":
             # Eligibility must cite rules/clauses
@@ -642,10 +733,10 @@ class OutputValidator:
                         "Document Checker cannot verify authenticity - authenticity_verified must be False"
                     )
 
-        elif agent_name == "intake":
-            # Intake should collect facts, not make decisions
-            if "eligible" in response_text.lower() or "approve" in response_text.lower():
-                errors.append("Intake agent should not make eligibility decisions")
+        elif agent_name == "scheme_info":
+            # Quoting a scheme's criteria is fine; deciding the user's own eligibility is not.
+            if _decides_eligibility(response_text):
+                errors.append("Scheme answers must not decide the user's own eligibility")
 
         # 5. Response length sanity check
         if len(response_text) > 10000:
@@ -695,6 +786,12 @@ Your job is to validate and route requests intelligently:
    - Documents needed → Document Checker Agent
    - Want to apply → Intake Agent first (collect all facts)
    - Status update → Respond (this is Phase 4, not yet available)
+   - Factual question about a scheme (benefits, limits, how to apply) that does not ask to check
+     the user's own eligibility → Respond with scheme_question true; it is answered from cited documents
+   - A question whether the user or someone they speak for can get something is an eligibility
+     check, not a scheme question: "Is there a widow pension for me?", "Can my mother get a pension?",
+     "Which schemes can I join?", "मुझे कौन सी योजना मिल सकती है?", "मला कोणती योजना मिळू शकते?"
+     → Intake, even when it names a scheme
 
 3. VALIDATE OUTPUT:
    - Ensure specialist responses follow contracts
@@ -709,6 +806,9 @@ Rules you must follow:
 - When input is invalid, explain briefly in user's language without exposing technical details
 - Log all validation failures for security review
 - If a specialist returns invalid output, ask it to fix or escalate to human reviewer
+- When document_check is supplied, use that result to give a concise user-facing
+  summary in reason and set next_agent to respond. Do not add findings or claim
+  documents are authentic, valid, or verified.
 
 You are the security layer. Your job is to prevent harm and ensure trust."""
 

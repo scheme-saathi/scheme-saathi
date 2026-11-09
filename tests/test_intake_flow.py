@@ -86,7 +86,7 @@ def test_field_specs_for_live_scheme():
 
 def test_field_specs_list_known_string_values():
     spec = get_field_specs(["M18"], include_draft=True)["data"]["social_category"]
-    assert spec == {"type": "str", "known_values": ["VJNT", "OBC", "SBC"]}
+    assert spec == {"type": "str", "known_values": ["VJ-A", "NT-B", "NT-C", "NT-D", "OBC", "SBC"]}
 
 
 def test_field_specs_unknown_scheme_is_an_error():
@@ -98,7 +98,7 @@ def test_draft_fields_are_hidden_outside_preview(tmp_path, monkeypatch):
     for rule in record["rules"]:
         rule["status"] = "draft"
     (tmp_path / "C06.json").write_text(json.dumps(record))
-    monkeypatch.setattr(rule_server, "RULE_DIRS", [ROOT / "data/schemes", tmp_path])
+    monkeypatch.setattr(rule_server, "RULE_DIRS", [ROOT / "data/schemes", ROOT / "tests/fixtures", tmp_path])
     assert get_field_specs(["C06"])["data"] == {}
 
 
@@ -208,14 +208,28 @@ def test_extract_never_sees_earlier_facts(pension_specs):
 
 
 def test_dont_know_counts_only_for_an_unanswered_pending_field(pension_specs):
-    def run(reply, pending):
-        return IntakeAgent(FakeModel(reply)).extract({"request": "pata nahi", "pending_field": pending}, pension_specs)
+    def run(reply, pending):  # a missed pending field is asked again on its own, so script both calls
+        return IntakeAgent(FakeModel(reply, reply)).extract({"request": "pata nahi", "pending_field": pending}, pension_specs)
 
     assert run({"facts": {}, "reply_kind": "dont_know"}, "income").dont_know
     assert not run({"facts": {}, "reply_kind": "other"}, "income").dont_know
     assert not run({"facts": {}, "reply_kind": "dont_know"}, None).dont_know
     answered = {"facts": {"income": {"amount": 100000, "period": "year"}}, "reply_kind": "dont_know"}
     assert not run(answered, "income").dont_know
+
+
+def test_a_missed_pending_answer_is_read_again_against_that_field_alone(pension_specs):
+    """gpt-4o-mini read "No" as dont_know against a wide schema, which stopped intake.
+    A bare "No" is now read by code (direct_answer); this covers replies code can't read."""
+    model = FakeModel(
+        {"facts": {"age": 67}, "reply_kind": "dont_know"},
+        {"facts": {"is_widow": False}, "reply_kind": "answer"},
+    )
+    result = IntakeAgent(model).extract({"request": "She lost her husband? not really", "pending_field": "is_widow"}, pension_specs)
+
+    assert result.facts == {"age": 67, "is_widow": False}
+    assert not result.dont_know
+    assert set(model.schemas[1]["$defs"]["HouseholdProfile"]["properties"]) == {"is_widow"}
 
 
 @pytest.mark.parametrize(
@@ -356,21 +370,37 @@ def test_a_settled_no_asks_nothing_more():
 # T8: when intake stops asking
 
 
-def test_dont_know_stops_intake():
+def test_dont_know_skips_that_fact_and_intake_continues():
     intake = ScriptedIntake(IntakeExtraction(facts={"age": 67}), IntakeExtraction(dont_know=True))
     _, _, send = intake_graph(intake)
 
     send("My mother is 67")
     result = send("I don't know")
-    assert result["status"] == "intake_stopped"
-    assert result["intake_stopped"] == "dont_know"
-    assert result["declined_fields"] == ["income"]
-    assert "income" in result["response"] and "is widow" in result["response"]
-    assert result["pending_field"] is None
-    assert len(intake.ask_calls) == 1  # is_widow is not asked after "don't know"
+    assert (result["status"], result["response"]) == ("needs_information", "Q:is_widow")
+    assert result["declined_fields"] == ["income"] and result["intake_stopped"] is None
+    assert [q.field for q in intake.ask_calls] == ["income", "is_widow"]
 
 
-def test_two_unusable_replies_to_one_question_stop_intake():
+def test_when_only_unknown_facts_remain_the_answer_is_a_final_cant_tell():
+    intake = ScriptedIntake(
+        IntakeExtraction(facts={"age": 67}),
+        IntakeExtraction(dont_know=True),            # income: "I don't know"
+        IntakeExtraction(facts={"is_widow": True}),  # the only other open fact
+    )
+    graph, _, send = intake_graph(intake)
+
+    send("My mother is 67")
+    send("I don't know")
+    paused = send("Yes, she is a widow")
+    pending = paused["__interrupt__"][0].value
+    assert pending["kind"] == "confirm_facts" and pending["facts"] == {"age": 67, "is_widow": True}
+    final = resume(graph, {"configurable": {"thread_id": "t"}}, action="approve", payload_hash=pending["payload_hash"])
+    assert final["status"] == "eligibility_checked"
+    assert final["verdicts"][PENSION]["verdict"] == "cant_tell"
+    assert final["verdicts"][PENSION]["missing_fields"] == ["income"]
+
+
+def test_two_unusable_replies_skip_that_fact():
     intake = ScriptedIntake(
         IntakeExtraction(facts={"age": 67}), IntakeExtraction(), IntakeExtraction()
     )
@@ -379,22 +409,29 @@ def test_two_unusable_replies_to_one_question_stop_intake():
     send("My mother is 67")
     again = send("hmm")
     assert again["response"] == "Q:income"  # asked a second time
-    stopped = send("hmm")
-    assert (stopped["status"], stopped["intake_stopped"]) == ("intake_stopped", "no_answer")
-    assert stopped["declined_fields"] == ["income"]
-    assert [q.field for q in intake.ask_calls] == ["income", "income"]
+    moved_on = send("hmm")
+    assert (moved_on["status"], moved_on["response"]) == ("needs_information", "Q:is_widow")
+    assert moved_on["intake_stopped"] is None
+    assert [q.field for q in intake.ask_calls] == ["income", "income", "is_widow"]
     assert supervisor.calls == 3  # each empty reply was re-routed by the Supervisor
 
 
-def test_question_cap(monkeypatch):
+def test_question_cap_ends_in_a_final_answer(monkeypatch):
+    """At the cap the person confirms what they said and gets an answer; open verdicts are a
+    final can't tell naming the missing fact. Stopping without one left 11 of 21 C2 cases unanswered."""
     monkeypatch.setattr("graph.agent_workflow.MAX_QUESTIONS", 1)
     intake = ScriptedIntake(IntakeExtraction(facts={"age": 67}), IntakeExtraction(facts={"income": 100000}))
-    _, _, send = intake_graph(intake)
+    graph, _, send = intake_graph(intake)
 
     send("My mother is 67")
-    result = send("1 lakh a year")
-    assert result["intake_stopped"] == "question_cap"
-    assert [q.field for q in intake.ask_calls] == ["income"]
+    paused = send("1 lakh a year")
+    assert [q.field for q in intake.ask_calls] == ["income"]  # is_widow is never asked
+    pending = paused["__interrupt__"][0].value
+    assert pending["kind"] == "confirm_facts" and pending["facts"] == {"age": 67, "income": 100000}
+    final = resume(graph, {"configurable": {"thread_id": "t"}}, action="approve", payload_hash=pending["payload_hash"])
+    assert final["status"] == "eligibility_checked"
+    assert final["verdicts"][PENSION]["verdict"] == "cant_tell"
+    assert final["verdicts"][PENSION]["missing_fields"] == ["is_widow"]
 
 
 def test_new_request_while_a_question_is_pending_reaches_the_supervisor():
@@ -409,18 +446,22 @@ def test_new_request_while_a_question_is_pending_reaches_the_supervisor():
     assert len(intake.ask_calls) == 1
 
 
-def test_a_fresh_intake_resets_the_stop():
+def test_a_fresh_intake_resets_the_question_count(monkeypatch):
+    monkeypatch.setattr("graph.agent_workflow.MAX_QUESTIONS", 1)
     intake = ScriptedIntake(
         IntakeExtraction(facts={"age": 67}),
         IntakeExtraction(dont_know=True),
         IntakeExtraction(facts={"income": 100000}),
     )
-    _, _, send = intake_graph(intake)
+    graph, _, send = intake_graph(intake)
 
     send("My mother is 67")
-    assert send("I don't know")["status"] == "intake_stopped"
+    capped = send("I don't know")  # income declined; the one-question cap is now reached
+    pending = capped["__interrupt__"][0].value
+    assert pending["kind"] == "confirm_facts"
+    resume(graph, {"configurable": {"thread_id": "t"}}, action="approve", payload_hash=pending["payload_hash"])
     result = send("I found out: her income is 1 lakh a year")
-    assert result["intake_stopped"] is None and result["declined_fields"] == []
+    assert result["questions_asked"] == 1 and result["declined_fields"] == []
     assert result["response"] == "Q:is_widow"
 
 
@@ -532,3 +573,120 @@ def test_api_reports_the_confirm_step_and_accepts_the_decision():
 
     done = service.submit_decision("t", "a1", "approve", confirmation["payload_hash"], {})
     assert done["status"] == "eligibility_checked"
+
+
+def ui_confirmation_journey():
+    from app import app_new
+
+    app_new._initialize_portal_state()
+    app_new._render_chat_page()
+
+
+@pytest.mark.parametrize("correct_first", [False, True])
+def test_ui_confirm_details_resumes_real_api_and_graph(monkeypatch, correct_first):
+    from fastapi.testclient import TestClient
+    from streamlit.testing.v1 import AppTest
+
+    from app import app_new
+    from app.auth import AuthenticatedHousehold, authenticated_household
+
+    service = api.AgentWorkflowService()
+    service._agent_graph = intake_graph(ScriptedIntake(
+        IntakeExtraction(facts=WIDOW_67), IntakeExtraction(facts={"age": 68})
+    ))[0]
+    monkeypatch.setattr(api, "get_workflow_service", lambda: service)
+    monkeypatch.setattr("graph.agent_workflow._shortlist_schemes", lambda agents, request, facts=None: [PENSION])
+    application = api.create_api()
+    application.dependency_overrides[authenticated_household] = lambda: AuthenticatedHousehold(
+        household_id="test-household", subject="test-subject"
+    )
+    client = TestClient(application)
+
+    class HealthResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return b'{"status":"ok"}'
+
+    def request(url, method="GET", body=None, headers=None):
+        response = client.request(method, url, content=body, headers=headers)
+        if response.status_code >= 400:
+            raise RuntimeError(response.json()["detail"])
+        return response.json()
+
+    monkeypatch.setattr(app_new, "_api_base_url", lambda: "http://testserver")
+    monkeypatch.setattr(app_new, "urlopen", lambda *args, **kwargs: HealthResponse())
+    monkeypatch.setattr(app_new, "_api_request", request)
+    monkeypatch.setattr(app_new, "_scheme_names", lambda base: {PENSION: "Synthetic pension"})
+
+    ui = AppTest.from_function(ui_confirmation_journey).run()
+    ui.chat_input[0].set_value("My mother is 67, a widow, and earns 1 lakh a year").run()
+    assert not ui.exception
+    assert ui.session_state["chat_confirmation"]["facts"] == WIDOW_67
+    expected = WIDOW_67
+    if correct_first:
+        next(button for button in ui.button if button.label == "Change details in chat").click().run()
+        assert not ui.exception
+        assert ui.session_state["chat_confirmation"] is None
+        assert not ui.chat_input[0].disabled
+        ui.chat_input[0].set_value("Sorry, she is 68").run()
+        expected = {**WIDOW_67, "age": 68}
+        assert ui.session_state["chat_confirmation"]["facts"] == expected
+    next(button for button in ui.button if button.label == "Confirm details").click().run()
+    assert not ui.exception
+    assert ui.session_state["chat_confirmation"] is None
+    assert ui.session_state["chat_eligibility_result"]["status"] == "eligibility_checked"
+    assert ui.session_state["chat_eligibility_result"]["verdicts"][PENSION]["verdict"] == "eligible"
+    assert ui.session_state["chat_eligibility_result"]["profile"] == expected
+    assert ui.selectbox[0].options == [f"Synthetic pension ({PENSION})"]
+
+
+# Direct answers to the pending question, read by code (agent-team evaluation, 8 Nov)
+
+from agents.intake import NONE_OF_THESE, direct_answer  # noqa: E402
+
+BOOL = {"type": "bool", "known_values": []}
+CATEGORY = {"type": "str", "known_values": ["individual owner cultivator", "tenant farmer"]}
+
+
+@pytest.mark.parametrize("reply, spec, value", [
+    ("No.", BOOL, False),
+    ("No, she is not remarried.", BOOL, False),
+    ("No, I am not a government or local body employee.", BOOL, False),  # was read as True
+    ("Yes, I consent to auto debit.", BOOL, True),
+    ("नाही, मी नाही.", BOOL, False),
+    ("होय, माझ्याकडे बचत खाते आहे.", BOOL, True),
+    ("हाँ", BOOL, True),
+    ("नहीं", BOOL, False),
+    ("I am not a farmer.", CATEGORY, NONE_OF_THESE),
+    ("I don't fall into any of these categories.", CATEGORY, NONE_OF_THESE),
+    ("No", CATEGORY, NONE_OF_THESE),
+])
+def test_plain_answers_are_read_by_code(reply, spec, value):
+    assert direct_answer(reply, spec) == value
+
+
+@pytest.mark.parametrize("reply, spec", [
+    ("I don't know.", BOOL),
+    ("I have a savings account.", BOOL),          # not a yes/no: left to the model
+    ("Not sure", BOOL),
+    ("I am a tenant farmer.", CATEGORY),
+    ("Nobody told me", BOOL),                      # "nobody" is not "no"
+    ("No", {"type": "number", "known_values": []}),
+])
+def test_other_replies_are_left_to_the_model(reply, spec):
+    assert direct_answer(reply, spec) is None
+
+
+def test_a_plain_no_overrides_the_models_reading(pension_specs):
+    """The model flipped "No" for a field whose name says "excluded"; code reads it."""
+    model = FakeModel({"facts": {"is_widow": True}, "reply_kind": "answer"})
+    result = IntakeAgent(model).extract(
+        {"request": "No, she is not.", "pending_field": "is_widow", "pending_question": "Is she a widow?"},
+        pension_specs,
+    )
+    assert result.facts["is_widow"] is False and not result.dont_know

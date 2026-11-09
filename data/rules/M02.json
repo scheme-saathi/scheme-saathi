@@ -1,0 +1,86 @@
+{
+  "scheme_id": "M02",
+  "name": "Shravanbal Seva State Pension Scheme",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/sbssps",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant should be a citizen of India."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant should be a domicile / permanent resident of the state of Maharashtra for at least 15 years."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant should be destitute."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant should be 65 years or above in age."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The name of the applicant should be in the list of Below Poverty Line (BPL) families OR the annual income of the family should be less than or equal to ₹ 21,000/-."
+    }
+  ],
+  "documents_required": [
+    "Aadhaar Card.",
+    "2-Passport Sized Photograph (Signed Across).",
+    "Proof of Age.",
+    "Income Certificate / BPL Card of the Family (if applicable)",
+    "Residential Certificate / Domicile Certificate of the State of Maharashtra.",
+    "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+    "Any other document required by the District Social Welfare Office."
+  ],
+  "rules": [
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "years_resident_in_maharashtra",
+      "op": "gte",
+      "value": 15,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_destitute",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 65,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "household_below_bpl",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-5",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 21000
+        }
+      ]
+    }
+  ],
+  "rule_logic": "all"
+}

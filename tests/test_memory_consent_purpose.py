@@ -11,7 +11,7 @@ SCOPE = MemoryScope(actor_id="a1", household_id="hh1", actor_role="citizen")
 
 
 def _consent(purpose: str) -> MemoryConsent:
-    now = datetime.now()
+    now = datetime.utcnow()
     return MemoryConsent(
         purpose=purpose,
         granted=True,
@@ -30,7 +30,7 @@ def service():
 
 
 def _fact() -> MemoryFact:
-    now = datetime.now()
+    now = datetime.utcnow()
     return MemoryFact(
         field="state_code",
         value="KA",
@@ -43,7 +43,7 @@ def _fact() -> MemoryFact:
 
 
 def _reference() -> ApplicationReference:
-    now = datetime.now()
+    now = datetime.utcnow()
     return ApplicationReference(
         scheme_id="S1",
         application_id="APP1",

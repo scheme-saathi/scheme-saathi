@@ -1,0 +1,110 @@
+{
+  "scheme_id": "M07",
+  "name": "LIDCOM Gattai Stall Scheme",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/lgss",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant should be a citizen of India."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant should be a Roadside Cobbler identified by the Gram Panchayat."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant should be a permanent resident of Maharashtra State."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant should be in the 18 to 50 years age group."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The applicant should be from Charmakar Community only (Dhor, Chambhar, Holar, Mochi, etc.)."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "The annual income of the family of the applicant should be less than or equal to ₹1,00,000/-."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "The applicant should have knowledge of the business for which he has applied for the loan."
+    }
+  ],
+  "documents_required": [
+    "Aadhaar Card.",
+    "Proof of Age (Birth Certificate, Marksheet of Class 10th/12th, etc)",
+    "2-Passport Sized Photograph (Signed Across)",
+    "Residential Certificate / Domicile Certificate of the State of Maharashtra.",
+    "Proof of being a Roadside Cobbler (issued by the Gram Panchayat),",
+    "Income Certificate issued by an Authorised Govt.Officer.",
+    "Caste Certificate issued by an Authorised Govt.Officer.",
+    "Details of the Bank Account (Bank Name, Branch Name, Address, IFSC, etc).",
+    "Any other document required by the District Office of LIDCOM."
+  ],
+  "rules": [
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_roadside_cobbler_identified_by_gram_panchayat",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_maharashtra_resident",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 18,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 50,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_charmakar_community",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "annual_family_income",
+      "op": "lte",
+      "value": 100000,
+      "clause_id": "elig-6",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_knowledge_of_business_applied_for",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-7",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

@@ -1,0 +1,98 @@
+{
+  "scheme_id": "C07",
+  "name": "Rashtriya Krishi Vigyan Puraskar",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/rkvp",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "General Conditions:"
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant should be an Indian scientist working in agriculture or allied fields in ICAR institutes, public agricultural institutions, or Krishi Vigyan Kendras, and must have made significant contributions in India."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant should have work (research, innovation, or extension) that shows clear and proven impact on society, economy, or environment, supported by the Head of the Institution."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant can apply at any stage of their career, as no minimum service period is required."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The applicant should submit only one application for a particular contribution in a year, and the application will be valid only for that year."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "The applicant should have a clean service record, with no pending enquiry or major punishment in the last five years."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "The applicant should apply under only one category and cannot be considered for multiple categories."
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "Category-wise Conditions:"
+    },
+    {
+      "clause_id": "elig-9",
+      "text": "The applicant can apply individually or as part of a team (maximum five members) for innovation and research awards, and must be below 60 years of age."
+    },
+    {
+      "clause_id": "elig-10",
+      "text": "The applicant applying for interdisciplinary research should be part of a team of at least three members from different disciplines, and the team leader must be below 60 years of age."
+    },
+    {
+      "clause_id": "elig-11",
+      "text": "The applicant applying for the women scientist category should be a woman working in agriculture or allied fields, and must be below 60 years of age."
+    },
+    {
+      "clause_id": "elig-12",
+      "text": "The applicant applying for the young scientist category should have a doctoral degree, hold a regular position, and must be below 45 years of age."
+    }
+  ],
+  "documents_required": [
+    "Filled application",
+    "Details of your work",
+    "Proof your work helped people/environment",
+    "Documents (papers, patents, etc.)",
+    "Clean record certificate"
+  ],
+  "rules": [
+    {
+      "field": "is_agricultural_scientist_in_icar_or_public_institution",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "work_has_proven_impact_supported_by_head",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_clean_service_record_last_5_years",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-6",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lt",
+      "value": 60,
+      "clause_id": "elig-9",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

@@ -1,0 +1,93 @@
+{
+  "scheme_id": "C29",
+  "name": "Indira Gandhi National Disability Pension Scheme",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/igndps",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The eligibility criteria for a disabled person to avail of the benefits are as follows."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The age of the applicant should be 18 years and above."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant should be a resident of India."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant should be a physically or mentally disabled person."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The applicant’s disability should be more than 80%."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "Dwarfs are also eligible for this scheme."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "The applicant should belong to the Below Poverty Line."
+    }
+  ],
+  "documents_required": [
+    "BPL Card",
+    "Aadhaar card",
+    "Age Proof - For age, the birth certificate or school certificate may be relied on. In their absence ration card and EPIC may be considered. If there is no valid document, any Medical Officer of any government hospital may be authorized to issue the age certificate.",
+    "Disability certificate:- Disability certificate (80% and More) issued from Chief Medical Officer, Community Health Centre or Primary Health Centre will be accepted.",
+    "Passport Size Photographs."
+  ],
+  "rules": [
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 18,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "resides_in_india",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_disability",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "disability_percent",
+      "op": "gt",
+      "value": 80,
+      "clause_id": "elig-5",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "is_person_with_dwarfism",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-6"
+        }
+      ]
+    },
+    {
+      "field": "household_below_bpl",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-7",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

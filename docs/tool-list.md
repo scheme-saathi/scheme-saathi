@@ -63,10 +63,11 @@ path to bypass the approval workflow.
 functions directly and do not pass through the graph's `call_tool` allow-list.
 Both require a verified Auth0 access token. POST additionally requires a
 short-lived one-use capability bound to the exact form and authenticated
-household; GET returns status only to the owning household. Capability nonces
-and application records are process-local, and the shared-secret issuer is
-demo-grade. Keep the portal server private; this is not production service
-isolation.
+household; GET returns status only to the owning household. Application records
+are process-local. Capability nonces are also process-local unless all portal
+processes share the optional `MOCK_PORTAL_NONCE_DB` SQLite file. The
+shared-secret issuer is demo-grade. Keep the portal server private; this is not
+production service isolation.
 
 ## Change checklist
 

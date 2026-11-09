@@ -57,6 +57,20 @@ class StubSupervisor(StubAgent):
     def handle_validation_error(self, result, language):
         return {"user_message": self.output_validator.get_user_friendly_error(result, language)}
 
+    def invoke(self, value):
+        self.calls.append(value)
+        if value.document_check is not None:
+            check = DocumentCheckResult.model_validate(value.document_check)
+            parts = (
+                ["Missing documents: " + ", ".join(check.missing_documents)]
+                if check.missing_documents
+                else ["Document checklist complete; authenticity is not verified."]
+            )
+            parts.extend(check.possible_inconsistencies)
+            parts.extend(check.clarifying_questions)
+            return SupervisorPlan(next_agent="respond", reason=" ".join(parts))
+        return self.result
+
 
 class StubIntake:
     """Reads no facts from the message and words each question as its field name."""
@@ -113,6 +127,71 @@ def test_intake_question_pauses_before_other_specialists():
     assert agents.document_checker.calls == agents.application.calls == []
 
 
+def test_intake_only_asks_about_the_shortlisted_schemes():
+    class ChoosingIntake(StubIntake):
+        def choose_schemes(self, value):
+            return ["C13", "not-a-scheme"][:1]
+
+    agents = build_agents(
+        intake=ChoosingIntake(),
+        plan=StubSupervisor(SupervisorPlan(next_agent="intake", reason="Collect facts.", language="en")),
+    )
+
+    result = build_agent_graph(agents).invoke({"request": "I am a farmer, which schemes fit me?"})
+
+    assert result["shortlist"] == ["C13"]
+    assert list(result["verdicts"]) == ["C13"]
+
+
+def test_an_answer_refreshes_the_shortlist_with_the_facts_so_far():
+    from langgraph.checkpoint.memory import MemorySaver
+
+    class RefreshingIntake(StubIntake):
+        def __init__(self):
+            super().__init__()
+            self.choices = []
+
+        def choose_schemes(self, value):
+            self.choices.append(value)
+            return ["C01"] if len(self.choices) == 1 else ["C02"]
+
+        def extract(self, value, specs):
+            return IntakeExtraction(facts={"age": 53} if value.pending_field else {})
+
+    intake = RefreshingIntake()
+    agents = build_agents(
+        intake=intake,
+        plan=StubSupervisor(SupervisorPlan(next_agent="intake", reason="Collect facts.", language="en")),
+    )
+    graph = build_agent_graph(agents, checkpointer=MemorySaver())
+    config = {"configurable": {"thread_id": "refresh-1"}}
+
+    first = graph.invoke({"request": "Find schemes for my mother"}, config)
+    assert first["shortlist"] == ["C01"] and first["pending_field"] == "age"
+
+    second = graph.invoke({"request": "53"}, config)
+
+    assert [c.known_facts for c in intake.choices] == [{}, {"age": 53}]
+    assert intake.choices[1].request == "Find schemes for my mother"  # the original request, not "53"
+    assert second["shortlist"] == ["C02"]
+    assert list(second["verdicts"]) == ["C02"]
+
+
+def test_failed_shortlisting_falls_back_to_every_reviewed_scheme():
+    class BrokenIntake(StubIntake):
+        def choose_schemes(self, value):
+            raise RuntimeError("model unavailable")
+
+    agents = build_agents(
+        intake=BrokenIntake(),
+        plan=StubSupervisor(SupervisorPlan(next_agent="intake", reason="Collect facts.", language="en")),
+    )
+
+    result = build_agent_graph(agents).invoke({"request": "I am a farmer, which schemes fit me?"})
+
+    assert len(result["verdicts"]) > 1
+
+
 def test_intake_question_leaking_an_id_is_blocked_and_not_pending():
     class LeakyIntake(StubIntake):
         def ask(self, value):
@@ -164,6 +243,31 @@ def test_document_request_is_routed_to_checker_without_application_access():
     assert result["status"] == "documents_checked"
     assert "Income certificate" in result["response"]
     assert application.calls == []
+
+
+def test_document_checker_receives_confirmed_persona_and_supervisor_receives_result():
+    documents = StubAgent(DocumentCheckResult(missing_documents=["Income certificate"]))
+    supervisor = StubSupervisor(
+        SupervisorPlan(next_agent="document_checker", reason="Check documents.")
+    )
+    agents = build_agents(plan=supervisor, documents=documents)
+
+    result = build_agent_graph(agents).invoke(
+        {
+            "request": "Check these documents",
+            "selected_scheme_id": "C01",
+            "required_documents": ["Income certificate"],
+            "available_documents": ["Age proof: age: 60"],
+            "confirmed_facts": {"age": 60, "income": 250000},
+        }
+    )
+
+    assert documents.calls[0].household_persona == {"age": 60, "income": 250000}
+    assert (
+        supervisor.calls[-1].document_check.model_dump(mode="json")
+        == result["document_check"]
+    )
+    assert "Income certificate" in result["response"]
 
 
 def test_respond_route_does_not_invoke_specialists():

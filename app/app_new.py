@@ -5,9 +5,11 @@ from __future__ import annotations
 import http.client
 import json
 import os
+import sys
 import threading
 import time
 from collections.abc import Iterator
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -19,11 +21,33 @@ import streamlit as st
 import uvicorn
 
 if __package__:
+    from . import memory_text, ui_auth
     from .api import create_api
 else:
-    from api import create_api
+    # `streamlit run app/app_new.py` puts app/ on sys.path, but api.py imports `app.*`.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from app import memory_text, ui_auth
+    from app.api import create_api
 
 CSS_PATH = Path(__file__).with_name("style.css")
+BRAND_IMAGE_PATH = Path(__file__).with_name("images") / "main_image.png"
+JOURNEY_STEPS = (
+    "Your details",
+    "Eligibility",
+    "Documents",
+    "Review",
+    "Confirmation",
+)
+
+
+def _render_brand_image(width: int = 313) -> None:
+    """Render the official Scheme Saathi image at a consistent header size."""
+    with st.container(key="page-brand"):
+        st.image(
+            BRAND_IMAGE_PATH,
+            width=width,
+            alt="Government of India, MyGov, and Scheme Saathi",
+        )
 
 
 @st.cache_resource
@@ -111,6 +135,56 @@ def _parse_sse(response: Any) -> Iterator[tuple[str, dict[str, Any]]]:
         yield event_name, payload
 
 
+def _access_token() -> str | None:
+    """The signed-in user's Auth0 access token, or None when signed out or expired."""
+    try:
+        token = st.session_state.get("access_token")
+    except Exception:
+        return None
+    value = getattr(token, "value", None)
+    expires_at = getattr(token, "expires_at", None)
+    if isinstance(value, str) and isinstance(expires_at, (int, float)):
+        if time.time() < expires_at - 30:
+            return value
+    return None
+
+
+def _auth_headers(headers: dict[str, str] | None = None) -> dict[str, str]:
+    merged = dict(headers or {})
+    token = _access_token()
+    if token:
+        merged["Authorization"] = f"Bearer {token}"
+    return merged
+
+
+def _sign_out() -> None:
+    st.session_state["access_token"] = None
+    st.session_state["account_role"] = None
+    st.session_state["account_email"] = None
+    st.session_state["account_email_error"] = None
+    st.session_state["header_panel"] = None
+    st.session_state["portal_stage"] = "access"
+    st.session_state["consent_given"] = False
+
+
+def _http_error_message(error: HTTPError) -> str:
+    """Turn an API error into user-facing text; an expired sign-in ends the session."""
+    message = error.read().decode("utf-8", errors="replace")
+    try:
+        detail = json.loads(message).get("detail", message)
+    except (json.JSONDecodeError, AttributeError):
+        detail = message
+    if error.code == 401:
+        try:
+            _sign_out()
+        except Exception:
+            pass
+        reason = f"Sign-in was rejected: {detail} Please sign in again."
+        st.session_state["access_error"] = reason
+        return reason
+    return str(detail) or f"FastAPI request failed ({error.code})."
+
+
 def _api_request(
     url: str,
     method: str = "GET",
@@ -118,19 +192,12 @@ def _api_request(
     headers: dict[str, str] | None = None,
 ) -> Any:
     """Send a JSON API request and turn HTTP/network failures into clear UI errors."""
-    request = Request(url, data=body, headers=headers or {}, method=method)
+    request = Request(url, data=body, headers=_auth_headers(headers), method=method)
     try:
         with urlopen(request, timeout=300) as response:
             return json.loads(response.read().decode("utf-8"))
     except HTTPError as error:
-        message = error.read().decode("utf-8", errors="replace")
-        try:
-            detail = json.loads(message).get("detail", message)
-        except json.JSONDecodeError:
-            detail = message
-        raise RuntimeError(
-            str(detail) or f"FastAPI request failed ({error.code})."
-        ) from error
+        raise RuntimeError(_http_error_message(error)) from error
     except (URLError, OSError, http.client.HTTPException) as error:
         raise RuntimeError(f"FastAPI request failed: {error}") from error
 
@@ -145,10 +212,9 @@ def _send_workflow(
     request = Request(
         f"{api_base}{path}",
         data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "Content-Type": "application/json",
-            "Accept": "text/event-stream",
-        },
+        headers=_auth_headers(
+            {"Content-Type": "application/json", "Accept": "text/event-stream"}
+        ),
         method="POST",
     )
     result = None
@@ -164,14 +230,7 @@ def _send_workflow(
                 elif event_name == "result":
                     result = event_payload
     except HTTPError as error:
-        message = error.read().decode("utf-8", errors="replace")
-        try:
-            detail = json.loads(message).get("detail", message)
-        except json.JSONDecodeError:
-            detail = message
-        raise RuntimeError(
-            str(detail) or f"FastAPI request failed ({error.code})."
-        ) from error
+        raise RuntimeError(_http_error_message(error)) from error
     except URLError as error:
         raise RuntimeError(f"Could not connect to FastAPI: {error}") from error
     except (OSError, http.client.HTTPException) as error:
@@ -189,7 +248,7 @@ def _upload_document(
     document_type: str,
     uploaded_file: Any,
 ) -> dict[str, Any]:
-    """Upload a required PDF/image; the API validates it and retains metadata only."""
+    """Upload a required PDF/image for time-limited local storage."""
     boundary = f"----SchemeSaathi{uuid4().hex}"
     filename = Path(uploaded_file.name.replace("\\", "/")).name
     filename = filename.replace('"', "_").replace("\r", "_").replace("\n", "_")
@@ -198,6 +257,7 @@ def _upload_document(
     for name, value in (
         ("scheme_id", scheme_id),
         ("document_type", document_type),
+        ("sensitive_ids_masked", "true"),
     ):
         parts.extend(
             [
@@ -229,90 +289,213 @@ def _upload_document(
     )
 
 
+def _scheme_names(api_base: str) -> dict[str, str]:
+    """Map scheme IDs to display names; names are optional, so failures return {}."""
+    try:
+        with urlopen(f"{api_base}/api/schemes", timeout=10) as response:
+            schemes = json.loads(response.read().decode("utf-8")).get("schemes", [])
+        return {item["scheme_id"]: item["name"] for item in schemes}
+    except (HTTPError, URLError, OSError, ValueError, KeyError, TypeError, AttributeError):
+        return {}
+
+
 def _send_chat(
     api_base: str,
     user_input: str,
     session_id: str | None,
+    actor_id: str,
     progress: Any,
-) -> tuple[str | None, str | None, dict[str, Any] | None]:
-    """Send one conversational intake turn and return its reply and eligibility data."""
-    payload = {"user_input": user_input, "session_id": session_id}
-    request = Request(
+) -> tuple[str, str, dict[str, Any]]:
+    """Send one supervisor chat turn and return its reply and workflow data."""
+    payload = {"message": user_input, "actor_id": actor_id, "thread_id": session_id}
+    progress.write("Sending your message")
+    response = _api_request(
         f"{api_base}/api/chat",
-        data=json.dumps(payload).encode("utf-8"),
+        method="POST",
+        body=json.dumps(payload).encode("utf-8"),
         headers={
             "Content-Type": "application/json",
-            "Accept": "text/event-stream",
         },
-        method="POST",
     )
-    assistant_reply = None
-    received_session_id = session_id
-    result = None
-    try:
-        with urlopen(request, timeout=300) as response:
-            for event_name, event_payload in _parse_sse(response):
-                if event_name == "progress":
-                    progress.write(event_payload.get("label", "Working..."))
-                elif event_name == "session":
-                    received_session_id = event_payload.get("session_id")
-                elif event_name == "assistant":
-                    assistant_reply = event_payload.get("content", "")
-                elif event_name == "result":
-                    result = event_payload
-                elif event_name == "error":
-                    raise RuntimeError(
-                        event_payload.get("detail", "The intake agent could not respond.")
-                    )
-    except HTTPError as error:
-        message = error.read().decode("utf-8", errors="replace")
-        try:
-            detail = json.loads(message).get("detail", message)
-        except json.JSONDecodeError:
-            detail = message
-        raise RuntimeError(
-            str(detail) or f"FastAPI request failed ({error.code})."
-        ) from error
-    except URLError as error:
-        raise RuntimeError(f"Could not connect to FastAPI: {error}") from error
-    except (OSError, http.client.HTTPException) as error:
-        raise RuntimeError(f"The FastAPI stream ended unexpectedly: {error}") from error
+    return _chat_response(api_base, response, progress)
 
-    if assistant_reply is None:
-        raise RuntimeError("The FastAPI stream ended before returning a response.")
-    return received_session_id, assistant_reply, result
+
+def _chat_response(
+    api_base: str, response: Any, progress: Any
+) -> tuple[str, str, dict[str, Any]]:
+    if not isinstance(response, dict):
+        raise RuntimeError("FastAPI returned an invalid chat response.")
+
+    thread_id = response.get("thread_id")
+    assistant_reply = response.get("response")
+    data = response.get("data", {})
+    if not isinstance(thread_id, str) or not thread_id:
+        raise RuntimeError("FastAPI did not return a conversation thread.")
+    if not isinstance(assistant_reply, str) or not assistant_reply.strip():
+        raise RuntimeError("FastAPI did not return a chat response.")
+    if not isinstance(data, dict):
+        raise RuntimeError("FastAPI returned invalid workflow data.")
+
+    result = {"status": response.get("next_step"), "data": data}
+    if data.get("verdicts"):
+        progress.write("Checking reviewed scheme rules")
+        result.update(
+            verdicts=data["verdicts"],
+            explanations=data.get("explanations", {}),
+            profile=data.get("known_facts", {}),
+            scheme_names=_scheme_names(api_base),
+        )
+    return thread_id, assistant_reply, result
+
+
+def _send_fact_decision(
+    api_base: str, thread_id: str, confirmation: dict[str, Any], action: str,
+    progress: Any,
+) -> tuple[str, str, dict[str, Any]]:
+    payload_hash = confirmation.get("payload_hash")
+    if action not in ("approve", "reject") or not isinstance(payload_hash, str) or not payload_hash:
+        raise ValueError("The details confirmation is invalid. Start a new chat.")
+    response = _api_request(
+        f"{api_base}/api/chat/{quote(thread_id, safe='')}/decision",
+        method="POST",
+        body=json.dumps({"action": action, "payload_hash": payload_hash}).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+    )
+    return _chat_response(api_base, response, progress)
+
+
+def _shows_verdicts(result: dict[str, Any] | None) -> bool:
+    """Show rule verdicts when the check finished, or stopped with some schemes already decided."""
+    return bool(
+        result
+        and result.get("verdicts")
+        and result.get("status") in ("eligibility_checked", "intake_stopped")
+    )
+
+
+VERDICT_BADGES = {
+    "eligible": (":green-badge[:material/check_circle: ELIGIBLE]", "success"),
+    "not_eligible": (":red-badge[:material/cancel: NOT ELIGIBLE]", "warning"),
+    "cant_tell": (":orange-badge[:material/help: NEEDS INFO]", "info"),
+}
+CONDITION_MARKS = {"true": "✅", "false": "❌", "unknown": "❔"}
+FIELD_LABELS = {
+    "age": "Age (years)",
+    "age_nearer_birthday": "Age at nearest birthday (years)",
+    "income": "Income",
+    "monthly_income": "Monthly income",
+    "is_widow": "Widow",
+    "household_below_bpl": "Household below poverty line (BPL)",
+    "is_remarried": "Remarried",
+}
+
+
+def _field_label(field: str) -> str:
+    return FIELD_LABELS.get(field, field.replace("_", " ").capitalize())
+
+
+def _t(key: str, **values: Any) -> str:
+    """Memory wording in the language the person chose on the consent screen."""
+    return memory_text.text(st.session_state.get("portal_language", "en"), key, **values)
+
+
+def _set_language() -> None:
+    st.session_state["portal_language"] = st.session_state.get("portal-language-choice", "en")
+
+
+def _subject_line(prefix: str, source: dict[str, Any]) -> str:
+    """"Checking for: ..." or "Applying for: ...", naming who the check or application is for."""
+    if source.get("subject") != "other":
+        return _t(f"{prefix}_self")
+    relation = source.get("relation")
+    return _t(f"{prefix}_other", relation=relation) if relation else _t(f"{prefix}_someone")
+
+
+def _short_date(value: Any) -> str:
+    try:
+        return datetime.fromisoformat(str(value)).strftime("%d %b %Y")
+    except ValueError:
+        return str(value)
+
+
+def _memory_request(
+    api_base: str, path: str, method: str = "GET", payload: dict[str, Any] | None = None
+) -> Any:
+    body = json.dumps(payload).encode("utf-8") if payload is not None else None
+    headers = {"Content-Type": "application/json"} if payload is not None else None
+    return _api_request(f"{api_base}{path}", method=method, body=body, headers=headers)
+
+
+def _account_role(api_base: str) -> str:
+    """"operator" or "citizen", read from the API (which takes it from the token) once per sign-in."""
+    role = st.session_state.get("account_role")
+    if role is None and st.session_state.get("access_token"):
+        try:
+            role = _memory_request(api_base, "/api/memory/consent").get("role", "citizen")
+        except RuntimeError:
+            return "citizen"  # remembering is unavailable, so there is nothing to agree to; ask again later
+        st.session_state["account_role"] = role
+    return role or "citizen"
+
+
+@st.cache_data
+def _memory_policy() -> dict[str, Any]:
+    """The fields that may be remembered and for how long, read from the shared policy file."""
+    from agents.memory_service import HouseholdAllowlist
+
+    allowlist = HouseholdAllowlist.from_policy_file()
+    fields = []
+    for field, policy in allowlist.allowed_fields.items():
+        retention = policy.get("retention", {})
+        if retention.get("store", True) and {"reconfirm_days", "expiry_days"} <= retention.keys():
+            fields.append((field, retention["reconfirm_days"], retention["expiry_days"]))
+    return {"fields": fields, "reference_days": allowlist.application_reference_expiry_days}
 
 
 def _render_eligibility(result: dict[str, Any]) -> None:
-    """Present each reviewed-rule verdict and its source clauses in the chat."""
+    """Present each reviewed-rule verdict, what was checked, and its source clauses."""
     names = result.get("scheme_names", {})
     verdicts = result.get("verdicts", {})
     if not verdicts:
         st.caption("No reviewed eligibility rules were available to check.")
         return
 
-    st.markdown("**Step 2 — Eligibility check**")
-    for scheme_id, verdict in verdicts.items():
+    st.markdown("**Eligibility check**")
+    if result.get("status") == "intake_stopped":
+        st.caption("Preliminary results based on unconfirmed details; please verify them before continuing.")
+    else:
+        st.caption("Decided by reviewed scheme rules, not by the AI model.")
+    order = {"eligible": 0, "cant_tell": 1, "not_eligible": 2}
+    for scheme_id, verdict in sorted(
+        verdicts.items(), key=lambda item: order.get(item[1].get("verdict"), 1)
+    ):
         with st.container(border=True):
-            st.markdown(
-                f"**{names.get(scheme_id, scheme_id)}**  \n"
-                f"`{scheme_id}`"
-            )
             status = verdict.get("verdict", "cant_tell")
-            if status == "eligible":
-                st.success("May be eligible", icon=":material/check_circle:")
-            elif status == "not_eligible":
-                st.warning("Does not currently match", icon=":material/info:")
-            else:
-                st.info("Could not determine", icon=":material/help:")
+            badge, _ = VERDICT_BADGES.get(status, VERDICT_BADGES["cant_tell"])
+            st.markdown(
+                f"**{names.get(scheme_id, scheme_id)}**  {badge}  \n`{scheme_id}`"
+            )
             st.write(verdict.get("reason", "No explanation was returned."))
+            if verdict.get("missing_fields"):
+                st.caption(
+                    "Still needed: " + ", ".join(_field_label(f) for f in verdict["missing_fields"])
+                )
+            conditions = verdict.get("conditions", [])
+            if conditions:
+                st.caption(
+                    "  ·  ".join(
+                        f"{CONDITION_MARKS.get(c.get('outcome'), '❔')} {_field_label(str(c.get('field', '')))}"
+                        for c in conditions
+                    )
+                )
             citations = verdict.get("citations", [])
             if citations:
                 with st.expander("View reviewed source clauses"):
                     for citation in citations:
+                        page = f" (page {citation['page']})" if citation.get("page") else ""
                         st.markdown(
                             f"- **{citation.get('clause_id', 'Source')}:** "
-                            f"{citation.get('text', '')}"
+                            f"{citation.get('text', '')}{page}"
                         )
 
 
@@ -324,38 +507,123 @@ def _render_message(message: dict[str, Any]) -> None:
             _render_eligibility(message["result"])
 
 
-def _reset_chat() -> None:
+def _delete_uploaded_documents(
+    thread_id: str | None, api_base: str | None = None
+) -> bool:
+    """Delete retained supporting files only; the application workflow itself stays."""
+    if not thread_id:
+        return True
+    try:
+        base_url = api_base or _api_base_url()
+        _api_request(
+            f"{base_url}/api/threads/{quote(thread_id, safe='')}/documents",
+            method="DELETE",
+        )
+    except RuntimeError as error:
+        st.error(str(error), title="Could not delete uploaded documents")
+        return False
+    return True
+
+
+def _delete_application_workflow(thread_id: str | None, api_base: str | None = None) -> bool:
+    """Delete the application workflow, its saved state and its uploads; one already gone counts as deleted."""
+    if not thread_id:
+        return True
+    try:
+        base_url = api_base or _api_base_url()
+        _api_request(
+            f"{base_url}/api/threads/{quote(thread_id, safe='')}",
+            method="DELETE",
+        )
+    except RuntimeError as error:
+        if "not found" in str(error).lower():
+            return True
+        st.error(str(error), title="Could not delete the application")
+        return False
+    return True
+
+
+def _delete_conversation(session_id: str | None) -> bool:
+    """Delete the server-side conversation; an already-missing thread counts as deleted."""
+    if not session_id:
+        return True
+    try:
+        _api_request(
+            f"{_api_base_url()}/api/chat/{quote(session_id, safe='')}",
+            method="DELETE",
+        )
+    except RuntimeError as error:
+        if "not found" in str(error).lower():
+            return True
+        st.error(str(error), title="Could not delete the conversation")
+        return False
+    return True
+
+
+def _reset_chat() -> bool:
     """Clear chat/application data and widget values before another profile is checked."""
+    application_result = st.session_state.get("application_result")
+    thread_id = (
+        application_result.get("thread_id")
+        if isinstance(application_result, dict)
+        else None
+    )
+    if not _delete_application_workflow(thread_id):
+        return False
+    if not _delete_conversation(st.session_state.get("chat_session_id")):
+        return False
+
+    _clear_chat_state()
+    return True
+
+
+def _clear_chat_state() -> None:
+    """Forget the chat and application held in this browser session, without calling the API."""
     st.session_state["chat_session_id"] = None
     st.session_state["chat_messages"] = []
+    st.session_state["chat_known_facts"] = {}
     st.session_state["chat_eligibility_result"] = None
+    st.session_state["chat_partial_result"] = None
+    st.session_state["chat_show_partial"] = False
+    st.session_state["chat_confirmation"] = None
     st.session_state["application_result"] = None
+    st.session_state["application_subject"] = None
     st.session_state["application_uploads"] = {}
     st.session_state["application_outcome"] = None
     st.session_state["application_editing"] = False
     st.session_state["application_edit_revision"] = 0
     for key in list(st.session_state):
         if key.startswith(
-            ("edit-field-", "confirm-application-submission-")
+            ("edit-field-", "confirm-application-submission-", "choose-eligible-scheme")
         ):
             del st.session_state[key]
+    return True
 
 
 def _start_application(
     api_base: str, eligibility_result: dict[str, Any], scheme_id: str
 ) -> None:
     """Create the graph-backed application workflow for one eligible scheme."""
+    if (
+        eligibility_result.get("status") != "eligibility_checked"
+        or eligibility_result.get("verdicts", {}).get(scheme_id, {}).get("verdict") != "eligible"
+    ):
+        raise ValueError("Choose a confirmed eligible scheme before preparing an application.")
+    data = eligibility_result.get("data") or {}
+    subject = "other" if data.get("subject") == "other" else "self"
+    relation = data.get("relation") if subject == "other" else None
+    payload: dict[str, Any] = {
+        "citizen": eligibility_result["profile"],
+        "scheme_ids": [scheme_id],
+    }
+    if subject == "other":
+        payload["subject"] = "other"
+        if isinstance(relation, str) and relation:
+            payload["relation"] = relation
     with st.status("Preparing the application workflow...", expanded=True) as progress:
-        application_result = _send_workflow(
-            api_base,
-            "/api/analyze",
-            {
-                "citizen": eligibility_result["profile"],
-                "scheme_ids": [scheme_id],
-            },
-            progress,
-        )
+        application_result = _send_workflow(api_base, "/api/analyze", payload, progress)
     st.session_state["application_result"] = application_result
+    st.session_state["application_subject"] = {"subject": subject, "relation": relation}
     st.session_state["application_uploads"] = {}
     st.session_state["application_outcome"] = None
 
@@ -369,73 +637,156 @@ def _render_application_start(
         for scheme_id, verdict in eligibility_result.get("verdicts", {}).items()
         if verdict.get("verdict") == "eligible"
     ]
-    st.divider()
-    st.subheader("Continue through the full workflow")
+    st.markdown("#### Choose the next step")
     st.caption(
         "Eligibility guidance is informational. The remaining steps prepare "
         "and record a mock application; nothing is sent to a government service."
     )
     if not eligible:
-        st.info("No eligible scheme is available to continue to an application.")
+        st.info("No scheme is currently eligible for an application. Review the results or start a new chat.")
         return
 
     names = eligibility_result.get("scheme_names", {})
-    st.write("Choose an eligible scheme to prepare its application:")
-    for scheme_id in eligible:
-        label = names.get(scheme_id, scheme_id)
-        if st.button(
-            f"Prepare application: {label}",
-            type="primary",
-            key=f"prepare-application-{scheme_id}",
-        ):
-            try:
-                _start_application(api_base, eligibility_result, scheme_id)
-            except (RuntimeError, ValueError, json.JSONDecodeError) as error:
-                st.error(str(error), title="Could not start the application")
-            else:
-                st.rerun()
+    scheme_id = st.selectbox(
+        "Select an eligible scheme",
+        options=eligible,
+        index=None,
+        placeholder="Choose a scheme",
+        format_func=lambda value: f"{names.get(value, value)} ({value})",
+        key="choose-eligible-scheme",
+    )
+    if st.button(
+        "Prepare selected application",
+        type="primary",
+        disabled=scheme_id is None,
+        key="prepare-selected-application",
+    ) and scheme_id is not None:
+        try:
+            _start_application(api_base, eligibility_result, scheme_id)
+        except (RuntimeError, ValueError, json.JSONDecodeError) as error:
+            st.error(str(error), title="Could not start the application")
+        else:
+            st.rerun()
 
 
-def _render_document_step(result: dict[str, Any]) -> bool:
+def _document_mask_key(result: dict[str, Any], document_type: str) -> str:
+    scheme_id = result["application"]["scheme_id"]
+    position = result["documents"][scheme_id].index(document_type)
+    return f"document-sensitive-ids-masked-{result['thread_id']}-{position}"
+
+
+def _render_document_step(api_base: str, result: dict[str, Any]) -> bool:
     """Show document status and explain how to attach the next required file."""
     scheme_id = result.get("application", {}).get("scheme_id")
     required_documents = result.get("documents", {}).get(scheme_id, [])
     uploads = st.session_state["application_uploads"]
-    st.markdown("#### Step 3 — Upload required documents")
+    st.markdown("#### Step 3 — Documents")
     st.caption(
-        "The demo validates each file, then discards its contents and keeps only "
-        "upload metadata. Use redacted test files; maximum size is 10 MB."
+        "Upload a redacted copy only. Mask Aadhaar, bank-account, and other full "
+        "ID numbers before upload. Copies are stored unencrypted and deleted after 30 days."
     )
     missing = []
+    document_rows = []
     for document_type in required_documents:
-        with st.container(border=True):
-            st.markdown(f"**{document_type}**")
-            existing = uploads.get(document_type)
-            if existing:
-                st.success(f"Uploaded: {existing['filename']}")
-            else:
-                missing.append(document_type)
+        existing = uploads.get(document_type)
+        if existing:
+            status = f"Uploaded: {existing['filename']}"
+        else:
+            missing.append(document_type)
+            status = "Required"
+        document_rows.append({"Document": document_type, "Status": status})
+
+    if document_rows:
+        st.caption(f"{len(required_documents) - len(missing)} of {len(required_documents)} documents uploaded")
+        st.table(document_rows)
+    else:
+        st.caption("No documents are required for this application.")
 
     if missing:
-        st.info(
-            "Still required: "
-            + ", ".join(missing)
-            + ". Attach the next document using the paperclip in the chat input below."
+        next_document = missing[0]
+        st.info(f"Next required document: {next_document}")
+        masked = st.checkbox(
+            "I confirm this document has no unmasked Aadhaar, bank-account, or other ID numbers.",
+            key=_document_mask_key(result, next_document),
         )
+        uploaded_file = st.file_uploader(
+            "Choose a redacted document",
+            type=["pdf", "png", "jpg", "jpeg"],
+            max_upload_size=10,
+            key=f"document-upload-{result['thread_id']}-{required_documents.index(next_document)}",
+            help="PDF, PNG or JPEG, up to 10 MB. Upload one document at a time.",
+        )
+        if st.button(
+            "Upload document",
+            key="upload-required-document",
+            type="primary",
+            disabled=not masked or uploaded_file is None,
+        ) and masked and uploaded_file is not None:
+            try:
+                _upload = _upload_document(
+                    api_base, result, scheme_id, next_document, uploaded_file
+                )
+            except (RuntimeError, ValueError) as error:
+                st.error(str(error), title="Document upload failed")
+            else:
+                uploads[next_document] = _upload
+                st.rerun()
+        st.caption("You can also attach the next document using the chat paperclip.")
     else:
-        st.success("All required documents are recorded.")
+        st.success(
+            "All required documents are recorded." if required_documents
+            else "No documents are required for this application."
+        )
     return not missing
+
+
+def _render_workflow_fields(fields: dict[str, Any]) -> None:
+    """Display every profile or draft field without a collapsed JSON viewer."""
+
+    def field_rows(values: dict[str, Any], parent: str = "") -> list[dict[str, str]]:
+        rows = []
+        for field, value in values.items():
+            label = _field_label(str(field))
+            label = f"{parent} - {label}" if parent else label
+            if isinstance(value, dict) and value:
+                rows.extend(field_rows(value, label))
+                continue
+            rows.append(
+                {
+                    "Field": label,
+                    "Value": (
+                        json.dumps(value, ensure_ascii=False, default=str)
+                        if isinstance(value, (dict, list, tuple))
+                        else "Yes" if value is True
+                        else "No" if value is False
+                        else "Not provided" if value is None
+                        else str(value)
+                    ),
+                }
+            )
+        return rows
+
+    rows = field_rows(fields)
+    if rows:
+        st.table(rows)
+    else:
+        st.caption("No fields are available.")
 
 
 def _render_review_step(
     api_base: str, result: dict[str, Any], documents_complete: bool
 ) -> None:
     """Let the user approve, edit, or reject the reviewed application draft."""
-    st.markdown("#### Step 4 — Review the application draft")
-    st.write("Check the profile and exact draft below before making a decision.")
-    st.json(result.get("profile", {}), expanded=False)
-    st.markdown("**Application draft**")
-    st.json(result.get("application", {}), expanded=True)
+    st.markdown("#### Step 4 — Review and decide")
+    st.caption("Check your profile and exact application draft before deciding.")
+    st.caption(_subject_line("applying_for", st.session_state.get("application_subject") or {}))
+    profile_col, application_col = st.columns(2, gap="small")
+    with profile_col:
+        st.markdown("**Profile**")
+        _render_workflow_fields(result.get("profile", {}))
+    with application_col:
+        st.markdown("**Application draft**")
+        _render_workflow_fields(result.get("application", {}))
     st.caption(
         "Approval is tied to this exact draft. Editing rechecks eligibility "
         "and creates a new draft for you to review."
@@ -452,10 +803,22 @@ def _render_review_step(
         return
 
     approval_hash = result["approval"]["payload_hash"]
+    st.caption(
+        f"Approval code: `{approval_hash[:12]}…` — changing anything creates a new code."
+    )
     confirmed = st.checkbox(
         "I reviewed this draft and understand that this is a mock submission.",
         key=f"confirm-application-submission-{approval_hash}",
     )
+    approval = {"action": "approve", "payload_hash": approval_hash}
+    if _account_role(api_base) == "operator":
+        # Each application needs the agreement of the person being helped, never a standing one.
+        agreed = st.checkbox(
+            _t("operator_agreement", days=_memory_policy()["reference_days"]),
+            key=f"operator-citizen-agreed-{approval_hash}",
+        )
+        st.caption(_t("operator_agreement_help"))
+        approval["citizen_agreed"] = agreed
     approve_col, edit_col, reject_col = st.columns(3)
     if approve_col.button(
         "Approve",
@@ -463,11 +826,7 @@ def _render_review_step(
         disabled=not documents_complete or not confirmed,
         key="approve-mock-application",
     ):
-        _finish_application(
-            api_base,
-            result,
-            {"action": "approve", "payload_hash": approval_hash},
-        )
+        _finish_application(api_base, result, approval)
     if edit_col.button("Edit", key="edit-mock-application"):
         st.session_state["application_editing"] = True
         st.rerun()
@@ -481,44 +840,47 @@ def _render_review_step(
             "review the updated draft before approving it."
         )
         profile = result.get("profile", {})
+        st.caption("Only the profile details shown above can be changed. Checked boxes mean Yes.")
         edit_revision = st.session_state["application_edit_revision"]
         with st.form("edit-application-profile"):
             changes: dict[str, Any] = {}
-            for field, value in profile.items():
-                if isinstance(value, bool):
-                    updated = st.checkbox(
-                        field.replace("_", " ").title(),
-                        value=value,
-                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
-                    )
-                elif isinstance(value, int):
-                    updated = st.number_input(
-                        field.replace("_", " ").title(),
-                        value=value,
-                        step=1,
-                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
-                    )
-                elif isinstance(value, float):
-                    updated = st.number_input(
-                        field.replace("_", " ").title(),
-                        value=value,
-                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
-                    )
-                elif isinstance(value, str):
-                    updated = st.text_input(
-                        field.replace("_", " ").title(),
-                        value=value,
-                        key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
-                    )
-                else:
-                    continue
-                if updated != value:
-                    changes[field] = updated
-            edit_submitted = st.form_submit_button(
-                "Save changes and recheck eligibility",
-                disabled=not changes,
-            )
+            edit_columns = st.columns(2, gap="small")
+            for index, (field, value) in enumerate(profile.items()):
+                with edit_columns[index % len(edit_columns)]:
+                    if isinstance(value, bool):
+                        updated = st.checkbox(
+                            _field_label(field),
+                            value=value,
+                            key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
+                        )
+                    elif isinstance(value, int):
+                        updated = st.number_input(
+                            _field_label(field),
+                            value=value,
+                            step=1,
+                            key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
+                        )
+                    elif isinstance(value, float):
+                        updated = st.number_input(
+                            _field_label(field),
+                            value=value,
+                            key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
+                        )
+                    elif isinstance(value, str):
+                        updated = st.text_input(
+                            _field_label(field),
+                            value=value,
+                            key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
+                        )
+                    else:
+                        continue
+                    if updated != value:
+                        changes[field] = updated
+            edit_submitted = st.form_submit_button("Save changes and recheck eligibility")
         if edit_submitted:
+            if not changes:
+                st.info("Change a detail before saving.")
+                return
             try:
                 with st.status(
                     "Rechecking eligibility and rebuilding the draft...",
@@ -534,6 +896,14 @@ def _render_review_step(
                 st.error(str(error), title="Could not update the application")
             else:
                 st.session_state["application_result"] = updated_result
+                if isinstance(updated_result.get("verdicts"), dict):
+                    previous = st.session_state.get("chat_eligibility_result") or {}
+                    st.session_state["chat_eligibility_result"] = {
+                        **previous,
+                        "status": "eligibility_checked",
+                        "profile": updated_result.get("profile", {}),
+                        "verdicts": updated_result["verdicts"],
+                    }
                 st.session_state["application_outcome"] = None
                 st.session_state["application_editing"] = False
                 st.session_state["application_edit_revision"] += 1
@@ -576,7 +946,7 @@ def _journey_step() -> tuple[int, str]:
     if outcome:
         return 5, "Confirmation"
 
-    if not st.session_state["chat_eligibility_result"]:
+    if not st.session_state["chat_eligibility_result"] and not st.session_state.get("chat_show_partial"):
         return 1, "Your details"
     if not st.session_state["application_result"]:
         return 2, "Eligibility"
@@ -592,6 +962,156 @@ def _journey_step() -> tuple[int, str]:
     return 3, "Documents"
 
 
+def _render_eligibility_screen(
+    eligibility_result: dict[str, Any], api_base: str
+) -> None:
+    """Present profile facts and reviewed eligibility results as one workflow stage."""
+    partial = eligibility_result.get("status") == "intake_stopped"
+    with st.container(key="eligibility-screen"):
+        st.subheader("Preliminary results" if partial else "Eligibility results")
+        st.caption(
+            "Results are determined by reviewed scheme rules. The assistant explains "
+            "the findings but does not decide eligibility."
+        )
+        if partial:
+            st.warning(
+                "These results use details that have not yet been confirmed. "
+                "Return to chat to provide missing or corrected details before preparing an application."
+            )
+        assistant_explanation = next(
+            (
+                message["content"]
+                for message in reversed(st.session_state["chat_messages"])
+                if message.get("result")
+            ),
+            None,
+        )
+        if assistant_explanation:
+            with st.container(border=True):
+                st.markdown(assistant_explanation)
+        profile_column, results_column = st.columns([0.85, 1.5], gap="medium")
+        with profile_column:
+            with st.container(border=True):
+                st.markdown("**Details checked**")
+                _render_workflow_fields(eligibility_result.get("profile", {}))
+        with results_column:
+            verdicts = eligibility_result.get("verdicts", {})
+            if not verdicts:
+                st.info("No reviewed eligibility rules were available to check.")
+            order = {"eligible": 0, "cant_tell": 1, "not_eligible": 2}
+            for scheme_id, verdict in sorted(
+                verdicts.items(), key=lambda item: order.get(item[1].get("verdict"), 1)
+            ):
+                with st.container(border=True):
+                    name = eligibility_result.get("scheme_names", {}).get(
+                        scheme_id, scheme_id
+                    )
+                    st.markdown(f"**{name}**")
+                    status = verdict.get("verdict", "cant_tell")
+                    if status == "eligible":
+                        st.success("May be eligible", icon=":material/check_circle:")
+                    elif status == "not_eligible":
+                        st.warning(
+                            "Does not currently match", icon=":material/info:"
+                        )
+                    else:
+                        st.info("Could not determine", icon=":material/help:")
+                    st.write(verdict.get("reason", "No explanation was returned."))
+                    if verdict.get("missing_fields"):
+                        st.caption(
+                            "Still needed: "
+                            + ", ".join(_field_label(field) for field in verdict["missing_fields"])
+                        )
+                    citations = verdict.get("citations", [])
+                    if citations:
+                        with st.expander("View reviewed source clauses"):
+                            for citation in citations:
+                                st.caption(
+                                    f"{citation.get('clause_id', 'Reviewed source')}: "
+                                    f"{citation.get('text', '')}"
+                                )
+    if partial:
+        if st.button("Back to chat", key="back-to-chat", type="primary"):
+            st.session_state["chat_show_partial"] = False
+            st.rerun()
+    else:
+        _render_application_start(api_base, eligibility_result)
+
+
+def _record_chat_result(result: dict[str, Any]) -> None:
+    data = result["data"]
+    confirmation = data.get("confirmation") if result.get("status") == "awaiting_confirmation" else None
+    if result.get("status") == "awaiting_confirmation" and (
+        not isinstance(confirmation, dict)
+        or not isinstance(confirmation.get("facts"), dict)
+        or not isinstance(confirmation.get("payload_hash"), str)
+        or not confirmation["payload_hash"]
+    ):
+        raise ValueError("The server did not provide the details needed for confirmation. Start a new chat.")
+    if isinstance(data.get("known_facts"), dict):
+        st.session_state["chat_known_facts"] = data["known_facts"]
+    st.session_state["chat_confirmation"] = confirmation
+    st.session_state["chat_partial_result"] = (
+        result if result.get("status") == "intake_stopped" and result.get("verdicts") else None
+    )
+    st.session_state["chat_show_partial"] = False
+    if result.get("status") == "eligibility_checked" and result.get("verdicts"):
+        st.session_state["chat_eligibility_result"] = result
+
+
+def _render_fact_confirmation(api_base: str) -> None:
+    confirmation = st.session_state.get("chat_confirmation")
+    if not isinstance(confirmation, dict):
+        return
+    facts = confirmation.get("facts")
+    if not isinstance(facts, dict) or not isinstance(confirmation.get("payload_hash"), str):
+        st.error("Could not display the details for confirmation. Start a new chat.")
+        return
+    with st.container(border=True, key="fact-confirmation"):
+        st.subheader("Confirm the details")
+        st.markdown(f"**{_subject_line('checking_for', confirmation)}**")
+        remembered = [f for f in confirmation.get("remembered_fields") or [] if f in facts]
+        if remembered:
+            language = st.session_state.get("portal_language", "en")
+            st.info(
+                _t(
+                    "remembered_from_before",
+                    fields=", ".join(memory_text.field_name(language, f) for f in remembered),
+                )
+            )
+        st.caption(
+            "Ask the citizen to check these details. Confirm only if they are correct; "
+            "otherwise return to chat to change them."
+        )
+        _render_workflow_fields(facts)
+        approve, reject = st.columns(2)
+        action = None
+        if approve.button("Confirm details", type="primary", key="confirm-chat-facts"):
+            action = "approve"
+        if reject.button("Change details in chat", key="reject-chat-facts"):
+            action = "reject"
+        if action:
+            try:
+                with st.status("Checking your decision...", expanded=False) as progress:
+                    thread_id, reply, result = _send_fact_decision(
+                        api_base, st.session_state["chat_session_id"], confirmation, action, progress
+                    )
+                st.session_state["chat_session_id"] = thread_id
+                _record_chat_result(result)
+                if action == "reject" and result.get("status") == "facts_rejected":
+                    reply = (
+                        "The details have not been confirmed. Please type the correction "
+                        "in the chat; you will be asked to review the updated details."
+                    )
+                st.session_state["chat_messages"].append(
+                    {"role": "assistant", "content": reply,
+                     "result": result if _shows_verdicts(result) else None}
+                )
+                st.rerun()
+            except (RuntimeError, ValueError, json.JSONDecodeError) as error:
+                st.error(str(error), title="Could not confirm details")
+
+
 def _render_welcome() -> None:
     """Explain the demo journey and safe-data expectations before chat starts."""
     if st.session_state["chat_messages"]:
@@ -604,76 +1124,241 @@ def _render_welcome() -> None:
             "will ask for missing details before checking reviewed scheme rules."
         )
         st.caption(
-            "1. Share your details  →  2. Check eligibility  →  "
-            "3. Add requested documents  →  4. Review the draft and "
-            "approve, edit, or reject"
+            "1. Your details  →  2. Eligibility  →  3. Documents  →  "
+            "4. Review  →  5. Confirmation"
         )
         st.info(
-            "This is a local demo. Uploads keep metadata only, and approval "
-            "creates a mock submission—not a government application. Never "
-            "share Aadhaar, bank-account numbers, OTPs, or passwords."
+            "This is a local demo. Supporting documents are stored unencrypted "
+            "and automatically deleted after 30 days; you can also delete them sooner. "
+            "Upload redacted files only. "
+            "Approval creates a mock submission—not a government application. "
+            "Never share Aadhaar, bank-account numbers, OTPs, or passwords."
         )
         st.markdown(
             "**Try:** “I’m 62, a widow, and our household earns ₹20,000 a month. "
             "What support may I qualify for?”"
         )
+        st.caption(
+            "You can write in English, हिन्दी, or मराठी. Eligibility is decided "
+            "by reviewed scheme rules; the assistant only helps collect details."
+        )
 
 
-def _render_application_workflow(api_base: str) -> None:
-    """Render the documents, review, and confirmation steps for the selected scheme."""
+def _render_application_workflow(api_base: str, current_step: int) -> None:
+    """Render the active documents, review, or confirmation workflow screen."""
     result = st.session_state["application_result"]
     if not result:
         return
 
-    st.divider()
-    st.subheader("Your application journey")
-    scheme_id = result.get("application", {}).get("scheme_id", "Selected scheme")
-    st.caption(f"Selected scheme: {scheme_id}")
+    with st.container(key="application-workflow"):
+        scheme_id = result.get("application", {}).get(
+            "scheme_id", "Selected scheme"
+        )
 
-    outcome = st.session_state["application_outcome"]
-    if outcome == "submitted" or result.get("submission"):
-        submission = result.get("submission") or {}
-        st.success("Your mock application was submitted.")
-        st.write(f"**Reference:** {submission.get('application_id', 'Unavailable')}")
-        st.write(f"**Status:** {submission.get('status', 'submitted (mock)')}")
-        st.info(
-            "This is a local demonstration only. It is not a government "
-            "application and does not guarantee a benefit."
-        )
-        if st.button("Start a new chat", type="primary", key="new-chat-after-submit"):
-            _reset_chat()
-            st.rerun()
-        return
-    if outcome == "rejected" or result.get("approval_status") == "rejected":
-        st.info("The draft was rejected. Nothing was submitted.")
-        if st.button("Start a new chat", type="primary", key="new-chat-after-reject"):
-            _reset_chat()
-            st.rerun()
-        return
-    if outcome == "not_submitted":
-        st.error(
-            "The application was not submitted. Review the result and start a "
-            "new chat if you want to prepare another draft."
-        )
-        if st.button(
-            "Start a new chat",
-            type="primary",
-            key="new-chat-after-not-submitted",
+        outcome = st.session_state["application_outcome"]
+        if current_step == 5 and (
+            outcome == "submitted" or result.get("submission")
         ):
-            _reset_chat()
-            st.rerun()
-        return
+            submission = result.get("submission") or {}
+            with st.container(border=True):
+                st.markdown(":material/task_alt: **Application complete**")
+                st.title("Your application has been recorded")
+                st.write(
+                    f"**Reference:** "
+                    f"{submission.get('application_id', 'Unavailable')}"
+                )
+                st.write(
+                    f"**Status:** {submission.get('status', 'submitted (mock)')}"
+                )
+                st.caption(f"Scheme: {scheme_id}")
+                st.info(
+                    "This is a local demonstration only. It is not a government "
+                    "application and does not guarantee a benefit."
+                )
+                reference = str(submission.get("application_id", "")).strip()
+                if reference:
+                    try:
+                        if __package__:
+                            from .document_exports import (
+                                application_filename,
+                                create_application_docx,
+                                create_application_pdf,
+                            )
+                        else:
+                            from document_exports import (
+                                application_filename,
+                                create_application_docx,
+                                create_application_pdf,
+                            )
+                    except ModuleNotFoundError as error:
+                        if error.name not in {"barcode", "docx", "reportlab"}:
+                            raise
+                        st.error(
+                            "Application downloads need the project's declared "
+                            "document packages. Install them for this Streamlit "
+                            f"Python with `{sys.executable} -m pip install -e .`."
+                        )
+                    else:
+                        export_data = {
+                            "reference": reference,
+                            "scheme_id": str(
+                                submission.get("scheme_id", scheme_id)
+                            ),
+                            "status": str(
+                                submission.get("status", "submitted (mock)")
+                            ),
+                            "profile": result.get("profile", {}),
+                            "application": result.get("application", {}),
+                            "eligibility": st.session_state[
+                                "chat_eligibility_result"
+                            ]
+                            or {},
+                            "required_documents": result.get("documents", {}).get(
+                                scheme_id, []
+                            ),
+                            "uploads": st.session_state["application_uploads"],
+                        }
+                        pdf_column, docx_column = st.columns(2, gap="small")
+                        pdf_column.download_button(
+                            "Download PDF",
+                            data=create_application_pdf(**export_data),
+                            file_name=application_filename(reference, "pdf"),
+                            mime="application/pdf",
+                            icon=":material/picture_as_pdf:",
+                            key="download-application-pdf",
+                            width="stretch",
+                        )
+                        docx_column.download_button(
+                            "Download Word document",
+                            data=create_application_docx(**export_data),
+                            file_name=application_filename(reference, "docx"),
+                            mime=(
+                                "application/vnd.openxmlformats-officedocument."
+                                "wordprocessingml.document"
+                            ),
+                            icon=":material/description:",
+                            key="download-application-docx",
+                            width="stretch",
+                        )
+                        st.caption(
+                            "Both files include the reference barcode and masked ID "
+                            "numbers. The barcode represents this demo reference only."
+                        )
+                        uploads = st.session_state["application_uploads"]
+                        if uploads:
+                            st.markdown("#### Supporting documents")
+                            document_columns = st.columns(2, gap="small")
+                            for index, (document_type, metadata) in enumerate(
+                                uploads.items()
+                            ):
+                                document_url = (
+                                    f"{api_base}/api/threads/"
+                                    f"{quote(result['thread_id'], safe='')}/documents/"
+                                    f"{quote(str(metadata.get('scheme_id', scheme_id)), safe='')}/"
+                                    f"{quote(document_type, safe='')}"
+                                )
+                                with document_columns[
+                                    index % len(document_columns)
+                                ]:
+                                    st.link_button(
+                                        f"Download {document_type}",
+                                        document_url,
+                                        icon=":material/download:",
+                                        width="stretch",
+                                    )
+                                    st.caption(
+                                        f"{metadata.get('filename', document_type)} · "
+                                        f"expires {metadata.get('expires_at', 'in 30 days')}"
+                                    )
+                            if st.button(
+                                "Forget uploaded documents",
+                                key="forget-uploaded-documents",
+                                icon=":material/delete:",
+                            ):
+                                if _delete_uploaded_documents(
+                                    result.get("thread_id"), api_base
+                                ):
+                                    st.session_state["application_uploads"] = {}
+                                    st.success(
+                                        "Uploaded document copies were deleted."
+                                    )
+                else:
+                    st.error(
+                        "A reference number is missing, so a downloadable "
+                        "application record cannot be generated."
+                    )
+                if st.button(
+                    "Start a new chat",
+                    type="primary",
+                    key="new-chat-after-submit",
+                ):
+                    if _reset_chat():
+                        st.rerun()
+            return
+        if current_step == 5 and (
+            outcome == "rejected" or result.get("approval_status") == "rejected"
+        ):
+            with st.container(border=True):
+                st.markdown(":material/do_not_disturb_on: **Application closed**")
+                st.title("The draft was rejected")
+                st.write("Nothing was submitted.")
+                st.caption(f"Scheme: {scheme_id}")
+                if st.button(
+                    "Start a new chat",
+                    type="primary",
+                    key="new-chat-after-reject",
+                ):
+                    if _reset_chat():
+                        st.rerun()
+            return
+        if current_step == 5 and outcome == "not_submitted":
+            with st.container(border=True):
+                st.error(
+                    "The application was not submitted. Review the result and start "
+                    "a new chat if you want to prepare another draft."
+                )
+                if st.button(
+                    "Start a new chat",
+                    type="primary",
+                    key="new-chat-after-not-submitted",
+                ):
+                    if _reset_chat():
+                        st.rerun()
+            return
 
-    if not result.get("application"):
-        st.warning(
-            "The application draft could not be prepared for this profile. "
-            "Review the eligibility result or start a new chat."
-        )
-        return
+        if not result.get("application"):
+            st.warning(
+                "The application draft could not be prepared for this profile. "
+                "Review the eligibility result or start a new chat."
+            )
+            return
 
-    documents_complete = _render_document_step(result)
-    st.markdown("#### Step 4 — Review and decide")
-    _render_review_step(api_base, result, documents_complete)
+        if current_step == 3:
+            st.caption(f"Selected scheme: {scheme_id}")
+            with st.container(border=True):
+                _render_document_step(api_base, result)
+                latest_upload_message = next(
+                    (
+                        message["content"]
+                        for message in reversed(st.session_state["chat_messages"])
+                        if message["role"] == "assistant"
+                        and message["content"].startswith("Document upload failed:")
+                    ),
+                    None,
+                )
+                if latest_upload_message:
+                    st.error(latest_upload_message)
+        elif current_step == 4:
+            st.caption(f"Selected scheme: {scheme_id}")
+            document_column, review_column = st.columns(
+                [0.8, 2.2], gap="medium", vertical_alignment="top"
+            )
+            with document_column:
+                with st.container(border=True):
+                    _render_document_step(api_base, result)
+            with review_column:
+                with st.container(border=True):
+                    _render_review_step(api_base, result, documents_complete=True)
 
 
 def _handle_chat_submission(
@@ -712,9 +1397,7 @@ def _handle_chat_submission(
                     )
                 else:
                     scheme_id = application_result["application"]["scheme_id"]
-                    required = application_result.get("documents", {}).get(
-                        scheme_id, []
-                    )
+                    required = application_result.get("documents", {}).get(scheme_id, [])
                     uploaded = st.session_state["application_uploads"]
                     next_document = next(
                         (name for name in required if name not in uploaded), None
@@ -723,13 +1406,22 @@ def _handle_chat_submission(
                         assistant_reply = (
                             "All required documents have already been uploaded."
                         )
+                    elif not st.session_state.get(
+                        _document_mask_key(application_result, next_document), False
+                    ):
+                        assistant_reply = (
+                            "Before uploading, mask any full Aadhaar, bank-account, "
+                            "or other ID numbers in the document, then confirm this "
+                            "on the Documents screen."
+                        )
+                        st.warning(assistant_reply)
                     else:
                         try:
                             with st.status(
                                 f"Validating {next_document}...", expanded=True
                             ) as progress:
                                 progress.write(
-                                    "Checking the file and recording upload metadata."
+                                    "Validating and saving the document."
                                 )
                                 upload_result = _upload_document(
                                     api_base,
@@ -779,21 +1471,20 @@ def _handle_chat_submission(
                                 api_base,
                                 user_text,
                                 st.session_state["chat_session_id"],
+                                st.session_state["chat_actor_id"],
                                 progress,
                             )
                             st.session_state["chat_session_id"] = session_id
                             progress.update(
                                 label=(
                                     "Eligibility check complete"
-                                    if assistant_result
-                                    and assistant_result.get("status")
-                                    == "eligibility_checked"
+                                    if _shows_verdicts(assistant_result)
                                     else "Waiting for your details"
                                 ),
                                 state="complete",
                             )
                         st.markdown(chat_reply)
-                        if assistant_result and assistant_result.get("verdicts"):
+                        if _shows_verdicts(assistant_result):
                             _render_eligibility(assistant_result)
                         assistant_reply = chat_reply
                     except (RuntimeError, ValueError, json.JSONDecodeError) as error:
@@ -804,53 +1495,682 @@ def _handle_chat_submission(
                         st.error(str(error), title="Request failed")
                         st.markdown(assistant_reply)
 
-            if (
-                assistant_result
-                and assistant_result.get("status") == "eligibility_checked"
-            ):
-                st.session_state["chat_eligibility_result"] = assistant_result
+            if assistant_result:
+                try:
+                    _record_chat_result(assistant_result)
+                except ValueError as error:
+                    assistant_reply = str(error)
+                    assistant_result = None
+                    st.error(assistant_reply, title="Could not continue")
             st.session_state["chat_messages"].append(
                 {
                     "role": "assistant",
                     "content": assistant_reply,
-                    "result": (
-                        assistant_result
-                        if assistant_result and assistant_result.get("verdicts")
-                        else None
-                    ),
+                    "result": assistant_result if _shows_verdicts(assistant_result) else None,
                 }
             )
 
 
-def main() -> None:
-    """Run the chat intake and render later application steps from session state."""
-    st.set_page_config(
-        page_title="Scheme Saathi | Eligibility chat",
-        page_icon=":material/account_balance:",
-        layout="centered",
+def _initialize_portal_state() -> None:
+    """Set up session-only access, consent, and workflow state."""
+    defaults = {
+        "portal_stage": "access",
+        "access_error": None,
+        "access_token": None,
+        "account_email": None,
+        "account_email_error": None,
+        "auth_url": None,
+        "consent_given": False,
+        "consent_recorded_at": None,
+        "consent_error": None,
+        "chat_actor_id": f"citizen-{uuid4().hex}",
+        "chat_session_id": None,
+        "chat_messages": [],
+        "chat_known_facts": {},
+        "chat_eligibility_result": None,
+        "chat_partial_result": None,
+        "chat_show_partial": False,
+        "chat_confirmation": None,
+        "application_result": None,
+        "application_uploads": {},
+        "application_outcome": None,
+        "application_editing": False,
+        "application_edit_revision": 0,
+        "application_subject": None,
+        "portal_language": "en",
+        "memory_choice_error": None,
+        "memory_panel_open": False,
+        "memory_notice": None,
+        "header_panel": None,
+    }
+    for key, value in defaults.items():
+        st.session_state.setdefault(key, value)
+
+
+def _handle_sign_in_callback(settings: Any) -> None:
+    """Finish an Auth0 redirect (?code=&state=) and store the access token."""
+    params = st.query_params
+    if "error" in params:
+        detail = "".join(
+            c for c in str(params.get("error_description", "")) if c.isprintable() and c not in "<>`"
+        )[:160]
+        code = "".join(c for c in str(params.get("error")) if c.isalnum() or c == "_")[:40]
+        st.session_state["access_error"] = (
+            f"Sign-in was cancelled or refused (Auth0 error: {code or 'unknown'}"
+            f"{': ' + detail if detail else ''}). Please try again."
+        )
+        st.query_params.clear()
+        return
+    code, state = params.get("code"), params.get("state")
+    if not code or not state:
+        return
+    st.session_state["account_role"] = None
+    st.session_state["account_email"] = None
+    st.session_state["account_email_error"] = None
+    try:
+        token = ui_auth.complete_sign_in(settings, code, state)
+    except ui_auth.SignInError as error:
+        st.session_state["access_error"] = str(error)
+    else:
+        st.session_state["access_token"] = token
+        try:
+            st.session_state["account_email"] = ui_auth.user_email(settings, token)
+        except ui_auth.SignInError as error:
+            st.session_state["account_email_error"] = str(error)
+        else:
+            if st.session_state["account_email"] is None:
+                st.session_state["account_email_error"] = (
+                    "Your account has no email available for display."
+                )
+        st.session_state["access_error"] = None
+        st.session_state["portal_stage"] = "consent"
+    finally:
+        st.query_params.clear()
+    st.rerun()
+
+
+def _render_access_page() -> None:
+    """Sign the citizen in with Auth0; their household identity comes from the token."""
+    settings = ui_auth.ui_settings()
+    if settings is not None:
+        _handle_sign_in_callback(settings)
+
+    with st.container(key="auth-page"):
+        with st.container(border=True, key="auth-shell"):
+            with st.container(key="auth-brand"):
+                _render_brand_image()
+            st.caption("PUBLIC SUPPORT, MADE SIMPLE")
+            st.title("Welcome")
+            st.write(
+                "Sign in or create an account to explore support schemes for your "
+                "household. Your sign-in helps protect your conversation and applications."
+            )
+
+            if settings is None:
+                missing = ", ".join(f"`{name}`" for name in ui_auth.missing_settings())
+                st.error(
+                    "Sign-in is not configured yet. Set these in `.env`: "
+                    f"{missing or '`AUTH0_REDIRECT_URI`'}.",
+                    icon=":material/key:",
+                )
+            else:
+                if not st.session_state.get("auth_url"):
+                    st.session_state["auth_url"] = ui_auth.authorize_url(settings)
+                st.link_button(
+                    "Sign in / Create account",
+                    st.session_state["auth_url"],
+                    type="primary",
+                    icon=":material/login:",
+                    width="stretch",
+                )
+            if st.session_state["access_error"]:
+                st.error(st.session_state["access_error"])
+                st.session_state["auth_url"] = None
+            st.caption(
+                "Demo only. Nothing is sent to a real government portal. This "
+                "is not an official government service."
+            )
+
+
+def _save_memory_choices() -> None:
+    """Record the memory choices made on the consent screen; both are off unless ticked."""
+    st.session_state["memory_choice_error"] = None
+    chosen = [
+        purpose
+        for purpose, key in (
+            ("profile_facts", "memory-consent-facts"),
+            ("application_references", "memory-consent-refs"),
+        )
+        if st.session_state.get(key)
+    ]
+    for purpose in chosen:
+        try:
+            _memory_request(
+                _api_base_url(),
+                "/api/memory/consent",
+                method="PUT",
+                payload={"purpose": purpose, "granted": True},
+            )
+        except RuntimeError as error:
+            st.session_state["memory_choice_error"] = _t("memory_failed", error=str(error))
+
+
+def _complete_consent() -> None:
+    """Record an in-session consent decision and open the chat only on acceptance."""
+    if not st.session_state.get("session-consent", False):
+        st.session_state["consent_error"] = (
+            "Please confirm consent before continuing to the chat."
+        )
+        return
+
+    st.session_state["consent_given"] = True
+    st.session_state["consent_recorded_at"] = datetime.now(timezone.utc).isoformat()
+    st.session_state["consent_error"] = None
+    st.session_state["portal_stage"] = "chat"
+    _save_memory_choices()
+
+
+def _render_memory_choices() -> None:
+    """The optional, separate choices to remember details and applications; both start unticked."""
+    language = st.session_state.get("portal_language", "en")
+    policy = _memory_policy()
+    st.markdown(f"**{_t('consent_heading')}**")
+    st.write(_t("consent_notice"))
+    for field, reconfirm_days, expiry_days in policy["fields"]:
+        st.caption(
+            "• "
+            + _t(
+                "retention_line",
+                field=memory_text.field_name(language, field),
+                reconfirm=reconfirm_days,
+                expiry=expiry_days,
+            )
+        )
+    st.checkbox(_t("choice_facts"), key="memory-consent-facts")
+    st.checkbox(_t("choice_refs"), key="memory-consent-refs")
+    st.caption(_t("refs_note", days=policy["reference_days"]))
+    st.caption(_t("leave_unticked"))
+
+
+def _decline_consent() -> None:
+    """Return to the access screen without enabling chat."""
+    _sign_out()
+    st.session_state["session-consent"] = False
+
+
+def _render_signed_in_account() -> None:
+    email = st.session_state.get("account_email")
+    if email:
+        st.text(f"Signed in as: {email}")
+    elif st.session_state.get("account_email_error"):
+        st.warning(st.session_state["account_email_error"])
+
+
+def _render_privacy_notice() -> None:
+    use_col, handling_col = st.columns(2, gap="medium")
+    with use_col:
+        with st.container(border=True, key="consent-use-card"):
+            st.markdown("**How your information is used**")
+            st.write(
+                "Details you choose to share help the service ask relevant "
+                "follow-up questions and check reviewed scheme rules."
+            )
+    with handling_col:
+        with st.container(border=True, key="consent-handling-card"):
+            st.markdown("**How it is handled**")
+            st.write(
+                "Your responses are processed by this application to provide "
+                "the current workflow. Redacted supporting documents are "
+                "stored locally without encryption for up to 30 days. This screen "
+                "does not submit information to a government portal."
+            )
+
+    with st.container(key="consent-sensitive-notice"):
+        st.warning(
+            "For your safety, do not enter Aadhaar numbers, bank-account "
+            "details, passwords, OTPs, or other sensitive identifiers."
+        )
+    st.caption(
+        "Your consent choice applies to this active application session. "
+        "You may withdraw it later; doing so clears the conversation and "
+        "deletes the active application, including its saved details and "
+        "supporting documents."
     )
-    st.html(CSS_PATH)
+
+
+def _render_consent_page() -> None:
+    """Present a clear privacy notice before opening the guided chat."""
+    with st.container(key="consent-page"):
+        with st.container(key="consent-header"):
+            image_col, tagline_col, step_col = st.columns(
+                [1.5, 1.1, 1.1], vertical_alignment="center"
+            )
+            with image_col:
+                _render_brand_image()
+            tagline_col.caption("PUBLIC SUPPORT, MADE SIMPLE")
+            with step_col:
+                st.markdown("**BEFORE YOU BEGIN**")
+                st.caption("Privacy and consent")
+
+        with st.container(border=True, key="consent-shell"):
+            _render_signed_in_account()
+            st.markdown(":material/verified_user: PRIVACY & CONSENT")
+            st.title("Your information. Your choice.")
+            st.write(
+                "Please review how information is used before continuing to "
+                "your scheme search."
+            )
+
+            _render_privacy_notice()
+
+            st.session_state.setdefault(
+                "portal-language-choice", st.session_state.get("portal_language", "en")
+            )
+            st.radio(
+                _t("language_label"),
+                options=list(memory_text.LANGUAGES),
+                format_func=memory_text.LANGUAGES.get,
+                horizontal=True,
+                key="portal-language-choice",
+                on_change=_set_language,
+            )
+
+            with st.form("session-consent-form"):
+                st.checkbox(
+                    "I have read this notice and agree to use my information "
+                    "for this session.",
+                    key="session-consent",
+                )
+                _render_memory_choices()
+                st.form_submit_button(
+                    "Agree and continue",
+                    type="primary",
+                    width="stretch",
+                    on_click=_complete_consent,
+                )
+            if st.session_state["consent_error"]:
+                st.error(st.session_state["consent_error"])
+
+            st.button(
+                "I do not agree — return to sign in",
+                key="decline-consent",
+                on_click=_decline_consent,
+                width="stretch",
+            )
+
+
+def _withdraw_consent() -> bool:
+    """Clear the current workflow and return to the consent screen."""
+    if not _reset_chat():
+        return False
+    st.session_state["portal_stage"] = "consent"
+    st.session_state["consent_given"] = False
+    st.session_state["consent_recorded_at"] = None
+    st.session_state["session-consent"] = False
+    st.session_state["memory-consent-facts"] = False
+    st.session_state["memory-consent-refs"] = False
+    return True
+
+
+def _render_header_actions(prefix: str, *, columns: bool = False) -> None:
+    has_chat = bool(
+        st.session_state.get("chat_messages")
+        or st.session_state.get("chat_session_id")
+        or st.session_state.get("application_result")
+    )
+    actions = (
+        ("New chat", ":material/add:", "new_chat", not has_chat),
+        (_t("panel_button"), ":material/folder_managed:", "memory", False),
+        ("Privacy & consent", ":material/shield:", "privacy", False),
+        ("Sign out", ":material/logout:", "sign_out", False),
+    )
+    containers = st.columns(len(actions), gap="small") if columns else [st.container() for _ in actions]
+    for container, (label, icon, panel, disabled) in zip(containers, actions):
+        with container:
+            if st.button(
+                label, icon=icon, disabled=disabled,
+                key=f"{prefix}-{panel}", width="stretch",
+            ):
+                if panel == "memory":  # the saved-details panel, which opens without a confirmation
+                    st.session_state["memory_panel_open"] = not st.session_state.get("memory_panel_open", False)
+                    st.rerun()
+                st.session_state["header_panel"] = panel
+
+
+def _render_header_panel() -> None:
+    panel = st.session_state.get("header_panel")
+    if not panel:
+        return
+    with st.container(border=True, key="header-panel"):
+        if panel == "privacy":
+            st.subheader("Privacy & consent")
+            _render_privacy_notice()
+            if st.button("Withdraw consent", key="header-withdraw-consent"):
+                st.session_state["header_panel"] = "withdraw"
+                st.rerun()
+        else:
+            if panel == "new_chat":
+                st.subheader("Start a new chat?")
+                st.write(
+                    "This clears the current conversation and deletes the active "
+                    "application, including its saved details and uploaded documents."
+                )
+                label = "Yes, start a new chat"
+            elif panel == "sign_out":
+                st.subheader("Sign out?")
+                st.write(
+                    "This clears the current conversation and deletes the active "
+                    "application, including its saved details and uploaded "
+                    "documents. It does not sign you out of Auth0."
+                )
+                label = "Yes, sign out"
+            else:
+                st.subheader("Withdraw consent?")
+                st.write(
+                    "This clears the current conversation and deletes the active "
+                    "application, including its saved details and uploaded documents."
+                )
+                label = "Yes, withdraw consent"
+            if st.button(label, type="primary", key=f"confirm-header-{panel}"):
+                if panel == "withdraw":
+                    succeeded = _withdraw_consent()
+                else:
+                    succeeded = _reset_chat()
+                    if succeeded and panel == "sign_out":
+                        _sign_out()
+                if succeeded:
+                    st.session_state["header_panel"] = None
+                    st.rerun()
+        if st.button("Close" if panel == "privacy" else "Cancel", key="close-header-panel"):
+            st.session_state["header_panel"] = None
+            st.rerun()
+
+
+def _render_chat_header() -> None:
+    with st.container(key="chat-header"):
+        with st.container(key="header-main"):
+            image_col, title_col, account_col = st.columns(
+                [1.4, 1.6, 1.4], gap="medium", vertical_alignment="center"
+            )
+            with image_col:
+                _render_brand_image()
+            with title_col:
+                st.markdown("#### Scheme Saathi")
+                st.caption("Your guide to government schemes")
+            with account_col:
+                with st.container(key="header-desktop-account"):
+                    _render_signed_in_account()
+                with st.container(key="header-mobile-menu"):
+                    with st.popover("Account & actions", icon=":material/account_circle:", width="stretch"):
+                        _render_signed_in_account()
+                        _render_header_actions("mobile")
+        with st.container(key="header-desktop-actions"):
+            _render_header_actions("desktop", columns=True)
+    _render_header_panel()
+
+
+def _render_wizard(current_step: int) -> None:
+    """Keep the five-step workflow tracker visible above each active screen."""
+    with st.container(key="workflow-wizard"):
+        st.caption("APPLICATION WORKFLOW")
+        with st.container(key="wizard-desktop"):
+            step_columns = st.columns(len(JOURNEY_STEPS), gap="small")
+            for index, (column, label) in enumerate(
+                zip(step_columns, JOURNEY_STEPS), start=1
+            ):
+                if index < current_step:
+                    state = "complete"
+                    marker = ":material/check_circle:"
+                elif index == current_step:
+                    state = "current"
+                    marker = ":material/radio_button_checked:"
+                else:
+                    state = "upcoming"
+                    marker = ":material/radio_button_unchecked:"
+                with column:
+                    with st.container(key=f"wizard-step-{state}-{index}"):
+                        st.markdown(f"{marker} **{label}**")
+        with st.container(key="wizard-mobile"):
+            st.markdown(f"**{current_step} / {len(JOURNEY_STEPS)} · {JOURNEY_STEPS[current_step - 1]}**")
+        st.progress(
+            current_step / len(JOURNEY_STEPS),
+            text=f"Step {current_step} of {len(JOURNEY_STEPS)}",
+        )
+
+
+def _render_api_reference() -> None:
+    """Show the API reference independently from the citizen-facing workflow."""
+    st.title("API reference")
+    st.write(
+        "The endpoints below are generated from the running FastAPI OpenAPI "
+        "schema and document the service contract separately from the citizen flow."
+    )
+    try:
+        api_base = _api_base_url()
+        with urlopen(f"{api_base}/openapi.json", timeout=5) as response:
+            schema = json.loads(response.read().decode("utf-8"))
+    except (RuntimeError, ValueError, OSError, URLError) as error:
+        st.error(str(error), title="API reference is unavailable")
+        return
+
+    if not isinstance(schema, dict) or not isinstance(schema.get("paths"), dict):
+        st.error("FastAPI returned an invalid OpenAPI document.")
+        return
+
+    st.caption(f"API base URL: `{api_base}`")
+    st.link_button(
+        "Open interactive API docs",
+        f"{api_base}/docs",
+        icon=":material/open_in_new:",
+    )
+    grouped: dict[str, list[tuple[str, str, dict[str, Any]]]] = {}
+    for path, methods in schema["paths"].items():
+        if not isinstance(methods, dict):
+            continue
+        for method, operation in methods.items():
+            if method.lower() not in {
+                "get",
+                "post",
+                "put",
+                "patch",
+                "delete",
+            } or not isinstance(operation, dict):
+                continue
+            tags = operation.get("tags") or ["Other"]
+            grouped.setdefault(str(tags[0]), []).append(
+                (method.upper(), path, operation)
+            )
+
+    for tag, operations in grouped.items():
+        with st.expander(f"{tag} · {len(operations)} endpoints", expanded=True):
+            for method, path, operation in operations:
+                with st.container(border=True):
+                    method_col, path_col = st.columns([1, 4])
+                    method_col.markdown(f"**{method}**")
+                    path_col.code(path, language=None)
+                    summary = operation.get("summary")
+                    if summary:
+                        st.write(summary)
+
+
+def _change_memory_consent(api_base: str, purpose: str, granted: bool) -> None:
+    try:
+        _memory_request(
+            api_base, "/api/memory/consent", method="PUT", payload={"purpose": purpose, "granted": granted}
+        )
+    except RuntimeError as error:
+        st.error(str(error))
+    else:
+        st.rerun()
+
+
+def _render_memory_consent(api_base: str, consent: dict[str, Any]) -> None:
+    purposes = consent.get("purposes", {})
+    if consent.get("role") == "operator":
+        st.caption(_t("operator_note"))
+    for purpose, on_text, off_text in (
+        ("profile_facts", "facts_on", "facts_off"),
+        ("application_references", "refs_on", "refs_off"),
+    ):
+        if purpose not in purposes:  # an operator is offered only the list of applications
+            continue
+        granted = bool(purposes[purpose].get("granted"))
+        label_column, button_column = st.columns([3, 2], vertical_alignment="center")
+        label_column.write(_t(on_text if granted else off_text))
+        if button_column.button(
+            _t("turn_off" if granted else "turn_on"), key=f"memory-consent-{purpose}"
+        ):
+            _change_memory_consent(api_base, purpose, not granted)
+
+
+def _display_fact(value: Any) -> str:
+    if isinstance(value, bool):
+        return _t("yes" if value else "no")
+    return str(value)
+
+
+def _render_remembered_facts(api_base: str, remembered: dict[str, Any]) -> None:
+    language = st.session_state.get("portal_language", "en")
+    facts = remembered.get("facts") or []
+    if not facts:
+        st.caption(_t("no_facts"))
+    for fact in facts:
+        field = str(fact.get("field", ""))
+        text_column, button_column = st.columns([4, 1], vertical_alignment="center")
+        text_column.markdown(f"**{memory_text.field_name(language, field)}:** {_display_fact(fact.get('value'))}")
+        text_column.caption(
+            _t("reconfirm_due")
+            if fact.get("reconfirm_due")
+            else _t("until", date=_short_date(fact.get("expires_at")))
+        )
+        if button_column.button(_t("forget_one"), key=f"forget-fact-{field}"):
+            try:
+                _memory_request(api_base, f"/api/memory/facts/{quote(field, safe='')}", method="DELETE")
+            except RuntimeError as error:
+                st.error(str(error))
+            else:
+                st.rerun()
+
+
+def _render_application_item(api_base: str, names: dict[str, str], item: dict[str, Any], show_relation: bool) -> None:
+    application_id = str(item.get("application_id", ""))
+    scheme_id = str(item.get("scheme_id", ""))
+    who = f" ({item['relation']})" if show_relation and item.get("relation") else ""
+    st.markdown(f"{names.get(scheme_id, scheme_id)}{who}")
+    st.caption(f"`{application_id}` · {_short_date(item.get('submitted_at'))}")
+    check_column, remove_column = st.columns(2)
+    quoted = quote(application_id, safe="")
+    if check_column.button(_t("check_status"), key=f"status-{application_id}"):
+        try:
+            status = _memory_request(api_base, f"/api/applications/{quoted}/status")
+        except RuntimeError as error:
+            st.error(str(error))
+        else:
+            if status.get("found_at_portal"):
+                st.info(_t("status_is", status=status.get("status")))
+            else:
+                st.warning(_t("not_at_portal"))
+    if remove_column.button(_t("remove"), key=f"remove-{application_id}"):
+        try:
+            _memory_request(api_base, f"/api/applications/{quoted}", method="DELETE")
+        except RuntimeError as error:
+            st.error(str(error))
+        else:
+            st.rerun()
+
+
+def _render_family_member(api_base: str, names: dict[str, str], member: dict[str, Any]) -> None:
+    language = st.session_state.get("portal_language", "en")
+    relation = str(member.get("relation", ""))
+    nickname = member.get("nickname")
+    title = memory_text.relation_name(language, relation)
+    st.markdown(f"**{title}{f' ({nickname})' if nickname else ''}**")
+    quoted = quote(relation, safe="")
+    name_column, save_column = st.columns([3, 2], vertical_alignment="bottom")
+    entered = name_column.text_input(_t("nickname_label"), value=nickname or "", key=f"nickname-{relation}")
+    if save_column.button(_t("nickname_save"), key=f"nickname-save-{relation}"):
+        try:
+            _memory_request(api_base, f"/api/family/{quoted}", method="PATCH", payload={"nickname": entered})
+        except RuntimeError as error:
+            st.error(str(error))
+        else:
+            st.rerun()
+    for item in member.get("applications") or []:
+        _render_application_item(api_base, names, item, show_relation=False)
+    if st.button(_t("family_remove"), key=f"family-remove-{relation}"):
+        try:
+            _memory_request(api_base, f"/api/family/{quoted}", method="DELETE")
+        except RuntimeError as error:
+            st.error(str(error))
+        else:
+            st.rerun()
+
+
+def _render_saved_applications(api_base: str, applications: dict[str, Any]) -> None:
+    st.markdown(f"**{_t('applications_title')}**")
+    names = _scheme_names(api_base)
+    for group in ("for_me", "family", "for_others"):
+        st.caption(_t("for_family" if group == "family" else group))
+        items = applications.get(group) or []
+        if not items:
+            st.caption(_t("none_saved"))
+        for item in items:
+            if group == "family":
+                _render_family_member(api_base, names, item)
+            else:
+                _render_application_item(api_base, names, item, show_relation=True)
+
+
+def _render_forget_everything(api_base: str) -> None:
+    st.divider()
+    st.caption(_t("forget_note"))
+    confirmed = st.checkbox(_t("forget_confirm"), key="memory-forget-confirm")
+    if st.button(_t("forget_all"), disabled=not confirmed, key="memory-forget-all"):
+        try:
+            _memory_request(api_base, "/api/memory", method="DELETE")
+        except RuntimeError as error:
+            st.error(str(error))
+            return
+        _clear_chat_state()
+        st.session_state["memory_panel_open"] = False
+        st.session_state["memory_notice"] = _t("forget_done")
+        st.rerun()
+
+
+def _render_memory_panel(api_base: str) -> None:
+    """What is remembered, the choices to change it, the saved applications, and forgetting it all."""
+    with st.container(border=True, key="memory-panel"):
+        st.subheader(_t("panel_title"))
+        try:
+            consent = _memory_request(api_base, "/api/memory/consent")
+            remembered = _memory_request(api_base, "/api/memory")
+            applications = _memory_request(api_base, "/api/applications")
+        except RuntimeError:
+            st.info(_t("unavailable"))
+            return
+        _render_memory_consent(api_base, consent)
+        _render_remembered_facts(api_base, remembered)
+        _render_saved_applications(api_base, applications)
+        _render_forget_everything(api_base)
+
+
+def _render_chat_page() -> None:
+    """Run the consented chat intake and later application workflow."""
+    st.session_state.setdefault("chat_actor_id", f"citizen-{uuid4().hex}")
     st.session_state.setdefault("chat_session_id", None)
     st.session_state.setdefault("chat_messages", [])
+    st.session_state.setdefault("chat_known_facts", {})
     st.session_state.setdefault("chat_eligibility_result", None)
+    st.session_state.setdefault("chat_partial_result", None)
+    st.session_state.setdefault("chat_show_partial", False)
+    st.session_state.setdefault("chat_confirmation", None)
     st.session_state.setdefault("application_result", None)
     st.session_state.setdefault("application_uploads", {})
     st.session_state.setdefault("application_outcome", None)
     st.session_state.setdefault("application_editing", False)
     st.session_state.setdefault("application_edit_revision", 0)
 
-    title_col, action_col = st.columns([4, 1], vertical_alignment="center")
-    title_col.markdown("### :material/account_balance: Scheme Saathi")
-    title_col.caption("A guided way to explore public support")
-    if action_col.button(
-        "New chat",
-        icon=":material/add:",
-        disabled=not st.session_state["chat_messages"],
-        key="new-chat",
-        width="stretch",
-    ):
-        _reset_chat()
-        st.rerun()
+    _render_chat_header()
 
     try:
         api_base = _api_base_url()
@@ -863,20 +2183,44 @@ def main() -> None:
         st.error(str(error), title="FastAPI is unavailable")
         st.stop()
 
-    step, label = _journey_step()
-    st.progress(step / 5, text=f"Step {step} of 5 · {label}")
-    _render_welcome()
+    if st.session_state.get("memory_choice_error"):
+        st.warning(st.session_state["memory_choice_error"])
+        st.session_state["memory_choice_error"] = None
+    if st.session_state.get("memory_notice"):
+        st.success(st.session_state["memory_notice"])
+        st.session_state["memory_notice"] = None
+    if st.session_state.get("memory_panel_open"):
+        _render_memory_panel(api_base)
 
-    if st.session_state["chat_messages"]:
-        for message in st.session_state["chat_messages"]:
-            _render_message(message)
-
-    # Keep the application continuation and its current step above the chat
-    # composer so the next action is always visible before the input.
-    eligibility_result = st.session_state["chat_eligibility_result"]
-    if eligibility_result and not st.session_state["application_result"]:
-        _render_application_start(api_base, eligibility_result)
-    _render_application_workflow(api_base)
+    current_step, _ = _journey_step()
+    _render_wizard(current_step)
+    with st.container(key="workflow-screen"):
+        if current_step == 1:
+            _render_welcome()
+            if st.session_state["chat_messages"]:
+                with st.container(key="conversation"):
+                    st.subheader("Conversation")
+                    for message in st.session_state["chat_messages"]:
+                        _render_message(message)
+            if st.session_state["chat_known_facts"]:
+                with st.expander("Details collected so far", expanded=False):
+                    st.caption("Please check these with the citizen. They are not confirmed yet.")
+                    _render_workflow_fields(st.session_state["chat_known_facts"])
+            _render_fact_confirmation(api_base)
+            if st.session_state["chat_partial_result"]:
+                st.info("The check stopped with some details missing. You can continue chatting or review preliminary results.")
+                if st.button("Review preliminary results", key="show-partial-results"):
+                    st.session_state["chat_show_partial"] = True
+                    st.rerun()
+        elif current_step == 2:
+            eligibility_result = (
+                st.session_state["chat_eligibility_result"]
+                or st.session_state["chat_partial_result"]
+            )
+            if eligibility_result:
+                _render_eligibility_screen(eligibility_result, api_base)
+        else:
+            _render_application_workflow(api_base, current_step)
 
     # Reserve this location before the composer so submitted messages and streamed
     # workflow updates render above the input even though the submission is handled later.
@@ -884,7 +2228,18 @@ def main() -> None:
     # Pin the prompt and its always-visible starter guidance to the bottom of
     # the app viewport while keeping workflow output in the main content above.
     with st.bottom:
-        st.caption("Tell us what you need. We’ll ask only for missing details.")
+        if st.session_state["chat_confirmation"]:
+            st.caption("Confirm or correct the details above to continue.")
+        elif current_step == 2 and st.session_state["chat_show_partial"]:
+            st.caption("Return to chat to provide or confirm your details.")
+        elif current_step == 2:
+            st.caption("Select an eligible scheme above, or return to chat for preliminary results.")
+        elif current_step in (3, 4):
+            st.caption("Upload redacted documents on the Documents screen when required.")
+        elif current_step == 5:
+            st.caption("This is a mock application. Start a new chat to check another profile.")
+        else:
+            st.caption("Tell us what you need. We’ll ask for missing details.")
         prompt = st.chat_input(
             "Ask about eligibility or share a requested detail...",
             max_chars=4000,
@@ -892,12 +2247,70 @@ def main() -> None:
             accept_file=True,
             file_type=["pdf", "png", "jpg", "jpeg"],
             submit_mode="disable",
-            disabled=st.session_state["application_outcome"] is not None,
+            disabled=(
+                st.session_state["application_outcome"] is not None
+                or st.session_state["chat_confirmation"] is not None
+                or current_step == 2
+            ),
         )
 
     if prompt:       
         _handle_chat_submission(api_base, prompt, response_slot)
         st.rerun()
+
+
+def _render_citizen_portal() -> None:
+    """Route the citizen through access, consent, then the chat workflow."""
+    stage = st.session_state["portal_stage"]
+    if stage != "access" and _access_token() is None:
+        _sign_out()
+        stage = "access"
+        st.session_state["access_error"] = (
+            st.session_state.get("access_error") or "Please sign in to continue."
+        )
+    if stage == "access":
+        _render_access_page()
+    elif stage == "consent":
+        _render_consent_page()
+    elif stage == "chat" and st.session_state["consent_given"]:
+        _render_chat_page()
+    else:
+        st.session_state["portal_stage"] = "consent"
+        _render_consent_page()
+
+
+def main() -> None:
+    """Run the citizen experience and API reference as separate Streamlit pages."""
+    st.set_page_config(
+        page_title="Scheme Saathi",
+        page_icon=":material/account_balance:",
+        layout="wide",
+        initial_sidebar_state="collapsed",
+    )
+    st.html(CSS_PATH)
+    _initialize_portal_state()
+    page = st.navigation(
+        {
+            "Experience": [
+                st.Page(
+                    _render_citizen_portal,
+                    title="Citizen portal",
+                    icon=":material/volunteer_activism:",
+                    default=True,
+                )
+            ],
+            "Developer": [
+                st.Page(
+                    _render_api_reference,
+                    title="API reference",
+                    icon=":material/api:",
+                )
+            ],
+        },
+        position="top",
+    )
+    page.run()
+
 
 if __name__ == "__main__":
     main()

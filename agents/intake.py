@@ -5,6 +5,7 @@ open verdicts (graph.tools.next_question). The model only reads facts from the m
 and words the question.
 """
 
+import re
 from typing import Annotated, Any, Literal
 
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -12,6 +13,8 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
 
 from agents.base import StructuredGPTAgent, untrusted_prompt
 from agents.contracts import (
+    IntakeAnswer,
+    IntakeAnswerInput,
     IntakeAskInput,
     IntakeExtraction,
     IntakeExtractInput,
@@ -19,6 +22,8 @@ from agents.contracts import (
     IntakeQuestion,
     IntakeQuestionText,
     IntakeResult,
+    SchemeChoice,
+    SchemeChoiceInput,
 )
 
 INSTRUCTIONS = """You are Scheme Saathi's intake specialist.
@@ -36,19 +41,95 @@ each field's type. For an income field, give the amount in rupees exactly as the
 it (1 lakh = 100000, 15 hazaar = 15000, 10k = 10000) and its period: "month" or "year" when
 the user says so or pending_question asked for that period, otherwise "unstated". Never
 convert between periods or multiply by 12; that is done for you. Classify the reply to
-pending_question in reply_kind. Never record Aadhaar, bank-account numbers or other sensitive
+pending_question in reply_kind. Set subject to "other" when the request is about someone
+else (your mother, a neighbour, a client) or when it is unclear whose facts these are, and
+"self" only when the user clearly speaks about themselves. For "other", give relation as one
+lowercase word such as "mother" or "neighbour"; never a name or a number. For "self", relation
+is null. Never record Aadhaar, bank-account numbers or other sensitive
 identifiers. Never decide eligibility or claim that a fact has been saved."""
 
 ASK_INSTRUCTIONS = """You write the next question for Scheme Saathi's intake. Ask exactly
 one short, polite question that collects only the given field. Write it in the given
 language (en English, hi Hindi, mr Marathi); if it is unknown, use the language of the
-request. Refer to the person the way the request does (for example "she" for a mother).
-For a bool field, ask a yes/no question. When period is given, ask for the amount per that
-period ("per month" or "per year") and say so in the question. Do not mention eligibility, schemes, rules or
-field names, and never ask for Aadhaar, bank-account numbers or other sensitive
+request. Keep the question gender neutral: never use he, she, him, her, his or hers. Use
+"you" when the request is about the user, and the relation the request names when it is
+about someone else ("your mother", "your son"). Any amount is in Indian rupees: write it
+with ₹ or "rupees", never $ or another currency.
+Never show the raw field name; say in everyday words what it means, keeping every part of
+it (social_category is "social (caste) category", not just "category").
+For a bool field, ask a yes/no question. For a number field, ask for one number and name its
+unit (years, rupees, people). For a str field, never ask a yes/no question: when
+known_values are given, list them as the choices in plain words and let the person say
+another answer. When period is given, ask for the amount per that
+period ("per month" or "per year") and say so in the question. Do not mention eligibility, schemes or
+rules, and never ask for Aadhaar, bank-account numbers or other sensitive
 identifiers."""
 
+ANSWER_INSTRUCTIONS = """You answer a question about Indian government schemes using only the
+given passages, never outside knowledge. Set found to false when the passages do not answer the
+question. When found, write a short answer in the given language (en English, hi Hindi, mr Marathi;
+if it is unknown, use the language of the question) and put the id of every passage you used in
+cited_passage_ids. Say what the scheme documents state, in general terms ("The scheme is for widows
+aged 40 to 79 from BPL households"). Never say whether the user or anyone they mention qualifies:
+do not answer yes or no about them, and do not write "you can get", "she is eligible" or similar.
+If the question is about their own eligibility, state the scheme's conditions and add that Scheme
+Saathi can check their eligibility step by step. Never ask for Aadhaar, bank-account numbers or
+other sensitive identifiers."""
+
+CHOOSE_INSTRUCTIONS = """You pick which government schemes are worth checking for a person.
+Given the person's request and a list of schemes (scheme_id, name, description), return the
+scheme_ids of the schemes that plausibly fit what the person describes or asks about (their
+occupation, age, gender, family, need). known_facts holds what the person has already answered
+(field: value); use it together with the request. Return only ids from the list, best fit first, at most
+8. Return an empty list when none fit. You never decide eligibility; rules do that later."""
+
 _FIELD_TYPES = {"number": int | float, "bool": bool, "str": str}
+
+# shortcut: word lists for en + common hi/mr replies; extend from evaluation transcripts.
+_YES = {"yes", "yeah", "yep", "haan", "han", "ji", "हाँ", "हां", "हा", "होय", "हो", "जी"}
+_NO = {"no", "nope", "nahi", "nahin", "नहीं", "नही", "ना", "नाही", "नको"}
+NONE_OF_THESE = "none of these"
+_NONE_OF_LIST = re.compile(
+    r"\b(?:none|neither|not an?\s|not any|don't fall|do not fall|doesn't fall|does not fall)\b"
+    r"|कोई नहीं|इनमें से कोई|यापैकी कोणी|यापैकी नाही|काहीही नाही"
+)
+# A reply with doubt or a second clause is not a plain answer: "No, I am not sure",
+# "I am not a farmer but I am a tenant farmer". Those go to the model (PR #67 review).
+_UNSURE = re.compile(
+    r"\b(?:not sure|unsure|don'?t know|do not know|no idea|not certain|maybe|perhaps|probably|i think|"
+    r"i guess|pata nahi|pata nahin|malum nahi|maloom nahi)\b"
+    r"|पता नहीं|मालूम नहीं|शायद|माहित नाही|माहीत नाही|कदाचित|बहुतेक"
+)
+_SECOND_CLAUSE = re.compile(r"\b(?:but|however|except|although|though|only if)\b|लेकिन|पर |पण |परंतु|मगर")
+
+
+def direct_answer(reply: str, spec: dict[str, Any] | None) -> Any:
+    """A reply that answers the pending question by its first word, decided by code.
+
+    For a yes/no field, a reply that starts with yes or no ("No.", "No, she is not remarried",
+    "नाही") is that answer; questions are always asked about the field as named. For a field
+    with listed values, "none of these" / "I am not a farmer" / a plain "No" becomes
+    NONE_OF_THESE, which matches no listed value. Only plain answers count: a reply that shows
+    doubt, adds a second clause ("but ...") or names one of the listed values is left to the
+    model, which can read it or mark it unanswered so the question is asked again.
+    """
+    if not spec:
+        return None
+    text = reply.strip().lower()
+    if _UNSURE.search(text) or _SECOND_CLAUSE.search(text):
+        return None
+    if any(value.lower() in text for value in spec.get("known_values") or []):
+        return None
+    first = re.split(r"[\s,.!?।]+", text, maxsplit=1)[0] if text else ""
+    if spec.get("type") == "bool":
+        if first in _YES:
+            return True
+        if first in _NO:
+            return False
+    elif spec.get("type") == "str" and spec.get("known_values"):
+        if first in _NO or _NONE_OF_LIST.search(text):
+            return NONE_OF_THESE
+    return None
 
 # A forced choice with examples: as a plain dont_know flag, the model set it for "hmm" and "hello".
 ReplyKind = Annotated[
@@ -109,13 +190,48 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
     def __init__(self, model: BaseChatModel) -> None:
         super().__init__(model, IntakeInput, IntakeResult, INSTRUCTIONS)
         self._asker = StructuredGPTAgent(model, IntakeAskInput, IntakeQuestionText, ASK_INSTRUCTIONS)
+        self._answerer = StructuredGPTAgent(model, IntakeAnswerInput, IntakeAnswer, ANSWER_INSTRUCTIONS)
+        self._chooser = StructuredGPTAgent(model, SchemeChoiceInput, SchemeChoice, CHOOSE_INSTRUCTIONS)
+
+    def choose_schemes(self, value: SchemeChoiceInput | dict) -> list[str]:
+        """Schemes worth checking for this person, best fit first. Ids outside the list are dropped."""
+        request = SchemeChoiceInput.model_validate(value)
+        allowed = {option.scheme_id for option in request.schemes}
+        chosen = self._chooser.invoke(request).scheme_ids
+        return [scheme_id for scheme_id in dict.fromkeys(chosen) if scheme_id in allowed]
 
     def extract(self, value: IntakeExtractInput | dict, specs: dict[str, dict[str, Any]]) -> IntakeExtraction:
         """Typed facts from the message. Each field is checked on its own, so one bad value
         is dropped without losing the rest."""
         request = IntakeExtractInput.model_validate(value)
+        result = self._extract_once(request, specs)
+        pending = request.pending_field
+        direct = direct_answer(request.request, specs.get(pending)) if pending else None
+        if direct is not None:
+            # Code reads a plain yes/no (or "none of these") to the question just asked; the model
+            # misread a bare "No", and flipped "No" for a field named is_excluded_...
+            return result.model_copy(update={"facts": {**result.facts, pending: direct}, "dont_know": False})
+        if pending in specs and pending not in result.facts and len(specs) > 1:
+            # Against a wide schema the model read a bare "No" as dont_know; one field alone it reads reliably.
+            narrow = self._extract_once(request, {pending: specs[pending]})
+            result = IntakeExtraction(
+                facts={**result.facts, **narrow.facts},
+                rejected_fields=result.rejected_fields + narrow.rejected_fields,
+                dont_know=narrow.dont_know,
+                subject=result.subject,
+                relation=result.relation,
+            )
+        return result
+
+    def _extract_once(self, request: IntakeExtractInput, specs: dict[str, dict[str, Any]]) -> IntakeExtraction:
         profile = profile_model(specs)
-        output = create_model("IntakeExtractionOutput", facts=(profile, ...), reply_kind=(ReplyKind, "other"))
+        output = create_model(
+            "IntakeExtractionOutput",
+            facts=(profile, ...),
+            reply_kind=(ReplyKind, "other"),
+            subject=(Literal["self", "other"], ...),
+            relation=(str | None, None),
+        )
         # A JSON schema, not the model class: the reply comes back as a dict and is validated below.
         chain = untrusted_prompt(EXTRACT_INSTRUCTIONS) | self._model.with_structured_output(
             output.model_json_schema()
@@ -140,9 +256,27 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
                     continue
             facts[field] = value
         dont_know = raw.get("reply_kind") == "dont_know" and pending is not None and pending not in facts
-        return IntakeExtraction(facts=facts, rejected_fields=rejected, dont_know=dont_know)
+        # A missing or unrecognised subject counts as someone else, so nothing is remembered by mistake.
+        subject = raw.get("subject") if raw.get("subject") in ("self", "other") else "other"
+        relation = raw.get("relation") if isinstance(raw.get("relation"), str) else None
+        return IntakeExtraction(
+            facts=facts,
+            rejected_fields=rejected,
+            dont_know=dont_know,
+            subject=subject,
+            relation=relation,
+        )
 
     def ask(self, value: IntakeAskInput | dict) -> IntakeQuestion:
         """One question for one field; the field comes from the caller, never from the model."""
         request = IntakeAskInput.model_validate(value)
         return IntakeQuestion(field=request.field, question=self._asker.invoke(request).question)
+
+    def answer(self, value: IntakeAnswerInput | dict) -> IntakeAnswer:
+        """A cited answer from the given passages. A citation outside them voids the answer."""
+        request = IntakeAnswerInput.model_validate(value)
+        result = self._answerer.invoke(request)
+        cited = set(result.cited_passage_ids)
+        if not (result.found and result.answer.strip() and cited) or not cited <= {p.id for p in request.passages}:
+            return IntakeAnswer(found=False)
+        return result

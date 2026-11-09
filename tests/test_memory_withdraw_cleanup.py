@@ -16,7 +16,7 @@ def service():
 
 
 def test_withdraw_deletes_application_references(service):
-    now = datetime.now()
+    now = datetime.utcnow()
     service.record_consent(
         SCOPE,
         MemoryConsent(

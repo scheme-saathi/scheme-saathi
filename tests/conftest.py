@@ -1,6 +1,65 @@
+import json
+import sys
+from pathlib import Path
+
 import pytest
+
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+
+@pytest.fixture(autouse=True)
+def close_chroma_clients():
+    """Stop every ChromaDB client a test opened.
+
+    ChromaDB keeps each PersistentClient's database open in a process-wide cache until it is
+    stopped, about 15-20 open files per memory-store test. On macOS (256 open files by default)
+    the suite then failed with "Too many open files" after about 60 such tests.
+    """
+    yield
+    if "chromadb" not in sys.modules:
+        return
+    from chromadb.api.shared_system_client import SharedSystemClient
+
+    for system in list(SharedSystemClient._identifier_to_system.values()):
+        try:
+            system.stop()
+        except Exception:  # a system already stopped by its test
+            pass
+    SharedSystemClient.clear_system_cache()
 
 
 @pytest.fixture(autouse=True)
 def mock_portal_test_secret(monkeypatch):
     monkeypatch.setenv("MOCK_PORTAL_AUTH_SECRET", "test-only-mock-portal-secret")
+    monkeypatch.setenv("MOCK_PORTAL_NONCE_DB", "")
+
+
+@pytest.fixture(autouse=True)
+def isolated_memory_store(monkeypatch, tmp_path):
+    """Point the API's memory store at a temporary folder, so no test writes to the real one."""
+    from app import checkpoints, memory_runtime
+
+    monkeypatch.setenv(memory_runtime.DIRECTORY_ENV, str(tmp_path / "memory"))
+    monkeypatch.setenv(checkpoints.DATABASE_ENV, "")  # workflow state stays in memory unless a test opts in
+    memory_runtime.get_memory_service.cache_clear()
+    checkpoints.get_checkpointer.cache_clear()
+    yield
+    getattr(memory_runtime.get_memory_service, "cache_clear", lambda: None)()
+    checkpoints.get_checkpointer.cache_clear()
+
+
+@pytest.fixture(autouse=True)
+def synthetic_scheme_fixture(monkeypatch):
+    """Serve the test-only SYNTH-PENSION-001 record; it is not in data/, so users never see it."""
+    from servers.rule_engine import server as rule_server
+    from servers.schemes_kb import server as kb_server
+
+    monkeypatch.setattr(rule_server, "RULE_DIRS", [*rule_server.RULE_DIRS, FIXTURES])
+    fixtures = {
+        record["scheme_id"]: record
+        for record in (json.loads(path.read_text(encoding="utf-8")) for path in FIXTURES.glob("*.json"))
+    }
+    load = kb_server._load_scheme_records
+    monkeypatch.setattr(kb_server, "_load_scheme_records", lambda: {**load(), **fixtures})
+    from graph import tools
+    tools.scheme_is_closed.cache_clear()  # a test that swaps scheme records must not see another's cache

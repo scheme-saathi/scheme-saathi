@@ -126,7 +126,7 @@ erDiagram
     }
 ```
 
-The field-by-field structure of one scheme record is in [docs/scheme-data-relationships.md](docs/scheme-data-relationships.md). Only rule records whose rules are all `reviewed` give live verdicts; today that is the synthetic `SYNTH-PENSION-001`, whose record sits in `data/schemes/`.
+The field-by-field structure of one scheme record is in [docs/scheme-data-relationships.md](docs/scheme-data-relationships.md). Only rule records whose rules are all `reviewed` give live verdicts; those are the records in `data/rules/`. The synthetic `SYNTH-PENSION-001` is a test-only fixture in `tests/fixtures/`, loaded by `tests/conftest.py`; users never see it.
 
 ### Step 1: Download the embedding model (once per machine)
 
@@ -194,6 +194,9 @@ python -m servers.schemes_kb.search --method hybrid --question "loan to start a 
 # Only schemes currently open for applications
 python -m servers.schemes_kb.search --method hybrid --availability open --question "pension for elderly"
 
+# Rerank the top 20 hybrid candidates with SPECIALIST_MODEL (needs the .env model settings; ~3s per query)
+python -m servers.schemes_kb.search --method hybrid --rerank --question "age limit to join Atal Pension Yojana"
+
 # Pass/fail smoke check across all approved schemes
 python -m servers.schemes_kb.check_retrieval
 ```
@@ -241,7 +244,27 @@ The repository is public, so release assets can be downloaded by anyone. Only pu
 Never mark a scheme `open` without checking; unknown availability stays `unverified`.
 
 For later OpenRouter-backed agents, copy `.env.example` to `.env` and add your key. Never commit `.env`.
-The local API/UI entry point is described below; Docker setup has not been implemented yet.
+The local API/UI entry point is described below, along with Docker setup.
+
+### Run with Docker
+
+Build the image from the project root:
+
+```bash
+docker build -t scheme-saathi .
+```
+
+The approved ChromaDB database in `data/chroma` is included in the image. Run
+the UI on <http://localhost:8501>. Provide your local `.env` file at runtime;
+it is not copied into the image. Uploaded documents are stored in a named
+Docker volume:
+
+```bash
+docker run --rm -p 8501:8501 --env-file .env -v scheme-saathi-documents:/app/data/private_documents scheme-saathi
+```
+
+Create `.env` from `.env.example` and configure the required model variables
+before starting the container.
 
 ### Local Streamlit UI
 
@@ -256,6 +279,36 @@ server-sent event stream while the eligibility workflow runs. The current
 eligibility rules include a synthetic widow-pension example for testing; results
 are not official benefit decisions. Applications are only submitted by the
 mock workflow after the user approves the exact drafted form.
+
+During chat, **Details collected so far** shows the unconfirmed profile. After
+intake, ask the citizen to confirm the displayed details; **Change details in
+chat** returns to the conversation without confirming them. Once the
+reviewed rules return final results, select an eligible scheme and choose
+**Prepare selected application** to proceed to documents and draft review.
+On the Documents screen, select the requested redacted PDF, PNG or JPEG,
+confirm the masking notice for each document, and select **Upload document**.
+Alternatively, attach the next required document using the chat paperclip.
+The workflow advances to review once all required documents are uploaded.
+On the review screen, **Edit** updates collected profile details. Saving changes
+rechecks eligibility and requires approval of the new draft.
+If intake stops before confirmation, **Review preliminary results** shows
+the current rule results without enabling application preparation; return to
+chat to supply or correct details. Nothing is sent to a government portal.
+
+The portal header shows the signed-in account and provides **New chat**,
+**Saved details**, **Privacy & consent**, and **Sign out**. On smaller screens
+these are in the account menu. **Saved details** opens what is remembered, the
+saved and family applications, and "Forget my data". Opening the privacy notice
+does not withdraw consent; withdrawal, starting a new chat, and signing out
+require confirmation before clearing the active conversation and deleting the
+active application with its saved details and uploaded documents. Sign out
+clears the app session but does not explicitly end the Auth0 session.
+
+Mock submission requires `MOCK_PORTAL_AUTH_SECRET` in the API environment.
+If it is missing, approval is blocked without consuming the pending decision.
+If submission fails after approval, its outcome may be unknown; check the mock
+portal before preparing another application.
+
 The approval and rejection button colors are set by `approvedButtonColor` and
 `rejectButtonColor` in `.streamlit/scheme_saathi.toml`; Streamlit's standard
 `config.toml` does not support per-button theme colors.
@@ -289,8 +342,9 @@ Eligibility: candidate schemes → rule engine → verdicts
     ↓
 A cant_tell verdict that an answer could settle?
     ├─ yes → Intake asks ONE question → the reply goes back to Intake
-    ├─ "don't know", no usable answer twice, or 8 questions → stop and list what is missing
+    │        ("don't know", or no usable answer twice, skips that fact; 12 questions → confirm and answer, open ones as can't tell)
     └─ no  → Confirm step: the person approves, edits or rejects the exact facts
+             (verdicts still open only on skipped facts are final "can't tell" answers)
                 ↓
              Eligibility on confirmed facts → cited verdict → documents / application
 ```
@@ -301,7 +355,8 @@ A cant_tell verdict that an answer could settle?
   (`get_field_specs`). The model gets that schema, and code validates each returned field on
   its own: `"67"` for a number, `"yes"` for a bool or an unknown field is dropped, not stored.
   Candidate schemes are the selected scheme, or else every scheme whose rules are fully
-  reviewed (today only `SYNTH-PENSION-001`, so live mode asks about age, income and widowhood).
+  reviewed (all 49 rule files since the Step 5 review on 9 Nov 2026, plus the test-only
+  `SYNTH-PENSION-001`; see `data/rules/REVIEW_STATUS.md`).
 - **Choosing the question.** `tools.next_question(verdicts, declined)` counts each field in the
   `missing_fields`/`unresolved_fields` of the `cant_tell` verdicts and picks the highest count
   (ties go alphabetically). A field from an already decided scheme is never asked. The model
@@ -314,9 +369,18 @@ A cant_tell verdict that an answer could settle?
   `monthly_income`). Questions ask in the field's own period, so a bare amount answering one is
   read in that period. With no question to anchor it, the amount is rejected and asked again.
   Income fields are recognised by name (a `shortcut:` in `agents/intake.py`).
+- **Plain answers.** When the pending question is yes/no and the reply starts with yes or no
+  (हाँ/नहीं, होय/नाही), code records it, whatever the model read. For a list question,
+  a leading "no" or "none of these" / "I am not a …" is recorded as `none of these`. A reply
+  with doubt ("No, I am not sure"), a second clause ("… but …") or a listed value is left to
+  the model.
 - **Stop rules.** The model classifies each reply as `answer`, `dont_know` or `other`.
-  "Don't know" stops intake, a field asked twice without a usable answer counts as "don't
-  know", and at most 8 questions are asked (`MAX_QUESTIONS`). A reply with no facts at all
+  "Don't know" skips that one fact, and so does a field asked twice without a usable answer;
+  intake goes on with the questions that can still change a verdict. When none is left, the
+  person confirms the facts, and verdicts open only on skipped facts are given as "can't tell"
+  with the missing fact named. At most 12 questions are asked (`MAX_QUESTIONS`); at that point
+  the person confirms the facts given so far and gets every verdict, the open ones as "can't
+  tell" with the missing facts named. A reply with no facts at all
   goes back to the Supervisor, so a new request ("what documents do I need?") is routed rather
   than the question repeated. A new intake resets these counters.
 - **Confirm step.** Once the verdicts settle, the graph pauses with `interrupt()` and shows the
@@ -498,8 +562,8 @@ The source clauses and rule conditions are stored with each record. Review must 
 `--include-draft` lets a rule author preview a draft ruleset without changing its stored status:
 
 ```bash
-python -m graph.run --include-draft --scheme-id C02 --citizen '{"has_bank_account": true, "age": 40, "consents_to_auto_debit": true}'
-python -m graph.run --include-draft --scheme-id C04 --citizen '{"has_savings_account": true, "age": 30, "is_or_was_income_tax_payer": false}'
+python -m graph.run --include-draft --scheme-id C02 --citizen '{"has_bank_account": true, "age": 40, "age_nearer_birthday": 40, "consents_to_auto_debit": true}'
+python -m graph.run --include-draft --scheme-id C04 --citizen '{"has_savings_account": true, "age": 30, "is_or_was_income_tax_payer": false, "consents_to_auto_debit": true}'
 ```
 
 The output starts with a DRAFT PREVIEW banner. Draft rules are evaluated as in-memory copies (the files are not changed), and the workflow stops after the verdict and document list: no application is drafted, approved or submitted. Without the flag, draft rules still fail closed. Use this only while a scheme’s rules are under review; do not use preview results for citizen advice or applications.
@@ -518,7 +582,7 @@ Run the rule-engine unit and integration tests:
 python -m pytest -q tests/test_scheme.py tests/test_rule_engine.py
 ```
 
-The current evaluator supports reviewed scalar comparisons and membership checks. A scheme's flat rules are combined with either `all` or `any`; nested mixed expressions are not supported. The synthetic pension fixture is the current executable example. Other scheme records contain source material and have not yet been converted into reviewed machine-readable eligibility rules, so the evaluator does not provide verified eligibility decisions for them.
+The current evaluator supports reviewed scalar comparisons and membership checks. A scheme's flat rules are combined with either `all` or `any`. One level of OR inside a rule is supported: a rule may list `or_conditions`, and it passes when its own condition or any alternative holds (for example "BPL card **or** family income ≤ ₹21,000"). Deeper nesting is not supported. The synthetic pension fixture is the current executable example. Other scheme records contain source material and have not yet been converted into reviewed machine-readable eligibility rules, so the evaluator does not provide verified eligibility decisions for them.
 
 ### GPT agent workflow
 
@@ -540,12 +604,29 @@ graph.invoke(Command(resume={"action": "approve", "payload_hash": pending["paylo
 
 Set `SUPERVISOR_MODEL` and `SPECIALIST_MODEL` in `.env`, plus either `OPENROUTER_API_KEY` (with an OpenRouter model ID such as `openai/gpt-4o-mini`) or `OPENAI_API_KEY` (with an OpenAI model ID). `OPENAI_BASE_URL` can be set for an OpenAI-compatible endpoint. The model IDs are configuration, not code defaults.
 
+For the OpenRouter language and intent classifier, optionally set `ROUTER_MODEL`;
+otherwise it uses `SUPERVISOR_MODEL`. With no OpenRouter key or classifier
+model, it uses the local language and keyword fallback instead of calling an API.
+
 Mock-portal writes also require `MOCK_PORTAL_AUTH_SECRET` in `.env`. Set the
 same long random value in the graph application and mock-portal server
 environments (for example, generate one with
 `python -c 'import secrets; print(secrets.token_urlsafe(32))'`). The workflow
 uses short-lived, one-use capabilities tied to the exact application form; writes
 fail closed when the secret is not configured. Do not commit the secret.
+
+For replay protection across restarts or portal processes, optionally set
+`MOCK_PORTAL_NONCE_DB` to the same SQLite file path on the same host for every
+portal process. For example, use `data/mock-portal-nonces.sqlite` (ignored by
+Git). The file contains capability nonces and expiry times, not application
+forms; expired entries are removed on the next capability use. The database
+file is created with owner-only permissions on POSIX. If it is unavailable,
+writes fail rather than falling back to process-local replay protection.
+Without this setting, nonce tracking remains process-local and a capability may
+be replayed after a restart or in another process until it expires. Do not
+delete or replace the database while capabilities may still be valid.
+This setting **does not persist applications**: mock drafts and submissions
+still disappear on portal restart.
 
 How an application is drafted, approved and submitted:
 
@@ -559,26 +640,59 @@ How an application is drafted, approved and submitted:
 8. The `document_checker` role may call only the required-document and field-comparison tools; intake and eligibility have separate read-tool permissions. The single-agent baseline intentionally retains its full tool set.
 9. Approval decisions emit `application_approval` events with the action, result and whether the caller was an authenticated household. They omit household IDs, form data and approval hashes.
 
+**Entering the citizen portal:**
+
+1. Open the portal URL and select **Sign in / Create account**.
+2. Sign in with an account available in the configured Auth0 tenant. Whether new users can register depends on the tenant's signup settings.
+3. After returning to Scheme Saathi, review the privacy notice and consent before starting the chat.
+4. Check schemes and, if eligible, prepare an application for review. Submission is to a mock portal, not a government service.
+
+Auth0 issues an access token after sign-in. The API verifies the token and takes the household identity from its trusted claim; the Auth0 Action must provide this claim or protected API requests are rejected. The token is not a household ID entered in chat. The current model scopes access to the household in the token; an operator workflow for authorized access to multiple households has not been established.
+
+The UI requests the OpenID `email` scope and displays the account email returned by Auth0's `/userinfo` endpoint on the consent and workflow screens. It is kept only in the current UI session and cleared on sign-out or expiry; it is not used to authorize household access. If Auth0 cannot provide the email, sign-in still works and the UI displays a notice. On shared screens, consider who can see the displayed address.
+
+`localhost:8501` is local to the machine running the app. Other users need a reachable deployed URL configured as an Auth0 callback and as `AUTH0_REDIRECT_URI`. Account provisioning, signup policy and household mapping must be decided by the team. The current sign-out clears the local app session but does not explicitly end the Auth0 session; shared CSC devices need an appropriate logout and session-isolation design before use.
+
 HTTP API (`app/api.py`):
 
 - Configure `AUTH0_DOMAIN`, `AUTH0_AUDIENCE` and `AUTH0_HOUSEHOLD_CLAIM` in `.env`. Auth0 access tokens must use RS256 and include a non-empty `sub` plus the configured custom namespaced household claim. Configure that claim in an Auth0 Action; never accept a household ID from the request body or headers. Protected API routes reject missing/invalid tokens, and fail closed with 503 if Auth0 is not configured.
-- The mock portal HTTP routes also require an Auth0 access token. `POST /applications` additionally requires the exact, short-lived, one-use capability in `X-Write-Capability`; capabilities are bound to the authenticated household and form. `GET /applications/{application_id}` returns status only to the owning household. Keep the portal server private; this demo's capability issuer and nonce store are process-local.
+- CSC operators: set `AUTH0_ROLE_CLAIM` to a custom namespaced claim that an Auth0 Action fills with `"operator"` (or a list that contains it) for named operator accounts. An operator token needs no household claim. The API keeps an operator's work under `operator:<sub>`, a name no citizen household can have (a citizen token whose household claim starts with `operator:` is rejected), so an operator never reaches a citizen's remembered details. An operator has no standing consent. When they approve an application they choose whether the person they are helping agrees to it being kept on their list for 90 days; the tick starts unticked and is sent as `citizen_agreed` with the approve decision. That agreement is recorded for that one application, as taken in person and by whom, and is withdrawn when the entry is removed. An operator cannot remember or delete household details. Letting an operator act inside a citizen's household needs citizen-approved, time-limited grants, which are not built. Without `AUTH0_ROLE_CLAIM` every token is a citizen.
+- Workflow state: by default conversations and application workflows live in the server's memory and are lost on restart. Set `SCHEME_SAATHI_CHECKPOINT_DB` to a SQLite file to keep workflow state and thread owners across restarts, so a paused confirmation or approval can be resumed. Either way a workflow expires after 24 hours without use or 7 days after it started. An expired workflow is refused as "not found" the moment it is used, and its saved state and uploads are deleted then; the 5-minute cleanup deletes the ones nobody asks for. Using a workflow refreshes only the idle limit, never the 7-day one, and an expired workflow is never brought back by a later request. Chat sessions follow the same rule. A thread can be used or resumed only by its owner, even after a restart, and whose application it is for (the person's own, or a family member's) is kept with the thread, so a restarted application is not saved as the signed-in person's own. Starting a new chat, signing out from the menu and withdrawing consent delete the application workflow through `DELETE /api/threads/{thread_id}` (owner only, 404 when unknown or expired), so its profile and draft do not stay in this file; `DELETE /api/threads/{thread_id}/documents` still removes only the uploads. This file holds personal details: keep it private and Git-ignored. It is a storage exception to the ChromaDB-only design, because ChromaDB has no verified LangGraph checkpointer.
+- The Streamlit UI signs users in with the Auth0 Authorization Code flow with PKCE and sends the resulting access token to the API. Create an Auth0 "Single Page Application" (or Native) application, add `http://localhost:8501` to its Allowed Callback URLs, and set `AUTH0_CLIENT_ID` (and `AUTH0_REDIRECT_URI` if the UI is not served at `http://localhost:8501`). No client secret is used or stored. Without these values the UI shows a configuration message instead of a login form.
+- The mock portal HTTP routes also require an Auth0 access token. `POST /applications` additionally requires the exact, short-lived, one-use capability in `X-Write-Capability`; capabilities are bound to the authenticated household and form. `GET /applications/{application_id}` returns status only to the owning household, and the `get_application_status` tool answers "not found" to any other household when it is told who is asking (every call in this app does). Keep the portal server private; the capability issuer is demo-grade, and nonce tracking is process-local unless the shared SQLite nonce store is configured.
 - `POST /api/chat` runs the graph on a `thread_id`. `known_facts` and `confirmed_facts` sent on a turn are merged with earlier turns. `next_step` tells the client what to show:
   - `needs_information`: one intake question in `response`; the field is `data.pending_field`.
   - `awaiting_confirmation`: `data.confirmation` holds the `facts` to confirm, their `payload_hash` and any `rejected_edits`.
   - `intake_stopped`: the person did not know an answer; `response` lists the missing details.
   - `eligibility_checked`: the final, cited verdict for each candidate scheme.
   - `awaiting_approval`: a draft is waiting; `data.approval` holds the form, `payload_hash` and `portal_draft_id`.
+  - `answered`: a cited answer to a scheme question, with a `Sources:` list in `response`.
+  - `answer_not_found`: no reviewed evidence answered the question (also returned when search is unavailable).
 
   A new message on a thread waiting for a confirmation or approval returns 409.
 - `POST /api/chat/{thread_id}/decision` takes `{"action": "approve" | "edit" | "reject", "payload_hash": "...", "changes": {}}` and resumes the graph, for the confirm step and the approval gate alike. It returns 404 for an unknown thread, 403 for another household, and 409 when nothing is waiting.
+- Long-term memory is opt-in and off until the person agrees. All of these routes take the household and the person from the access token only, never from the request, and return 503 when ChromaDB is not installed. Records are kept in `chroma_data/` (Git-ignored); set `SCHEME_SAATHI_MEMORY_DIR` to use another folder. Expired records are deleted every 5 minutes. The remembered fields and their periods are in `data/memory_policy.json`.
+  - `GET /api/memory/consent` returns what the person agreed to and the policy that applies. `PUT /api/memory/consent` with `{"purpose": "profile_facts" | "application_references", "granted": true | false}` records or withdraws one choice for a citizen; withdrawing deletes what was saved under it, and agreeing again while it is active changes nothing. An operator gets 403 here, because their agreements are recorded per application instead.
+  - `GET /api/memory` lists the remembered details with their dates. `DELETE /api/memory/facts/{field}` forgets one.
+  - `DELETE /api/memory` is "Forget my data" and covers every session of the household: remembered details, saved applications and consents; application workflows with their saved state and uploaded documents; and conversations with their saved state. Every store is attempted and the response lists each one under `surfaces`. It returns 200 only when all were cleared, otherwise 500 naming the ones that were not; deleting again is safe. Applications already submitted to a portal are not deleted. Uploads made before this change do not record their household, so they are found only through threads still known to the server and otherwise expire after 30 days.
+  - `GET /api/applications` lists saved applications as `for_me`, `family` and `for_others`. `family` holds one entry per family member, each with the `relation`, an optional `nickname` and their `applications`. Mother, father, grandmother, grandfather, son, daughter, wife and husband count as family (Hindi and Marathi words are recognised too); any other relation stays in `for_others`. A member is created by the first saved application that names the relation, needs no other consent, and goes when their last saved application is removed or expires. `PATCH /api/family/{relation}` with `{"nickname": "..."}` sets or clears a nickname (letters only), and `DELETE /api/family/{relation}` removes the member with their saved applications. Operators have the same list under their own account. `GET /api/applications/{application_id}/status` reads the live portal status, only for an application in the caller's own list. `DELETE /api/applications/{application_id}` removes one from the list.
+  - A submitted application is saved with the scheme, application number, date and whether it was for the person or someone else (with a relation word such as "mother"). `POST /api/analyze` takes optional `subject` and `relation` for this. Facts about someone else, including family members, are never remembered. A chat message asking about the status of an application is answered from the caller's own saved list, and naming a family member ("my mother's case") shows only theirs.
 
-Not wired in yet: memory storage, document extraction, and persistent checkpoints (the API uses an in-memory checkpointer). Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
+Scheme questions ("What is the age limit for Atal Pension Yojana?") are answered from cited evidence:
+
+1. The Supervisor routes a factual scheme question to `respond` and sets `scheme_question` on its plan. A request to check the person's own eligibility still goes to intake and the rule engine.
+2. `respond` calls the read-only `schemes-kb.search_scheme_evidence` tool (hybrid search, LLM rerank, passages scoring 5/10 or more).
+3. The intake agent (`intake.answer()`) writes a short answer in the user's language from those passages only. An answer that cites a passage that was not retrieved, or cites none, is discarded.
+4. Output guardrails check it as `scheme_info`: quoting a scheme's criteria is allowed, telling the person they are or are not eligible is blocked.
+
+This needs `data/chroma/` and the BGE-M3 model (Setup, steps 1 and 2). Without them every scheme question gets `answer_not_found`, and the cause appears only in the server log. The first question after startup also loads the model (about 15 seconds); later answers take about 6 to 7 seconds.
+
+Not wired in yet: operator access inside a citizen's household (it needs citizen-approved, time-limited grants), document extraction, and held-out cases and attacks for the memory evaluation. The evaluation harness itself, `python -m evaluation.memory_eval`, compares a returning person's questions with memory on and off on the synthetic households and exits 1 if a verdict changes; `--cases FILE` runs cases supplied by someone else. Workflow state is durable only when `SCHEME_SAATHI_CHECKPOINT_DB` is set. Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
 
 ## Guides
 
-- [Tool inventory](teamProjectWorkspace/reference-docs/tool-list.md) — current MCP tools, access types, and graph access checks.
-- [Threat model](teamProjectWorkspace/reference-docs/threat-model.md) — security boundaries, current controls, and deployment follow-ups.
+- [Tool inventory](docs/tool-list.md) — current MCP tools, access types, and graph access checks.
+- [Threat model](docs/threat-model.md) — security boundaries, current controls, and deployment follow-ups.
 - [60-scheme review workbook](docs/Scheme-Saathi-60-Schemes-Schema-Review.xlsx) — manual review of scheme details and source information. Excel edits do not automatically update scheme JSON or ChromaDB.
 
 - [Scheme relationships](docs/scheme-data-relationships.md)
@@ -599,7 +713,7 @@ The approved collection is `schemes_bge_m3_body_v1`; `--review` selects `schemes
 
 Reimporting updates matching IDs and removes obsolete chunks from that importer's collection, including withdrawn or deleted records. Keep one importer running at a time. Multi-batch importing is not atomic; rerun successfully after a failure before serving results. Use a separate collection if the model or embedding strategy changes.
 
-Retrieval prints matching passages and citations; it does not generate answers or determine eligibility. Similarity scores are not probabilities, and nearest matches may still be irrelevant. BM25 and RRF hybrid retrieval are available. Reranking and contextual-prefix improvements remain pending.
+Retrieval prints matching passages and citations; it does not generate answers or determine eligibility (cited answers come from the agent workflow, see GPT agent workflow). Similarity scores are not probabilities, and nearest matches may still be irrelevant. BM25, RRF hybrid and optional LLM reranking are available. Contextual-prefix improvements remain pending.
 
 ## PDF and hybrid retrieval
 
@@ -618,7 +732,9 @@ python -m servers.schemes_kb.search --method hybrid --scheme-id C09 --question "
 
 Replace <file-hash> with the extraction filename. The PDF test indexes the selected extraction into scheme_pdf_review_v1. Combined search reuses stored records without reingestion, supports vector/bm25/hybrid methods, and returns source references. Draft PDF evidence is excluded unless --include-review-pdfs is explicit. --availability open filters out closed schemes in every method. Scores are ranking signals, not eligibility verdicts.
 
-BM25 uses local frequency/length scoring (k1=1.2, b=0.75) over the same filtered passages, with Unicode-aware tokenization and HTML tags excluded. It does not call an LLM. Hindi keywords may not match English sources. Hybrid fuses up to 20 candidates per method using reciprocal rank fusion with constant 60. The original scheme-page and PDF collections remain separate. Overlap deduplication and reranking are not implemented.
+BM25 uses local frequency/length scoring (k1=1.2, b=0.75) over the same filtered passages, with Unicode-aware tokenization and HTML tags excluded. It does not call an LLM. Hindi keywords may not match English sources. Hybrid fuses up to 20 candidates per method using reciprocal rank fusion with constant 60. The original scheme-page and PDF collections remain separate. Overlap deduplication is not implemented.
+
+`--rerank` (or `search_schemes(..., rerank=True)`) sends the first-stage top `candidate_k` passages (default 20, each cut to 1,500 characters, tables as visible text) to `SPECIALIST_MODEL` in one call. The model scores each 0 to 10; results are sorted by that score, with ties keeping first-stage order. Passage text is sent as untrusted data. If the call fails, the first-stage order is returned with a warning. Rerank scores are not comparable with vector, BM25 or RRF scores. The reranker can only reorder candidates the first stage found.
 
 RAG scripts recognize synthetic:// rule fixtures and skip them without altering the rule-engine files. Malformed real scheme records still fail validation.
 
@@ -629,6 +745,8 @@ The comparison runner supports vector, BM25 and hybrid using the same source-lab
 ```bash
 python -m servers.schemes_kb.evaluate_retrieval --dataset "/path/to/retrieval_gold_v1.json" --method hybrid --split development --allow-pending
 ```
+
+Add `--rerank` to compare the same method with LLM reranking; the report filename and `rerank` field record it.
 
 --allow-pending explicitly permits provisional labels; omit it for approved labels. Keep held-out cases untouched until final evaluation. Reports are saved under ignored data/evaluation-runs/ and include evidence coverage, scheme hits, language breakdowns, filter checks, latency and corpus fingerprints. Abstention cases are marked unsupported; retrieval alone does not generate an answer. Evidence scoring requires source references plus normalized source text, not a matching citation alone. Tests use small synthetic examples and do not include the gold dataset.
 

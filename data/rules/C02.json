@@ -14,7 +14,7 @@
   "rules": [
     {"field": "has_bank_account", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-1", "status": "reviewed"},
-    {"field": "age", "op": "lte", "value": 70, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "age_nearer_birthday", "op": "lte", "value": 70, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "consents_to_auto_debit", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"}
   ]
 }

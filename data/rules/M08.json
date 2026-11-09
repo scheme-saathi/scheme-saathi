@@ -1,0 +1,150 @@
+{
+  "scheme_id": "M08",
+  "name": "Mahila Kisan Yojana (Maharashtra)",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/mkym",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant should be a permanent resident of Maharashtra."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant should be a female."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant should belong to the Charmakar Community."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant's age should be between 18 to 50 years."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The applicant must have knowledge of the business for which they are applying for a loan."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "The applicant must have her own name, or joint name with her husband, or her husband’s name (with affidavit) on the 7/12 land extract for agricultural project loans."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "For the 50% Subsidy Scheme and Margin Money, her annual income must be below the poverty line."
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "For the NSFDC Scheme, the income limit is ₹98,000 for rural areas and ₹1,20,000 for urban areas."
+    }
+  ],
+  "documents_required": [
+    "Completed application form from the LIDCOM District Office.",
+    "Recent passport-size photograph.",
+    "Valid Income Certificate (issued by an authorized government officer).",
+    "Caste Certificate (Charmakar Community).",
+    "Proof of Residence (Maharashtra).",
+    "7/12 Land Extract:",
+    "Applicant’s name, joint name with husband, or husband’s name (with affidavit) for agricultural loans.",
+    "Knowledge or experience proof relevant to the proposed business/project."
+  ],
+  "rules": [
+    {
+      "field": "is_maharashtra_resident",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_woman_or_girl",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "is_charmakar_community",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 18,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 50,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_knowledge_of_business_applied_for",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "household_below_bpl",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-7",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "annual_income",
+          "op": "lte",
+          "value": 120000,
+          "clause_id": "elig-8"
+        }
+      ]
+    },
+    {
+      "field": "household_below_bpl",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-7",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "annual_income",
+          "op": "lte",
+          "value": 98000,
+          "clause_id": "elig-8"
+        },
+        {
+          "field": "lives_in_urban_area",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-8"
+        }
+      ]
+    },
+    {
+      "field": "is_agricultural_project_loan",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-6",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "has_7_12_extract_in_own_joint_or_husbands_name",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-6"
+        }
+      ]
+    }
+  ],
+  "rule_logic": "all"
+}

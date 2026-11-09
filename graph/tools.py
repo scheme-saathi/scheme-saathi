@@ -39,7 +39,7 @@ _SERVERS = {
     MOCK_PORTAL: portal_server,
     DOC_CHECK: document_check_server,
 }
-DEFAULT_TOOL_CALL_BUDGET = 40
+DEFAULT_TOOL_CALL_BUDGET = 150  # one turn can evaluate every live scheme (50) twice, plus lookups
 _KNOWN_ACTORS = {"application", "baseline", "document_checker", "eligibility", "intake", "supervisor"}
 
 # Pre-tool hook: only these agents may call a write tool. "baseline" is the single-agent
@@ -52,6 +52,7 @@ READ_TOOLS = {
     (SCHEMES_KB, "search_schemes"),
     (SCHEMES_KB, "get_scheme_details"),
     (SCHEMES_KB, "get_required_documents"),
+    (SCHEMES_KB, "search_scheme_evidence"),
     (MOCK_PORTAL, "get_application_status"),
     (DOC_CHECK, "compare_document_fields"),
 }
@@ -63,6 +64,7 @@ READ_ACCESS = {
         (RULE_ENGINE, "list_rule_schemes"),
         (RULE_ENGINE, "get_rule_fields"),
         (RULE_ENGINE, "get_field_specs"),
+        (SCHEMES_KB, "search_scheme_evidence"),
     },
     "eligibility": {
         (RULE_ENGINE, "list_rule_schemes"),
@@ -294,6 +296,49 @@ def search_schemes(profile: dict, scheme_ids: list[str] | None = None, include_d
     return call_tool(RULE_ENGINE, "list_rule_schemes", scheme_ids=scheme_ids, include_draft=include_draft)
 
 
+CLOSED_NOTE = "Applications for this scheme are closed on myScheme right now."
+
+
+_closed_schemes: dict[str, bool] = {}
+
+
+def scheme_is_closed(scheme_id: str) -> bool:
+    """True when the scheme's myScheme page said applications are closed when it was collected.
+
+    Only a definite answer is cached: the record's status, or "no record" (a synthetic test
+    scheme). A failed lookup (an exhausted tool budget, a server error) adds no note this
+    time and is tried again next time, so it can't hide the note for good (PR #67 review).
+    Scheme records don't change while the app runs, and each lookup is a tool call that counts
+    against a conversation's tool-call budget.
+    """
+    if scheme_id in _closed_schemes:
+        return _closed_schemes[scheme_id]
+    try:
+        details = call_tool(SCHEMES_KB, "get_scheme_details", scheme_id=scheme_id)
+    except ToolCallError as error:
+        if error.code == "scheme_not_found":
+            _closed_schemes[scheme_id] = False
+        else:
+            logger.warning("Could not check whether %s is closed (%s); no note added.", scheme_id, error.code)
+        return False
+    closed = isinstance(details, dict) and details.get("availability_status") == "closed"
+    _closed_schemes[scheme_id] = closed
+    return closed
+
+
+scheme_is_closed.cache_clear = _closed_schemes.clear  # type: ignore[attr-defined]
+
+
+def with_closed_note(scheme_id: str, explanation: str) -> str:
+    """The explanation, plus a line saying applications are closed when they are (Step 5, F6)."""
+    return f"{explanation} {CLOSED_NOTE}" if scheme_is_closed(scheme_id) else explanation
+
+
+def search_evidence(question: str, scheme_id: str | None = None) -> list[dict]:
+    """Cited passages that answer a scheme question; empty when nothing relevant was found."""
+    return call_tool(SCHEMES_KB, "search_scheme_evidence", question=question, scheme_id=scheme_id)
+
+
 def required_fields(scheme_ids: list[str] | None = None, include_draft: bool = False) -> list[str]:
     candidates = search_schemes({}, scheme_ids, include_draft)
     if not candidates:
@@ -328,6 +373,16 @@ def next_question(verdicts: dict[str, dict], declined: Collection[str] = ()) -> 
 
 def list_documents(scheme_id: str) -> list[str]:
     return call_tool(SCHEMES_KB, "get_required_documents", scheme_id=scheme_id)
+
+
+def application_status(application_id: str, household_id: str) -> dict[str, Any]:
+    """The portal's current status of one application, for the household that owns it.
+
+    It is read live and never stored. The portal answers "not found" to any other household.
+    """
+    return call_tool(
+        MOCK_PORTAL, "get_application_status", application_id=application_id, household_id=household_id
+    )
 
 
 def compare_document_fields(

@@ -1,0 +1,145 @@
+{
+  "scheme_id": "M12",
+  "name": "Ramai Awas (Gharkul) Scheme for SC & Nav-Buddha (Urban and Rural)",
+  "level": "state",
+  "state": "Maharashtra",
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/rassnb",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "1. The applicant should have lived for 15 years in Maharashtra."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "2. The applicant's annual income limit is as under -"
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "For Rural Area, ₹1,00,000/- per annum."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "For Municipal Area, ₹1,50,000/- per annum."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "For Municipal Corporation, ₹2,00,000/- per annum."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "3. Only one person in the family will get the benefit."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "4. The applicant should have his/her own land"
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "5. The applicant should not be receiving the benefits of any other housing scheme of the Government."
+    },
+    {
+      "clause_id": "elig-9",
+      "text": "Reservation/Relaxation/Priority"
+    },
+    {
+      "clause_id": "elig-10",
+      "text": "Priority will be given to applicants from the Below Poverty Line (BPL)."
+    },
+    {
+      "clause_id": "det-1",
+      "text": "The scheme \"Ramai Awas (Gharkul) Scheme for SC & Nav-Buddha (Urban and Rural)\" is a housing scheme by the Department of Social Justice & Special Assistance of the Government of Maharashtra. The scheme aims to raise the standard of living of the individuals from the Scheduled Caste and Nav-Buddha communities residing in rural & urban areas of Maharashtra."
+    }
+  ],
+  "documents_required": [
+    "Residential / Domicile Certificate.",
+    "Caste Certificate.",
+    "Aadhaar Card",
+    "Address Proof.",
+    "Identity Card.",
+    "Passport Size Photo."
+  ],
+  "rules": [
+    {
+      "field": "social_category",
+      "op": "in",
+      "value": [
+        "SC",
+        "Nav-Buddha"
+      ],
+      "clause_id": "det-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "years_resident_in_maharashtra",
+      "op": "gte",
+      "value": 15,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "annual_income",
+      "op": "lte",
+      "value": 200000,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "annual_income",
+      "op": "lte",
+      "value": 150000,
+      "clause_id": "elig-4",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "area_type",
+          "op": "eq",
+          "value": "municipal corporation",
+          "clause_id": "elig-5"
+        }
+      ]
+    },
+    {
+      "field": "annual_income",
+      "op": "lte",
+      "value": 100000,
+      "clause_id": "elig-3",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "area_type",
+          "op": "in",
+          "value": [
+            "municipal council area",
+            "municipal corporation"
+          ],
+          "clause_id": "elig-4"
+        }
+      ]
+    },
+    {
+      "field": "family_member_already_beneficiary",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-6",
+      "status": "reviewed"
+    },
+    {
+      "field": "owns_land_for_house",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-7",
+      "status": "reviewed"
+    },
+    {
+      "field": "receives_other_government_housing_benefit",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-8",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

@@ -1,0 +1,170 @@
+{
+  "scheme_id": "C09",
+  "name": "PRISM (Promoting Innovations in Individuals, Start-ups and MSMEs): Category-2: Fabrication of Working Model/Process Know-how/Testing & Trial/Patenting/Technology Transfer",
+  "level": "central",
+  "state": null,
+  "source": {
+    "url": "https://www.myscheme.gov.in/schemes/prism-c2-fwmpkhttptt",
+    "collected_on": "2026-10-28"
+  },
+  "clauses": [
+    {
+      "clause_id": "elig-1",
+      "text": "The applicant must be an Indian Citizen."
+    },
+    {
+      "clause_id": "elig-2",
+      "text": "The applicant must have an innovative idea or an invention."
+    },
+    {
+      "clause_id": "elig-3",
+      "text": "The applicant must propose a project where the project cost is more than ₹5,00,000/- and up to ₹35,00,000/-."
+    },
+    {
+      "clause_id": "elig-4",
+      "text": "The applicant must ensure the project duration does not exceed 24 months."
+    },
+    {
+      "clause_id": "elig-5",
+      "text": "The applicant must ensure the proposal involves the fabrication of a working model/process know-how/testing and trial/patenting/technology transfer."
+    },
+    {
+      "clause_id": "elig-6",
+      "text": "The applicant must ensure the proposal does not involve only software development."
+    },
+    {
+      "clause_id": "elig-7",
+      "text": "The applicant must ensure the proposal is not for basic scientific research having no immediate commercial implications."
+    },
+    {
+      "clause_id": "elig-8",
+      "text": "Specific Conditions"
+    },
+    {
+      "clause_id": "elig-9",
+      "text": "Students: The applicant must provide a `No Objection Certificate’ from the head of their institution on the institution’s letterhead."
+    },
+    {
+      "clause_id": "elig-10",
+      "text": "Students: The applicant must ensure the commitment from the institution that the project will be taken to its logical conclusion by the student/concerned faculty."
+    },
+    {
+      "clause_id": "elig-11",
+      "text": "Individuals Working in Organizations: The applicant must furnish a `No Objection Certificate’ from their employer."
+    },
+    {
+      "clause_id": "elig-12",
+      "text": "Desirable Criteria (Preference)"
+    },
+    {
+      "clause_id": "elig-13",
+      "text": "The proposals should preferably be in the following focus sectors: Green Technology, Clean Energy, Industrially utilizable smart materials, Waste to wealth, Affordable healthcare, Water & sewage management, or any other technology or knowledge-intensive area."
+    },
+    {
+      "clause_id": "elig-14",
+      "text": "Preference: Student innovators making it to the final of any competition are eligible, but they should take the project as a full-time activity after graduation to ensure their studies are not adversely affected."
+    },
+    {
+      "clause_id": "elig-15",
+      "text": "The applicant should ensure the proposal is submitted through the nearest TePP Outreach cum Cluster Innovation Centre, even if scouted, documented, and mentored by other agencies, and must include evaluation by the assisting agency."
+    },
+    {
+      "clause_id": "excl-1",
+      "text": "Proposals involving only software development."
+    },
+    {
+      "clause_id": "excl-2",
+      "text": "Proposals involving only patenting (unless patenting is along with prototype development)."
+    },
+    {
+      "clause_id": "excl-3",
+      "text": "Proposals for basic scientific research having no immediate commercial implication"
+    }
+  ],
+  "documents_required": [
+    "Required During Application/Submission Stage",
+    "Proof Of Residence (Issued By Sub-Divisional Magistrate (SDM)/District Magistrate (DM) Or A Copy Of Ration Card Or Any Other Document Regarding Proof Of Residence).",
+    "Copy Of Aadhaar Card.",
+    "Documentary Proof Of Prior Work (Video, Photo, Press Coverage, etc.).",
+    "No Objection Certificate (From Head of Institute/Organization, on institution’s letterhead, for Students and Working Innovators).",
+    "Commitment Letter From Institution (Committing that the project will be taken to its logical conclusion by the student/concerned faculty, for Students).",
+    "Copy Of The Latest Income Tax Returns Filed (If Applicant Is An Income Tax Payer).",
+    "List Of Equipment/Instruments, Etc. With Their Respective Costs In A Separate Annexure (Required if an essential equipment purchase is proposed).",
+    "Details Of Work Done On Innovation So Far (Including Literature Survey/Patent Search, Development Work Done, etc.).",
+    "Brief Write-Up Giving Broad Details Of The Original Idea/Invention/Intellectual Property Rights/Know How Available.",
+    "Proposed Costs And Time Frame For The Project (Including Justification For Cost Estimation).",
+    "Activity Details/Work Plan With Monitorable Milestones.",
+    "Details Of End Product/Process/Output (Including Targeted Specifications, Performance Requirements/Standards).",
+    "Referees (Two Numbers With Complete Address, Phone Number And E-Mail Identification).",
+    "Required Prior To Grants-in-aid Release",
+    "Signed \"Terms & Conditions\" Document.",
+    "Required At Project Closure",
+    "Project Completion Report."
+  ],
+  "rules": [
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "reviewed"
+    },
+    {
+      "field": "has_innovative_idea_or_invention",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
+      "field": "project_cost_rupees",
+      "op": "gt",
+      "value": 500000,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "project_cost_rupees",
+      "op": "lte",
+      "value": 3500000,
+      "clause_id": "elig-3",
+      "status": "reviewed"
+    },
+    {
+      "field": "proposal_is_working_model_testing_patenting_or_tech_transfer",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "project_duration_months",
+      "op": "lte",
+      "value": 24,
+      "clause_id": "elig-4",
+      "status": "reviewed"
+    },
+    {
+      "field": "proposal_is_only_software",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-6",
+      "status": "reviewed"
+    },
+    {
+      "field": "proposal_is_basic_research_without_commercial_use",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-7",
+      "status": "reviewed"
+    },
+    {
+      "field": "proposal_is_only_patenting_without_prototype",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-2",
+      "status": "reviewed"
+    }
+  ],
+  "rule_logic": "all"
+}

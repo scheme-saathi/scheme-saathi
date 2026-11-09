@@ -45,6 +45,13 @@
       "status": "reviewed"
     },
     {
+      "field": "consents_to_auto_debit",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "reviewed"
+    },
+    {
       "field": "age",
       "op": "gte",
       "value": 18,

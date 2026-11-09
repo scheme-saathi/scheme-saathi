@@ -50,8 +50,8 @@ def test_rule_tools_are_read_only_and_evaluate_reviewed_rules():
     listing = list_rule_schemes()
     assert listing["ok"] and listing["access"] == "read"
     assert get_rule_fields(["C02"], include_draft=True)["ok"]
-    live = evaluate_profile({"age": 40, "has_bank_account": True, "consents_to_auto_debit": True}, "C02")
+    live = evaluate_profile({"age": 40, "age_nearer_birthday": 40, "has_bank_account": True, "consents_to_auto_debit": True}, "C02")
     assert live["ok"]
     assert live["data"]["verdict"] == "eligible"
-    preview = evaluate_profile({"age": 40, "has_bank_account": True, "consents_to_auto_debit": True}, "C02", include_draft=True)
+    preview = evaluate_profile({"age": 40, "age_nearer_birthday": 40, "has_bank_account": True, "consents_to_auto_debit": True}, "C02", include_draft=True)
     assert preview["data"]["verdict"] == "eligible"

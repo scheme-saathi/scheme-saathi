@@ -51,6 +51,14 @@
     {
       "clause_id": "excl-10",
       "text": "Non-Resident Indians (NRIs)"
+    },
+    {
+      "clause_id": "det-2",
+      "text": "•\tGovernment Resolution No Kisani-2023/CR 42/11 A dated 15/06/2023 has been issued regarding the scheme."
+    },
+    {
+      "clause_id": "det-3",
+      "text": "•\tFarmers which are eligible for PM Kisan Yojana will be eligible for the benefit of \"Namo Shetkari Mahasanman Nidhi Yojana\""
     }
   ],
   "documents_required": [
@@ -63,14 +71,15 @@
   "rules": [
     {"field": "is_cultivable_landholding_farmer_family", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "held_qualifying_land_on_2019_02_01", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
-    {"field": "eligible_for_pm_kisan", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "is_pm_kisan_beneficiary", "op": "eq", "value": true, "clause_id": "det-3", "status": "reviewed"},
+    {"field": "holds_farmland_in_maharashtra", "op": "eq", "value": true, "clause_id": "det-2", "status": "reviewed"},
     {"field": "is_institutional_landholder", "op": "eq", "value": false, "clause_id": "excl-2", "status": "reviewed"},
-    {"field": "is_former_or_present_constitutional_post_holder", "op": "eq", "value": false, "clause_id": "excl-4", "status": "reviewed"},
-    {"field": "is_former_or_present_listed_political_office_holder", "op": "eq", "value": false, "clause_id": "excl-5", "status": "reviewed"},
-    {"field": "is_excluded_government_or_local_body_employee", "op": "eq", "value": false, "clause_id": "excl-6", "status": "reviewed"},
-    {"field": "is_excluded_retired_pensioner_receiving_at_least_10000_monthly", "op": "eq", "value": false, "clause_id": "excl-7", "status": "reviewed"},
-    {"field": "paid_income_tax_in_last_assessment_year", "op": "eq", "value": false, "clause_id": "excl-8", "status": "reviewed"},
-    {"field": "is_practicing_registered_professional_in_listed_field", "op": "eq", "value": false, "clause_id": "excl-9", "status": "reviewed"},
-    {"field": "is_non_resident_indian", "op": "eq", "value": false, "clause_id": "excl-10", "status": "reviewed"}
+    {"field": "family_has_former_or_present_constitutional_post_holder", "op": "eq", "value": false, "clause_id": "excl-4", "status": "reviewed"},
+    {"field": "family_has_former_or_present_listed_political_office_holder", "op": "eq", "value": false, "clause_id": "excl-5", "status": "reviewed"},
+    {"field": "family_has_government_or_local_body_employee", "op": "eq", "value": false, "clause_id": "excl-6", "status": "reviewed", "or_conditions": [{"field": "family_government_or_local_body_employees_are_all_mts_class_iv_or_group_d", "op": "eq", "value": true, "clause_id": "excl-6"}]},
+    {"field": "family_has_retired_pensioner_with_monthly_pension_10000_or_more", "op": "eq", "value": false, "clause_id": "excl-7", "status": "reviewed", "or_conditions": [{"field": "family_pensioners_with_10000_or_more_are_all_former_mts_class_iv_or_group_d", "op": "eq", "value": true, "clause_id": "excl-7"}]},
+    {"field": "family_has_member_who_paid_income_tax_in_last_assessment_year", "op": "eq", "value": false, "clause_id": "excl-8", "status": "reviewed"},
+    {"field": "family_has_practicing_registered_professional_in_listed_field", "op": "eq", "value": false, "clause_id": "excl-9", "status": "reviewed"},
+    {"field": "family_has_non_resident_indian", "op": "eq", "value": false, "clause_id": "excl-10", "status": "reviewed"}
   ]
 }

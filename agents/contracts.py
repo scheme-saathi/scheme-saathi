@@ -45,6 +45,8 @@ class IntakeExtraction(Contract):
     facts: FactMap = Field(default_factory=dict)  # typed rule-field values; unconfirmed
     rejected_fields: list[str] = Field(default_factory=list)
     dont_know: bool = False  # the user can't or won't answer pending_field
+    subject: Literal["self", "other"] = "self"  # whose facts these are; "other" when in doubt
+    relation: str | None = None  # a short word such as "mother"; only meaningful for "other"
 
 
 class IntakeAskInput(Contract):
@@ -56,6 +58,22 @@ class IntakeAskInput(Contract):
     request: str = Field(min_length=1)  # the message that started intake, so "she" stays "she"
 
 
+class SchemeOption(Contract):
+    scheme_id: str = Field(min_length=1)
+    name: str = Field(min_length=1)
+    description: str = ""
+
+
+class SchemeChoiceInput(Contract):
+    request: str = Field(min_length=1)
+    known_facts: FactMap = Field(default_factory=dict)  # answers so far, so the pick improves as they arrive
+    schemes: list[SchemeOption]
+
+
+class SchemeChoice(Contract):
+    scheme_ids: list[str] = Field(default_factory=list)
+
+
 class IntakeQuestionText(Contract):
     question: str = Field(min_length=1)
 
@@ -65,15 +83,53 @@ class IntakeQuestion(Contract):
     question: str = Field(min_length=1)
 
 
+class EvidencePassage(Contract):
+    id: str = Field(min_length=1)
+    scheme_id: str
+    text: str
+
+
+class IntakeAnswerInput(Contract):
+    question: str = Field(min_length=1)
+    language: Language = "unknown"
+    passages: list[EvidencePassage] = Field(min_length=1)
+
+
+class IntakeAnswer(Contract):
+    found: bool
+    answer: str = ""
+    cited_passage_ids: list[str] = Field(default_factory=list)
+
+
+class DocumentCheckInput(Contract):
+    scheme_id: str = Field(min_length=1)
+    required_documents: list[str] = Field(default_factory=list)
+    available_documents: list[str] = Field(default_factory=list)
+    household_persona: FactMap = Field(default_factory=dict)
+
+
+class DocumentCheckResult(Contract):
+    missing_documents: list[str] = Field(default_factory=list)
+    possible_inconsistencies: list[str] = Field(default_factory=list)
+    clarifying_questions: list[str] = Field(default_factory=list)
+    authenticity_verified: Literal[False] = False
+
+
 class SupervisorInput(Contract):
     request: str = Field(min_length=1)
     intake: IntakeResult | None = None  # Optional: None on first call, populated after Intake runs
     selected_scheme_id: str | None = None
+    document_check: DocumentCheckResult | None = None
 
 
 class SupervisorPlan(Contract):
     next_agent: Route
     reason: str = Field(min_length=1)
+    scheme_question: bool = Field(
+        False,
+        description="True when the user asks a factual question about a scheme (benefits, age or "
+        "income limits, how to apply) without asking to check their own eligibility. Route it to respond.",
+    )
     language: Language = Field(
         "unknown",
         description="Language of the user's message; replies use it. Hindi and Marathi both use "
@@ -89,19 +145,6 @@ class EligibilityInput(Contract):
 class EligibilityNarrative(Contract):
     explanation: str = Field(min_length=1)
     clarifying_questions: list[str] = Field(default_factory=list)
-
-
-class DocumentCheckInput(Contract):
-    scheme_id: str = Field(min_length=1)
-    required_documents: list[str] = Field(default_factory=list)
-    available_documents: list[str] = Field(default_factory=list)
-
-
-class DocumentCheckResult(Contract):
-    missing_documents: list[str] = Field(default_factory=list)
-    possible_inconsistencies: list[str] = Field(default_factory=list)
-    clarifying_questions: list[str] = Field(default_factory=list)
-    authenticity_verified: Literal[False] = False
 
 
 class ApplicationInput(Contract):
