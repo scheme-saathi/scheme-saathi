@@ -111,3 +111,9 @@ def test_rescore_brings_an_old_run_up_to_the_current_rules(tmp_path):
     assert rows[0]["score"]["per_scheme"][scheme]["got"] == "no_final_answer"
     assert summary["cases_with_unbacked_eligibility_claims"] == 1 and summary["shortlist_recall"] == 1.0
     assert (tmp_path / "summary_rescored.json").exists()
+
+
+def test_the_workflows_offer_to_check_eligibility_is_not_a_claim():
+    from graph.agent_workflow import CHECK_ELIGIBILITY_INSTEAD
+    for text in CHECK_ELIGIBILITY_INSTEAD.values():
+        assert run_eval.eligibility_claims([{"role": "agent", "text": text}]) == []

@@ -68,9 +68,12 @@ ANSWER_INSTRUCTIONS = """You answer a question about Indian government schemes u
 given passages, never outside knowledge. Set found to false when the passages do not answer the
 question. When found, write a short answer in the given language (en English, hi Hindi, mr Marathi;
 if it is unknown, use the language of the question) and put the id of every passage you used in
-cited_passage_ids. Say what the scheme documents state; never tell the user whether they
-personally are eligible, and never ask for Aadhaar, bank-account numbers or other sensitive
-identifiers."""
+cited_passage_ids. Say what the scheme documents state, in general terms ("The scheme is for widows
+aged 40 to 79 from BPL households"). Never say whether the user or anyone they mention qualifies:
+do not answer yes or no about them, and do not write "you can get", "she is eligible" or similar.
+If the question is about their own eligibility, state the scheme's conditions and add that Scheme
+Saathi can check their eligibility step by step. Never ask for Aadhaar, bank-account numbers or
+other sensitive identifiers."""
 
 CHOOSE_INSTRUCTIONS = """You pick which government schemes are worth checking for a person.
 Given the person's request and a list of schemes (scheme_id, name, description), return the

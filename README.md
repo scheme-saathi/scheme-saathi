@@ -322,8 +322,9 @@ Eligibility: candidate schemes → rule engine → verdicts
     ↓
 A cant_tell verdict that an answer could settle?
     ├─ yes → Intake asks ONE question → the reply goes back to Intake
-    ├─ "don't know", no usable answer twice, or 8 questions → stop and list what is missing
+    │        ("don't know", or no usable answer twice, skips that fact; 12 questions → stop and list what is missing)
     └─ no  → Confirm step: the person approves, edits or rejects the exact facts
+             (verdicts still open only on skipped facts are final "can't tell" answers)
                 ↓
              Eligibility on confirmed facts → cited verdict → documents / application
 ```
@@ -348,8 +349,11 @@ A cant_tell verdict that an answer could settle?
   read in that period. With no question to anchor it, the amount is rejected and asked again.
   Income fields are recognised by name (a `shortcut:` in `agents/intake.py`).
 - **Stop rules.** The model classifies each reply as `answer`, `dont_know` or `other`.
-  "Don't know" stops intake, a field asked twice without a usable answer counts as "don't
-  know", and at most 12 questions are asked (`MAX_QUESTIONS`). A reply with no facts at all
+  "Don't know" skips that one fact, and so does a field asked twice without a usable answer;
+  intake goes on with the questions that can still change a verdict. When none is left, the
+  person confirms the facts, and verdicts open only on skipped facts are given as "can't tell"
+  with the missing fact named. At most 12 questions are asked (`MAX_QUESTIONS`); reaching that
+  stops intake and lists what is missing. A reply with no facts at all
   goes back to the Supervisor, so a new request ("what documents do I need?") is routed rather
   than the question repeated. A new intake resets these counters.
 - **Confirm step.** Once the verdicts settle, the graph pauses with `interrupt()` and shows the

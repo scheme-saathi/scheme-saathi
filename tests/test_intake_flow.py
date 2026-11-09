@@ -369,21 +369,37 @@ def test_a_settled_no_asks_nothing_more():
 # T8: when intake stops asking
 
 
-def test_dont_know_stops_intake():
+def test_dont_know_skips_that_fact_and_intake_continues():
     intake = ScriptedIntake(IntakeExtraction(facts={"age": 67}), IntakeExtraction(dont_know=True))
     _, _, send = intake_graph(intake)
 
     send("My mother is 67")
     result = send("I don't know")
-    assert result["status"] == "intake_stopped"
-    assert result["intake_stopped"] == "dont_know"
-    assert result["declined_fields"] == ["income"]
-    assert "income" in result["response"] and "is widow" in result["response"]
-    assert result["pending_field"] is None
-    assert len(intake.ask_calls) == 1  # is_widow is not asked after "don't know"
+    assert (result["status"], result["response"]) == ("needs_information", "Q:is_widow")
+    assert result["declined_fields"] == ["income"] and result["intake_stopped"] is None
+    assert [q.field for q in intake.ask_calls] == ["income", "is_widow"]
 
 
-def test_two_unusable_replies_to_one_question_stop_intake():
+def test_when_only_unknown_facts_remain_the_answer_is_a_final_cant_tell():
+    intake = ScriptedIntake(
+        IntakeExtraction(facts={"age": 67}),
+        IntakeExtraction(dont_know=True),            # income: "I don't know"
+        IntakeExtraction(facts={"is_widow": True}),  # the only other open fact
+    )
+    graph, _, send = intake_graph(intake)
+
+    send("My mother is 67")
+    send("I don't know")
+    paused = send("Yes, she is a widow")
+    pending = paused["__interrupt__"][0].value
+    assert pending["kind"] == "confirm_facts" and pending["facts"] == {"age": 67, "is_widow": True}
+    final = resume(graph, {"configurable": {"thread_id": "t"}}, action="approve", payload_hash=pending["payload_hash"])
+    assert final["status"] == "eligibility_checked"
+    assert final["verdicts"][PENSION]["verdict"] == "cant_tell"
+    assert final["verdicts"][PENSION]["missing_fields"] == ["income"]
+
+
+def test_two_unusable_replies_skip_that_fact():
     intake = ScriptedIntake(
         IntakeExtraction(facts={"age": 67}), IntakeExtraction(), IntakeExtraction()
     )
@@ -392,10 +408,10 @@ def test_two_unusable_replies_to_one_question_stop_intake():
     send("My mother is 67")
     again = send("hmm")
     assert again["response"] == "Q:income"  # asked a second time
-    stopped = send("hmm")
-    assert (stopped["status"], stopped["intake_stopped"]) == ("intake_stopped", "no_answer")
-    assert stopped["declined_fields"] == ["income"]
-    assert [q.field for q in intake.ask_calls] == ["income", "income"]
+    moved_on = send("hmm")
+    assert (moved_on["status"], moved_on["response"]) == ("needs_information", "Q:is_widow")
+    assert moved_on["intake_stopped"] is None
+    assert [q.field for q in intake.ask_calls] == ["income", "income", "is_widow"]
     assert supervisor.calls == 3  # each empty reply was re-routed by the Supervisor
 
 
@@ -423,7 +439,8 @@ def test_new_request_while_a_question_is_pending_reaches_the_supervisor():
     assert len(intake.ask_calls) == 1
 
 
-def test_a_fresh_intake_resets_the_stop():
+def test_a_fresh_intake_resets_the_stop(monkeypatch):
+    monkeypatch.setattr("graph.agent_workflow.MAX_QUESTIONS", 1)
     intake = ScriptedIntake(
         IntakeExtraction(facts={"age": 67}),
         IntakeExtraction(dont_know=True),
@@ -432,7 +449,8 @@ def test_a_fresh_intake_resets_the_stop():
     _, _, send = intake_graph(intake)
 
     send("My mother is 67")
-    assert send("I don't know")["status"] == "intake_stopped"
+    stopped = send("I don't know")  # income declined; the one-question cap is now reached
+    assert (stopped["status"], stopped["intake_stopped"]) == ("intake_stopped", "question_cap")
     result = send("I found out: her income is 1 lakh a year")
     assert result["intake_stopped"] is None and result["declined_fields"] == []
     assert result["response"] == "Q:is_widow"

@@ -33,7 +33,7 @@ from agents.intake import IntakeAgent, income_period
 from agents.family import family_relation, relation_in_text
 from agents.memory import MemoryService, clean_relation
 from agents.model_factory import create_chat_model
-from agents.supervisor import SupervisorAgent
+from agents.supervisor import SupervisorAgent, asks_about_own_eligibility
 from graph import tools
 from graph.memory_nodes import (
     load_remembered,
@@ -50,7 +50,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 SHORTLIST_SIZE = 5  # schemes one intake asks about, so questions stay relevant to the person
 MAX_QUESTIONS = 12  # per intake, so a long tail of open schemes can't turn into an interview
-MAX_ATTEMPTS_PER_FIELD = 2  # a field asked twice without a usable answer counts as "don't know"
+MAX_ATTEMPTS_PER_FIELD = 2  # a field asked twice without a usable answer is skipped, like "don't know"
 PROFILE_GOALS = {"intake", "eligibility", "application"}
 RESET_FACTS = "__reset__"  # in a facts update: drop what is held and start from the rest
 
@@ -95,7 +95,7 @@ class AgentWorkflowState(TypedDict, total=False):
     declined_fields: list[str]  # fields the user said they don't know
     question_attempts: dict[str, int]  # field -> times asked in this intake
     questions_asked: int
-    intake_stopped: str | None  # "dont_know", "no_answer" or "question_cap"
+    intake_stopped: str | None  # "question_cap" when intake has asked its maximum
     reply_unanswered: bool  # the reply to a question held no facts at all
     confirm_status: str  # "confirmed", "edit_rejected", "rejected" or "invalid"
     rejected_edits: list[str]  # edited fields that were unknown or the wrong type
@@ -166,6 +166,14 @@ def _supervisor_node(
             selected_scheme_id=state.get("selected_scheme_id"),
         )
     )
+    if plan.next_agent == "respond" and asks_about_own_eligibility(state["request"]):
+        # Code, not the model, keeps personal eligibility questions on the rule-engine path.
+        logger.info("Rerouted a personal eligibility question from respond to intake.")
+        plan = plan.model_copy(update={
+            "next_agent": "intake",
+            "scheme_question": False,
+            "reason": f"{plan.reason} (Rerouted: the user asks about their own eligibility.)",
+        })
     update["plan"] = plan.model_dump(mode="json")
     if plan.language != "unknown":
         update["language"] = plan.language
@@ -177,13 +185,24 @@ def _supervisor_node(
 
 
 def _guard_output(
-    agents: AgentSet, state: AgentWorkflowState, update: dict[str, str], agent_name: str
+    agents: AgentSet,
+    state: AgentWorkflowState,
+    update: dict[str, str],
+    agent_name: str,
+    blocked_message: dict[str, str] | None = None,
 ) -> dict[str, str]:
-    """Supervisor output check: nothing leaves the graph unless it passes."""
+    """Supervisor output check: nothing leaves the graph unless it passes.
+
+    `blocked_message`, by language, replaces the generic error when a block has a known,
+    safe next step to offer the person.
+    """
     language = state.get("language", "unknown")
     result = agents.supervisor.validate_output(update["response"], agent_name, language)
     if result.passed:
         return update
+    logger.warning("Output from %s blocked: %s", agent_name, "; ".join(result.errors))
+    if blocked_message:
+        return {"status": "output_blocked", "response": blocked_message.get(language, blocked_message["en"])}
     blocked = agents.supervisor.handle_validation_error(result, language)
     return {"status": "output_blocked", "response": blocked["user_message"]}
 
@@ -340,8 +359,8 @@ def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
         }
     update |= _subject_update(agents, state, result, replying=pending is not None)
     if result.dont_know:
+        # Skip only this fact: intake goes on with the questions that can still change a verdict.
         update["declined_fields"] = [*state.get("declined_fields", []), pending]
-        update["intake_stopped"] = "dont_know"
     return update
 
 
@@ -362,6 +381,12 @@ def _open_fields(state: AgentWorkflowState) -> list[str]:
     return sorted(
         {f for v in state["verdicts"].values() if v["verdict"] == "cant_tell" for f in v["unresolved_fields"]}
     )
+
+
+def _skipped_fields(state: AgentWorkflowState) -> list[str]:
+    """Fields not to ask again: declined ("don't know"), or asked twice without a usable answer."""
+    tired = [f for f, n in state.get("question_attempts", {}).items() if n >= MAX_ATTEMPTS_PER_FIELD]
+    return list(dict.fromkeys([*state.get("declined_fields", []), *tired]))
 
 
 def _stop_intake(state: AgentWorkflowState, reason: str, declined: list[str]) -> dict[str, Any]:
@@ -387,17 +412,16 @@ def _stop_intake(state: AgentWorkflowState, reason: str, declined: list[str]) ->
 def _intake_question_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
     """Ask for the one field that settles the most open verdicts, then wait for the reply.
 
-    Stops instead when that field has had its attempts or the question cap is reached.
+    Facts the person doesn't know, or couldn't answer twice, are skipped rather than ending
+    intake. Intake stops only at the question cap.
     """
     declined = state.get("declined_fields", [])
     if state.get("intake_stopped"):
         return _stop_intake(state, state["intake_stopped"], declined)
-    field = tools.next_question(state["verdicts"], declined)
-    attempts = state.get("question_attempts", {})
-    if attempts.get(field, 0) >= MAX_ATTEMPTS_PER_FIELD:
-        return _stop_intake(state, "no_answer", [*declined, field])
     if state.get("questions_asked", 0) >= MAX_QUESTIONS:
         return _stop_intake(state, "question_cap", declined)
+    field = tools.next_question(state["verdicts"], _skipped_fields(state))
+    attempts = state.get("question_attempts", {})
     spec = tools.field_specs(_candidate_schemes(state))[field]
     question = agents.intake.ask(
         IntakeAskInput(
@@ -511,8 +535,9 @@ def _selected_scheme_eligibility(
 
 def _route_after_eligibility(state: AgentWorkflowState) -> str:
     # Still open: ask the next question, or, once intake has stopped, say what is missing.
+    # Once nothing left to ask can change a verdict, the open ones become a final "can't tell".
     if _open_fields(state) and (
-        state.get("intake_stopped") or tools.next_question(state["verdicts"], state.get("declined_fields", []))
+        state.get("intake_stopped") or tools.next_question(state["verdicts"], _skipped_fields(state))
     ):
         return "intake_question"
     if _unconfirmed(state):
@@ -927,6 +952,19 @@ def _submit_node(
     }
 
 
+# A scheme answer that decided the person's own eligibility is replaced by an offer to check
+# it properly: only the rule engine, on confirmed facts, may say who qualifies.
+CHECK_ELIGIBILITY_INSTEAD = {
+    "hi": "मैं योजना दस्तावेज़ों से यह तय नहीं कर सकता कि आप या आपके परिजन पात्र हैं या नहीं। "
+          "अगर आप मुझे उस व्यक्ति के बारे में बताएँ, जैसे उम्र और परिवार के पास बीपीएल कार्ड है या नहीं, "
+          "तो मैं नियमों से जाँच कर दूँगा।",
+    "mr": "योजनेच्या कागदपत्रांवरून तुम्ही किंवा तुमचे नातेवाईक पात्र आहात की नाही हे मी ठरवू शकत नाही. "
+          "त्या व्यक्तीबद्दल सांगा, जसे वय आणि कुटुंबाकडे बीपीएल कार्ड आहे का, म्हणजे मी नियमांनुसार तपासतो.",
+    "en": "I can't decide from the scheme documents whether you or your family member qualify. "
+          "If you tell me about the person, such as their age and whether the family has a BPL card, "
+          "I'll check the scheme rules for you.",
+}
+
 NOT_FOUND = {
     "hi": "मुझे यह जानकारी समीक्षित योजना दस्तावेज़ों में नहीं मिली।",
     "mr": "मला ही माहिती तपासलेल्या योजना कागदपत्रांमध्ये सापडली नाही.",
@@ -966,7 +1004,9 @@ def _respond_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]
     if state.get("validation_errors"):
         return {"status": "validation_error", "response": " ".join(state["validation_errors"])}
     if state["plan"].get("scheme_question"):
-        return _guard_output(agents, state, _scheme_answer(agents, state), "scheme_info")
+        return _guard_output(
+            agents, state, _scheme_answer(agents, state), "scheme_info", CHECK_ELIGIBILITY_INSTEAD
+        )
     return _guard_output(
         agents, state, {"status": "responded", "response": state["plan"]["reason"]}, "supervisor"
     )
