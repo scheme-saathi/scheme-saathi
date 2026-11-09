@@ -65,7 +65,9 @@ def test_preview_does_not_change_the_stored_rules(draft_rule_records):
 
 def test_preview_intake_asks_only_for_the_rule_fields(draft_rule_records):
     state = run(PMSBY_OK, ["C02"], True)
-    assert set(state["profile"]) == {"has_bank_account", "age", "age_nearer_birthday", "consents_to_auto_debit"}
+    # date_of_birth is asked first; this citizen has none, so age nearer birthday is asked next.
+    assert set(state["profile"]) == {"has_bank_account", "age", "date_of_birth", "age_nearer_birthday",
+                                     "consents_to_auto_debit"}
 
 
 def test_cli_preview_prints_banner_and_verdict():

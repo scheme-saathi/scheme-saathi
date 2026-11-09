@@ -51,7 +51,7 @@ class IntakeExtraction(Contract):
 
 class IntakeAskInput(Contract):
     field: str = Field(min_length=1)
-    field_type: Literal["number", "bool", "str"]
+    field_type: Literal["number", "bool", "str", "date"]
     known_values: list[str] = Field(default_factory=list)
     period: Literal["month", "year"] | None = None  # for income fields: ask per this period
     language: Language = "unknown"

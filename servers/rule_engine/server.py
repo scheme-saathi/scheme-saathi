@@ -7,7 +7,8 @@ from typing import Any
 from fastmcp import FastMCP
 
 from .rules import evaluate
-from .scheme import RuleSet, SchemeRecord, live_conditions, preview_conditions
+from .ages import DOB_DERIVED, derive_age_fields
+from .scheme import SHARED_VALUES, RuleSet, SchemeRecord, live_conditions, preview_conditions
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEME_DIR = ROOT / "data" / "schemes"
@@ -60,7 +61,8 @@ def list_rule_schemes(scheme_ids: list[str] | None = None, include_draft: bool =
 
     Returns:
         With scheme_ids: those IDs (error if any has no rule record). Otherwise every scheme
-        whose rules are all reviewed (or every scheme with rules in preview mode).
+        whose rules are all reviewed (or every scheme with rules in preview mode), leaving out
+        schemes for organisations (``applicant_type`` "institution").
     """
     records = _rule_records()
     if scheme_ids:
@@ -68,7 +70,8 @@ def list_rule_schemes(scheme_ids: list[str] | None = None, include_draft: bool =
         if unknown:
             return _error("scheme_not_found", f"No rule record for scheme(s): {', '.join(unknown)}")
         return {"ok": True, "access": "read", "data": list(scheme_ids)}
-    ready = [s for s, record in records.items() if _conditions(record, include_draft).ready]
+    ready = [s for s, record in records.items()
+             if _conditions(record, include_draft).ready and record.applicant_type != "institution"]
     return {"ok": True, "access": "read", "data": ready}
 
 
@@ -92,8 +95,10 @@ def get_field_specs(scheme_ids: list[str], include_draft: bool = False) -> dict[
     """Read-only type of each profile field used by the given schemes' rules, in rule order.
 
     Returns:
-        ``{field: {"type": "number" | "bool" | "str", "known_values": [...]}}``. ``known_values``
-        lists the strings the rules compare against; other strings are still valid answers.
+        ``{field: {"type": "number" | "bool" | "str" | "date", "known_values": [...]}}``. ``known_values``
+        lists the strings the rules compare against (the whole shared list for fields in
+        data/field_values.json); other strings are still valid answers. When a rule uses an age
+        worked out from the date of birth, ``date_of_birth`` (type "date", YYYY-MM-DD) is added.
     """
     records = _rule_records()
     specs: dict[str, dict[str, Any]] = {}
@@ -107,7 +112,10 @@ def get_field_specs(scheme_ids: list[str], include_draft: bool = False) -> dict[
             if spec["type"] != kind:
                 return _error("field_type_conflict", f"Rules use '{condition.field}' as both {spec['type']} and {kind}.")
             if kind == "str":
+                values = SHARED_VALUES.get(condition.field, values)  # offer the whole shared list
                 spec["known_values"] += [v for v in values if v not in spec["known_values"]]
+    if specs.keys() & DOB_DERIVED:  # these are worked out from the date of birth, never asked
+        specs["date_of_birth"] = {"type": "date", "known_values": []}
     return {"ok": True, "access": "read", "data": specs}
 
 
@@ -133,7 +141,7 @@ def evaluate_profile(profile: dict[str, object], scheme_id: str, include_draft: 
         }
 
     try:
-        result = evaluate(profile, _conditions(scheme, include_draft))
+        result = evaluate(derive_age_fields(profile), _conditions(scheme, include_draft))
     except Exception as exc:  # pragma: no cover - defensive guard for invalid runtime input
         return {
             "ok": False,

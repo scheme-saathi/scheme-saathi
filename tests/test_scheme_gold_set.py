@@ -46,9 +46,13 @@ def test_ai_drafted_rules_are_not_live_until_reviewed():
         assert set(tools.search_schemes({}, sorted(AI_DRAFTED_IDS), include_draft=True)) == AI_DRAFTED_IDS
 
 
+# Schemes for organisations (decision F1): evaluable by id, but not in the citizen scheme list.
+INSTITUTION_IDS = {"C07", "C21", "C22", "C30"}
+
+
 def test_every_reviewed_scheme_is_live_by_default():
     assert set(tools.search_schemes({}, sorted(EXPECTED_IDS))) == EXPECTED_IDS
-    assert set(tools.search_schemes({})) == EXPECTED_IDS | {"SYNTH-PENSION-001"}
+    assert set(tools.search_schemes({})) == (EXPECTED_IDS - INSTITUTION_IDS) | {"SYNTH-PENSION-001"}
 
 
 def test_each_reviewed_record_evaluates_live_when_its_rules_are_satisfied():

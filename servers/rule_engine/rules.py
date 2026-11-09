@@ -118,6 +118,7 @@ def evaluate(
     missing: set[str] = set()
     unresolved: set[str] = set()
     rule_outcomes: list[str] = []
+    cited_ids: set[str] = set()
     for rule in rules:
         # A rule holds when its own condition or any alternative holds (three-valued OR).
         results = []
@@ -134,6 +135,9 @@ def evaluate(
             results.append((condition.field, outcome, is_missing))
         rule_outcome = _combine([outcome for _, outcome, _ in results], "any")
         rule_outcomes.append(rule_outcome)
+        # A passing rule cites only the alternatives that held, not every one it tried.
+        rule_rows = rows[-len(results):]
+        cited_ids |= {row.clause_id for row in rule_rows if rule_outcome != "true" or row.outcome == "true"}
         if rule_outcome == "unknown":  # only facts that could still settle this rule are open
             for field, outcome, is_missing in results:
                 if outcome == "unknown":
@@ -154,7 +158,6 @@ def evaluate(
         Verdict.NOT_ELIGIBLE: "The reviewed rule expression is not satisfied.",
         Verdict.CANT_TELL: "One or more facts needed to decide the reviewed rules are missing or invalid.",
     }
-    cited_ids = {row.clause_id for row in rows}
     cited_clauses = [clause for clause in clauses if clause.clause_id in cited_ids]
     return Evaluation(
         verdict=verdict,

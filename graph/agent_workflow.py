@@ -428,7 +428,7 @@ def _intake_question_node(agents: AgentSet, state: AgentWorkflowState) -> dict[s
             field=field,
             field_type=spec["type"],
             known_values=spec["known_values"],
-            period=income_period(field),
+            period=income_period(field) if spec["type"] == "number" else None,
             language=state.get("language", "unknown"),
             request=state.get("intake_request", state["request"]),
         )
