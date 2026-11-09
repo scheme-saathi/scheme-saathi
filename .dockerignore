@@ -17,5 +17,6 @@ data/extracted/
 data/evaluation-runs/
 tmp*/
 dist/
+observability/deploy/
 !data/chroma/
 !data/chroma/**

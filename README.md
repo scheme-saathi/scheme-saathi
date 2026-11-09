@@ -354,8 +354,9 @@ A run, tool call and the rest are recorded only while `OBSERVABILITY_ENABLED` is
 a fixed allowlist (`observability/metrics.py`), so a household, thread, application or user
 identifier, a fact value or an exception message cannot become a label; a failure is recorded by
 its exception class name only. A stream that the client closes before it finishes is `cancelled`,
-unless its result had already been sent. Tracing is described below; the Prometheus and
-Grafana setup is added in a later stage.
+unless its result had already been sent. Tracing is described below. For the Prometheus and Grafana
+setup (`observability/deploy/`), every metric and ready-made queries, see
+[docs/observability.md](docs/observability.md).
 
 Stage 3 records every model call, by `role` (`supervisor`, `specialist`, `router`) and `model` (the
 ID from your environment):
