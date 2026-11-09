@@ -12,6 +12,7 @@ import time
 from collections.abc import AsyncIterator, Callable, Collection, Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
+from functools import lru_cache
 from threading import Lock
 from typing import Any
 
@@ -299,8 +300,12 @@ def search_schemes(profile: dict, scheme_ids: list[str] | None = None, include_d
 CLOSED_NOTE = "Applications for this scheme are closed on myScheme right now."
 
 
+@lru_cache(maxsize=None)
 def scheme_is_closed(scheme_id: str) -> bool:
-    """True when the scheme's myScheme page said applications are closed when it was collected."""
+    """True when the scheme's myScheme page said applications are closed when it was collected.
+
+    Cached: scheme records don't change while the app runs, and each lookup is a tool call that
+    counts against a conversation's tool-call budget."""
     try:
         details = call_tool(SCHEMES_KB, "get_scheme_details", scheme_id=scheme_id)
     except ToolCallError:
