@@ -6,8 +6,11 @@ thread or application identifier, a fact value or a message, so a call site cann
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
+
 from observability.metrics import active_metrics
 from observability.runs import current_run, error_type, outcome_for_exception
+from observability.tracing import Span
 
 
 def record_tool_call(server: str, tool: str, outcome: str, duration_seconds: float, error_code: str = "") -> None:
@@ -15,6 +18,18 @@ def record_tool_call(server: str, tool: str, outcome: str, duration_seconds: flo
     run = current_run()
     if run is not None:
         run.add_tool_call(failed=outcome != "success")
+        if run.keep_spans:
+            duration = max(duration_seconds, 0.0)
+            run.add_span(
+                Span(
+                    name=f"{server}.{tool}",
+                    run_type="tool",
+                    start=datetime.now(timezone.utc) - timedelta(seconds=duration),
+                    duration=duration,
+                    metadata={"server": server, "tool": tool, "outcome": outcome},
+                    error=(error_code or "error") if outcome != "success" else None,
+                )
+            )
     metrics = active_metrics()
     if metrics is None:
         return

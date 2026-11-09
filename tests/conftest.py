@@ -54,14 +54,26 @@ def observability_off_and_isolated(monkeypatch):
 
     Empty (not removed) values stop load_dotenv from filling them back in from a local .env.
     """
-    from observability import set_metrics
+    from observability import set_metrics, set_tracer
 
     monkeypatch.setenv("OBSERVABILITY_ENABLED", "")
     monkeypatch.setenv("METRICS_BEARER_TOKEN", "")
     monkeypatch.setenv("MODEL_PRICES_FILE", "")
+    for name in (
+        "TRACING_BACKEND",
+        "TRACING_SAMPLE_RATE",
+        "TRACING_HASH_SALT",
+        "LANGSMITH_API_KEY",
+        "LANGCHAIN_API_KEY",
+        "LANGSMITH_TRACING",
+        "LANGCHAIN_TRACING_V2",
+    ):
+        monkeypatch.setenv(name, "")
     set_metrics(None)
+    set_tracer(None)
     yield
     set_metrics(None)
+    set_tracer(None)
 
 
 @pytest.fixture(autouse=True)

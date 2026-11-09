@@ -93,8 +93,15 @@ class Metrics:
             "Unhandled exceptions while handling a request, by route template and exception type.",
             ["route", "error_type"],
         )
-        build = self._gauge("build_info", "The running version and tracing backend; always 1.", ["version", "tracing_backend"])
-        build.labels(version=_version(), tracing_backend="none").set(1)
+        self._build = self._gauge(
+            "build_info", "The running version and tracing backend; always 1.", ["version", "tracing_backend"]
+        )
+        self.set_tracing_backend("none")
+        self.traces = self._counter(
+            "traces_total",
+            "Run traces by result: exported, sampled_out, dropped (export queue full) or failed (export error).",
+            ["result"],
+        )
 
         # Runs: one workflow invocation (a chat turn, a decision, an application step, a legacy chat turn).
         self.runs = self._counter(
@@ -193,6 +200,10 @@ class Metrics:
         unknown = set(labels) - ALLOWED_LABELS
         if unknown:
             raise ValueError(f"Metric labels not on the allowlist: {sorted(unknown)}")
+
+    def set_tracing_backend(self, backend: str) -> None:
+        self._build.clear()
+        self._build.labels(version=_version(), tracing_backend=backend).set(1)
 
     def _counter(self, name: str, help_text: str, labels: Sequence[str]) -> Counter:
         self._check(labels)

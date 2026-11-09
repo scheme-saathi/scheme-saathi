@@ -12,6 +12,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from observability.config import settings
 from observability.metrics import HTTP_METHODS, Metrics, activate, get_metrics, set_metrics
+from observability.tracing import configure_tracing
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +86,7 @@ def install_observability(application: FastAPI, metrics: Metrics | None = None) 
         set_metrics(metrics)
     metrics = get_metrics()
     activate()  # from here the run, tool-call and other hooks record into these metrics
+    metrics.set_tracing_backend(configure_tracing(config))
     application.add_middleware(MetricsMiddleware, metrics=metrics)
 
     if config.metrics_token is None:

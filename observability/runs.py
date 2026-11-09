@@ -11,15 +11,20 @@ and an error is recorded by its exception class name, never its message.
 from __future__ import annotations
 
 import contextvars
+import logging
 import re
 import threading
 import time
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from typing import Any
 
 from observability.metrics import Metrics, active_metrics
+from observability.tracing import Span, TraceItem, active_tracer
+
+logger = logging.getLogger(__name__)
 
 RUN_KINDS = frozenset(
     {
@@ -149,6 +154,9 @@ def outcome_from_payload(kind: str, payload: dict[str, Any]) -> str:
     return normalise_outcome(payload.get("status"))
 
 
+MAX_SPANS = 200
+
+
 @dataclass
 class RunRecord:
     """What one run has done so far. Worker threads share it, so counts are guarded."""
@@ -165,7 +173,21 @@ class RunRecord:
     input_tokens: int = 0
     output_tokens: int = 0
     cost: float = 0.0
+    thread: str | None = None
+    keep_spans: bool = False
+    spans: list[Span] = field(default_factory=list)
+    spans_dropped: int = 0
+    started_wall: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
+
+    def add_span(self, span: Span) -> None:
+        if not self.keep_spans:
+            return
+        with self._lock:
+            if len(self.spans) < MAX_SPANS:
+                self.spans.append(span)
+            else:
+                self.spans_dropped += 1
 
     def add_tool_call(self, failed: bool) -> None:
         with self._lock:
@@ -202,6 +224,8 @@ class RunRecorder:
         self.kind = kind if kind in RUN_KINDS else "other"
         self._metrics: Metrics | None = active_metrics()
         self._record = RunRecord(self.kind)
+        self._tracer = active_tracer()
+        self._record.keep_spans = self._tracer is not None
         self._started = time.perf_counter()
         self._finished = False
         self._lock = threading.Lock()
@@ -239,6 +263,11 @@ class RunRecorder:
     def set_verdicts(self, verdicts: Any) -> None:
         if self.active:
             self._record.verdicts = verdicts
+
+    def set_thread(self, thread_id: Any) -> None:
+        """The conversation this run belongs to. It is hashed before it goes to a tracing backend."""
+        if self.active and isinstance(thread_id, str) and thread_id:
+            self._record.thread = thread_id
 
     def note_error(self, error: BaseException) -> None:
         """Say why a run failed when the failure is reported as an event rather than raised."""
@@ -281,7 +310,37 @@ class RunRecorder:
                 name = verdict.get("verdict") if isinstance(verdict, dict) else None
                 if name in VERDICTS:
                     metrics.verdicts.labels(verdict=name).inc()
+        self._export_trace(final, time.perf_counter() - self._started)
 
+    def _export_trace(self, outcome: str, duration: float) -> None:
+        tracer = self._tracer
+        if tracer is None:
+            return
+        try:
+            record = self._record
+            with record._lock:
+                item = TraceItem(
+                    kind=self.kind,
+                    outcome=outcome,
+                    error_type=record.error_type,
+                    started=record.started_wall,
+                    duration=duration,
+                    thread=record.thread,
+                    llm_calls=record.llm_calls,
+                    llm_errors=record.llm_errors,
+                    unpriced_calls=record.unpriced_calls,
+                    tool_calls=record.tool_calls,
+                    tool_errors=record.tool_errors,
+                    input_tokens=record.input_tokens,
+                    output_tokens=record.output_tokens,
+                    cost=record.cost,
+                    spans=tuple(record.spans),
+                    spans_dropped=record.spans_dropped,
+                    server_side_error=outcome in SERVER_SIDE_ERRORS,
+                )
+            tracer.submit(item)
+        except Exception:
+            logger.warning("A run trace could not be prepared.")
     def _observe_models(self, metrics: Metrics) -> None:
         record, kind = self._record, self.kind
         with record._lock:
@@ -354,5 +413,6 @@ class RunRecorder:
         if name == "result":
             self._record.outcome = outcome_from_payload(self.kind, payload)
             self._record.verdicts = payload.get("verdicts")
+            self.set_thread(payload.get("thread_id"))
         elif name == "error" and self._record.outcome is None:
             self._record.outcome = "error"

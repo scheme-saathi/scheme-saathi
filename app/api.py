@@ -511,6 +511,7 @@ def _record_result(run: RunRecorder, result: dict[str, Any]) -> None:
     run.set_outcome(result.get("status"))
     data = result.get("data")
     run.set_verdicts(data.get("verdicts") if isinstance(data, dict) else None)
+    run.set_thread(result.get("thread_id"))
 
 
 def _event_stream(

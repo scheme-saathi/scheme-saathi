@@ -354,8 +354,8 @@ A run, tool call and the rest are recorded only while `OBSERVABILITY_ENABLED` is
 a fixed allowlist (`observability/metrics.py`), so a household, thread, application or user
 identifier, a fact value or an exception message cannot become a label; a failure is recorded by
 its exception class name only. A stream that the client closes before it finishes is `cancelled`,
-unless its result had already been sent. Tracing (Langfuse or LangSmith) and the Prometheus and
-Grafana setup are added in later stages.
+unless its result had already been sent. Tracing is described below; the Prometheus and
+Grafana setup is added in a later stage.
 
 Stage 3 records every model call, by `role` (`supervisor`, `specialist`, `router`) and `model` (the
 ID from your environment):
@@ -377,6 +377,28 @@ while observability is on. Otherwise it is tokens times the price in `observabil
 which ships **empty**: fill it in from your provider's price list, or point `MODEL_PRICES_FILE` at your
 own copy. A model that is not listed counts as unpriced, never as free. Only token counts and cost are
 recorded, never a prompt or a response.
+
+### Tracing (LangSmith)
+
+Set `TRACING_BACKEND=langsmith` and `LANGSMITH_API_KEY` (with `OBSERVABILITY_ENABLED=true`) to send one
+LangSmith trace per run: a root span named `scheme-saathi <kind>` with a child span for each model
+call (`llm`, with token usage and cost) and each tool call (`tool`). `LANGSMITH_PROJECT` names the
+project (default `scheme-saathi`) and `LANGSMITH_ENDPOINT` points at the EU or a self-hosted LangSmith.
+Langfuse is not implemented yet; `TRACING_BACKEND=langfuse` leaves tracing off with a warning.
+
+- **Metadata only.** A trace has the run kind, outcome, duration, model, token counts, cost, tool
+  names, outcomes and error class names. It never has a prompt, a reply, tool arguments, fact values or
+  an error message, and the client is built to drop inputs and every output except token usage.
+- **Leave `LANGSMITH_TRACING` and `LANGCHAIN_TRACING_V2` unset.** LangChain's own tracing would send
+  full prompts to LangSmith; the app warns at startup if either is on.
+- **Conversations** are grouped by `thread_id` metadata, which is a salted hash of the thread ID, never
+  the ID itself or a household ID. Set `TRACING_HASH_SALT` to keep the hash stable across restarts.
+- **Sampling.** `TRACING_SAMPLE_RATE` (0 to 1, default 1) picks the share of runs traced; a run that
+  failed on the server side is always traced.
+- **Never in the way.** Traces are sent from a background thread through a bounded queue. If LangSmith is
+  slow or down, requests are unaffected; `scheme_saathi_traces_total{result}` counts `exported`,
+  `sampled_out`, `dropped` (queue full) and `failed`. A trace keeps at most 200 spans.
+- `scheme_saathi_build_info{tracing_backend}` shows which backend is running.
 
 ## Intake agent
 

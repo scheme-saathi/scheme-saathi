@@ -10,11 +10,13 @@ response, and no error message.
 from __future__ import annotations
 
 import re
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from observability.metrics import active_metrics
 from observability.pricing import number, price_for
 from observability.runs import current_run, error_type
+from observability.tracing import Span
 
 # The agent roles that call a model. Anything else is "other".
 ROLES = frozenset({"supervisor", "specialist", "router", "other"})
@@ -68,6 +70,22 @@ def record_llm_call(
 
     if run is not None:
         run.add_llm_call(failed=error is not None, input_tokens=tokens_in, output_tokens=tokens_out, cost=cost)
+        if run.keep_spans:
+            duration = max(duration_seconds, 0.0)
+            usage = {"input_tokens": tokens_in, "output_tokens": tokens_out, "total_tokens": tokens_in + tokens_out}
+            if cost is not None:
+                usage["total_cost"] = cost
+            run.add_span(
+                Span(
+                    name=f"{role} {model}",
+                    run_type="llm",
+                    start=datetime.now(timezone.utc) - timedelta(seconds=duration),
+                    duration=duration,
+                    metadata={"ls_model_name": model, "role": role, "cost_source": source or "none"},
+                    outputs={"usage_metadata": usage},
+                    error=error_type(error) if error is not None else None,
+                )
+            )
     if metrics is None:
         return
 
