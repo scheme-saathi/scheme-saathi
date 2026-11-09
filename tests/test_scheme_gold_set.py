@@ -7,13 +7,14 @@ from servers.rule_engine.server import _load_scheme
 ROOT = Path(__file__).resolve().parents[1]
 # Hand-coded and checked rule by rule against the scheme text by a person (Step 1, 7 Nov 2026);
 # the gold standard for rule extraction.
-GOLD_IDS = {"C01", "C02", "C04", "C05", "C06", "C10", "C17", "C19", "C30", "C38"}
+GOLD_IDS = {"C01", "C02", "C04", "C05", "C06", "C10", "C17", "C30", "C38"}
 # AI-drafted, then checked by a person and fixed where needed (Step 4, 8 Nov 2026).
 AI_DRAFTED_REVIEWED_IDS = {"M02"}
 EXPECTED_IDS = GOLD_IDS | AI_DRAFTED_REVIEWED_IDS  # every live (reviewed) scheme
 # Reviewed schemes whose rules an AI fixed (docs/rule-fix-plan.md, Phase 1): the changed rules
 # are draft, so the scheme gives no live verdicts until a person signs them off.
-PENDING_REREVIEW_IDS = {"C03", "C13", "C14", "C23", "C29", "M01", "M13", "M16", "M18", "M19", "M20"}  # M18 also F2
+PENDING_REREVIEW_IDS = {"C03", "C13", "C14", "C19", "C23", "C29", "M01", "M13", "M16", "M18", "M19",
+                        "M20"}  # M18 also F2
 # AI-drafted and not yet checked by a person, so kept as draft (no live verdicts);
 # see data/rules/REVIEW_STATUS.md.
 AI_DRAFTED_IDS = {

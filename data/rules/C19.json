@@ -15,13 +15,17 @@
     {
       "clause_id": "elig-2",
       "text": "The applicant must be studying in a Primary or Upper Primary class (Class 1st to Class 8th) in a Government or a Government-aided school."
+    },
+    {
+      "clause_id": "benefits-7",
+      "text": "Under the Scheme, there is the provision of hot cooked meals to children of pre-schools or Bal Vatika (before class I) in primary schools also in addition to the 11.80 crore children of classes I to VIII studying in 11.20 lakh schools."
     }
   ],
   "documents_required": [],
   "rules": [
     {"field": "is_indian_citizen", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
-    {"field": "school_class", "op": "gte", "value": 1, "clause_id": "elig-2", "status": "reviewed"},
-    {"field": "school_class", "op": "lte", "value": 8, "clause_id": "elig-2", "status": "reviewed"},
+    {"field": "school_class", "op": "gte", "value": 1, "clause_id": "elig-2", "status": "draft", "or_conditions": [{"field": "is_in_bal_vatika_or_pre_school_class", "op": "eq", "value": true, "clause_id": "benefits-7"}]},
+    {"field": "school_class", "op": "lte", "value": 8, "clause_id": "elig-2", "status": "draft", "or_conditions": [{"field": "is_in_bal_vatika_or_pre_school_class", "op": "eq", "value": true, "clause_id": "benefits-7"}]},
     {"field": "school_type", "op": "in", "value": ["government", "government-aided"], "clause_id": "elig-2", "status": "reviewed"}
   ]
 }

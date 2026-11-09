@@ -55,6 +55,10 @@
     {
       "clause_id": "details-3",
       "text": "•\tFarmers which are eligible for PM Kisan Yojana will be eligible for the benefit of \"Namo Shetkari Mahasanman Nidhi Yojana\""
+    },
+    {
+      "clause_id": "details-2",
+      "text": "•\tGovernment Resolution No Kisani-2023/CR 42/11 A dated 15/06/2023 has been issued regarding the scheme."
     }
   ],
   "documents_required": [
@@ -68,6 +72,7 @@
     {"field": "is_cultivable_landholding_farmer_family", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "held_qualifying_land_on_2019_02_01", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "is_pm_kisan_beneficiary", "op": "eq", "value": true, "clause_id": "details-3", "status": "draft"},
+    {"field": "holds_farmland_in_maharashtra", "op": "eq", "value": true, "clause_id": "details-2", "status": "draft"},
     {"field": "is_institutional_landholder", "op": "eq", "value": false, "clause_id": "excl-2", "status": "reviewed"},
     {"field": "family_has_former_or_present_constitutional_post_holder", "op": "eq", "value": false, "clause_id": "excl-4", "status": "draft"},
     {"field": "family_has_former_or_present_listed_political_office_holder", "op": "eq", "value": false, "clause_id": "excl-5", "status": "draft"},

@@ -10,7 +10,7 @@ def verdict(profile, scheme_id):
 
 
 M13_OK = {"is_cultivable_landholding_farmer_family": True, "held_qualifying_land_on_2019_02_01": True,
-          "is_pm_kisan_beneficiary": True, "is_institutional_landholder": False,
+          "is_pm_kisan_beneficiary": True, "holds_farmland_in_maharashtra": True, "is_institutional_landholder": False,
           "family_has_former_or_present_constitutional_post_holder": False,
           "family_has_former_or_present_listed_political_office_holder": False,
           "family_has_government_or_local_body_employee": False,
@@ -23,6 +23,7 @@ M13_OK = {"is_cultivable_landholding_farmer_family": True, "held_qualifying_land
 @pytest.mark.parametrize("changes, expected", [
     ({}, "eligible"),
     ({"is_pm_kisan_beneficiary": False}, "not_eligible"),
+    ({"holds_farmland_in_maharashtra": False}, "not_eligible"),
     ({"family_has_non_resident_indian": True}, "not_eligible"),  # the husband, not the applicant
     ({"family_has_government_or_local_body_employee": True}, "cant_tell"),
     ({"family_has_government_or_local_body_employee": True,
@@ -102,3 +103,37 @@ def test_m16_board_field_matches_m20():
     profile = {"is_building_or_construction_worker": True, "registered_with_mbocww_board": True,
                "worker_or_family_member_undergoing_critical_treatment": True}
     assert verdict(profile, "M16") == "eligible"
+
+
+M01_BASE = {"is_indian_citizen": True, "is_maharashtra_resident": True, "household_below_bpl": True}
+
+
+@pytest.mark.parametrize("category, age, clause", [
+    ("orphan child", 10, "elig-6"), ("destitute widow", 70, "elig-9"),
+    ("destitute man or woman below 65", 60, "elig-5"), ("unmarried woman above 35", 40, "elig-14"),
+    ("sickle cell disease", 30, "elig-16"),
+])
+def test_m01_cites_the_matching_category_only(category, age, clause):
+    result = tools.evaluate_scheme({**M01_BASE, "niradhar_category": category, "age": age}, "M01", include_draft=True)
+    cited = {c["clause_id"] for c in result["citations"]}
+    assert result["verdict"] == "eligible"
+    assert cited == {"elig-1", "elig-2", "elig-3", "elig-4", clause}
+
+
+C19_BASE = {"is_indian_citizen": True, "school_type": "government"}
+
+
+@pytest.mark.parametrize("changes, expected", [
+    ({"is_in_bal_vatika_or_pre_school_class": True}, "eligible"),           # no class needed
+    ({"school_class": 5, "is_in_bal_vatika_or_pre_school_class": False}, "eligible"),
+    ({"school_class": 9, "is_in_bal_vatika_or_pre_school_class": False}, "not_eligible"),
+    ({"is_in_bal_vatika_or_pre_school_class": True, "school_type": "private"}, "not_eligible"),
+    ({"is_in_bal_vatika_or_pre_school_class": False}, "cant_tell"),         # class still unknown
+])
+def test_c19_feeds_bal_vatika_children_in_government_schools(changes, expected):
+    assert verdict({**C19_BASE, **changes}, "C19") == expected
+
+
+def test_c19_class_answer_settles_it_without_the_bal_vatika_question():
+    result = tools.evaluate_scheme({**C19_BASE, "school_class": 5}, "C19", include_draft=True)
+    assert result["verdict"] == "eligible" and "benefits-7" not in {c["clause_id"] for c in result["citations"]}
