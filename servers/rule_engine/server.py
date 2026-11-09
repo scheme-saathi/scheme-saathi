@@ -8,6 +8,7 @@ from fastmcp import FastMCP
 
 from .rules import evaluate
 from .ages import DOB_DERIVED, derive_age_fields
+from .implied import derive_implied_facts
 from .scheme import SHARED_VALUES, RuleSet, SchemeRecord, live_conditions, preview_conditions
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -141,7 +142,7 @@ def evaluate_profile(profile: dict[str, object], scheme_id: str, include_draft: 
         }
 
     try:
-        result = evaluate(derive_age_fields(profile), _conditions(scheme, include_draft))
+        result = evaluate(derive_implied_facts(derive_age_fields(profile)), _conditions(scheme, include_draft))
     except Exception as exc:  # pragma: no cover - defensive guard for invalid runtime input
         return {
             "ok": False,
