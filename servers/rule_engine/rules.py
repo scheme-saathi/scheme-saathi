@@ -135,9 +135,13 @@ def evaluate(
             results.append((condition.field, outcome, is_missing))
         rule_outcome = _combine([outcome for _, outcome, _ in results], "any")
         rule_outcomes.append(rule_outcome)
-        # A passing rule cites only the alternatives that held, not every one it tried.
+        # A passing rule cites one reason: the first condition that held (its own condition first).
+        # A failing or undecided rule cites every condition it tried.
         rule_rows = rows[-len(results):]
-        cited_ids |= {row.clause_id for row in rule_rows if rule_outcome != "true" or row.outcome == "true"}
+        if rule_outcome == "true":
+            cited_ids.add(next(row.clause_id for row in rule_rows if row.outcome == "true"))
+        else:
+            cited_ids |= {row.clause_id for row in rule_rows}
         if rule_outcome == "unknown":  # only facts that could still settle this rule are open
             for field, outcome, is_missing in results:
                 if outcome == "unknown":

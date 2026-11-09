@@ -40,14 +40,14 @@ def test_intake_offers_the_whole_shared_list():
 
 
 # 3.3 citations
-def test_a_passing_or_rule_cites_only_the_alternative_that_held():
+def test_a_passing_or_rule_cites_the_first_condition_that_held():
     rule = Rule(field="a", op="eq", value=True, clause_id="c1", status="reviewed",
                 or_conditions=[{"field": "b", "op": "eq", "value": True, "clause_id": "c2"}])
     rules = RuleSet(rules=[rule], clauses=[{"clause_id": "c1", "text": "x"}, {"clause_id": "c2", "text": "y"}],
                     ready=True)
     cited = lambda profile: [c.clause_id for c in evaluate(profile, rules).citations]
     assert cited({"a": False, "b": True}) == ["c2"]
-    assert cited({"a": True, "b": True}) == ["c1", "c2"]
+    assert cited({"a": True, "b": True}) == ["c1"]  # one reason is enough: the rule's own condition
     assert cited({"a": False, "b": False}) == ["c1", "c2"]  # a failing rule cites everything it tried
 
 
