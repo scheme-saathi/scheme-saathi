@@ -7,13 +7,13 @@ from servers.rule_engine.server import _load_scheme
 ROOT = Path(__file__).resolve().parents[1]
 # Hand-coded and checked rule by rule against the scheme text by a person (Step 1, 7 Nov 2026);
 # the gold standard for rule extraction.
-GOLD_IDS = {
-    "C01", "C02", "C04", "C05", "C06", "C10", "C13", "C17",
-    "C19", "C23", "C30", "C38", "M13", "M16", "M18",
-}
+GOLD_IDS = {"C01", "C02", "C04", "C05", "C06", "C10", "C17", "C19", "C30", "C38"}
 # AI-drafted, then checked by a person and fixed where needed (Step 4, 8 Nov 2026).
-AI_DRAFTED_REVIEWED_IDS = {"C03", "C14", "C29", "M01", "M02", "M19", "M20"}
+AI_DRAFTED_REVIEWED_IDS = {"M02"}
 EXPECTED_IDS = GOLD_IDS | AI_DRAFTED_REVIEWED_IDS  # every live (reviewed) scheme
+# Reviewed schemes whose rules an AI fixed (docs/rule-fix-plan.md, Phase 1): the changed rules
+# are draft, so the scheme gives no live verdicts until a person signs them off.
+PENDING_REREVIEW_IDS = {"C03", "C13", "C14", "C23", "C29", "M01", "M13", "M16", "M18", "M19", "M20"}
 # AI-drafted and not yet checked by a person, so kept as draft (no live verdicts);
 # see data/rules/REVIEW_STATUS.md.
 AI_DRAFTED_IDS = {
@@ -26,19 +26,23 @@ AI_DRAFTED_IDS = {
 def test_rule_records_are_source_linked_with_the_expected_status():
     paths = sorted((ROOT / "data/rules").glob("*.json"))
     records = {record["scheme_id"]: record for record in (json.loads(path.read_text()) for path in paths)}
-    assert set(records) == EXPECTED_IDS | AI_DRAFTED_IDS
+    assert set(records) == EXPECTED_IDS | AI_DRAFTED_IDS | PENDING_REREVIEW_IDS
     for record in records.values():
         clause_ids = {clause["clause_id"] for clause in record["clauses"]}
         assert record["source"]["url"].startswith("https://")
         assert record["source"]["collected_on"]
         assert record["rules"]
-        expected_status = "reviewed" if record["scheme_id"] in EXPECTED_IDS else "draft"
-        assert all(rule["status"] == expected_status for rule in record["rules"]), record["scheme_id"]
+        statuses = {rule["status"] for rule in record["rules"]}
+        if record["scheme_id"] in PENDING_REREVIEW_IDS:
+            assert "draft" in statuses, record["scheme_id"]
+        else:
+            expected_status = "reviewed" if record["scheme_id"] in EXPECTED_IDS else "draft"
+            assert statuses == {expected_status}, record["scheme_id"]
         assert all(rule["clause_id"] in clause_ids for rule in record["rules"])
 
 
 def test_ai_drafted_rules_are_not_live_until_reviewed():
-    assert not set(tools.search_schemes({})) & AI_DRAFTED_IDS
+    assert not set(tools.search_schemes({})) & (AI_DRAFTED_IDS | PENDING_REREVIEW_IDS)
     assert set(tools.search_schemes({}, sorted(AI_DRAFTED_IDS), include_draft=True)) == AI_DRAFTED_IDS
 
 

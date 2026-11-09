@@ -30,7 +30,7 @@
     "Cropping pattern (Crops grown) with acreage.",
     "Security documents for loan limit above Rs.1.60 lakhs / Rs.3.00 lakhs, as applicable."
   ],
-  "rule_logic": "any",
+  "rule_logic": "all",
   "rules": [
     {
       "field": "farmer_applicant_category",
@@ -40,28 +40,28 @@
         "joint borrower owner cultivator"
       ],
       "clause_id": "elig-1",
-      "status": "reviewed"
-    },
-    {
-      "field": "farmer_applicant_category",
-      "op": "in",
-      "value": [
-        "tenant farmer",
-        "oral lessee",
-        "sharecropper"
-      ],
-      "clause_id": "elig-2",
-      "status": "reviewed"
-    },
-    {
-      "field": "farmer_applicant_category",
-      "op": "in",
-      "value": [
-        "farmer self-help group",
-        "farmer joint-liability group"
-      ],
-      "clause_id": "elig-3",
-      "status": "reviewed"
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "farmer_applicant_category",
+          "op": "in",
+          "value": [
+            "tenant farmer",
+            "oral lessee",
+            "sharecropper"
+          ],
+          "clause_id": "elig-2"
+        },
+        {
+          "field": "farmer_applicant_category",
+          "op": "in",
+          "value": [
+            "farmer self-help group",
+            "farmer joint-liability group"
+          ],
+          "clause_id": "elig-3"
+        }
+      ]
     }
   ]
 }

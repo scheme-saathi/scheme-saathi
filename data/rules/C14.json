@@ -83,11 +83,31 @@
   ],
   "rules": [
     {
-      "field": "grows_notified_crop_in_notified_area",
+      "field": "grows_notified_crop",
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
+    },
+    {
+      "field": "farm_is_in_notified_area",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "draft"
+    },
+    {
+      "field": "farmer_applicant_category",
+      "op": "in",
+      "value": [
+        "individual owner cultivator",
+        "joint borrower owner cultivator",
+        "tenant farmer",
+        "oral lessee",
+        "sharecropper"
+      ],
+      "clause_id": "elig-4",
+      "status": "draft"
     },
     {
       "field": "has_land_record_or_tenancy_agreement",

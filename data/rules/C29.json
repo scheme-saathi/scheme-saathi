@@ -64,7 +64,15 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "is_person_with_dwarfism",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-6"
+        }
+      ]
     },
     {
       "field": "disability_percent",

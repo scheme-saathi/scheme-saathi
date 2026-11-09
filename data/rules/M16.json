@@ -32,7 +32,7 @@
   ],
   "rules": [
     {"field": "is_building_or_construction_worker", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
-    {"field": "registered_with_mbo_cww_board", "op": "eq", "value": true, "clause_id": "elig-2", "status": "reviewed"},
+    {"field": "registered_with_mbocww_board", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"},
     {"field": "worker_or_family_member_undergoing_critical_treatment", "op": "eq", "value": true, "clause_id": "elig-3", "status": "reviewed"}
   ]
 }

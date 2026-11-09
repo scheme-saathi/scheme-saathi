@@ -11,10 +11,16 @@
     {
       "clause_id": "elig-1",
       "text": "The only specific requirement for eligibility is that the applicant must be a woman/girl."
+    },
+    {
+      "clause_id": "details-1",
+      "text": "Nari Adalat, a component of the \"Sambal\" sub-scheme under Mission Shakti, it aims to provide women with an alternate Grievance Redressal Mechanism for resolving cases of petty nature (harassment, subversion, curtailment of rights or entitlements) faced by them at Gram panchayat level by negotiation, mediation, and reconciliation with mutual consent for speedy, accessible, and affordable justice. It also be used as a platform for awareness of right, entitlements, social facilitation and hand holding of women centric organizations. The component of Nari Adalat is being implemented in a phased manner on pilot basis.  The scheme is being run in 50 Gram Panchayat each in the state of Assam and UT of Jammu and Kashmir. Further it is being expanded in the 10 Gram Panchayats of Bihar and Karnataka and 5 Gram Panchayats of Andaman and Nicobar Islands."
     }
   ],
   "documents_required": [],
+  "rule_logic": "all",
   "rules": [
-    {"field": "is_woman_or_girl", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"}
+    {"field": "is_woman_or_girl", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "state_of_residence", "op": "in", "value": ["Assam", "Jammu and Kashmir", "Bihar", "Karnataka", "Andaman and Nicobar Islands"], "clause_id": "details-1", "status": "draft"}
   ]
 }

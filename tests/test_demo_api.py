@@ -303,7 +303,8 @@ def test_missing_mock_portal_secret_does_not_consume_approval(monkeypatch):
     client = authenticated_client(create_api(service))
     analyzed = client.post(
         "/api/analyze",
-        json={"citizen": {"is_woman_or_girl": True}, "scheme_ids": ["C23"]},
+        json={"citizen": {"age": 30, "has_individual_bank_or_post_office_account": True},
+              "scheme_ids": ["C01"]},
     )
     result = next(payload for name, payload in parse_events(analyzed.content) if name == "result")
     thread_id = result["thread_id"]
@@ -368,7 +369,8 @@ def test_submission_tool_failure_reports_uncertain_outcome(monkeypatch):
     client = authenticated_client(create_api(DemoService()))
     analyzed = client.post(
         "/api/analyze",
-        json={"citizen": {"is_woman_or_girl": True}, "scheme_ids": ["C23"]},
+        json={"citizen": {"age": 30, "has_individual_bank_or_post_office_account": True},
+              "scheme_ids": ["C01"]},
     )
     result = next(payload for name, payload in parse_events(analyzed.content) if name == "result")
     response = client.post(

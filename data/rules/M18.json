@@ -28,8 +28,10 @@
     "Bank Account Details.",
     "Passport-sized Photograph."
   ],
+  "rule_logic": "all",
   "rules": [
     {"field": "social_category", "op": "in", "value": ["VJNT", "OBC", "SBC"], "clause_id": "elig-1", "status": "reviewed"},
-    {"field": "meets_motor_vehicle_act_age_education_and_fitness_conditions", "op": "eq", "value": true, "clause_id": "elig-2", "status": "reviewed"}
+    {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-2", "status": "draft"},
+    {"field": "is_medically_fit_to_drive", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"}
   ]
 }

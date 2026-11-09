@@ -173,11 +173,11 @@
       "status": "reviewed"
     },
     {
-      "field": "family_has_government_employee_or_government_pensioner",
+      "field": "family_has_regular_government_employee_or_pensioner",
       "op": "eq",
       "value": false,
       "clause_id": "excl-3",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "receives_1500_monthly_from_other_government_scheme",

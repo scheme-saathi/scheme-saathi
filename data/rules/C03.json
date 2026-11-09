@@ -141,6 +141,13 @@
       "status": "reviewed"
     },
     {
+      "field": "covered_by_other_statutory_social_security_scheme",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-1",
+      "status": "draft"
+    },
+    {
       "field": "opted_for_pm_sym_or_pm_vyapari_maandhan",
       "op": "eq",
       "value": false,
@@ -155,39 +162,46 @@
       "status": "reviewed"
     },
     {
-      "field": "is_former_or_present_constitutional_post_holder",
+      "field": "family_has_former_or_present_constitutional_post_holder",
       "op": "eq",
       "value": false,
       "clause_id": "excl-5",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
-      "field": "is_former_or_present_listed_political_office_holder",
+      "field": "family_has_former_or_present_listed_political_office_holder",
       "op": "eq",
       "value": false,
       "clause_id": "excl-6",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
-      "field": "is_excluded_government_or_local_body_employee",
+      "field": "family_has_government_or_local_body_employee",
       "op": "eq",
       "value": false,
       "clause_id": "excl-7",
-      "status": "reviewed"
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "family_government_or_local_body_employees_are_all_mts_class_iv_or_group_d",
+          "op": "eq",
+          "value": true
+        }
+      ]
     },
     {
-      "field": "paid_income_tax_in_last_assessment_year",
+      "field": "family_has_member_who_paid_income_tax_in_last_assessment_year",
       "op": "eq",
       "value": false,
       "clause_id": "excl-8",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
-      "field": "is_practicing_registered_professional_in_listed_field",
+      "field": "family_has_practicing_registered_professional_in_listed_field",
       "op": "eq",
       "value": false,
       "clause_id": "excl-8",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

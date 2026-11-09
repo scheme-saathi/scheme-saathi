@@ -44,7 +44,7 @@
     "ration_card_type": {
       "type": "str",
       "purpose": "Ration-card rules",
-      "known_values": ["yellow", "antyodaya", "annapurna", "orange", "white"],
+      "known_values": ["yellow", "antyodaya", "annapurna", "orange", "white", "phh"],
       "retention": {"store": true, "reconfirm_days": 90, "expiry_days": 180}
     }
   },

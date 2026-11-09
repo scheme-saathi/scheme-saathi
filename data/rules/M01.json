@@ -119,21 +119,21 @@
       "field": "niradhar_category",
       "op": "in",
       "value": [
-        "destitute man or woman below 65",
+        "destitute widow",
         "orphan child",
         "person with disability",
-        "unable to sustain due to tb, cancer, aids or leprosy",
-        "destitute widow",
-        "woman in divorce process or divorced without alimony",
-        "woman released from prostitution",
+        "unable to sustain due to a serious disease (e.g. tb, cancer, aids, leprosy)",
+        "sickle cell disease",
         "transgender",
         "devadasi",
         "unmarried woman above 35",
+        "woman in divorce process or divorced without alimony",
+        "woman released from prostitution",
         "wife of a serving prisoner",
-        "sickle cell disease"
+        "destitute man or woman below 65"
       ],
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "niradhar_category",
@@ -146,6 +146,34 @@
           "field": "age",
           "op": "lt",
           "value": 65
+        }
+      ]
+    },
+    {
+      "field": "niradhar_category",
+      "op": "ne",
+      "value": "orphan child",
+      "clause_id": "elig-6",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "age",
+          "op": "lt",
+          "value": 18
+        }
+      ]
+    },
+    {
+      "field": "niradhar_category",
+      "op": "ne",
+      "value": "unmarried woman above 35",
+      "clause_id": "elig-14",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "age",
+          "op": "gt",
+          "value": 35
         }
       ]
     }

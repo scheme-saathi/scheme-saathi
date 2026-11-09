@@ -130,7 +130,7 @@ def test_intake_question_pauses_before_other_specialists():
 def test_intake_only_asks_about_the_shortlisted_schemes():
     class ChoosingIntake(StubIntake):
         def choose_schemes(self, value):
-            return ["C13", "not-a-scheme"][:1]
+            return ["C38", "not-a-scheme"][:1]
 
     agents = build_agents(
         intake=ChoosingIntake(),
@@ -139,8 +139,8 @@ def test_intake_only_asks_about_the_shortlisted_schemes():
 
     result = build_agent_graph(agents).invoke({"request": "I am a farmer, which schemes fit me?"})
 
-    assert result["shortlist"] == ["C13"]
-    assert list(result["verdicts"]) == ["C13"]
+    assert result["shortlist"] == ["C38"]
+    assert list(result["verdicts"]) == ["C38"]
 
 
 def test_an_answer_refreshes_the_shortlist_with_the_facts_so_far():

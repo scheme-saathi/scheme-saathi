@@ -106,10 +106,11 @@
         "yellow",
         "antyodaya",
         "annapurna",
-        "orange"
+        "orange",
+        "phh"
       ],
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "ration_card_type",

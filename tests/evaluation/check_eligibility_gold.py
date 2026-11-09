@@ -32,6 +32,8 @@ ALLOWED_VALUES = {
         "farmer joint-liability group", "not a farmer",
     },
     "school_type": {"government", "government-aided", "private"},
+    "state_of_residence": {"Maharashtra", "Assam", "Jammu and Kashmir", "Bihar", "Karnataka",
+                           "Andaman and Nicobar Islands"},
 }
 BANK_FIELDS = (
     "has_individual_bank_or_post_office_account", "has_bank_account",
@@ -105,7 +107,7 @@ def problems(case: dict, records: dict[str, SchemeRecord]) -> list[str]:
     if g("has_tuberculosis") is False and (g("government_notification_on_or_after_2018_04_01") is not None
                                            or g("registered_or_notified_on_nikshay") is not None):
         out.append(f"{cid}: rule 8, TB details without TB")
-    if g("is_building_or_construction_worker") is False and g("registered_with_mbo_cww_board") is True:
+    if g("is_building_or_construction_worker") is False and g("registered_with_mbocww_board") is True:
         out.append(f"{cid}: rule 9, board registration for a non-worker")
     if g("age_nearer_birthday") is not None and g("age") is not None \
             and g("age_nearer_birthday") not in (g("age"), g("age") + 1):

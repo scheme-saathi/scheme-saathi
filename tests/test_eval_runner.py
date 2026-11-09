@@ -39,6 +39,8 @@ def test_a_failed_case_is_reported_not_dropped(monkeypatch):
     assert rows[0]["error"] == "RuntimeError: model timed out"
 
 
+@pytest.mark.xfail(strict=True, reason="C13, C23 and M13 are draft after the Phase 1 rule fixes "
+                   "(docs/rule-fix-plan.md); passes again once a person signs them off and relabels the gold cases")
 def test_c0_fixed_workflow_matches_gold_on_development(tmp_path):
     config = run_eval.load_config(CONFIG_DIR / "c0_fixed_workflow.json")
     rows, summary = run_eval.run(config, "development")
