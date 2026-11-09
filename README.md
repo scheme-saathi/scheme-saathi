@@ -577,12 +577,29 @@ graph.invoke(Command(resume={"action": "approve", "payload_hash": pending["paylo
 
 Set `SUPERVISOR_MODEL` and `SPECIALIST_MODEL` in `.env`, plus either `OPENROUTER_API_KEY` (with an OpenRouter model ID such as `openai/gpt-4o-mini`) or `OPENAI_API_KEY` (with an OpenAI model ID). `OPENAI_BASE_URL` can be set for an OpenAI-compatible endpoint. The model IDs are configuration, not code defaults.
 
+For the OpenRouter language and intent classifier, optionally set `ROUTER_MODEL`;
+otherwise it uses `SUPERVISOR_MODEL`. With no OpenRouter key or classifier
+model, it uses the local language and keyword fallback instead of calling an API.
+
 Mock-portal writes also require `MOCK_PORTAL_AUTH_SECRET` in `.env`. Set the
 same long random value in the graph application and mock-portal server
 environments (for example, generate one with
 `python -c 'import secrets; print(secrets.token_urlsafe(32))'`). The workflow
 uses short-lived, one-use capabilities tied to the exact application form; writes
 fail closed when the secret is not configured. Do not commit the secret.
+
+For replay protection across restarts or portal processes, optionally set
+`MOCK_PORTAL_NONCE_DB` to the same SQLite file path on the same host for every
+portal process. For example, use `data/mock-portal-nonces.sqlite` (ignored by
+Git). The file contains capability nonces and expiry times, not application
+forms; expired entries are removed on the next capability use. The database
+file is created with owner-only permissions on POSIX. If it is unavailable,
+writes fail rather than falling back to process-local replay protection.
+Without this setting, nonce tracking remains process-local and a capability may
+be replayed after a restart or in another process until it expires. Do not
+delete or replace the database while capabilities may still be valid.
+This setting **does not persist applications**: mock drafts and submissions
+still disappear on portal restart.
 
 How an application is drafted, approved and submitted:
 
@@ -615,7 +632,7 @@ HTTP API (`app/api.py`):
 - CSC operators: set `AUTH0_ROLE_CLAIM` to a custom namespaced claim that an Auth0 Action fills with `"operator"` (or a list that contains it) for named operator accounts. An operator token needs no household claim. The API keeps an operator's work under `operator:<sub>`, a name no citizen household can have (a citizen token whose household claim starts with `operator:` is rejected), so an operator never reaches a citizen's remembered details. An operator has no standing consent. When they approve an application they choose whether the person they are helping agrees to it being kept on their list for 90 days; the tick starts unticked and is sent as `citizen_agreed` with the approve decision. That agreement is recorded for that one application, as taken in person and by whom, and is withdrawn when the entry is removed. An operator cannot remember or delete household details. Letting an operator act inside a citizen's household needs citizen-approved, time-limited grants, which are not built. Without `AUTH0_ROLE_CLAIM` every token is a citizen.
 - Workflow state: by default conversations and application workflows live in the server's memory and are lost on restart. Set `SCHEME_SAATHI_CHECKPOINT_DB` to a SQLite file to keep workflow state and thread owners across restarts, so a paused confirmation or approval can be resumed. Either way a workflow expires after 24 hours without use or 7 days after it started. An expired workflow is refused as "not found" the moment it is used, and its saved state and uploads are deleted then; the 5-minute cleanup deletes the ones nobody asks for. Using a workflow refreshes only the idle limit, never the 7-day one, and an expired workflow is never brought back by a later request. Chat sessions follow the same rule. A thread can be used or resumed only by its owner, even after a restart, and whose application it is for (the person's own, or a family member's) is kept with the thread, so a restarted application is not saved as the signed-in person's own. Starting a new chat, signing out from the menu and withdrawing consent delete the application workflow through `DELETE /api/threads/{thread_id}` (owner only, 404 when unknown or expired), so its profile and draft do not stay in this file; `DELETE /api/threads/{thread_id}/documents` still removes only the uploads. This file holds personal details: keep it private and Git-ignored. It is a storage exception to the ChromaDB-only design, because ChromaDB has no verified LangGraph checkpointer.
 - The Streamlit UI signs users in with the Auth0 Authorization Code flow with PKCE and sends the resulting access token to the API. Create an Auth0 "Single Page Application" (or Native) application, add `http://localhost:8501` to its Allowed Callback URLs, and set `AUTH0_CLIENT_ID` (and `AUTH0_REDIRECT_URI` if the UI is not served at `http://localhost:8501`). No client secret is used or stored. Without these values the UI shows a configuration message instead of a login form.
-- The mock portal HTTP routes also require an Auth0 access token. `POST /applications` additionally requires the exact, short-lived, one-use capability in `X-Write-Capability`; capabilities are bound to the authenticated household and form. `GET /applications/{application_id}` returns status only to the owning household, and the `get_application_status` tool answers "not found" to any other household when it is told who is asking (every call in this app does). Keep the portal server private; this demo's capability issuer and nonce store are process-local.
+- The mock portal HTTP routes also require an Auth0 access token. `POST /applications` additionally requires the exact, short-lived, one-use capability in `X-Write-Capability`; capabilities are bound to the authenticated household and form. `GET /applications/{application_id}` returns status only to the owning household, and the `get_application_status` tool answers "not found" to any other household when it is told who is asking (every call in this app does). Keep the portal server private; the capability issuer is demo-grade, and nonce tracking is process-local unless the shared SQLite nonce store is configured.
 - `POST /api/chat` runs the graph on a `thread_id`. `known_facts` and `confirmed_facts` sent on a turn are merged with earlier turns. `next_step` tells the client what to show:
   - `needs_information`: one intake question in `response`; the field is `data.pending_field`.
   - `awaiting_confirmation`: `data.confirmation` holds the `facts` to confirm, their `payload_hash` and any `rejected_edits`.
@@ -647,8 +664,8 @@ Not wired in yet: operator access inside a citizen's household (it needs citizen
 
 ## Guides
 
-- [Tool inventory](teamProjectWorkspace/reference-docs/tool-list.md) — current MCP tools, access types, and graph access checks.
-- [Threat model](teamProjectWorkspace/reference-docs/threat-model.md) — security boundaries, current controls, and deployment follow-ups.
+- [Tool inventory](docs/tool-list.md) — current MCP tools, access types, and graph access checks.
+- [Threat model](docs/threat-model.md) — security boundaries, current controls, and deployment follow-ups.
 - [60-scheme review workbook](docs/Scheme-Saathi-60-Schemes-Schema-Review.xlsx) — manual review of scheme details and source information. Excel edits do not automatically update scheme JSON or ChromaDB.
 
 - [Scheme relationships](docs/scheme-data-relationships.md)

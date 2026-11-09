@@ -12,6 +12,8 @@ from uuid import uuid4
 
 from dotenv import load_dotenv
 
+from servers.mock_portal.nonce_store import nonce_store
+
 CAPABILITY_TTL_SECONDS = 60
 _used_nonces: dict[str, float] = {}
 _nonce_lock = threading.Lock()
@@ -104,6 +106,11 @@ def consume_write_capability(
         raise CapabilityError("Write capability does not authorize this action.")
 
     nonce = payload["nonce"]
+    store = nonce_store()
+    if store is not None:
+        if not store.consume_nonce(nonce, float(payload["expires_at"])):
+            raise CapabilityError("Write capability has already been used.")
+        return
     with _nonce_lock:
         expired = [key for key, expiry in _used_nonces.items() if expiry < time.time()]
         for key in expired:

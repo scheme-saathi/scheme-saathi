@@ -9,6 +9,7 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures"
 @pytest.fixture(autouse=True)
 def mock_portal_test_secret(monkeypatch):
     monkeypatch.setenv("MOCK_PORTAL_AUTH_SECRET", "test-only-mock-portal-secret")
+    monkeypatch.setenv("MOCK_PORTAL_NONCE_DB", "")
 
 
 @pytest.fixture(autouse=True)
