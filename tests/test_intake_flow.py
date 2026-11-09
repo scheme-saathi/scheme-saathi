@@ -203,7 +203,7 @@ def test_extract_never_sees_earlier_facts(pension_specs):
     seen = []
     model = FakeModel()
     model.with_structured_output = lambda schema: RunnableLambda(lambda prompt: seen.append(prompt.to_string()) or {"facts": {}})
-    IntakeAgent(model).extract({"request": "yes", "pending_field": "is_widow"}, pension_specs)
+    IntakeAgent(model).extract({"request": "yes she is", "pending_field": "is_widow"}, pension_specs)
     assert "known_facts" not in seen[0] and "is_widow" in seen[0]
 
 
@@ -219,12 +219,13 @@ def test_dont_know_counts_only_for_an_unanswered_pending_field(pension_specs):
 
 
 def test_a_missed_pending_answer_is_read_again_against_that_field_alone(pension_specs):
-    """gpt-4o-mini read "No" as dont_know against a wide schema, which stopped intake."""
+    """gpt-4o-mini read "No" as dont_know against a wide schema, which stopped intake.
+    A bare "No" is now read in code; a longer reply still gets the narrow second read."""
     model = FakeModel(
         {"facts": {"age": 67}, "reply_kind": "dont_know"},
         {"facts": {"is_widow": False}, "reply_kind": "answer"},
     )
-    result = IntakeAgent(model).extract({"request": "No", "pending_field": "is_widow"}, pension_specs)
+    result = IntakeAgent(model).extract({"request": "No, she is not", "pending_field": "is_widow"}, pension_specs)
 
     assert result.facts == {"age": 67, "is_widow": False}
     assert not result.dont_know
@@ -634,3 +635,25 @@ def test_ui_confirm_details_resumes_real_api_and_graph(monkeypatch, correct_firs
     assert ui.session_state["chat_eligibility_result"]["verdicts"][PENSION]["verdict"] == "eligible"
     assert ui.session_state["chat_eligibility_result"]["profile"] == expected
     assert ui.selectbox[0].options == [f"Synthetic pension ({PENSION})"]
+
+
+@pytest.mark.parametrize("reply, value", [
+    ("No", False), ("no.", False), ("Nahi", False), ("नाही", False), ("नहीं", False),
+    ("Yes", True), ("haan", True), ("होय", True), ("हाँ!", True), (" yes ", True),
+])
+def test_a_bare_yes_or_no_answers_the_pending_question_without_the_model(pension_specs, reply, value):
+    model = FakeModel()  # no scripted replies: any model call would fail
+    result = IntakeAgent(model).extract({"request": reply, "pending_field": "is_widow"}, pension_specs)
+    assert result.facts == {"is_widow": value} and model.schemas == []
+
+
+@pytest.mark.parametrize("reply, pending", [
+    ("pata nahi", "is_widow"),        # "don't know", not "no"
+    ("No, she lives in Pune", "is_widow"),
+    ("no", "age"),                    # not a yes/no question
+    ("no", None),                     # nothing was asked
+])
+def test_other_replies_still_go_to_the_model(pension_specs, reply, pending):
+    model = FakeModel({"facts": {}}, {"facts": {}})
+    IntakeAgent(model).extract({"request": reply, "pending_field": pending}, pension_specs)
+    assert model.schemas  # the model was asked

@@ -329,6 +329,6 @@ def test_the_subject_survives_the_narrow_second_read_of_a_pending_field(specs):
         {"facts": {"age": 67}, "reply_kind": "dont_know", "subject": "other", "relation": "mother"},
         {"facts": {"is_widow": False}, "reply_kind": "answer", "subject": "self", "relation": None},
     )
-    result = IntakeAgent(model).extract({"request": "No", "pending_field": "is_widow"}, specs)
+    result = IntakeAgent(model).extract({"request": "No, she is not", "pending_field": "is_widow"}, specs)
     assert result.facts == {"age": 67, "is_widow": False}
     assert (result.subject, result.relation) == ("other", "mother")

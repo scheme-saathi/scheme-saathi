@@ -106,6 +106,20 @@ class Amount(BaseModel):
     period: Literal["month", "year", "unstated"]
 
 
+# A bare yes or no answers the pending yes/no question; code reads it, not the model, which
+# sometimes dropped a plain "No" (live run, 9 Nov 2026). English, Hindi and Marathi, both scripts.
+_YES = {"yes", "y", "yeah", "yep", "yup", "haan", "han", "haa", "ha", "ho", "hoy", "ji haan",
+        "हाँ", "हां", "हा", "हो", "होय", "जी हाँ", "जी हां"}
+_NO = {"no", "n", "nope", "nah", "nahi", "nahin", "nai", "na", "nako",
+       "नहीं", "नही", "ना", "नाही", "नको", "जी नहीं"}
+
+
+def bare_yes_no(text: str) -> bool | None:
+    """True or False when the whole reply is one yes or no word; None for anything else."""
+    word = " ".join(text.lower().replace(",", " ").split()).strip(" .!?।")
+    return True if word in _YES else False if word in _NO else None
+
+
 def income_period(field: str) -> Literal["month", "year"] | None:
     """The period an income rule field is measured in; None for other fields."""
     # shortcut: read from the field name, upgrade when rule records carry units.
@@ -164,8 +178,12 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
         """Typed facts from the message. Each field is checked on its own, so one bad value
         is dropped without losing the rest."""
         request = IntakeExtractInput.model_validate(value)
-        result = self._extract_once(request, specs)
         pending = request.pending_field
+        if pending in specs and specs[pending]["type"] == "bool":
+            answer = bare_yes_no(request.request)
+            if answer is not None:  # "No" means no to the question just asked
+                return IntakeExtraction(facts={pending: answer})
+        result = self._extract_once(request, specs)
         if pending in specs and pending not in result.facts and len(specs) > 1:
             # Against a wide schema the model read a bare "No" as dont_know; one field alone it reads reliably.
             narrow = self._extract_once(request, {pending: specs[pending]})
