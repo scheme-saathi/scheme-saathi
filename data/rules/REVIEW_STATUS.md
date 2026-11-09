@@ -49,3 +49,15 @@ C07, C09, C11, C15, C16, C18, C21, C22, C24, C25, C26, C27, C28, C31, C32, C33, 
 Added in PR #61 (8 Nov 2026), drafted by an AI from `data/schemes/`. That PR's notes file, `data/rules/REVIEW_NOTES.md`, is git-ignored and exists only on its author's machine. They were first marked `reviewed` without a check, then returned to `draft` on 8 Nov 2026, because the brief requires a person to review extracted rules before they go live.
 
 To return a scheme to `reviewed`, check every rule against its cited sentence, as in Steps 1 and 4: the clause, field, operator and value, the `all`/`any` logic, any `or_conditions`, and the boundary cases. Then set its rules' status to `reviewed` and add it to `AI_DRAFTED_REVIEWED_IDS` in `tests/test_scheme_gold_set.py`.
+
+## Decisions for the rule fixes (F1–F7, Phase 0 of `docs/rule-fix-plan.md`, 9 Nov 2026)
+
+Decided by Snehal Patel. They set the rules for Phases 1–4; they are not reviews of any rule.
+
+- **F1. Schemes for organisations.** Each rule file gets `"applicant_type": "individual" | "institution" | "mixed"` (default `individual`). Intake and the shortlist skip `institution` schemes (C07, C21, C22, C30); an operator can still check one by id. `mixed` schemes (C10, C11) stay in citizen intake; making their rules fit individuals is Phase 4. C09 stays `individual`.
+- **F2. `social_category` values.** `SC, ST, OBC, VJ-A, NT-B, NT-C, NT-D, SBC, Nav-Buddha, EWS, EBC, General`. A scheme text that says "VJNT" means VJ-A, NT-B, NT-C and NT-D. VJNT and SBC count as OBC in a central scheme only when that scheme's text says so.
+- **F3. Income.** One income field, `annual_family_income`. Monthly limits are converted to yearly ones (×12), and `annual_income`, `monthly_income` and `applicant_monthly_income` are retired. C31's and C38's scheme-specific fields stay, because their limits are on the applicant and spouse, not the family. Known cost: where a scheme limits the applicant's own income (C05, M10, M11, possibly C16), using the family's income is stricter than the text. Every such rule must name this in its review.
+- **F4. Bank account.** C01–C05 share one field, `has_bank_or_post_office_savings_account`. `has_aadhaar_linked_bank_account` (M19, M21) stays separate, because Aadhaar linking is a real extra condition.
+- **F5. "A family member already got this scheme."** Each scheme gets its own field (for example `family_member_already_got_ramai_awas`), so an answer about one scheme never decides another. This replaces `family_member_already_beneficiary` in C10, M12 and M14.
+- **F6. Age relaxation.** Always two rules: `age ≤ max + 5`, and `age ≤ max` OR the person is in a relaxed group. No engine change. Affects C24, C26, M14.
+- **F7. Source conflicts.** None of the 12 open questions in the plan's last table is fixed from myScheme alone. The rule fix that depends on each one waits until a person has read the official guideline and recorded the answer here.
