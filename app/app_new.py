@@ -53,10 +53,12 @@ def _render_brand_image(width: int = 313) -> None:
 @st.cache_resource
 def _start_local_api(port: int) -> uvicorn.Server:
     """Start one local FastAPI server and share it across Streamlit reruns."""
+    # Loopback unless a deployment asks otherwise, e.g. so Prometheus in another container can scrape /metrics.
+    host = os.environ.get("SCHEME_SAATHI_CHAT_API_HOST", "").strip() or "127.0.0.1"
     server = uvicorn.Server(
         uvicorn.Config(
             create_api(),
-            host="127.0.0.1",
+            host=host,
             port=port,
             log_level="warning",
         )

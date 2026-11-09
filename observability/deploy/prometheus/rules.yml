@@ -1,0 +1,86 @@
+# Recording rules: the numbers a Grafana panel will most often want, worked out once so panel queries stay short.
+# Names follow level:metric:operation. Ratios are NaN (no data) when there was no traffic, which is what a panel should show.
+# Run errors are the server-side outcomes only; a caller asking for a missing or foreign thread is not an error.
+groups:
+  - name: scheme_saathi_runs
+    rules:
+      - record: scheme_saathi:runs:rate5m
+        expr: sum by (kind, outcome) (rate(scheme_saathi_runs_total[5m]))
+
+      - record: scheme_saathi:runs:error_ratio_rate5m
+        expr: |
+          sum by (kind) (rate(scheme_saathi_runs_total{outcome=~"error|tool_error|budget_exceeded|storage_error"}[5m]))
+          /
+          sum by (kind) (rate(scheme_saathi_runs_total[5m]))
+
+      - record: scheme_saathi:run_duration_seconds:p50_5m
+        expr: histogram_quantile(0.5, sum by (kind, le) (rate(scheme_saathi_run_duration_seconds_bucket[5m])))
+
+      - record: scheme_saathi:run_duration_seconds:p95_5m
+        expr: histogram_quantile(0.95, sum by (kind, le) (rate(scheme_saathi_run_duration_seconds_bucket[5m])))
+
+      - record: scheme_saathi:stream_time_to_first_event_seconds:p95_5m
+        expr: histogram_quantile(0.95, sum by (kind, le) (rate(scheme_saathi_stream_time_to_first_event_seconds_bucket[5m])))
+
+  - name: scheme_saathi_models
+    rules:
+      - record: scheme_saathi:llm_calls:rate5m
+        expr: sum by (role, model, outcome) (rate(scheme_saathi_llm_calls_total[5m]))
+
+      - record: scheme_saathi:llm_calls:error_ratio_rate5m
+        expr: |
+          sum by (role, model) (rate(scheme_saathi_llm_calls_total{outcome="error"}[5m]))
+          /
+          sum by (role, model) (rate(scheme_saathi_llm_calls_total[5m]))
+
+      - record: scheme_saathi:llm_call_duration_seconds:p95_5m
+        expr: histogram_quantile(0.95, sum by (role, model, le) (rate(scheme_saathi_llm_call_duration_seconds_bucket[5m])))
+
+      - record: scheme_saathi:llm_tokens:rate5m
+        expr: sum by (role, model, direction) (rate(scheme_saathi_llm_tokens_total[5m]))
+
+      # Spend in US dollars. Calls with no known price are not in it; see the unpriced ratio below.
+      - record: scheme_saathi:llm_cost_usd:increase1h
+        expr: sum by (role, model) (increase(scheme_saathi_llm_cost_usd_total[1h]))
+
+      - record: scheme_saathi:run_cost_usd:avg_1h
+        expr: |
+          sum by (kind) (increase(scheme_saathi_run_cost_usd_sum[1h]))
+          /
+          sum by (kind) (increase(scheme_saathi_run_cost_usd_count[1h]))
+
+      # Share of successful model calls with no cost: how far spend is understated.
+      - record: scheme_saathi:llm_unpriced_calls:ratio_rate1h
+        expr: |
+          sum by (role, model) (rate(scheme_saathi_llm_unpriced_calls_total[1h]))
+          /
+          sum by (role, model) (rate(scheme_saathi_llm_calls_total{outcome="success"}[1h]))
+
+  - name: scheme_saathi_tools_and_http
+    rules:
+      - record: scheme_saathi:tool_calls:error_ratio_rate5m
+        expr: |
+          sum by (server, tool) (rate(scheme_saathi_tool_calls_total{outcome!="success"}[5m]))
+          /
+          sum by (server, tool) (rate(scheme_saathi_tool_calls_total[5m]))
+
+      - record: scheme_saathi:tool_call_duration_seconds:p95_5m
+        expr: histogram_quantile(0.95, sum by (server, tool, le) (rate(scheme_saathi_tool_call_duration_seconds_bucket[5m])))
+
+      - record: scheme_saathi:http_requests:error_ratio_rate5m
+        expr: |
+          sum by (route) (rate(scheme_saathi_http_requests_total{status_class="5xx"}[5m]))
+          /
+          sum by (route) (rate(scheme_saathi_http_requests_total[5m]))
+
+      - record: scheme_saathi:http_request_duration_seconds:p95_5m
+        expr: histogram_quantile(0.95, sum by (route, le) (rate(scheme_saathi_http_request_duration_seconds_bucket[5m])))
+
+  - name: scheme_saathi_tracing
+    rules:
+      # Traces that were not sent because the export queue was full or sending failed.
+      - record: scheme_saathi:traces:lost_ratio_rate5m
+        expr: |
+          sum(rate(scheme_saathi_traces_total{result=~"dropped|failed"}[5m]))
+          /
+          sum(rate(scheme_saathi_traces_total{result!="sampled_out"}[5m]))
