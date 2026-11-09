@@ -9,8 +9,10 @@ from functools import lru_cache
 from typing import Any, Literal
 from uuid import uuid4
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, Header, UploadFile
-from fastapi.responses import Response, StreamingResponse
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Header, Request, UploadFile
+from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 from pydantic import BaseModel, Field
 from urllib.parse import quote
 
@@ -21,6 +23,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.types import Command
 
 from agents.supervisor import SupervisorAgent
+from agents.persona_validator import SensitiveInputError, reject_sensitive_input
 from agents.contracts import Language
 from agents.memory import MemoryScope, MemoryService, clean_relation
 from app import memory_runtime
@@ -284,6 +287,7 @@ class AgentWorkflowService:
         memory_scope: MemoryScope | None = None,
     ) -> dict[str, Any]:
         """Execute agent workflow."""
+        reject_sensitive_input([request, known_facts, confirmed_facts, selected_scheme_id])
         if thread_id is None:
             thread_id = self.create_thread(actor_id)
         elif thread_id not in self.conversations:
@@ -324,6 +328,7 @@ class AgentWorkflowService:
         citizen_agreed: bool = False,
     ) -> dict[str, Any]:
         """Resume the paused graph with the person's decision on the exact form."""
+        reject_sensitive_input(changes)
         if thread_id not in self.conversations and self.registry.owner_of(thread_id) is None:
             if self.registry.is_expired(thread_id):
                 self._drop({thread_id})  # expired: delete what is left, and report it as unknown
@@ -561,6 +566,21 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         description="GPT agent orchestration for government scheme assistance",
     )
 
+    @application.exception_handler(RequestValidationError)
+    async def validation_error(request: Request, error: RequestValidationError) -> Response:
+        path = request.url.path
+        if path in {"/api/chat", "/api/chat/legacy", "/api/analyze"} or (
+            path.startswith(("/api/chat/", "/api/threads/")) and path.endswith("/decision")
+        ):
+            return JSONResponse(status_code=422, content={"detail": "Invalid request."})
+        return await request_validation_exception_handler(request, error)
+
+    def reject_unsafe(value: Any) -> None:
+        try:
+            reject_sensitive_input(value)
+        except SensitiveInputError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+
     # ========================================================================
     # HEALTH & METADATA ENDPOINTS
     # ========================================================================
@@ -597,6 +617,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         x_thread_id: str | None = Header(None),
     ) -> SupervisorChatResponse:
         """Send message through supervisor agent for intelligent routing."""
+        reject_unsafe([request.message, request.known_facts, request.confirmed_facts, request.selected_scheme_id])
         try:
             thread_id = x_thread_id or request.thread_id
             
@@ -652,6 +673,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> SupervisorChatResponse:
         """Approve, edit or reject the exact form the graph is waiting on."""
+        reject_unsafe(decision.changes)
         try:
             result = get_workflow_service().submit_decision(
                 thread_id,
@@ -837,6 +859,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         payload: AnalysisRequest,
         principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> StreamingResponse:
+        reject_unsafe([payload.citizen, payload.scheme_ids, payload.relation])
         try:
             events = demo.analyze(
                 payload.citizen,
@@ -854,6 +877,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         payload: ChatRequest,
         principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> StreamingResponse:
+        reject_unsafe(payload.user_input)
         return _event_stream(
             demo.chat_turn(
                 payload.user_input, payload.session_id, principal.household_id
@@ -872,8 +896,9 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         filename = file.filename or ""
         if not filename:
             raise HTTPException(status_code=422, detail="Choose a document file.")
-        content = await file.read(10 * 1024 * 1024 + 1)
         try:
+            reject_unsafe([scheme_id, document_type, filename])
+            content = await file.read(10 * 1024 * 1024 + 1)
             return demo.upload_document(
                 thread_id,
                 scheme_id,
@@ -999,6 +1024,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         payload: DecisionRequest,
         principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> StreamingResponse:
+        reject_unsafe(payload.changes)
         try:
             events = demo.decide(
                 thread_id,

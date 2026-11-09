@@ -123,22 +123,37 @@ def tool_call_budget(limit: int | None = None) -> Iterator[_ToolCallBudget]:
 class BudgetedGraph:
     """Apply a fresh MCP-call budget to each compiled graph execution."""
 
-    def __init__(self, graph: Any, limit: int | None = None) -> None:
+    def __init__(self, graph: Any, limit: int | None = None,
+                 input_guard: Callable[[Any], None] | None = None) -> None:
         self._graph = graph
         self._limit = limit
+        self._input_guard = input_guard
+
+    def _guard(self, args: tuple[Any, ...], kwargs: dict[str, Any], batch: bool = False) -> None:
+        if self._input_guard is None:
+            return
+        value = args[0] if args else kwargs.get("input" if not batch else "inputs")
+        if batch:
+            for item in value:
+                self._input_guard(item)
+        else:
+            self._input_guard(value)
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self._graph, name)
 
     def invoke(self, *args: Any, **kwargs: Any) -> Any:
+        self._guard(args, kwargs)
         with tool_call_budget(self._limit):
             return self._graph.invoke(*args, **kwargs)
 
     async def ainvoke(self, *args: Any, **kwargs: Any) -> Any:
+        self._guard(args, kwargs)
         with tool_call_budget(self._limit):
             return await self._graph.ainvoke(*args, **kwargs)
 
     def stream(self, *args: Any, **kwargs: Any) -> Iterator[Any]:
+        self._guard(args, kwargs)
         limit = self._limit or DEFAULT_TOOL_CALL_BUDGET
         budget = _tool_budget.get() or _ToolCallBudget(limit)
         iterator = iter(self._graph.stream(*args, **kwargs))
@@ -153,6 +168,7 @@ class BudgetedGraph:
             yield item
 
     async def astream(self, *args: Any, **kwargs: Any) -> AsyncIterator[Any]:
+        self._guard(args, kwargs)
         limit = self._limit or DEFAULT_TOOL_CALL_BUDGET
         budget = _tool_budget.get() or _ToolCallBudget(limit)
         iterator = self._graph.astream(*args, **kwargs).__aiter__()
@@ -167,17 +183,21 @@ class BudgetedGraph:
             yield item
 
     def batch(self, *args: Any, **kwargs: Any) -> Any:
+        self._guard(args, kwargs, batch=True)
         with tool_call_budget(self._limit):
             return self._graph.batch(*args, **kwargs)
 
     async def abatch(self, *args: Any, **kwargs: Any) -> Any:
+        self._guard(args, kwargs, batch=True)
         with tool_call_budget(self._limit):
             return await self._graph.abatch(*args, **kwargs)
 
 
-def budget_graph(graph: Any, limit: int | None = None) -> BudgetedGraph:
+def budget_graph(
+    graph: Any, limit: int | None = None, input_guard: Callable[[Any], None] | None = None
+) -> BudgetedGraph:
     """Wrap a compiled graph so each execution gets an independent tool budget."""
-    return BudgetedGraph(graph, limit)
+    return BudgetedGraph(graph, limit, input_guard)
 
 
 @contextmanager

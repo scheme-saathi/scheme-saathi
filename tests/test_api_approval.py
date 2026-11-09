@@ -250,6 +250,22 @@ def test_wrong_hash_is_refused_and_nothing_is_submitted(client):
     assert APPLICATIONS[approval["portal_draft_id"]]["status"] == "draft"
 
 
+def test_sensitive_edit_is_rejected_without_consuming_approval(client):
+    paused = start_paused(client)
+    approval = paused["data"]["approval"]
+    refused = decide(
+        client, paused["thread_id"], action="edit",
+        changes={"account_number": 123456789},
+    )
+    assert refused.status_code == 422
+    assert "123456789" not in refused.text
+    assert APPLICATIONS[approval["portal_draft_id"]]["status"] == "draft"
+
+    accepted = decide(client, paused["thread_id"], action="approve", payload_hash=approval["payload_hash"])
+    assert accepted.status_code == 200
+    assert accepted.json()["next_step"] == "submitted"
+
+
 def test_reject_does_not_submit(client):
     paused = start_paused(client)
 

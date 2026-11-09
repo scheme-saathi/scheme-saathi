@@ -244,9 +244,12 @@ def build_graph(checkpointer=None):
     builder.add_edge("escalate", END)
     builder.add_conditional_edges("approval", route_after_approval, ["submit", "eligibility", END])
     builder.add_edge("submit", END)
+    from agents.persona_validator import reject_sensitive_graph_input
+
     return tools.budget_graph(
         builder.compile(checkpointer=checkpointer or MemorySaver()),
         limit=MAX_TOOL_CALLS_PER_RUN,
+        input_guard=reject_sensitive_graph_input,
     )
 
 

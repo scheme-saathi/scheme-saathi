@@ -28,7 +28,6 @@ from agents.base import StructuredGPTAgent
 from agents.contracts import Intent, Language, SupervisorInput, SupervisorPlan
 from agents.persona_validator import (
     PersonaValidationError,
-    SensitiveDataMasker,
     SensitivePatternDetector,
 )
 
@@ -458,9 +457,8 @@ class InputValidator:
                 f"Request contains sensitive information ({sensitive_type}). "
                 "Please avoid sharing Aadhar, account numbers, or other sensitive data."
             )
-            # Log masked version
-            masked = SensitiveDataMasker.mask_all_sensitive(request)
-            logger.warning(f"Sensitive data rejected in request from {actor_id}: {masked}")
+            logger.warning("Sensitive data rejected in request.")
+            return ValidationResult(passed=False, errors=errors, warnings=warnings)
 
         # 4. Unified classification (language + intent in single call)
         if is_reply:
@@ -689,8 +687,8 @@ class OutputValidator:
         sensitive_type = SensitivePatternDetector.detect_sensitive_type(response_text)
         if sensitive_type:
             errors.append(f"Response contains sensitive information ({sensitive_type})")
-            masked_content = SensitiveDataMasker.mask_all_sensitive(response_text)
-            logger.error(f"Agent {agent_name} exposed {sensitive_type}: {masked_content}")
+            masked_content = "[Sensitive content removed]"
+            logger.error("Agent %s exposed sensitive data (%s).", agent_name, sensitive_type)
 
         # 4. Agent-specific validation
         if agent_name == "intake":
