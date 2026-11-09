@@ -318,6 +318,23 @@ The API can also be run separately with
 `POST /api/analyze` and `POST /api/threads/{thread_id}/decision` as streaming
 endpoints, plus `GET /health`.
 
+### Observability (metrics)
+
+Off by default. Set `OBSERVABILITY_ENABLED=true` and a long random `METRICS_BEARER_TOKEN` in
+`.env` and restart. The API then counts and times every request and serves Prometheus text at
+`GET /metrics`, which needs `Authorization: Bearer <METRICS_BEARER_TOKEN>`. With the switch on but
+no token set, `/metrics` refuses everyone (503). The Streamlit app serves it from the API it starts
+(`127.0.0.1:8766` by default).
+
+Stage 1 records `scheme_saathi_http_requests_total` (method, route template, status class),
+`scheme_saathi_http_request_duration_seconds`, `scheme_saathi_http_requests_in_progress`,
+`scheme_saathi_http_exceptions_total` (route, exception type only) and `scheme_saathi_build_info`,
+plus the standard Python process metrics. Requests that match no route are one `unmatched` series.
+A streamed response is timed to its end. Labels come from a fixed allowlist
+(`observability/metrics.py`), so a household, thread, application or user identifier, a fact value
+or an exception message cannot become a label. Run, outcome, model-cost and tool metrics, tracing
+(Langfuse or LangSmith) and the Prometheus and Grafana setup are added in later stages.
+
 ## Intake agent
 
 The Intake agent turns what a person says into a typed household profile and asks for the

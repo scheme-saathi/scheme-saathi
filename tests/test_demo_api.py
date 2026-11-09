@@ -166,7 +166,7 @@ def test_document_screen_uploads_to_real_api_and_advances_to_review(tmp_path, mo
 
     monkeypatch.setattr(app_new, "urlopen", request_url)
     monkeypatch.setattr(app_new.st, "file_uploader", lambda *args, **kwargs: Upload())
-    ui = AppTest.from_function(document_upload_screen)
+    ui = AppTest.from_function(document_upload_screen, default_timeout=30)  # the real API and rules run inside
     ui.session_state["application_result"] = result
     ui.session_state["application_uploads"] = {}
     ui.session_state["chat_eligibility_result"] = {"status": "eligibility_checked"}

@@ -31,6 +31,7 @@ from app.memory_api import FORGET_NOTE, optional_memory, remember_submission, ro
 from app.memory_runtime import forget_memory, memory_scope
 from app.periodic import PeriodicTask
 from app.thread_registry import ThreadRegistry, TouchResult
+from observability import install_observability
 from graph.memory_nodes import memory_config
 
 if __package__:
@@ -560,6 +561,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         version="1.0.0",
         description="GPT agent orchestration for government scheme assistance",
     )
+    install_observability(application)  # request metrics and /metrics, only when OBSERVABILITY_ENABLED is on
 
     # ========================================================================
     # HEALTH & METADATA ENDPOINTS
