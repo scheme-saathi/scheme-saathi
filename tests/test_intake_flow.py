@@ -25,7 +25,7 @@ from app import api
 from graph import tools
 from graph.agent_workflow import AgentSet, build_agent_graph
 from servers.rule_engine import server as rule_server
-from servers.rule_engine.server import get_field_specs
+from servers.rule_engine.server import evaluate_profile, get_field_specs
 
 PENSION = "SYNTH-PENSION-001"
 ROOT = Path(__file__).resolve().parents[1]
@@ -690,3 +690,32 @@ def test_a_plain_no_overrides_the_models_reading(pension_specs):
         pension_specs,
     )
     assert result.facts["is_widow"] is False and not result.dont_know
+
+
+def test_ambiguous_tax_questions_carry_their_exact_meaning():
+    seen = []
+    model = FakeModel()
+    model.with_structured_output = lambda schema: RunnableLambda(
+        lambda prompt: seen.append(prompt.to_string()) or {"question": "q?"})
+    agent = IntakeAgent(model)
+    agent.ask({"field": "is_or_was_income_tax_payer", "field_type": "bool", "request": "pension"})
+    agent.ask({"field": "is_income_tax_payer", "field_type": "bool", "request": "pension"})
+    assert "ever paid income tax" in seen[0] and "pay income tax now" in seen[1]
+
+
+@pytest.mark.parametrize("known, implied", [
+    ({"is_or_was_income_tax_payer": False}, {"is_income_tax_payer": False}),   # never paid: not paying now
+    ({"is_income_tax_payer": True}, {"is_or_was_income_tax_payer": True}),     # paying now: has paid
+    ({"is_or_was_income_tax_payer": True}, {}),                               # paid once: may not pay now
+    ({"is_income_tax_payer": False}, {}),                                     # not now: may have paid before
+    ({"is_or_was_income_tax_payer": False, "is_income_tax_payer": True}, {}),  # stated answers win
+])
+def test_one_tax_answer_settles_the_other_only_when_it_follows(known, implied):
+    from servers.rule_engine.implied import derive_implied_facts
+    assert derive_implied_facts(known) == {**known, **implied}
+
+
+def test_never_paid_tax_is_not_asked_again_as_paying_now():
+    profile = {"age": 30, "monthly_income": 12000, "is_unorganized_worker": True, "is_or_was_income_tax_payer": False}
+    verdicts = {s: evaluate_profile(profile, s)["data"] for s in ("C04", "C05")}
+    assert all("is_income_tax_payer" not in v["unresolved_fields"] for v in verdicts.values())

@@ -61,7 +61,8 @@ For a bool field, ask a yes/no question. For a number field, ask for one number 
 unit (years, rupees, people). For a str field, never ask a yes/no question: when
 known_values are given, list them as the choices in plain words and let the person say
 another answer. For a date field, ask for the full date in DD/MM/YYYY form (for example 05/03/1962). When period is given, ask for the amount per that
-period ("per month" or "per year") and say so in the question. Do not mention eligibility, schemes or
+period ("per month" or "per year") and say so in the question. When meaning is given, ask exactly
+that, keeping its time words ("now", "ever", "last year"). Do not mention eligibility, schemes or
 rules, and never ask for Aadhaar, bank-account numbers or other sensitive
 identifiers."""
 
@@ -151,6 +152,17 @@ class Amount(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     amount: int | float = Field(ge=0, description="Rupees, exactly as said.")
     period: Literal["month", "year", "unstated"]
+
+
+# Fields whose names alone are worded the same way by the model; each question must keep its
+# own meaning (a live run asked "Are you currently paying income tax?" for both personal fields).
+FIELD_MEANINGS = {
+    "is_or_was_income_tax_payer": "whether they have ever paid income tax, now or in any past year",
+    "is_income_tax_payer": "whether they pay income tax now",
+    "family_has_income_tax_payer": "whether anyone in their family pays income tax now",
+    "family_has_member_who_paid_income_tax_in_last_assessment_year":
+        "whether anyone in their family paid income tax in the last assessment year",
+}
 
 
 def income_period(field: str) -> Literal["month", "year"] | None:
@@ -277,6 +289,8 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
     def ask(self, value: IntakeAskInput | dict) -> IntakeQuestion:
         """One question for one field; the field comes from the caller, never from the model."""
         request = IntakeAskInput.model_validate(value)
+        if request.meaning is None and request.field in FIELD_MEANINGS:
+            request = request.model_copy(update={"meaning": FIELD_MEANINGS[request.field]})
         return IntakeQuestion(field=request.field, question=self._asker.invoke(request).question)
 
     def answer(self, value: IntakeAnswerInput | dict) -> IntakeAnswer:
