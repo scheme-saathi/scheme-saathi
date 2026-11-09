@@ -81,26 +81,11 @@
       "status": "draft"
     },
     {
-      "field": "has_brother",
-      "op": "eq",
-      "value": false,
-      "clause_id": "excl-3",
-      "status": "draft"
-    },
-    {
-      "field": "is_only_girl_child",
+      "field": "is_only_child",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft",
-      "or_conditions": [
-        {
-          "field": "is_twin_daughter",
-          "op": "eq",
-          "value": true,
-          "clause_id": "elig-3"
-        }
-      ]
+      "status": "draft"
     },
     {
       "field": "age_at_pg_admission",

@@ -154,32 +154,34 @@ def test_c16_obc_or_ebc(category, expected):
     assert verdict(profile, "C16") == expected
 
 
-C15_OK = {"is_indian_citizen": True, "is_woman_or_girl": True, "has_brother": False, "age_at_pg_admission": 30,
+C15_OK = {"is_indian_citizen": True, "is_woman_or_girl": True, "is_only_child": True, "age_at_pg_admission": 30,
           "admitted_full_time_first_year_masters": True, "course_is_non_professional": True,
           "studies_through_distance_education": False, "institution_is_deemed_university_without_government_funds": False}
 
 
 @pytest.mark.parametrize("changes, expected", [
-    ({"is_only_girl_child": True}, "eligible"),
-    ({"is_only_girl_child": False, "is_twin_daughter": True}, "eligible"),   # twins were rejected before
-    ({"is_only_girl_child": False, "is_twin_daughter": False}, "not_eligible"),  # sisters: waits for F7
-    ({"is_only_girl_child": True, "has_brother": True}, "not_eligible"),
-    ({"is_only_girl_child": True, "institution_is_deemed_university_without_government_funds": True}, "not_eligible"),
-    ({"is_only_girl_child": True, "age_at_pg_admission": 31}, "not_eligible"),
+    ({}, "eligible"),
+    ({"is_only_child": False}, "not_eligible"),  # a sister, a brother or a twin: not a single-child family (F7)
+    ({"institution_is_deemed_university_without_government_funds": True}, "not_eligible"),
+    ({"age_at_pg_admission": 31}, "not_eligible"),
 ])
-def test_c15_twins_and_deemed_universities(changes, expected):
+def test_c15_single_child_family_and_deemed_universities(changes, expected):
     assert verdict({**C15_OK, **changes}, "C15") == expected
 
 
 M14_OK = {"is_unemployed_or_starting_new_venture": True, "family_member_already_got_cmegp": False,
           "unit_already_got_government_subsidy": False, "social_category": "General", "is_woman_or_girl": False,
-          "is_ex_serviceman": False, "has_disability": False, "cmegp_project_cost_rupees": 500000,
+          "is_ex_serviceman": False, "has_disability": False, "religion": "Hindu", "cmegp_project_cost_rupees": 500000,
           "has_passed_class_7": False, "has_passed_class_10": False}
 
 
 @pytest.mark.parametrize("changes, expected", [
     ({"age": 45}, "eligible"), ({"age": 46}, "not_eligible"),
     ({"age": 50, "is_ex_serviceman": True}, "eligible"), ({"age": 51, "is_ex_serviceman": True}, "not_eligible"),
+    ({"age": 50, "social_category": "NT-C"}, "eligible"),   # VJNT, OBC and minorities too (benefits-11)
+    ({"age": 50, "social_category": "OBC"}, "eligible"),
+    ({"age": 50, "religion": "Parsi"}, "eligible"),
+    ({"age": 50, "religion": "Jewish"}, "not_eligible"),     # six central minorities only
     ({"age": 30, "cmegp_project_cost_rupees": 1000000}, "eligible"),      # no class 7 needed up to 10 lakh
     ({"age": 30, "cmegp_project_cost_rupees": 1000001}, "not_eligible"),
     ({"age": 30, "cmegp_project_cost_rupees": 2000000, "has_passed_class_7": True}, "eligible"),

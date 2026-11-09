@@ -71,6 +71,8 @@ Decided by Snehal Patel. They set the rules for Phases 1–4; they are not revie
 - **C02:** the upper age of 70 (age nearer birthday) is exclusive.
 - **C16:** the ₹8 lakh limit is on total family income, so the rule uses `annual_family_income`. The applicant is a student with no income of their own, so elig-4's "total income of the applicant" means the family's income. The income-criteria amendment (https://socialjustice.gov.in/writereaddata/UploadFile/RICfor%20ISSC.pdf) can be added to the record as a second source.
 - **C19:** local body schools are not covered. Bal Vatika is covered.
+- **C15:** the scholarship is for a single-child family with a girl. Two daughters, twins included, cannot apply, so record elig-3 ("girls without brothers or twin daughters may also apply") is not followed. The limit is 30 or under at PG admission.
+- **M14:** the special category for the age relaxation is SC, ST, women, ex-servicemen, differently abled, VJNT, OBC and minorities, as benefits-11 lists it. Minorities are the six central ones (Muslim, Christian, Sikh, Buddhist, Jain, Parsi), not the state list with Jews (decided 9 Nov 2026).
 
 ## Draft schemes fixed before review (Phase 2 of `docs/rule-fix-plan.md`, 9 Nov 2026)
 
@@ -84,8 +86,8 @@ These were already draft and stay draft. The reviewer checks them as for any AI-
 - **C31:** the income limit leaves out the artist pension. "Pension of at least ₹500 a month" and "recommended by a Zonal Cultural Centre" are two questions.
 - **C09:** project duration of 24 months at most, and the three exclusions (only software, only patenting without a prototype, basic research without commercial use).
 - **C16:** OBC or EBC students (details-5).
-- **C15:** twin daughters pass. Deemed universities without government funds are excluded. The age is the age at PG admission, asked directly. A girl with sisters but no brothers still fails, until the official guidelines answer F7.
-- **M14:** age 18–45, or up to 50 for the groups elig-1 names (SC/ST, women, ex-servicemen, differently abled). Class 7 is needed above a ₹10 lakh project and class 10 above ₹25 lakh. The fields are CMEGP-specific (F5), including the project cost. Whether VJNT, OBC and minorities also get the relaxation waits for F7.
+- **C15:** only a single-child family with a girl (`is_only_child`, see F7 answers). Deemed universities without government funds are excluded. The age is the age at PG admission, 30 or under, asked directly.
+- **M14:** age 18–45, or up to 50 for the groups elig-1 names (SC/ST, women, ex-servicemen, differently abled). Class 7 is needed above a ₹10 lakh project and class 10 above ₹25 lakh. The fields are CMEGP-specific (F5), including the project cost. The relaxation also covers VJNT (VJ-A, NT-B/C/D), OBC and the six central minorities (benefits-11, see F7 answers).
 
 ## Engine and intake changes (Phase 3 of `docs/rule-fix-plan.md`, 9 Nov 2026)
 
