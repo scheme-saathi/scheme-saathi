@@ -1246,4 +1246,8 @@ def build_agent_graph(
     # Finish → END
     builder.add_edge("finish", END)
     
-    return tools.budget_graph(builder.compile(checkpointer=checkpointer))
+    from agents.persona_validator import reject_sensitive_graph_input
+
+    return tools.budget_graph(
+        builder.compile(checkpointer=checkpointer), input_guard=reject_sensitive_graph_input
+    )

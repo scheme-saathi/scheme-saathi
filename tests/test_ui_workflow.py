@@ -44,6 +44,21 @@ def chat_screen():
     app_new._render_chat_page()
 
 
+def sensitive_attachment_screen():
+    from types import SimpleNamespace
+
+    import streamlit as st
+    from app import app_new
+
+    app_new._initialize_portal_state()
+    st.session_state["chat_messages"] = [{"role": "assistant", "content": "Previous question"}]
+    submission = SimpleNamespace(
+        text="My details are 1234 5678 9012",
+        files=[SimpleNamespace(name="document.pdf")],
+    )
+    app_new._handle_chat_submission("http://api", submission, st.container())
+
+
 def header_screen():
     import streamlit as st
     from app import app_new
@@ -437,6 +452,42 @@ def test_chat_confirmation_leads_to_scheme_selection(monkeypatch):
     app.selectbox[0].select("A").run()
     next(b for b in app.button if b.label == "Prepare selected application").click().run()
     assert calls == ["A"]
+
+
+def test_sensitive_chat_is_not_rendered_stored_or_sent(monkeypatch):
+    class HealthResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return b'{"status":"ok"}'
+
+    calls = []
+    monkeypatch.setattr(app_new, "_api_base_url", lambda: "http://api")
+    monkeypatch.setattr(app_new, "urlopen", lambda *args, **kwargs: HealthResponse())
+    monkeypatch.setattr(app_new, "_send_chat", lambda *args: calls.append(args))
+    app = AppTest.from_function(chat_screen).run()
+    secret = "1234 5678 9012"
+    app.chat_input[0].set_value(f"My Aadhaar is {secret}").run()
+    assert not app.exception
+    assert not calls
+    assert secret not in json.dumps(app.session_state["chat_messages"])
+    assert not any(secret in item.value for item in app.markdown)
+    assert any("Sensitive information detected" in item.value for item in app.warning)
+
+
+def test_sensitive_chat_with_attachment_rejects_the_whole_submission(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app_new, "_send_chat", lambda *args: calls.append(args))
+    monkeypatch.setattr(app_new, "_upload_document", lambda *args: calls.append(args))
+    app = AppTest.from_function(sensitive_attachment_screen).run()
+    assert not app.exception
+    assert not calls
+    assert app.session_state["chat_messages"] == [{"role": "assistant", "content": "Previous question"}]
+    assert any("attachments were not uploaded" in item.value for item in app.warning)
 
 
 def test_partial_results_remain_available_without_allowing_application(monkeypatch):

@@ -194,7 +194,7 @@ def test_a_failed_request_with_identifiers_in_its_error_adds_no_text_to_the_metr
     workflow.error = RuntimeError(PRIVATE)
 
     for _ in range(20):
-        assert client.post("/api/chat", json={"message": PRIVATE}).status_code == 500
+        assert client.post("/api/chat", json={"message": "Find schemes for me"}).status_code == 500
 
     exposed = generate_latest(metrics.registry).decode()
     for text in ("household-1", "thread-private", "1234 5678"):

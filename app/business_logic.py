@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from agents.base import StructuredGPTAgent
 from agents.contracts import IntakeResult
 from agents.model_factory import create_chat_model
+from agents.persona_validator import reject_sensitive_input
 from app.document_storage import DocumentStorageError, LocalDocumentStore
 from app.forget import household_threads
 from app.thread_registry import ThreadRegistry, TouchResult
@@ -130,6 +131,7 @@ class DemoService:
         actor_id: str | None = None,
     ) -> Iterator[tuple[str, dict[str, Any]]]:
         """Gather rule facts conversationally, then stream a deterministic rule check."""
+        reject_sensitive_input(user_input)
         yield "progress", {"label": "Reading your message"}
         try:
             chat_id, session = self._get_or_create_chat_session(session_id, actor_id)
@@ -394,6 +396,7 @@ class DemoService:
         `subject` and `relation` say whose application this is, so a saved reference can
         later be listed as the person's own or as someone else's.
         """
+        reject_sensitive_input([citizen, scheme_ids, relation])
         tools.search_schemes({}, scheme_ids)
         thread_id = str(uuid4())
         if actor_id is not None:
@@ -432,6 +435,7 @@ class DemoService:
         actor_id: str | None = None,
     ) -> Iterator[tuple[str, dict[str, Any]]]:
         """Validate an application decision and resume the matching workflow."""
+        reject_sensitive_input(changes)
         self._check_thread_owner(thread_id, actor_id)
         self._touch(thread_id, actor_id)
         snapshot = self._get_snapshot(thread_id)
@@ -476,6 +480,7 @@ class DemoService:
         actor_id: str | None = None,
     ) -> dict[str, Any]:
         """Validate and retain a required document in local storage."""
+        reject_sensitive_input([scheme_id, document_type, filename])
         self._check_thread_owner(thread_id, actor_id)
         self._touch(thread_id, actor_id)
         if not sensitive_ids_masked:

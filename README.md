@@ -481,6 +481,12 @@ A cant_tell verdict that an answer could settle?
 - Values must match the rule types and are never coerced; unit conversion is code, not the model.
 - Replies reach the model as untrusted data, and it can only fill rule fields. It never asks
   for Aadhaar, bank-account numbers or other identifiers.
+- Recognized Aadhaar, PAN, IFSC, phone and account-number patterns are rejected from chat
+  and structured workflow inputs before the graph or model runs. The portal does not save
+  a rejected chat turn, and a rejected edit leaves approval pending. This is a heuristic,
+  not comprehensive redaction: do not enter identifiers, passwords or OTPs, and redact
+  documents before uploading. Existing stored data, external logs and provider traces
+  are not automatically cleaned up.
 
 ### Quick test commands
 
