@@ -23,6 +23,10 @@
     {
       "clause_id": "det-1",
       "text": "The Pradhan Mantri Virasat Ka Samvardhan (PM VIKAS) is a Central Sector Scheme of the Ministry of Minority Affairs which converges five erstwhile schemes viz. ‘Seekho Aur Kamao’, ‘Nai Manzil’, ‘Nai Roshni’ and ‘USTTAD’ & ‘Hamari Dharohar’ schemes and focuses on socio-economic empowerment of six notified minority communities (Muslims, Christians, Sikhs, Buddhists, Jains, and Parsis) through the following:"
+    },
+    {
+      "clause_id": "det-2",
+      "text": "2)\tUp to 25% non-minority (EWS) candidates may be included in Traditional Skilling and 15% in other components to promote inter-community solidarity."
     }
   ],
   "documents_required": [
@@ -43,7 +47,15 @@
         "Parsi"
       ],
       "clause_id": "det-1",
-      "status": "reviewed"
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "social_category",
+          "op": "eq",
+          "value": "EWS",
+          "clause_id": "det-2"
+        }
+      ]
     },
     {
       "field": "age",

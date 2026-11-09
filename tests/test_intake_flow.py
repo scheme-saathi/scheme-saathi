@@ -86,7 +86,7 @@ def test_field_specs_for_live_scheme():
 
 def test_field_specs_list_known_string_values():
     spec = get_field_specs(["M18"], include_draft=True)["data"]["social_category"]
-    assert spec == {"type": "str", "known_values": ["VJNT", "OBC", "SBC"]}
+    assert spec == {"type": "str", "known_values": ["VJ-A", "NT-B", "NT-C", "NT-D", "OBC", "SBC"]}
 
 
 def test_field_specs_unknown_scheme_is_an_error():

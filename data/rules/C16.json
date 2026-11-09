@@ -72,7 +72,7 @@
       "status": "reviewed"
     },
     {
-      "field": "annual_income",
+      "field": "annual_family_income",
       "op": "lte",
       "value": 800000,
       "clause_id": "elig-4",

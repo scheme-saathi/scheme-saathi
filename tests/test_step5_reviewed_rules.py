@@ -16,11 +16,11 @@ BASE = {
             "proposal_is_only_patenting_without_prototype": False},
     "C11": {"is_starting_greenfield_enterprise": True, "is_woman_or_girl": False, "social_category": "SC",
             "age": 30, "is_bank_loan_defaulter": False},
-    "C15": {"is_indian_citizen": True, "is_woman_or_girl": True, "is_only_child_or_one_of_twin_daughters": True,
-            "age": 23, "admitted_full_time_first_year_masters": True, "course_is_non_professional": True,
+    "C15": {"is_indian_citizen": True, "is_woman_or_girl": True, "is_only_child": True,
+            "age_at_pg_admission": 23, "admitted_full_time_first_year_masters": True, "course_is_non_professional": True,
             "studies_through_distance_education": False, "institution_is_unfunded_deemed_university": False},
     "C16": {"social_category": "OBC", "admitted_abroad_masters_mphil_or_phd": True,
-            "has_iba_education_loan_from_scheduled_bank": True, "annual_income": 600000},
+            "has_iba_education_loan_from_scheduled_bank": True, "annual_family_income": 600000},
     "C24": {"is_indian_citizen": True, "has_phd_md_ms_or_thesis_submitted": True, "age": 33,
             "has_availed_npdf_before": False},
     "C25": {"is_woman_or_girl": True, "widushi_employment": B, "has_phd_in_basic_or_applied_sciences": True,
@@ -63,7 +63,7 @@ def test_the_base_profile_is_eligible(scheme_id):
     ("C09", {"proposal_is_basic_research_without_commercial_use": True}),
     ("C09", {"proposal_is_only_patenting_without_prototype": True}),
     ("C15", {"institution_is_unfunded_deemed_university": True}),
-    ("C15", {"is_only_child_or_one_of_twin_daughters": False}),   # F2: the strict reading
+    ("C15", {"is_only_child": False}),   # Step 6: single-child family only (official source)
     ("M05", {"institution_recognized_by_maharashtra_govt": False}),
 ])
 def test_a_condition_the_draft_missed_now_refuses(scheme_id, changes):
@@ -74,7 +74,7 @@ def test_a_condition_the_draft_missed_now_refuses(scheme_id, changes):
     # F1: the community named in the scheme's Details section
     ("C16", {"social_category": "SC"}, "not_eligible"),
     ("C16", {"social_category": "EBC"}, "eligible"),
-    ("C27", {"religion": "Hindu"}, "not_eligible"),
+    ("C27", {"religion": "Hindu", "social_category": "OBC"}, "not_eligible"),  # EWS would pass (Step 6)
     ("C27", {"religion": "Parsi"}, "eligible"),
     ("M12", {"social_category": "OBC"}, "not_eligible"),
     ("M12", {"social_category": "SC"}, "eligible"),
@@ -108,8 +108,8 @@ def test_the_five_year_age_relaxation(scheme_id, base, relaxed):
 
 
 def test_m14_age_relaxation_and_schooling_by_project_size():
-    general = {"social_category": "General", "is_woman_or_girl": False, "is_ex_serviceman": False,
-               "has_disability": False}
+    general = {"social_category": "General", "religion": "Hindu", "is_woman_or_girl": False,
+               "is_ex_serviceman": False, "has_disability": False}
     assert verdict("M14", age=46, **general) == "not_eligible"
     assert verdict("M14", age=50, **{**general, "is_ex_serviceman": True}) == "eligible"
     assert verdict("M14", age=51, **{**general, "is_woman_or_girl": True}) == "not_eligible"

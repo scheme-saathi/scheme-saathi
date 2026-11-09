@@ -39,6 +39,10 @@
     {
       "clause_id": "excl-2",
       "text": "2) Existing Units and units that have availed benefit under PMRY, REGP, PMEGP or any other subsidy linked scheme of Government of India or State Government and also units that have already availed Government Subsidy under any other scheme of Government of India or State Government are not eligible under the scheme."
+    },
+    {
+      "clause_id": "ben-11",
+      "text": "Special Category (includes SC / ST /Women/ Ex- servicemen / differently abled/VJNT/OBC/Minority)"
     }
   ],
   "documents_required": [
@@ -81,23 +85,45 @@
           "op": "in",
           "value": [
             "SC",
-            "ST"
-          ]
+            "ST",
+            "OBC",
+            "VJ-A",
+            "NT-B",
+            "NT-C",
+            "NT-D"
+          ],
+          "clause_id": "ben-11"
+        },
+        {
+          "field": "religion",
+          "op": "in",
+          "value": [
+            "Muslim",
+            "Christian",
+            "Sikh",
+            "Buddhist",
+            "Jain",
+            "Parsi"
+          ],
+          "clause_id": "ben-11"
         },
         {
           "field": "is_woman_or_girl",
           "op": "eq",
-          "value": true
+          "value": true,
+          "clause_id": "elig-1"
         },
         {
           "field": "is_ex_serviceman",
           "op": "eq",
-          "value": true
+          "value": true,
+          "clause_id": "elig-1"
         },
         {
           "field": "has_disability",
           "op": "eq",
-          "value": true
+          "value": true,
+          "clause_id": "elig-1"
         }
       ]
     },

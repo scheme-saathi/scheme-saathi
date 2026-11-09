@@ -81,14 +81,14 @@
       "status": "reviewed"
     },
     {
-      "field": "is_only_child_or_one_of_twin_daughters",
+      "field": "is_only_child",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
       "status": "reviewed"
     },
     {
-      "field": "age",
+      "field": "age_at_pg_admission",
       "op": "lte",
       "value": 30,
       "clause_id": "elig-4",

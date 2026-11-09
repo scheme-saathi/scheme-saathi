@@ -22,6 +22,7 @@ Languages: 58 English, 9 Marathi, 4 Hindi. A Hindi or Marathi case (`variant_of`
 3. **Cases.** Families were designed around rule boundaries (for example age 40 vs 41, income ₹15,000 vs ₹15,001), exclusions, multi-scheme households and unknown answers. Each case passed a field and consistency check (11 rules).
 4. **Labels.** Sharika labelled every case from the scheme source sentences, without running the engine.
 5. **Label review.** The 103 labels were compared once with the rule engine on 8 Nov, before any agent run. Three labels were corrected after rereading the source (R1 F05a, R2 F13c, R3 F19b). One rule was fixed (R4: C04 now requires auto-debit consent, found through F10b in the development split). Three ambiguous cases were rewritten and relabelled (R5 F12a, R6 F14d, R7 F16b). No label was copied from the engine.
+6. **Relabel after rule changes (9 Nov).** New rules from Snehal Patel's review (C23 pilot states; M13 PM-KISAN and farmland) changed 11 C23 verdicts and three M13 profiles, decided by Sharika from the source; see `data/rules/REVIEW_STATUS.md`, Step 6.
 
 ## Known limits
 

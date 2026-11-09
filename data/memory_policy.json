@@ -54,7 +54,7 @@
   "temporary_only": [
     "has_disability",
     "disability_percent",
-    "has_orthopedic_disability",
+    "has_permanent_orthopedic_disability",
     "is_child_with_intellectual_disability_needing_care",
     "social_category",
     "religion",
