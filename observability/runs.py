@@ -159,12 +159,32 @@ class RunRecord:
     outcome: str | None = None
     error_type: str | None = None
     verdicts: Any = None
+    llm_calls: int = 0
+    llm_errors: int = 0
+    unpriced_calls: int = 0
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cost: float = 0.0
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     def add_tool_call(self, failed: bool) -> None:
         with self._lock:
             self.tool_calls += 1
             self.tool_errors += int(failed)
+
+    def add_llm_call(
+        self, failed: bool, input_tokens: int = 0, output_tokens: int = 0, cost: float | None = None
+    ) -> None:
+        """A model call. `cost` is None for a successful call that could not be priced."""
+        with self._lock:
+            self.llm_calls += 1
+            self.llm_errors += int(failed)
+            self.input_tokens += input_tokens
+            self.output_tokens += output_tokens
+            if cost is not None:
+                self.cost += cost
+            elif not failed:
+                self.unpriced_calls += 1
 
 
 _current: contextvars.ContextVar[RunRecord | None] = contextvars.ContextVar("scheme_saathi_run", default=None)
@@ -249,6 +269,7 @@ class RunRecorder:
         metrics.runs.labels(kind=kind, outcome=final).inc()
         metrics.run_duration.labels(kind=kind).observe(time.perf_counter() - self._started)
         metrics.run_tool_calls.labels(kind=kind).observe(self._record.tool_calls)
+        self._observe_models(metrics)
         if final in SERVER_SIDE_ERRORS:
             metrics.run_errors.labels(kind=kind, error_type=self._record.error_type or "unknown").inc()
         if final == "output_blocked":
@@ -260,6 +281,20 @@ class RunRecorder:
                 name = verdict.get("verdict") if isinstance(verdict, dict) else None
                 if name in VERDICTS:
                     metrics.verdicts.labels(verdict=name).inc()
+
+    def _observe_models(self, metrics: Metrics) -> None:
+        record, kind = self._record, self.kind
+        with record._lock:
+            calls, cost = record.llm_calls, record.cost
+            input_tokens, output_tokens, unpriced = record.input_tokens, record.output_tokens, record.unpriced_calls
+        metrics.run_llm_calls.labels(kind=kind).observe(calls)
+        if not calls:
+            return
+        metrics.run_cost.labels(kind=kind).observe(cost)
+        metrics.run_tokens.labels(kind=kind, direction="input").inc(input_tokens)
+        metrics.run_tokens.labels(kind=kind, direction="output").inc(output_tokens)
+        if unpriced:
+            metrics.runs_with_unpriced_calls.labels(kind=kind).inc()
 
     # A stream -------------------------------------------------------------------------------
 

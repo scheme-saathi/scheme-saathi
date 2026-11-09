@@ -13,6 +13,7 @@ from observability.hooks import (
     record_tool_call,
 )
 from observability.http import install_observability
+from observability.llm import record_llm_call
 from observability.metrics import Metrics, activate, active_metrics, get_metrics, set_metrics
 from observability.runs import RunRecorder, current_run
 
@@ -27,6 +28,7 @@ __all__ = [
     "install_observability",
     "note_run_error",
     "record_approval",
+    "record_llm_call",
     "record_memory_operation",
     "record_thread_expired",
     "record_tool_call",

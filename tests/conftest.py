@@ -58,6 +58,7 @@ def observability_off_and_isolated(monkeypatch):
 
     monkeypatch.setenv("OBSERVABILITY_ENABLED", "")
     monkeypatch.setenv("METRICS_BEARER_TOKEN", "")
+    monkeypatch.setenv("MODEL_PRICES_FILE", "")
     set_metrics(None)
     yield
     set_metrics(None)

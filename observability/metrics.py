@@ -41,6 +41,10 @@ ALLOWED_LABELS = frozenset(
         "stage",
         "operation",
         "reason",
+        "role",
+        "model",
+        "direction",
+        "cost_source",
     }
 )
 
@@ -49,6 +53,8 @@ LATENCY_BUCKETS = (0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60, 120)
 # A tool call is a local call, so most take milliseconds.
 TOOL_BUCKETS = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10)
 COUNT_BUCKETS = (0, 1, 2, 3, 5, 8, 13, 21, 34, 55)
+# US dollars for one run: a fraction of a cent up to a dollar.
+COST_BUCKETS = (0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1)
 
 HTTP_METHODS = frozenset({"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"})
 
@@ -140,6 +146,47 @@ class Metrics:
             "threads_expired_total",
             "Workflow threads and chat sessions that expired, found by the cleanup timer or when used.",
             ["kind", "reason"],
+        )
+
+        # Model calls: every call to a language model, by the agent role that made it and the model.
+        self.llm_calls = self._counter(
+            "llm_calls_total", "Model calls by role, model and outcome (success or error).", ["role", "model", "outcome"]
+        )
+        self.llm_duration = self._histogram(
+            "llm_call_duration_seconds", "Seconds a model call took, retries included.", ["role", "model"]
+        )
+        self.llm_tokens = self._counter(
+            "llm_tokens_total", "Tokens used, by direction (input or output).", ["role", "model", "direction"]
+        )
+        self.llm_cost = self._counter(
+            "llm_cost_usd_total",
+            "Model spend in US dollars. cost_source is provider (reported by the provider) or table (from the price table).",
+            ["role", "model", "cost_source"],
+        )
+        self.llm_unpriced = self._counter(
+            "llm_unpriced_calls_total",
+            "Successful model calls with no cost: the provider reported none and the model is not in the price table.",
+            ["role", "model"],
+        )
+        self.llm_errors = self._counter(
+            "llm_errors_total", "Failed model calls by exception class name.", ["role", "model", "error_type"]
+        )
+        self.run_llm_calls = self._histogram(
+            "run_llm_calls", "Model calls made during one run.", ["kind"], buckets=COUNT_BUCKETS
+        )
+        self.run_cost = self._histogram(
+            "run_cost_usd",
+            "Model spend of one run in US dollars; its _sum is total spend by run kind.",
+            ["kind"],
+            buckets=COST_BUCKETS,
+        )
+        self.run_tokens = self._counter(
+            "run_tokens_total", "Tokens summed over runs, by run kind and direction.", ["kind", "direction"]
+        )
+        self.runs_with_unpriced_calls = self._counter(
+            "runs_with_unpriced_calls_total",
+            "Runs that made a model call with no cost, so their cost is understated.",
+            ["kind"],
         )
 
     def _check(self, labels: Sequence[str]) -> None:

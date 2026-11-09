@@ -354,8 +354,29 @@ A run, tool call and the rest are recorded only while `OBSERVABILITY_ENABLED` is
 a fixed allowlist (`observability/metrics.py`), so a household, thread, application or user
 identifier, a fact value or an exception message cannot become a label; a failure is recorded by
 its exception class name only. A stream that the client closes before it finishes is `cancelled`,
-unless its result had already been sent. Model cost and token metrics, tracing (Langfuse or
-LangSmith) and the Prometheus and Grafana setup are added in later stages.
+unless its result had already been sent. Tracing (Langfuse or LangSmith) and the Prometheus and
+Grafana setup are added in later stages.
+
+Stage 3 records every model call, by `role` (`supervisor`, `specialist`, `router`) and `model` (the
+ID from your environment):
+
+| Metric | Labels | What it answers |
+|---|---|---|
+| `scheme_saathi_llm_calls_total` | role, model, outcome | Calls, `success` or `error`. |
+| `scheme_saathi_llm_call_duration_seconds` | role, model | Latency of a call, retries included. |
+| `scheme_saathi_llm_tokens_total` | role, model, direction | Input and output tokens. |
+| `scheme_saathi_llm_cost_usd_total` | role, model, cost_source | Spend in US dollars. `provider` means the provider reported the cost; `table` means it was worked out from the price table. |
+| `scheme_saathi_llm_unpriced_calls_total` | role, model | Successful calls with no cost at all, so spend is understated by these. |
+| `scheme_saathi_llm_errors_total` | role, model, error_type | Failed calls by exception class name. |
+| `scheme_saathi_run_llm_calls`, `..._run_cost_usd` | kind | Model calls and spend in one run. The `_sum` of `run_cost_usd` is total spend by run kind. |
+| `scheme_saathi_run_tokens_total` | kind, direction | Tokens summed by run kind. |
+| `scheme_saathi_runs_with_unpriced_calls_total` | kind | Runs whose cost is understated. |
+
+Cost is the provider's figure when it reports one. For OpenRouter the app asks for it (`usage.include`)
+while observability is on. Otherwise it is tokens times the price in `observability/model_prices.json`,
+which ships **empty**: fill it in from your provider's price list, or point `MODEL_PRICES_FILE` at your
+own copy. A model that is not listed counts as unpriced, never as free. Only token counts and cost are
+recorded, never a prompt or a response.
 
 ## Intake agent
 
