@@ -61,28 +61,28 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 17.5,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 21,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "meets_armed_forces_education_physical_and_medical_standards",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

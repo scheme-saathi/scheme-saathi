@@ -45,35 +45,35 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "institution_is_aicte_approved",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "previous_year_score_at_least_7_cgpa_or_65_percent",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_paper_accepted_at_event_abroad",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_availed_aicte_inae_travel_grant_before",
       "op": "eq",
       "value": false,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

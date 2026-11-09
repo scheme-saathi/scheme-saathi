@@ -335,7 +335,8 @@ A cant_tell verdict that an answer could settle?
   (`get_field_specs`). The model gets that schema, and code validates each returned field on
   its own: `"67"` for a number, `"yes"` for a bool or an unknown field is dropped, not stored.
   Candidate schemes are the selected scheme, or else every scheme whose rules are fully
-  reviewed (today only `SYNTH-PENSION-001`, so live mode asks about age, income and widowhood).
+  reviewed (all 49 rule files since the Step 5 review on 9 Nov 2026, plus the test-only
+  `SYNTH-PENSION-001`; see `data/rules/REVIEW_STATUS.md`).
 - **Choosing the question.** `tools.next_question(verdicts, declined)` counts each field in the
   `missing_fields`/`unresolved_fields` of the `cant_tell` verdicts and picks the highest count
   (ties go alphabetically). A field from an already decided scheme is never asked. The model

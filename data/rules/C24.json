@@ -58,28 +58,56 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_phd_md_ms_or_thesis_submitted",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 40,
+      "clause_id": "elig-3",
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 35,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "social_category",
+          "op": "in",
+          "value": [
+            "SC",
+            "ST",
+            "OBC"
+          ]
+        },
+        {
+          "field": "is_woman_or_girl",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "has_disability",
+          "op": "eq",
+          "value": true
+        }
+      ]
     },
     {
       "field": "has_availed_npdf_before",
       "op": "eq",
       "value": false,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

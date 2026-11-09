@@ -19,6 +19,10 @@
     {
       "clause_id": "elig-3",
       "text": "3)\tThe education qualification for Skilling and Training component would be as per NSQF norms and Education component would be as per NIOS norms. Candidates with aptitude and leadership qualities will be selected for Women Leadership and Entrepreneurship component."
+    },
+    {
+      "clause_id": "det-1",
+      "text": "The Pradhan Mantri Virasat Ka Samvardhan (PM VIKAS) is a Central Sector Scheme of the Ministry of Minority Affairs which converges five erstwhile schemes viz. ‘Seekho Aur Kamao’, ‘Nai Manzil’, ‘Nai Roshni’ and ‘USTTAD’ & ‘Hamari Dharohar’ schemes and focuses on socio-economic empowerment of six notified minority communities (Muslims, Christians, Sikhs, Buddhists, Jains, and Parsis) through the following:"
     }
   ],
   "documents_required": [
@@ -28,18 +32,32 @@
   ],
   "rules": [
     {
+      "field": "religion",
+      "op": "in",
+      "value": [
+        "Muslim",
+        "Christian",
+        "Sikh",
+        "Buddhist",
+        "Jain",
+        "Parsi"
+      ],
+      "clause_id": "det-1",
+      "status": "reviewed"
+    },
+    {
       "field": "age",
       "op": "gte",
       "value": 14,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 45,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

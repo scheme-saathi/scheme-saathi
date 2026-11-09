@@ -57,6 +57,7 @@
     "has_orthopedic_disability",
     "is_child_with_intellectual_disability_needing_care",
     "social_category",
+    "religion",
     "has_tuberculosis",
     "worker_or_family_member_undergoing_critical_treatment"
   ]

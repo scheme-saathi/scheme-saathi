@@ -475,7 +475,8 @@ def _eligibility_node(
     explanations = {}
     if not state.get("selected_scheme_id") and not _unconfirmed(state):
         explanations = {
-            s: agents.eligibility.invoke(EligibilityInput(scheme_id=s, evaluation=v)).explanation
+            s: tools.with_closed_note(
+                s, agents.eligibility.invoke(EligibilityInput(scheme_id=s, evaluation=v)).explanation)
             for s, v in verdicts.items()
         }
     return {"verdicts": verdicts, "explanations": explanations, **_selected_scheme_eligibility(agents, state)}
@@ -527,7 +528,7 @@ def _selected_scheme_eligibility(
     return {
         "eligibility": {
             **evaluation_data,
-            "explanation": narrative.explanation,
+            "explanation": tools.with_closed_note(scheme_id, narrative.explanation),
             "clarifying_questions": narrative.clarifying_questions,
         },
     }

@@ -49,49 +49,49 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_maharashtra_resident",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_disability",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "disability_percent",
       "op": "gte",
       "value": 40,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 18,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 50,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "annual_income",
       "op": "lt",
       "value": 100000,
       "clause_id": "elig-6",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

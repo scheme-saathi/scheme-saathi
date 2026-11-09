@@ -296,6 +296,23 @@ def search_schemes(profile: dict, scheme_ids: list[str] | None = None, include_d
     return call_tool(RULE_ENGINE, "list_rule_schemes", scheme_ids=scheme_ids, include_draft=include_draft)
 
 
+CLOSED_NOTE = "Applications for this scheme are closed on myScheme right now."
+
+
+def scheme_is_closed(scheme_id: str) -> bool:
+    """True when the scheme's myScheme page said applications are closed when it was collected."""
+    try:
+        details = call_tool(SCHEMES_KB, "get_scheme_details", scheme_id=scheme_id)
+    except ToolCallError:
+        return False  # no scheme record (e.g. a synthetic test scheme): nothing to add
+    return isinstance(details, dict) and details.get("availability_status") == "closed"
+
+
+def with_closed_note(scheme_id: str, explanation: str) -> str:
+    """The explanation, plus a line saying applications are closed when they are (Step 5, F6)."""
+    return f"{explanation} {CLOSED_NOTE}" if scheme_is_closed(scheme_id) else explanation
+
+
 def search_evidence(question: str, scheme_id: str | None = None) -> list[dict]:
     """Cited passages that answer a scheme question; empty when nothing relevant was found."""
     return call_tool(SCHEMES_KB, "search_scheme_evidence", question=question, scheme_id=scheme_id)
