@@ -111,3 +111,15 @@ def test_checker_flags_wrong_scheme_and_missing_fields():
     assert any("OTHER" in p for p in problems)
     state["application"] = {"scheme_id": "SYNTH-PENSION-001", "applicant": {"age": 62}}
     assert any("is_widow" in p for p in workflow.check_application(state))
+
+
+@pytest.mark.parametrize("typed, kept", [("05/03/1962", "1962-01-01"), (None, "1962-01-01"),
+                                         ("1962-03-05", "1962-03-05")])
+def test_an_edit_keeps_the_stored_date_unless_the_new_one_is_iso(typed, kept):
+    graph, config, _ = start(f"edit-date-{typed}")
+    graph.update_state(config, {"profile": {**graph.get_state(config).values["profile"],
+                                            "date_of_birth": "1962-01-01"}})
+    state = graph.invoke(Command(resume={"action": "edit",
+                                         "changes": {"date_of_birth": typed, "income": 200000}}), config)
+    assert state["profile"]["date_of_birth"] == kept
+    assert state["profile"]["income"] == 200000  # the other change still applies

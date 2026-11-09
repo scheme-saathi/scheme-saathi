@@ -3,6 +3,7 @@
 import json
 import logging
 from dataclasses import dataclass
+from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Any, TypedDict
@@ -563,6 +564,11 @@ def _fits(kind: str, value: Any) -> bool:
         return isinstance(value, bool)
     if kind == "number":
         return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if kind == "date":  # the rule engine reads only YYYY-MM-DD; the UI converts DD/MM/YYYY
+        try:
+            date.fromisoformat(value)
+        except (TypeError, ValueError):
+            return False
     return isinstance(value, str)
 
 
