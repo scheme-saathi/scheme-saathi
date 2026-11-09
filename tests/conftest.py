@@ -7,6 +7,30 @@ import pytest
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 
+# Settings a developer's .env holds. Tests run as in CI, without them: a test that needs one
+# sets it itself. With them, the supervisor's router called the live model (and spent credit)
+# and Auth0's "missing configuration" test read the real settings back from .env.
+DOTENV_SETTINGS = (
+    "OPENROUTER_API_KEY", "OPENROUTER_BASE_URL", "OPENAI_API_KEY", "OPENAI_BASE_URL",
+    "SUPERVISOR_MODEL", "SPECIALIST_MODEL", "CITIZEN_MODEL",
+    "AUTH0_DOMAIN", "AUTH0_AUDIENCE", "AUTH0_CLIENT_ID", "AUTH0_HOUSEHOLD_CLAIM",
+    "AUTH0_ROLE_CLAIM", "AUTH0_REDIRECT_URI",
+)
+
+
+@pytest.fixture(autouse=True)
+def ignore_local_dotenv(monkeypatch):
+    """Keep a local .env out of the tests: no module reloads it, and its settings are cleared."""
+    import dotenv
+
+    real = dotenv.load_dotenv
+    for module in list(sys.modules.values()):
+        if getattr(module, "load_dotenv", None) is real:
+            monkeypatch.setattr(module, "load_dotenv", lambda *args, **kwargs: False)
+    for name in DOTENV_SETTINGS:
+        monkeypatch.delenv(name, raising=False)
+
+
 @pytest.fixture(autouse=True)
 def close_chroma_clients():
     """Stop every ChromaDB client a test opened.
