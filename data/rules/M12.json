@@ -47,6 +47,10 @@
     {
       "clause_id": "elig-10",
       "text": "Priority will be given to applicants from the Below Poverty Line (BPL)."
+    },
+    {
+      "clause_id": "det-1",
+      "text": "The scheme \"Ramai Awas (Gharkul) Scheme for SC & Nav-Buddha (Urban and Rural)\" is a housing scheme by the Department of Social Justice & Special Assistance of the Government of Maharashtra. The scheme aims to raise the standard of living of the individuals from the Scheduled Caste and Nav-Buddha communities residing in rural & urban areas of Maharashtra."
     }
   ],
   "documents_required": [
@@ -59,39 +63,82 @@
   ],
   "rules": [
     {
+      "field": "social_category",
+      "op": "in",
+      "value": [
+        "SC",
+        "Nav-Buddha"
+      ],
+      "clause_id": "det-1",
+      "status": "reviewed"
+    },
+    {
       "field": "years_resident_in_maharashtra",
       "op": "gte",
       "value": 15,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "annual_income",
       "op": "lte",
       "value": 200000,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "annual_income",
+      "op": "lte",
+      "value": 150000,
+      "clause_id": "elig-4",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "area_type",
+          "op": "eq",
+          "value": "municipal corporation",
+          "clause_id": "elig-5"
+        }
+      ]
+    },
+    {
+      "field": "annual_income",
+      "op": "lte",
+      "value": 100000,
+      "clause_id": "elig-3",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "area_type",
+          "op": "in",
+          "value": [
+            "municipal council area",
+            "municipal corporation"
+          ],
+          "clause_id": "elig-4"
+        }
+      ]
     },
     {
       "field": "family_member_already_beneficiary",
       "op": "eq",
       "value": false,
       "clause_id": "elig-6",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "owns_land_for_house",
       "op": "eq",
       "value": true,
       "clause_id": "elig-7",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "receives_other_government_housing_benefit",
       "op": "eq",
       "value": false,
       "clause_id": "elig-8",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

@@ -10,6 +10,7 @@ COPY .streamlit/ ./.streamlit/
 COPY app/ ./app/
 COPY agents/ ./agents/
 COPY graph/ ./graph/
+COPY observability/ ./observability/
 COPY servers/ ./servers/
 COPY data/ ./data/
 

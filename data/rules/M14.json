@@ -39,6 +39,10 @@
     {
       "clause_id": "excl-2",
       "text": "2) Existing Units and units that have availed benefit under PMRY, REGP, PMEGP or any other subsidy linked scheme of Government of India or State Government and also units that have already availed Government Subsidy under any other scheme of Government of India or State Government are not eligible under the scheme."
+    },
+    {
+      "clause_id": "ben-11",
+      "text": "Special Category (includes SC / ST /Women/ Ex- servicemen / differently abled/VJNT/OBC/Minority)"
     }
   ],
   "documents_required": [
@@ -60,42 +64,117 @@
       "op": "gte",
       "value": 18,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 50,
+      "clause_id": "elig-1",
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 45,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "social_category",
+          "op": "in",
+          "value": [
+            "SC",
+            "ST",
+            "OBC",
+            "VJ-A",
+            "NT-B",
+            "NT-C",
+            "NT-D"
+          ],
+          "clause_id": "ben-11"
+        },
+        {
+          "field": "religion",
+          "op": "in",
+          "value": [
+            "Muslim",
+            "Christian",
+            "Sikh",
+            "Buddhist",
+            "Jain",
+            "Parsi"
+          ],
+          "clause_id": "ben-11"
+        },
+        {
+          "field": "is_woman_or_girl",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-1"
+        },
+        {
+          "field": "is_ex_serviceman",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-1"
+        },
+        {
+          "field": "has_disability",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-1"
+        }
+      ]
     },
     {
       "field": "is_unemployed_or_starting_new_venture",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_passed_class_7",
       "op": "eq",
       "value": true,
       "clause_id": "elig-6",
-      "status": "draft"
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "project_cost_rupees",
+          "op": "lte",
+          "value": 1000000
+        }
+      ]
+    },
+    {
+      "field": "has_passed_class_10",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-6",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "project_cost_rupees",
+          "op": "lte",
+          "value": 2500000
+        }
+      ]
     },
     {
       "field": "family_member_already_beneficiary",
       "op": "eq",
       "value": false,
       "clause_id": "excl-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "availed_other_scheme_same_purpose",
       "op": "eq",
       "value": false,
       "clause_id": "excl-2",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

@@ -28,3 +28,5 @@ data/pdfs/
 
 dist/
 data/rules/REVIEW_NOTES.md
+observability/deploy/secrets/*
+!observability/deploy/secrets/README.txt

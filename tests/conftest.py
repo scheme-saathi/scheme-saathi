@@ -1,9 +1,31 @@
 import json
+import sys
 from pathlib import Path
 
 import pytest
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+
+@pytest.fixture(autouse=True)
+def close_chroma_clients():
+    """Stop every ChromaDB client a test opened.
+
+    ChromaDB keeps each PersistentClient's database open in a process-wide cache until it is
+    stopped, about 15-20 open files per memory-store test. On macOS (256 open files by default)
+    the suite then failed with "Too many open files" after about 60 such tests.
+    """
+    yield
+    if "chromadb" not in sys.modules:
+        return
+    from chromadb.api.shared_system_client import SharedSystemClient
+
+    for system in list(SharedSystemClient._identifier_to_system.values()):
+        try:
+            system.stop()
+        except Exception:  # a system already stopped by its test
+            pass
+    SharedSystemClient.clear_system_cache()
 
 
 @pytest.fixture(autouse=True)
@@ -27,6 +49,34 @@ def isolated_memory_store(monkeypatch, tmp_path):
 
 
 @pytest.fixture(autouse=True)
+def observability_off_and_isolated(monkeypatch):
+    """Keep the suite independent of the developer's .env, and each test's metrics separate.
+
+    Empty (not removed) values stop load_dotenv from filling them back in from a local .env.
+    """
+    from observability import set_metrics, set_tracer
+
+    monkeypatch.setenv("OBSERVABILITY_ENABLED", "")
+    monkeypatch.setenv("METRICS_BEARER_TOKEN", "")
+    monkeypatch.setenv("MODEL_PRICES_FILE", "")
+    for name in (
+        "TRACING_BACKEND",
+        "TRACING_SAMPLE_RATE",
+        "TRACING_HASH_SALT",
+        "LANGSMITH_API_KEY",
+        "LANGCHAIN_API_KEY",
+        "LANGSMITH_TRACING",
+        "LANGCHAIN_TRACING_V2",
+    ):
+        monkeypatch.setenv(name, "")
+    set_metrics(None)
+    set_tracer(None)
+    yield
+    set_metrics(None)
+    set_tracer(None)
+
+
+@pytest.fixture(autouse=True)
 def synthetic_scheme_fixture(monkeypatch):
     """Serve the test-only SYNTH-PENSION-001 record; it is not in data/, so users never see it."""
     from servers.rule_engine import server as rule_server
@@ -39,3 +89,5 @@ def synthetic_scheme_fixture(monkeypatch):
     }
     load = kb_server._load_scheme_records
     monkeypatch.setattr(kb_server, "_load_scheme_records", lambda: {**load(), **fixtures})
+    from graph import tools
+    tools.scheme_is_closed.cache_clear()  # a test that swaps scheme records must not see another's cache

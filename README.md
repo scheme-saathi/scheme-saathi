@@ -318,6 +318,90 @@ The API can also be run separately with
 `POST /api/analyze` and `POST /api/threads/{thread_id}/decision` as streaming
 endpoints, plus `GET /health`.
 
+### Observability (metrics)
+
+Off by default. Set `OBSERVABILITY_ENABLED=true` and a long random `METRICS_BEARER_TOKEN` in
+`.env` and restart. The API then counts and times every request and serves Prometheus text at
+`GET /metrics`, which needs `Authorization: Bearer <METRICS_BEARER_TOKEN>`. With the switch on but
+no token set, `/metrics` refuses everyone (503). The Streamlit app serves it from the API it starts
+(`127.0.0.1:8766` by default).
+
+Every request is recorded as `scheme_saathi_http_requests_total` (method, route template, status class),
+`scheme_saathi_http_request_duration_seconds`, `scheme_saathi_http_requests_in_progress`,
+`scheme_saathi_http_exceptions_total` (route, exception type only) and `scheme_saathi_build_info`,
+plus the standard Python process metrics. Requests that match no route are one `unmatched` series.
+A streamed response is timed to its end.
+
+Each workflow invocation is one **run**, with `kind` one of `chat_turn`, `chat_decision`,
+`application_start`, `application_decision` or `legacy_chat`:
+
+| Metric | Labels | What it answers |
+|---|---|---|
+| `scheme_saathi_runs_total` | kind, outcome | How runs ended: `eligibility_checked`, `needs_information`, `awaiting_approval`, `submitted`, `approval_rejected`, `output_blocked`, `answer_not_found`, `cancelled`, `refused`, `not_found`, `conflict`, `tool_error`, `error` and the rest of the closed set in `observability/runs.py`. |
+| `scheme_saathi_run_duration_seconds` | kind | Latency per run. A streamed run is timed to its last event. |
+| `scheme_saathi_run_errors_total` | kind, error_type | Server-side failures only (`error`, `tool_error`, `budget_exceeded`, `storage_error`), by exception class name. A caller's mistake such as a refused or unknown thread is an outcome, not an error. |
+| `scheme_saathi_run_tool_calls` | kind | Tool calls made during one run. |
+| `scheme_saathi_stream_time_to_first_event_seconds` | kind | Time until a streamed run said anything. |
+| `scheme_saathi_runs_in_progress` | kind | Runs started and not finished. |
+| `scheme_saathi_tool_calls_total`, `..._tool_call_duration_seconds`, `..._tool_errors_total` | server, tool, outcome / error_code | The MCP tools (rule engine, schemes knowledge base, document checker, mock portal), fed by the existing `mcp_tool_call` audit event. |
+| `scheme_saathi_approvals_total` | action, result | Approval decisions, fed by the existing `application_approval` audit event. |
+| `scheme_saathi_eligibility_verdicts_total` | verdict | Final `eligible`, `not_eligible` and `cant_tell` verdicts, one per scheme checked, counted only when a check settles. |
+| `scheme_saathi_guardrail_blocks_total` | stage | Input or output the guardrails stopped. |
+| `scheme_saathi_memory_operations_total` | operation, result | Memory load, save, reference, consent and forget operations. |
+| `scheme_saathi_threads_expired_total` | kind, reason | Threads and chat sessions that expired, found by the cleanup timer (`cleanup`) or when used (`on_use`). |
+
+A run, tool call and the rest are recorded only while `OBSERVABILITY_ENABLED` is on. Labels come from
+a fixed allowlist (`observability/metrics.py`), so a household, thread, application or user
+identifier, a fact value or an exception message cannot become a label; a failure is recorded by
+its exception class name only. A stream that the client closes before it finishes is `cancelled`,
+unless its result had already been sent. Tracing is described below. For the Prometheus and Grafana
+setup (`observability/deploy/`), every metric and ready-made queries, see
+[docs/observability.md](docs/observability.md).
+
+Every model call is recorded, by `role` (`supervisor`, `specialist`, `router`) and `model` (the
+ID from your environment):
+
+| Metric | Labels | What it answers |
+|---|---|---|
+| `scheme_saathi_llm_calls_total` | role, model, outcome | Calls, `success` or `error`. |
+| `scheme_saathi_llm_call_duration_seconds` | role, model | Latency of a call, retries included. |
+| `scheme_saathi_llm_tokens_total` | role, model, direction | Input and output tokens. |
+| `scheme_saathi_llm_cost_usd_total` | role, model, cost_source | Spend in US dollars. `provider` means the provider reported the cost; `table` means it was worked out from the price table. |
+| `scheme_saathi_llm_unpriced_calls_total` | role, model | Successful calls with no cost at all, so spend is understated by these. |
+| `scheme_saathi_llm_errors_total` | role, model, error_type | Failed calls by exception class name. |
+| `scheme_saathi_run_llm_calls`, `..._run_cost_usd` | kind | Model calls and spend in one run. The `_sum` of `run_cost_usd` is total spend by run kind. |
+| `scheme_saathi_run_tokens_total` | kind, direction | Tokens summed by run kind. |
+| `scheme_saathi_runs_with_unpriced_calls_total` | kind | Runs whose cost is understated. |
+
+Cost is the provider's figure when it reports one. For OpenRouter the app asks for it (`usage.include`)
+while observability is on. Otherwise it is tokens times the price in `observability/model_prices.json`,
+which lists `openai/gpt-4o-mini` with hand-entered prices that you should confirm against your provider's
+price list (add a line for any other model, or point `MODEL_PRICES_FILE` at your own copy). A model that is
+not listed counts as unpriced, never as free. Only token counts and cost are
+recorded, never a prompt or a response.
+
+### Tracing (LangSmith)
+
+Set `TRACING_BACKEND=langsmith` and `LANGSMITH_API_KEY` (with `OBSERVABILITY_ENABLED=true`) to send one
+LangSmith trace per run: a root span named `scheme-saathi <kind>` with a child span for each model
+call (`llm`, with token usage and cost) and each tool call (`tool`). `LANGSMITH_PROJECT` names the
+project (default `scheme-saathi`) and `LANGSMITH_ENDPOINT` points at the EU or a self-hosted LangSmith.
+Langfuse is not implemented yet; `TRACING_BACKEND=langfuse` leaves tracing off with a warning.
+
+- **Metadata only.** A trace has the run kind, outcome, duration, model, token counts, cost, tool
+  names, outcomes and error class names. It never has a prompt, a reply, tool arguments, fact values or
+  an error message, and the client is built to drop inputs and every output except token usage.
+- **Leave `LANGSMITH_TRACING` and `LANGCHAIN_TRACING_V2` unset.** LangChain's own tracing would send
+  full prompts to LangSmith; the app warns at startup if either is on.
+- **Conversations** are grouped by `thread_id` metadata, which is a salted hash of the thread ID, never
+  the ID itself or a household ID. Set `TRACING_HASH_SALT` to keep the hash stable across restarts.
+- **Sampling.** `TRACING_SAMPLE_RATE` (0 to 1, default 1) picks the share of runs traced; a run that
+  failed on the server side is always traced.
+- **Never in the way.** Traces are sent from a background thread through a bounded queue. If LangSmith is
+  slow or down, requests are unaffected; `scheme_saathi_traces_total{result}` counts `exported`,
+  `sampled_out`, `dropped` (queue full) and `failed`. A trace keeps at most 200 spans.
+- `scheme_saathi_build_info{tracing_backend}` shows which backend is running.
+
 ## Intake agent
 
 The Intake agent turns what a person says into a typed household profile and asks for the
@@ -342,7 +426,7 @@ Eligibility: candidate schemes → rule engine → verdicts
     ↓
 A cant_tell verdict that an answer could settle?
     ├─ yes → Intake asks ONE question → the reply goes back to Intake
-    │        ("don't know", or no usable answer twice, skips that fact; 12 questions → stop and list what is missing)
+    │        ("don't know", or no usable answer twice, skips that fact; 12 questions → confirm and answer, open ones as can't tell)
     └─ no  → Confirm step: the person approves, edits or rejects the exact facts
              (verdicts still open only on skipped facts are final "can't tell" answers)
                 ↓
@@ -355,7 +439,8 @@ A cant_tell verdict that an answer could settle?
   (`get_field_specs`). The model gets that schema, and code validates each returned field on
   its own: `"67"` for a number, `"yes"` for a bool or an unknown field is dropped, not stored.
   Candidate schemes are the selected scheme, or else every scheme whose rules are fully
-  reviewed (today only `SYNTH-PENSION-001`, so live mode asks about age, income and widowhood).
+  reviewed (all 49 rule files since the Step 5 review on 9 Nov 2026, plus the test-only
+  `SYNTH-PENSION-001`; see `data/rules/REVIEW_STATUS.md`).
 - **Choosing the question.** `tools.next_question(verdicts, declined)` counts each field in the
   `missing_fields`/`unresolved_fields` of the `cant_tell` verdicts and picks the highest count
   (ties go alphabetically). A field from an already decided scheme is never asked. The model
@@ -368,12 +453,18 @@ A cant_tell verdict that an answer could settle?
   `monthly_income`). Questions ask in the field's own period, so a bare amount answering one is
   read in that period. With no question to anchor it, the amount is rejected and asked again.
   Income fields are recognised by name (a `shortcut:` in `agents/intake.py`).
+- **Plain answers.** When the pending question is yes/no and the reply starts with yes or no
+  (हाँ/नहीं, होय/नाही), code records it, whatever the model read. For a list question,
+  a leading "no" or "none of these" / "I am not a …" is recorded as `none of these`. A reply
+  with doubt ("No, I am not sure"), a second clause ("… but …") or a listed value is left to
+  the model.
 - **Stop rules.** The model classifies each reply as `answer`, `dont_know` or `other`.
   "Don't know" skips that one fact, and so does a field asked twice without a usable answer;
   intake goes on with the questions that can still change a verdict. When none is left, the
   person confirms the facts, and verdicts open only on skipped facts are given as "can't tell"
-  with the missing fact named. At most 12 questions are asked (`MAX_QUESTIONS`); reaching that
-  stops intake and lists what is missing. A reply with no facts at all
+  with the missing fact named. At most 12 questions are asked (`MAX_QUESTIONS`); at that point
+  the person confirms the facts given so far and gets every verdict, the open ones as "can't
+  tell" with the missing facts named. A reply with no facts at all
   goes back to the Supervisor, so a new request ("what documents do I need?") is routed rather
   than the question repeated. A new intake resets these counters.
 - **Confirm step.** Once the verdicts settle, the graph pauses with `interrupt()` and shows the

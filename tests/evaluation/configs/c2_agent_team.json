@@ -1,9 +1,10 @@
 {
   "name": "c2_agent_team",
-  "description": "E1 system C2: the supervisor and specialist agents (graph/agent_workflow.py) talking to the simulated citizen, which plays each case from its hidden profile. Models come from SUPERVISOR_MODEL, SPECIALIST_MODEL and CITIZEN_MODEL (a different family).",
+  "description": "E1 system C2: the supervisor and specialist agents (graph/agent_workflow.py) talking to the simulated citizen, which plays each case from its hidden profile. Models come from SUPERVISOR_MODEL, SPECIALIST_MODEL and CITIZEN_MODEL (a different family). The supervisor's rate limit is raised to rate_limit_per_minute, because the simulated citizen answers far faster than a person; the limit itself is tested in E2.",
   "system": "agent_team",
   "scheme_selection": "system",
   "tool_call_limit": 400,
   "max_turns": 20,
-  "allow_same_model_family": false
+  "allow_same_model_family": false,
+  "rate_limit_per_minute": 1000
 }

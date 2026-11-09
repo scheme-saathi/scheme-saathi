@@ -32,18 +32,18 @@
   ],
   "rules": [
     {
-      "field": "has_orthopedic_disability",
+      "field": "has_permanent_orthopedic_disability",
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "disability_percent",
       "op": "gte",
       "value": 40,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

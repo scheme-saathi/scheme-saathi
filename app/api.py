@@ -34,6 +34,7 @@ from app.memory_api import FORGET_NOTE, optional_memory, remember_submission, ro
 from app.memory_runtime import forget_memory, memory_scope
 from app.periodic import PeriodicTask
 from app.thread_registry import ThreadRegistry, TouchResult
+from observability import RunRecorder, install_observability, record_memory_operation, record_thread_expired
 from graph.memory_nodes import memory_config
 
 if __package__:
@@ -249,6 +250,7 @@ class AgentWorkflowService:
         """
         outcome = self.registry.touch(thread_id, actor_id)
         if outcome is TouchResult.EXPIRED:
+            record_thread_expired("agent", "on_use")
             self._drop({thread_id})
             raise ThreadNotFoundError(thread_id)
         if outcome is TouchResult.NOT_OWNER:
@@ -461,6 +463,7 @@ class AgentWorkflowService:
         """Delete conversations idle for 24 hours or started 7 days ago, with their saved state."""
         threads = set(self.registry.expired())
         self._drop(threads)
+        record_thread_expired("agent", "cleanup", len(threads))
         return len(threads)
 
     def _drop(self, threads: set[str]) -> None:
@@ -508,6 +511,13 @@ def _tool_call_http_error(error: ToolCallError) -> HTTPException:
 # ============================================================================
 # EVENT STREAMING HELPER
 # ============================================================================
+
+def _record_result(run: RunRecorder, result: dict[str, Any]) -> None:
+    run.set_outcome(result.get("status"))
+    data = result.get("data")
+    run.set_verdicts(data.get("verdicts") if isinstance(data, dict) else None)
+    run.set_thread(result.get("thread_id"))
+
 
 def _event_stream(
     events: Any,
@@ -565,6 +575,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         version="1.0.0",
         description="GPT agent orchestration for government scheme assistance",
     )
+    install_observability(application)  # request metrics and /metrics, only when OBSERVABILITY_ENABLED is on
 
     @application.exception_handler(RequestValidationError)
     async def validation_error(request: Request, error: RequestValidationError) -> Response:
@@ -625,15 +636,17 @@ def create_api(service: DemoService | None = None) -> FastAPI:
             workflow = get_workflow_service()
             
             # Execute workflow
-            result = workflow.execute_workflow(
-                request=request.message,
-                actor_id=principal.household_id,
-                thread_id=thread_id,
-                known_facts=request.known_facts,
-                selected_scheme_id=request.selected_scheme_id,
-                confirmed_facts=request.confirmed_facts,
-                memory_scope=memory_scope(principal),
-            )
+            with RunRecorder("chat_turn") as run:
+                result = workflow.execute_workflow(
+                    request=request.message,
+                    actor_id=principal.household_id,
+                    thread_id=thread_id,
+                    known_facts=request.known_facts,
+                    selected_scheme_id=request.selected_scheme_id,
+                    confirmed_facts=request.confirmed_facts,
+                    memory_scope=memory_scope(principal),
+                )
+                _record_result(run, result)
             
             return SupervisorChatResponse(
                 status="success",
@@ -675,15 +688,17 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         """Approve, edit or reject the exact form the graph is waiting on."""
         reject_unsafe(decision.changes)
         try:
-            result = get_workflow_service().submit_decision(
-                thread_id,
-                principal.household_id,
-                decision.action,
-                decision.payload_hash,
-                decision.changes,
-                memory_scope=memory_scope(principal),
-                citizen_agreed=decision.citizen_agreed,
-            )
+            with RunRecorder("chat_decision") as run:
+                result = get_workflow_service().submit_decision(
+                    thread_id,
+                    principal.household_id,
+                    decision.action,
+                    decision.payload_hash,
+                    decision.changes,
+                    memory_scope=memory_scope(principal),
+                    citizen_agreed=decision.citizen_agreed,
+                )
+                _record_result(run, result)
         except ThreadNotFoundError:
             raise HTTPException(status_code=404, detail="Thread not found")
         except ThreadAccessError:
@@ -860,17 +875,19 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> StreamingResponse:
         reject_unsafe([payload.citizen, payload.scheme_ids, payload.relation])
+        run = RunRecorder("application_start")
         try:
-            events = demo.analyze(
-                payload.citizen,
-                payload.scheme_ids,
-                principal.household_id,
-                payload.subject,
-                clean_relation(payload.relation) if payload.subject == "other" else None,
-            )
+            with run.attach():
+                events = demo.analyze(
+                    payload.citizen,
+                    payload.scheme_ids,
+                    principal.household_id,
+                    payload.subject,
+                    clean_relation(payload.relation) if payload.subject == "other" else None,
+                )
         except ToolCallError as error:
             raise _tool_call_http_error(error) from error
-        return _event_stream(events)
+        return _event_stream(run.watch(events))
 
     @application.post("/api/chat/legacy", tags=["Demo"])
     def chat_legacy(
@@ -878,11 +895,10 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> StreamingResponse:
         reject_unsafe(payload.user_input)
-        return _event_stream(
-            demo.chat_turn(
-                payload.user_input, payload.session_id, principal.household_id
-            )
-        )
+        run = RunRecorder("legacy_chat")
+        with run.attach():
+            events = demo.chat_turn(payload.user_input, payload.session_id, principal.household_id)
+        return _event_stream(run.watch(events))
 
     @application.post("/api/threads/{thread_id}/documents/upload", tags=["Demo"])
     async def upload_document(
@@ -1025,14 +1041,16 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         principal: AuthenticatedHousehold = Depends(authenticated_household),
     ) -> StreamingResponse:
         reject_unsafe(payload.changes)
+        run = RunRecorder("application_decision")
         try:
-            events = demo.decide(
-                thread_id,
-                payload.action,
-                payload.payload_hash,
-                payload.changes,
-                principal.household_id,
-            )
+            with run.attach():
+                events = demo.decide(
+                    thread_id,
+                    payload.action,
+                    payload.payload_hash,
+                    payload.changes,
+                    principal.household_id,
+                )
         except DemoThreadAccessError:
             raise HTTPException(
                 status_code=403,
@@ -1052,7 +1070,9 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                 status_code=500, detail="Could not check stored documents."
             ) from error
         return _event_stream(
-            _remembering_submission(demo, thread_id, principal, events, citizen_agreed=payload.citizen_agreed)
+            _remembering_submission(
+                demo, thread_id, principal, run.watch(events), citizen_agreed=payload.citizen_agreed
+            )
         )
 
     @application.delete("/api/memory", tags=["Memory"])
@@ -1081,6 +1101,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
         if memory is None:
             results["memory"] = {"status": "not_applicable"}
         if not all_deleted(results):
+            record_memory_operation("forget", "partial")
             logger.error("Forgetting a household did not finish: %s", ", ".join(unfinished(results)))
             raise HTTPException(
                 status_code=500,
@@ -1090,6 +1111,7 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                     + "). Nothing is reported as deleted for those parts. Please try again."
                 ),
             )
+        record_memory_operation("forget", "success")
         return {"status": "success", "surfaces": results, "note": FORGET_NOTE}
 
     application.include_router(memory_router)

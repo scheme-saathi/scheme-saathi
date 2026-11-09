@@ -42,6 +42,7 @@ from graph.memory_nodes import (
     save_confirmed,
 )
 from graph.workflow import application_hash
+from observability.hooks import record_memory_operation
 from servers.rule_engine.rules import Evaluation
 
 logger = logging.getLogger(__name__)
@@ -475,7 +476,8 @@ def _eligibility_node(
     explanations = {}
     if not state.get("selected_scheme_id") and not _unconfirmed(state):
         explanations = {
-            s: agents.eligibility.invoke(EligibilityInput(scheme_id=s, evaluation=v)).explanation
+            s: tools.with_closed_note(
+                s, agents.eligibility.invoke(EligibilityInput(scheme_id=s, evaluation=v)).explanation)
             for s, v in verdicts.items()
         }
     return {"verdicts": verdicts, "explanations": explanations, **_selected_scheme_eligibility(agents, state)}
@@ -527,17 +529,26 @@ def _selected_scheme_eligibility(
     return {
         "eligibility": {
             **evaluation_data,
-            "explanation": narrative.explanation,
+            "explanation": tools.with_closed_note(scheme_id, narrative.explanation),
             "clarifying_questions": narrative.clarifying_questions,
         },
     }
 
 
+def _at_question_cap(state: AgentWorkflowState) -> bool:
+    """This intake has asked its maximum (an older thread may carry the stop flag instead)."""
+    return state.get("intake_stopped") == "question_cap" or state.get("questions_asked", 0) >= MAX_QUESTIONS
+
+
 def _route_after_eligibility(state: AgentWorkflowState) -> str:
-    # Still open: ask the next question, or, once intake has stopped, say what is missing.
-    # Once nothing left to ask can change a verdict, the open ones become a final "can't tell".
-    if _open_fields(state) and (
-        state.get("intake_stopped") or tools.next_question(state["verdicts"], _skipped_fields(state))
+    # Still open: ask the next question. At the question cap, or once nothing left to ask can
+    # change a verdict, the person confirms the facts given so far and gets every verdict:
+    # the decided ones, and the open ones as a final "can't tell" naming what is missing.
+    # (Stopping at the cap without that left 11 of 21 C2 development cases with no answer.)
+    if (
+        _open_fields(state)
+        and not _at_question_cap(state)
+        and tools.next_question(state["verdicts"], _skipped_fields(state))
     ):
         return "intake_question"
     if _unconfirmed(state):
@@ -628,7 +639,9 @@ def _memory_load_node(
         remembered = load_remembered(ctx, specs, _facts_so_far(state))
     except Exception:
         logger.warning("Memory could not be read; continuing without it.")
+        record_memory_operation("load", "error")
         return {}
+    record_memory_operation("load", "hit" if remembered else "miss")
     return {
         "memory_loaded": True,
         "subject": "self",
@@ -652,7 +665,9 @@ def _memory_save_node(
         )
     except Exception:
         logger.warning("Memory could not be updated; continuing without it.")
+        record_memory_operation("save", "error")
         return {}
+    record_memory_operation("save", "saved" if saved else "skipped")
     return {"memory_saved": saved, "remembered_facts": held}
 
 
@@ -910,7 +925,9 @@ def _remember_application(
         )
     except Exception:
         logger.warning("The submitted application could not be remembered.")
-        saved = False
+        record_memory_operation("reference", "error")
+        return {"reference_saved": False}
+    record_memory_operation("reference", "saved" if saved else "skipped")
     return {"reference_saved": saved}
 
 

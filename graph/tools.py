@@ -17,6 +17,7 @@ from typing import Any
 
 from fastmcp import Client
 
+from observability.hooks import record_approval, record_tool_call
 from servers.mock_portal.authorization import (
     CapabilityError,
     application_payload_hash,
@@ -247,9 +248,11 @@ def _audit_tool_call(server: str, tool: str, outcome: str, started_at: float, er
         "duration_ms": round((time.perf_counter() - started_at) * 1000),
     }
     logger.info("mcp_tool_call %s", json.dumps(event, sort_keys=True))
+    record_tool_call(event["server"], event["tool"], outcome, time.perf_counter() - started_at, error_code)
 
 
 def audit_approval_event(action: str, outcome: str, authenticated: bool) -> None:
+    record_approval(action, outcome)
     event = {
         "action": action,
         "outcome": outcome,
@@ -314,6 +317,44 @@ def call_tool(server: str, tool: str, **arguments: Any) -> Any:
 def search_schemes(profile: dict, scheme_ids: list[str] | None = None, include_draft: bool = False) -> list[str]:
     """Requested schemes, or every scheme whose rules are fully reviewed (any with rules in preview)."""
     return call_tool(RULE_ENGINE, "list_rule_schemes", scheme_ids=scheme_ids, include_draft=include_draft)
+
+
+CLOSED_NOTE = "Applications for this scheme are closed on myScheme right now."
+
+
+_closed_schemes: dict[str, bool] = {}
+
+
+def scheme_is_closed(scheme_id: str) -> bool:
+    """True when the scheme's myScheme page said applications are closed when it was collected.
+
+    Only a definite answer is cached: the record's status, or "no record" (a synthetic test
+    scheme). A failed lookup (an exhausted tool budget, a server error) adds no note this
+    time and is tried again next time, so it can't hide the note for good (PR #67 review).
+    Scheme records don't change while the app runs, and each lookup is a tool call that counts
+    against a conversation's tool-call budget.
+    """
+    if scheme_id in _closed_schemes:
+        return _closed_schemes[scheme_id]
+    try:
+        details = call_tool(SCHEMES_KB, "get_scheme_details", scheme_id=scheme_id)
+    except ToolCallError as error:
+        if error.code == "scheme_not_found":
+            _closed_schemes[scheme_id] = False
+        else:
+            logger.warning("Could not check whether %s is closed (%s); no note added.", scheme_id, error.code)
+        return False
+    closed = isinstance(details, dict) and details.get("availability_status") == "closed"
+    _closed_schemes[scheme_id] = closed
+    return closed
+
+
+scheme_is_closed.cache_clear = _closed_schemes.clear  # type: ignore[attr-defined]
+
+
+def with_closed_note(scheme_id: str, explanation: str) -> str:
+    """The explanation, plus a line saying applications are closed when they are (Step 5, F6)."""
+    return f"{explanation} {CLOSED_NOTE}" if scheme_is_closed(scheme_id) else explanation
 
 
 def search_evidence(question: str, scheme_id: str | None = None) -> list[dict]:

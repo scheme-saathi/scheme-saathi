@@ -22,6 +22,7 @@ Languages: 58 English, 9 Marathi, 4 Hindi. A Hindi or Marathi case (`variant_of`
 3. **Cases.** Families were designed around rule boundaries (for example age 40 vs 41, income ₹15,000 vs ₹15,001), exclusions, multi-scheme households and unknown answers. Each case passed a field and consistency check (11 rules).
 4. **Labels.** Sharika labelled every case from the scheme source sentences, without running the engine.
 5. **Label review.** The 103 labels were compared once with the rule engine on 8 Nov, before any agent run. Three labels were corrected after rereading the source (R1 F05a, R2 F13c, R3 F19b). One rule was fixed (R4: C04 now requires auto-debit consent, found through F10b in the development split). Three ambiguous cases were rewritten and relabelled (R5 F12a, R6 F14d, R7 F16b). No label was copied from the engine.
+6. **Relabel after rule changes (9 Nov).** New rules from Snehal Patel's review (C23 pilot states; M13 PM-KISAN and farmland) changed 11 C23 verdicts and three M13 profiles, decided by Sharika from the source; see `data/rules/REVIEW_STATUS.md`, Step 6.
 
 ## Known limits
 
@@ -47,7 +48,7 @@ Each config in `tests/evaluation/configs/` is one experiment. The runner writes 
 | Config | System | Development result (8 Nov) |
 | --- | --- | --- |
 | `c0_fixed_workflow` | C0, fixed workflow, no model, candidate schemes | 39/39 verdicts, 4.5 questions per case, 218 ms median |
-| `c0_fixed_workflow_all_schemes` | C0 checking all 22 live schemes | 39/39 verdicts, 80.2 questions per case, 3.7 s median (45.8 and 1.8 s with 15 live schemes) |
+| `c0_fixed_workflow_all_schemes` | C0 checking all 22 schemes live on 8 Nov (49 since the Step 5 review on 9 Nov) | 39/39 verdicts, 80.2 questions per case, 3.7 s median (45.8 and 1.8 s with 15 live schemes) |
 
 `c2_agent_team` runs the real supervisor and specialist agents against the simulated citizen in `tests/evaluation/simulated_citizen.py`: a model that knows only the case's hidden profile and answers only what it is asked, in the case's language. Set `SUPERVISOR_MODEL`, `SPECIALIST_MODEL`, `CITIZEN_MODEL` (a different model family, as the brief requires) and `OPENROUTER_API_KEY` in `.env`, then:
 
@@ -56,6 +57,10 @@ python tests/evaluation/run_eval.py --config tests/evaluation/configs/c2_agent_t
 ```
 
 For a conversation, a verdict counts only once the person was given the rule engine's answer on confirmed facts. Candidate schemes the system checked but never answered score `no_final_answer`; ones it never checked score `not_evaluated`. The summary separates these: `shortlist_recall` (candidates checked at all), `answered_rate` and `accuracy_when_answered`. `cases_with_unbacked_eligibility_claims` counts conversations where an agent told the person they qualify (or don't) without the rule engine. That is a keyword check, so an LLM judge should confirm the flagged cases. To score a saved run again under the current rules without calling a model, use `python tests/evaluation/run_eval.py --rescore data/evaluation-runs/<run>`.
+
+While it runs, the runner prints one line per finished case and, every 60 seconds, a "still running" line with the cases done, the case in progress and the time left (`--heartbeat SECONDS` changes it; `0` turns it off).
+
+The C2 config raises the supervisor's rate limit (`rate_limit_per_minute`), because the simulated citizen replies far faster than a person and would otherwise hit the app's limit of 10 messages a minute. The limit itself belongs to the security tests (E2).
 
 On top of the C0 measures, C2 also records the team's shortlist, facts it confirmed wrongly against the hidden profile, tokens by model and the full transcript of each case. The single-agent system (C1) is listed in the runner but not built yet.
 

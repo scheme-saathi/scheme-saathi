@@ -59,35 +59,42 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
-      "field": "applicant_and_spouse_annual_income",
+      "field": "applicant_and_spouse_annual_income_excluding_artist_pension",
       "op": "lte",
       "value": 48000,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 60,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
-      "field": "gets_state_artist_pension_or_zcc_recommendation",
-      "op": "eq",
-      "value": true,
+      "field": "state_artist_pension_per_month",
+      "op": "gte",
+      "value": 500,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "recommended_by_zonal_cultural_centre",
+          "op": "eq",
+          "value": true
+        }
+      ]
     },
     {
       "field": "gets_other_ministry_of_culture_assistance",
       "op": "eq",
       "value": false,
       "clause_id": "elig-6",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

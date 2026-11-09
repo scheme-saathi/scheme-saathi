@@ -166,7 +166,7 @@ def test_document_screen_uploads_to_real_api_and_advances_to_review(tmp_path, mo
 
     monkeypatch.setattr(app_new, "urlopen", request_url)
     monkeypatch.setattr(app_new.st, "file_uploader", lambda *args, **kwargs: Upload())
-    ui = AppTest.from_function(document_upload_screen)
+    ui = AppTest.from_function(document_upload_screen, default_timeout=30)  # the real API and rules run inside
     ui.session_state["application_result"] = result
     ui.session_state["application_uploads"] = {}
     ui.session_state["chat_eligibility_result"] = {"status": "eligibility_checked"}
@@ -303,7 +303,7 @@ def test_missing_mock_portal_secret_does_not_consume_approval(monkeypatch):
     client = authenticated_client(create_api(service))
     analyzed = client.post(
         "/api/analyze",
-        json={"citizen": {"is_woman_or_girl": True}, "scheme_ids": ["C23"]},
+        json={"citizen": {"is_woman_or_girl": True, "state_of_residence": "Assam"}, "scheme_ids": ["C23"]},
     )
     result = next(payload for name, payload in parse_events(analyzed.content) if name == "result")
     thread_id = result["thread_id"]
@@ -368,7 +368,7 @@ def test_submission_tool_failure_reports_uncertain_outcome(monkeypatch):
     client = authenticated_client(create_api(DemoService()))
     analyzed = client.post(
         "/api/analyze",
-        json={"citizen": {"is_woman_or_girl": True}, "scheme_ids": ["C23"]},
+        json={"citizen": {"is_woman_or_girl": True, "state_of_residence": "Assam"}, "scheme_ids": ["C23"]},
     )
     result = next(payload for name, payload in parse_events(analyzed.content) if name == "result")
     response = client.post(

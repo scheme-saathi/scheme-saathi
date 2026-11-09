@@ -70,21 +70,28 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "work_has_proven_impact_supported_by_head",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "reviewed"
     },
     {
       "field": "has_clean_service_record_last_5_years",
       "op": "eq",
       "value": true,
       "clause_id": "elig-6",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lt",
       "value": 60,
       "clause_id": "elig-9",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"
