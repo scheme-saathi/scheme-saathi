@@ -5,7 +5,8 @@ Prometheus scrapes the numbers from the API's `/metrics`, Grafana reads them fro
 LangSmith holds one trace per run. This page covers setup, every metric, and queries ready for panels.
 No dashboards are shipped: the data is here so they can be built.
 
-Nothing is recorded unless `OBSERVABILITY_ENABLED=true`.
+Nothing is recorded unless `OBSERVABILITY_ENABLED=true`. For how the pieces fit together and what is and is not
+traced, see [observability-architecture.md](./observability-architecture.md).
 
 ## What a run is
 
