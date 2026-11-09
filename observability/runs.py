@@ -15,6 +15,7 @@ import logging
 import re
 import threading
 import time
+import weakref
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -381,7 +382,14 @@ class RunRecorder:
         """
         if not self.active:
             return events
-        return self._watch(iter(events))
+        stream = self._watch(iter(events))
+        # A client that leaves before the stream starts never runs its body, so closing it ends nothing.
+        # Finishing when the stream is discarded keeps runs_in_progress from staying one too high.
+        weakref.finalize(stream, self._abandoned).atexit = False
+        return stream
+
+    def _abandoned(self) -> None:
+        self.finish(None if self._record.outcome else "cancelled")
 
     def _watch(self, iterator: Iterator[tuple[str, Any]]) -> Iterator[tuple[str, Any]]:
         first = True

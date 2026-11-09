@@ -326,13 +326,13 @@ Off by default. Set `OBSERVABILITY_ENABLED=true` and a long random `METRICS_BEAR
 no token set, `/metrics` refuses everyone (503). The Streamlit app serves it from the API it starts
 (`127.0.0.1:8766` by default).
 
-Stage 1 records `scheme_saathi_http_requests_total` (method, route template, status class),
+Every request is recorded as `scheme_saathi_http_requests_total` (method, route template, status class),
 `scheme_saathi_http_request_duration_seconds`, `scheme_saathi_http_requests_in_progress`,
 `scheme_saathi_http_exceptions_total` (route, exception type only) and `scheme_saathi_build_info`,
 plus the standard Python process metrics. Requests that match no route are one `unmatched` series.
 A streamed response is timed to its end.
 
-Stage 2 records one **run** per workflow invocation, with `kind` one of `chat_turn`, `chat_decision`,
+Each workflow invocation is one **run**, with `kind` one of `chat_turn`, `chat_decision`,
 `application_start`, `application_decision` or `legacy_chat`:
 
 | Metric | Labels | What it answers |
@@ -358,7 +358,7 @@ unless its result had already been sent. Tracing is described below. For the Pro
 setup (`observability/deploy/`), every metric and ready-made queries, see
 [docs/observability.md](docs/observability.md).
 
-Stage 3 records every model call, by `role` (`supervisor`, `specialist`, `router`) and `model` (the
+Every model call is recorded, by `role` (`supervisor`, `specialist`, `router`) and `model` (the
 ID from your environment):
 
 | Metric | Labels | What it answers |

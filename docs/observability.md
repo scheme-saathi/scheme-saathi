@@ -217,6 +217,22 @@ and the traces share the same `kind`, `outcome`, model, token and cost values, s
 dashboard can be traced to the runs behind it. Traces are metadata only; leave `LANGSMITH_TRACING` and
 `LANGCHAIN_TRACING_V2` unset.
 
+## Hardening
+
+- **Labels are closed.** The run kind and outcome, tool outcome and error code, approval action and result, memory
+  operation and result, and thread expiry kind and reason each come from a fixed list (`observability/runs.py` and
+  `observability/hooks.py`). Any other value is recorded as `other`, so a call site that passes an identifier or text
+  by mistake adds one `other` series, not one per value. Tool server and tool names are `unknown` unless allow-listed
+  (`graph/tools.py`), and model IDs are cut to 80 plain characters. If `other` appears on a panel, a new value
+  needs adding to a list.
+- **An abandoned stream is closed out.** A client that leaves before or during a stream ends its run as `cancelled`
+  (or with the outcome it had already reported), so `runs_in_progress` does not drift upwards.
+- **Tracing cannot slow or break a request.** Traces are sent from a background thread through a queue of 200. A
+  backend that never answers fills the queue, and further traces are dropped and counted in `traces_total`.
+- **Overhead.** On a development machine, recording one run with five tool and model calls takes about 0.3 ms with
+  metrics on and under 1 ms with tracing on, against model calls that take hundreds of milliseconds. Measured with a
+  throwaway script, so treat it as a rough guide.
+
 ## Known limits
 
 - **Cost depends on a price source.** `observability/model_prices.json` ships empty. A call is priced from
@@ -225,6 +241,5 @@ dashboard can be traced to the runs behind it. Traces are metadata only; leave `
 - **Failed calls cost nothing here.** A model call that fails is counted and timed but has no cost.
 - **Single process.** Metrics are held in memory and reset on restart; Prometheus handles counter resets.
   Running several API workers would need Prometheus multiprocess mode, which is not set up.
-- **A stream the client abandons before it starts** can leave `runs_in_progress` one too high until restart.
 - **The Compose stack has not been started** on the machine this was written on. Check `docker compose config`
   and the Targets page after the first run.

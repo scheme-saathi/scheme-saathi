@@ -39,8 +39,14 @@ def number(value: Any) -> float | None:
     return float(value) if math.isfinite(value) and value >= 0 else None
 
 
+_dotenv_loaded = False
+
+
 def prices_path() -> Path:
-    load_dotenv()
+    global _dotenv_loaded
+    if not _dotenv_loaded:  # reading .env on every priced call would cost milliseconds each time
+        load_dotenv()
+        _dotenv_loaded = True
     configured = os.environ.get(PRICES_FILE_ENV, "").strip()
     return Path(configured).expanduser() if configured else DEFAULT_FILE
 

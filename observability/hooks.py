@@ -12,9 +12,27 @@ from observability.metrics import active_metrics
 from observability.runs import current_run, error_type, outcome_for_exception
 from observability.tracing import Span
 
+# The values the app reports, by label. A value outside a set is recorded as "other", so a call site that
+# passes an identifier or free text by mistake cannot add a series per value.
+TOOL_OUTCOMES = frozenset({"success", "error", "denied"})
+TOOL_ERROR_CODES = frozenset({"tool_error", "transport_error", "authorization_denied", "budget_exceeded"})
+APPROVAL_ACTIONS = frozenset({"approve", "edit", "reject", "invalid"})
+APPROVAL_RESULTS = frozenset({"accepted", "rejected", "invalid"})
+MEMORY_OPERATIONS = frozenset({"load", "save", "reference", "consent_granted", "consent_withdrawn", "forget"})
+MEMORY_RESULTS = frozenset({"hit", "miss", "saved", "skipped", "changed", "unchanged", "partial", "success", "error"})
+EXPIRED_KINDS = frozenset({"agent", "chat_session", "application"})
+EXPIRED_REASONS = frozenset({"cleanup", "on_use"})
+
+
+def bounded(value: object, allowed: frozenset[str]) -> str:
+    return value if isinstance(value, str) and value in allowed else "other"
+
 
 def record_tool_call(server: str, tool: str, outcome: str, duration_seconds: float, error_code: str = "") -> None:
     """One tool call (an MCP server tool). It also counts toward the run it was made in."""
+    outcome = bounded(outcome, TOOL_OUTCOMES)
+    if error_code:
+        error_code = bounded(error_code, TOOL_ERROR_CODES)
     run = current_run()
     if run is not None:
         run.add_tool_call(failed=outcome != "success")
@@ -43,21 +61,27 @@ def record_approval(action: str, result: str) -> None:
     """An approval decision on an application form: approve, edit, reject or invalid, and how it ended."""
     metrics = active_metrics()
     if metrics is not None:
-        metrics.approvals.labels(action=action, result=result).inc()
+        metrics.approvals.labels(
+            action=bounded(action, APPROVAL_ACTIONS), result=bounded(result, APPROVAL_RESULTS)
+        ).inc()
 
 
 def record_memory_operation(operation: str, result: str) -> None:
     """A long-term memory operation: load, save, reference, consent or forget, and how it ended."""
     metrics = active_metrics()
     if metrics is not None:
-        metrics.memory_operations.labels(operation=operation, result=result).inc()
+        metrics.memory_operations.labels(
+            operation=bounded(operation, MEMORY_OPERATIONS), result=bounded(result, MEMORY_RESULTS)
+        ).inc()
 
 
 def record_thread_expired(kind: str, reason: str, count: int = 1) -> None:
     """Workflow threads or chat sessions that expired; `reason` is "cleanup" (the timer) or "on_use"."""
     metrics = active_metrics()
     if metrics is not None and count > 0:
-        metrics.threads_expired.labels(kind=kind, reason=reason).inc(count)
+        metrics.threads_expired.labels(
+            kind=bounded(kind, EXPIRED_KINDS), reason=bounded(reason, EXPIRED_REASONS)
+        ).inc(count)
 
 
 def note_run_error(error: BaseException) -> None:

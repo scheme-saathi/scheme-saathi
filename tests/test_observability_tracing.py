@@ -124,7 +124,7 @@ def test_no_prompt_reply_or_error_message_reaches_the_backend(tracer, client):
     with pytest.raises(RuntimeError):
         with RunRecorder("chat_turn"):
             record_llm_call("specialist", "vendor/model-one", 0.1, error=RuntimeError(PRIVATE))
-            record_tool_call("mock_portal", "submit", "error", 0.1, error_code="rejected")
+            record_tool_call("mock_portal", "submit", "error", 0.1, error_code="tool_error")
             raise RuntimeError(PRIVATE)
     assert tracer.flush()
 
@@ -133,7 +133,7 @@ def test_no_prompt_reply_or_error_message_reaches_the_backend(tracer, client):
         assert text not in sent
     root, *children = posted(client)
     assert root["error"] == "RuntimeError" and root["outputs"] == {} and root["inputs"] == {}
-    assert {c["error"] for c in children} == {"RuntimeError", "rejected"}
+    assert {c["error"] for c in children} == {"RuntimeError", "tool_error"}
 
 
 def test_the_client_drops_inputs_and_every_output_but_token_usage(monkeypatch):
