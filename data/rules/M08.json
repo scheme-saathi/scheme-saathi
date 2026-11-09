@@ -123,13 +123,25 @@
           "clause_id": "elig-8"
         },
         {
-          "field": "area_type",
-          "op": "in",
-          "value": [
-            "municipal council area",
-            "municipal corporation"
-          ],
+          "field": "lives_in_urban_area",
+          "op": "eq",
+          "value": true,
           "clause_id": "elig-8"
+        }
+      ]
+    },
+    {
+      "field": "is_agricultural_project_loan",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-6",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "has_7_12_extract_in_own_joint_or_husbands_name",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-6"
         }
       ]
     }

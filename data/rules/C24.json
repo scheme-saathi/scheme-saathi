@@ -108,6 +108,20 @@
       "value": false,
       "clause_id": "elig-4",
       "status": "reviewed"
+    },
+    {
+      "field": "has_mentor_with_regular_position_and_phd_in_science_or_engineering",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "mentor_current_npdf_fellows",
+      "op": "lte",
+      "value": 1,
+      "clause_id": "elig-6",
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

@@ -120,12 +120,9 @@
           "clause_id": "elig-7"
         },
         {
-          "field": "area_type",
-          "op": "in",
-          "value": [
-            "municipal council area",
-            "municipal corporation"
-          ],
+          "field": "lives_in_urban_area",
+          "op": "eq",
+          "value": true,
           "clause_id": "elig-7"
         }
       ]

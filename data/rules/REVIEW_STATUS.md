@@ -53,6 +53,14 @@ Sharika kept the Step 5 rules and added what Snehal found on `fix/rule-phase` (h
 - **Gold labels (Step 6 relabel):** C23 F01a–c become not eligible (Pune is outside the pilot); F17a, F17b, F17e, F18a–d and F20a become can't tell (no state given). M13 profiles F13a, F13d and F14c say PM-KISAN beneficiary: yes, and F14c holds farmland in Maharashtra: yes, so their labels stay eligible. F18b and F18c no longer say the person is a woman. The labels came from Sharika's reading of the source; the engine agrees on every verdict afterwards.
 - **Not added:** M08's land extract (Step 5 F3); C21, C22 and C28 questions his branch leaves open; renames across schemes (one income field, bank field, per-scheme "already got it" fields); skipping organisation schemes in intake; C03's family renames (its text is about the person, Step 4 E5).
 
+## PR #67 review (Saurabh, 9 Nov 2026)
+
+Two conditions were added because a verdict of "eligible" overstated what the rules checked; both give "can't tell" until the person answers:
+
+- **M08 (elig-6):** the 7/12 land extract (own, joint with husband, or husband's name) is needed for agricultural project loans only: not an agricultural loan, OR has the extract. This replaces Step 5 decision F3.
+- **C24 (elig-5, elig-6) and C26 (elig-5, elig-6):** the mentor's conditions. C24: a mentor with a regular position and a PhD in science or engineering, who has at most one NPDF fellow now (a mentor may not have more than two). C26: a mentor at Associate Professor / Scientist E level or higher, with no other TARE candidate.
+- **M08 and M09:** the NSFDC limit is "rural" or "urban" in the source, so the urban limit now asks `lives_in_urban_area` instead of matching two municipality names; an answer of "urban" was refused before. M12 keeps its three area types, which its source names.
+
 ## Adding a new AI-drafted rule set
 
 Keep its rules `draft` and list it in `AI_DRAFTED_IDS` in `tests/test_scheme_gold_set.py`. To make it live, check every rule against its cited sentence, as in Steps 1, 4 and 5: the clause, field, operator and value, the `all`/`any` logic, any `or_conditions`, and the boundary cases. Then set its rules' status to `reviewed` and move it to `AI_DRAFTED_REVIEWED_IDS`.

@@ -110,6 +110,20 @@
           "value": true
         }
       ]
+    },
+    {
+      "field": "has_mentor_at_associate_professor_or_scientist_e_level",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "mentor_has_another_tare_candidate",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-6",
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

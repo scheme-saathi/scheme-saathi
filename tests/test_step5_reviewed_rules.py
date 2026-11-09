@@ -22,12 +22,16 @@ BASE = {
     "C16": {"social_category": "OBC", "admitted_abroad_masters_mphil_or_phd": True,
             "has_iba_education_loan_from_scheduled_bank": True, "annual_family_income": 600000},
     "C24": {"is_indian_citizen": True, "has_phd_md_ms_or_thesis_submitted": True, "age": 33,
-            "has_availed_npdf_before": False},
+            "has_availed_npdf_before": False,
+            "has_mentor_with_regular_position_and_phd_in_science_or_engineering": True,
+            "mentor_current_npdf_fellows": 1},
     "C25": {"is_woman_or_girl": True, "widushi_employment": B, "has_phd_in_basic_or_applied_sciences": True,
             "was_pi_of_at_least_2_rd_projects": True, "research_publications_with_impact_factor": 12, "age": 50},
     "C26": {"is_indian_citizen": True, "has_phd_in_science_engineering_or_ms_md": True,
             "holds_regular_position_in_state_university_college_or_private_institution": True,
-            "has_ongoing_research_project_or_fellowship": False, "age": 40},
+            "has_ongoing_research_project_or_fellowship": False, "age": 40,
+            "has_mentor_at_associate_professor_or_scientist_e_level": True,
+            "mentor_has_another_tare_candidate": False},
     "C27": {"religion": "Jain", "age": 30},
     "C31": {"has_significant_contribution_to_art_or_letters": True,
             "applicant_and_spouse_annual_income_excluding_artist_pension": 40000, "age": 70,
@@ -45,6 +49,7 @@ BASE = {
             "availed_other_scheme_same_purpose": False},
 }
 BASE["M09"] = {k: v for k, v in BASE["M08"].items()}
+BASE["M08"]["is_agricultural_project_loan"] = False  # elig-6's land extract is for agricultural loans
 
 
 def verdict(scheme_id, **changes):
@@ -133,10 +138,10 @@ def test_m12_income_limit_depends_on_the_area(area, limit):
 ])
 def test_bpl_or_the_nsfdc_income_limit(scheme_id, rural_ok, rural_no, urban_ok, urban_no):
     not_bpl = {"household_below_bpl": False}
-    assert verdict(scheme_id, **not_bpl, area_type="rural", annual_income=rural_ok) == "eligible"
-    assert verdict(scheme_id, **not_bpl, area_type="rural", annual_income=rural_no) == "not_eligible"
-    assert verdict(scheme_id, **not_bpl, area_type="municipal corporation", annual_income=urban_ok) == "eligible"
-    assert verdict(scheme_id, **not_bpl, area_type="municipal corporation", annual_income=urban_no) == "not_eligible"
+    assert verdict(scheme_id, **not_bpl, lives_in_urban_area=False, annual_income=rural_ok) == "eligible"
+    assert verdict(scheme_id, **not_bpl, lives_in_urban_area=False, annual_income=rural_no) == "not_eligible"
+    assert verdict(scheme_id, **not_bpl, lives_in_urban_area=True, annual_income=urban_ok) == "eligible"
+    assert verdict(scheme_id, **not_bpl, lives_in_urban_area=True, annual_income=urban_no) == "not_eligible"
     assert verdict(scheme_id, household_below_bpl=True, annual_income=500000) == "eligible"
 
 

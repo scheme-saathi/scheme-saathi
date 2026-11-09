@@ -93,6 +93,14 @@ _NONE_OF_LIST = re.compile(
     r"\b(?:none|neither|not an?\s|not any|don't fall|do not fall|doesn't fall|does not fall)\b"
     r"|कोई नहीं|इनमें से कोई|यापैकी कोणी|यापैकी नाही|काहीही नाही"
 )
+# A reply with doubt or a second clause is not a plain answer: "No, I am not sure",
+# "I am not a farmer but I am a tenant farmer". Those go to the model (PR #67 review).
+_UNSURE = re.compile(
+    r"\b(?:not sure|unsure|don'?t know|do not know|no idea|not certain|maybe|perhaps|probably|i think|"
+    r"i guess|pata nahi|pata nahin|malum nahi|maloom nahi)\b"
+    r"|पता नहीं|मालूम नहीं|शायद|माहित नाही|माहीत नाही|कदाचित|बहुतेक"
+)
+_SECOND_CLAUSE = re.compile(r"\b(?:but|however|except|although|though|only if)\b|लेकिन|पर |पण |परंतु|मगर")
 
 
 def direct_answer(reply: str, spec: dict[str, Any] | None) -> Any:
@@ -101,11 +109,17 @@ def direct_answer(reply: str, spec: dict[str, Any] | None) -> Any:
     For a yes/no field, a reply that starts with yes or no ("No.", "No, she is not remarried",
     "नाही") is that answer; questions are always asked about the field as named. For a field
     with listed values, "none of these" / "I am not a farmer" / a plain "No" becomes
-    NONE_OF_THESE, which matches no listed value. Anything else is left to the model.
+    NONE_OF_THESE, which matches no listed value. Only plain answers count: a reply that shows
+    doubt, adds a second clause ("but ...") or names one of the listed values is left to the
+    model, which can read it or mark it unanswered so the question is asked again.
     """
     if not spec:
         return None
     text = reply.strip().lower()
+    if _UNSURE.search(text) or _SECOND_CLAUSE.search(text):
+        return None
+    if any(value.lower() in text for value in spec.get("known_values") or []):
+        return None
     first = re.split(r"[\s,.!?।]+", text, maxsplit=1)[0] if text else ""
     if spec.get("type") == "bool":
         if first in _YES:
