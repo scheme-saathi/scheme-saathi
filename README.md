@@ -254,9 +254,10 @@ Build the image from the project root:
 docker build -t scheme-saathi .
 ```
 
-Run the UI on <http://localhost:8501>. If using model-backed features, provide
-your local `.env` file at runtime; it is not copied into the image. Uploaded
-documents are stored in a named Docker volume:
+The approved ChromaDB database in `data/chroma` is included in the image. Run
+the UI on <http://localhost:8501>. Provide your local `.env` file at runtime;
+it is not copied into the image. Uploaded documents are stored in a named
+Docker volume:
 
 ```bash
 docker run --rm -p 8501:8501 --env-file .env -v scheme-saathi-documents:/app/data/private_documents scheme-saathi

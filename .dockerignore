@@ -17,3 +17,5 @@ data/extracted/
 data/evaluation-runs/
 tmp*/
 dist/
+!data/chroma/
+!data/chroma/**
