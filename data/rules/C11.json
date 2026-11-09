@@ -44,6 +44,7 @@
     "Project report (for the proposed project if term funding is required) containing details of the machinery to be acquired, from whom to be acquired, price, names of suppliers, financial details like capacity of machines, capacity of utilization assumed, production, sales, projected profit and loss and balance sheets for the tenor of the loan, the details of labour, staff to be hired, basis of assumption of such financial details etc.",
     "Manufacturing process if applicable, major profile of executives in the company, any tie-ups, details about raw material used and their suppliers, details about the buyers, details about major-competitors and the company’s strength and weaknesses as compared to their competitors etc."
   ],
+  "applicant_type": "mixed",
   "rules": [
     {
       "field": "is_starting_greenfield_enterprise",

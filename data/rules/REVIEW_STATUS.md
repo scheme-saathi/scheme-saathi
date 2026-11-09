@@ -32,7 +32,7 @@ C03, C13, C14, C23, C29, M01, M13, M16, M18, M19, M20. Each changed or added rul
 - **C23:** limited to the pilot states and UTs: Assam, Jammu and Kashmir, Bihar, Karnataka, Andaman and Nicobar Islands (details-1).
 - **C14:** the farmer must cultivate the insured land (`farmer_applicant_category`, elig-4). "Notified crop" and "notified area" are two questions.
 - **C13:** the three categories are one rule with alternatives, and `rule_logic` is `all`.
-- **M18:** "meets the Motor Vehicle Act conditions" is now `age ≥ 18` and `is_medically_fit_to_drive`.
+- **M18:** "meets the Motor Vehicle Act conditions" is now `age ≥ 18` and `is_medically_fit_to_drive`. Its categories follow F2: "VJNT" is now VJ-A, NT-B, NT-C and NT-D (gold case F19c uses VJ-A for "VJNT").
 - **M20:** PHH ration cards count as category A.
 - **M16:** the board field is spelled `registered_with_mbocww_board`, as in M20.
 
@@ -40,7 +40,7 @@ The reviewer should check two interpretations in particular. Is the M13 requirem
 
 **Gold set.** Profiles were updated for the renamed and split fields. These labels need a person to look at them again, because the new rules need facts the cases don't state: M13 in F13a, F13d and F14c (`is_pm_kisan_beneficiary`); C23 in F17a, F17b, F17e, F18a–d and F20a (`state_of_residence`); C23 in F01a–c (the mother lives in Pune, so she is outside the pilot states). `test_c0_fixed_workflow_matches_gold_on_development` is marked as an expected failure until then.
 
-**Not done in Phase 1, waiting on a decision:** C30 (F1), C02 age 70 and age nearer birthday (F7, Phase 3.5), C06 widows aged 80+, C19 Bal Vatika and the "local body" school type, M18's VJ-A and NT-B/C/D values (F2), M01 citations per category (Phase 3.3), and the Maharashtra-farmland rule for M13 (no source sentence says it).
+**Not done in Phase 1, waiting on a decision:** C30 (F1), C02 age 70 and age nearer birthday (F7, Phase 3.5), C06 widows aged 80+, C19 Bal Vatika and the "local body" school type, M01 citations per category (the engine now supports it), and the Maharashtra-farmland rule for M13 (no source sentence says it).
 
 ## Draft: 27 schemes, AI-drafted and not yet checked by a person
 
@@ -61,3 +61,11 @@ Decided by Snehal Patel. They set the rules for Phases 1–4; they are not revie
 - **F5. "A family member already got this scheme."** Each scheme gets its own field (for example `family_member_already_got_ramai_awas`), so an answer about one scheme never decides another. This replaces `family_member_already_beneficiary` in C10, M12 and M14.
 - **F6. Age relaxation.** Always two rules: `age ≤ max + 5`, and `age ≤ max` OR the person is in a relaxed group. No engine change. Affects C24, C26, M14.
 - **F7. Source conflicts.** None of the 12 open questions in the plan's last table is fixed from myScheme alone. The rule fix that depends on each one waits until a person has read the official guideline and recorded the answer here.
+
+## Engine and intake changes (Phase 3 of `docs/rule-fix-plan.md`, 9 Nov 2026)
+
+- **`applicant_type`** (F1) is an optional key of a rule file, `individual` by default.
+- **Shared values** (F2): `data/field_values.json` holds the one spelling of `social_category`, `area_type` and `residence_area_type`. A rule file that uses another value fails to load, and intake offers the whole list as choices.
+- **Citations:** a rule that passes through one alternative cites only that alternative's clause. A failing or undecided rule still cites every clause it tried.
+- **Income period:** only number fields are asked "per month" or "per year". Yes/no tax questions no longer are. Under F3 the name-based period still covers every income field.
+- **Ages from the date of birth:** `age_nearer_birthday` and `age_in_months` (for a 17.5-year minimum) are worked out from `date_of_birth` (YYYY-MM-DD), as is `age` when it isn't stated. Intake asks for the date of birth instead of those fields, and asks the field itself only if the person can't give the date. C15's "age at admission" needs the admission date and is left to its Phase 2 fix.

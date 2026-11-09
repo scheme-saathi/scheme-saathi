@@ -17,6 +17,7 @@ from typing import Any
 
 from fastmcp import Client
 
+from servers.rule_engine.ages import DOB_DERIVED
 from servers.mock_portal.authorization import (
     CapabilityError,
     application_payload_hash,
@@ -323,11 +324,16 @@ def next_question(verdicts: dict[str, dict], declined: Collection[str] = ()) -> 
     ``verdicts`` maps scheme IDs to rule-engine evaluations, as the eligibility step writes them.
     Only cant_tell verdicts count: a decided scheme can't be changed by another answer.
     Ties go to the alphabetically first field, as the rule engine sorts unresolved fields.
+    Ages that need more than whole years (``DOB_DERIVED``) are asked as ``date_of_birth``;
+    if that was declined (many people don't know it), the age field itself is asked.
     """
+    ask_dob = "date_of_birth" not in declined
     counts: dict[str, int] = {}
     for evaluation in verdicts.values():
         if evaluation["verdict"] == "cant_tell":
-            for field in evaluation["unresolved_fields"]:
+            for field in dict.fromkeys(
+                "date_of_birth" if ask_dob and f in DOB_DERIVED else f for f in evaluation["unresolved_fields"]
+            ):
                 if field not in declined:
                     counts[field] = counts.get(field, 0) + 1
     return max(counts, key=counts.get, default=None)

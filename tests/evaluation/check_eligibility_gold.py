@@ -19,13 +19,13 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from servers.rule_engine.rules import evaluate  # noqa: E402
-from servers.rule_engine.scheme import SchemeRecord, live_conditions  # noqa: E402
+from servers.rule_engine.scheme import SHARED_VALUES, SchemeRecord, live_conditions  # noqa: E402
 
 GOLD_DIR = ROOT / "tests" / "evaluation" / "eligibility_gold_v1"
 SPLITS = ("development", "held_out")
 VERDICTS = {"eligible", "not_eligible", "cant_tell"}
 ALLOWED_VALUES = {
-    "social_category": {"VJNT", "OBC", "SBC", "SC", "ST", "General"},
+    **{field: set(values) for field, values in SHARED_VALUES.items()},
     "farmer_applicant_category": {
         "individual owner cultivator", "joint borrower owner cultivator", "tenant farmer",
         "oral lessee", "sharecropper", "farmer self-help group",

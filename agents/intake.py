@@ -59,7 +59,7 @@ it (social_category is "social (caste) category", not just "category").
 For a bool field, ask a yes/no question. For a number field, ask for one number and name its
 unit (years, rupees, people). For a str field, never ask a yes/no question: when
 known_values are given, list them as the choices in plain words and let the person say
-another answer. When period is given, ask for the amount per that
+another answer. For a date field, ask for the full date: day, month and year. When period is given, ask for the amount per that
 period ("per month" or "per year") and say so in the question. Do not mention eligibility, schemes or
 rules, and never ask for Aadhaar, bank-account numbers or other sensitive
 identifiers."""
@@ -82,7 +82,9 @@ occupation, age, gender, family, need). known_facts holds what the person has al
 (field: value); use it together with the request. Return only ids from the list, best fit first, at most
 8. Return an empty list when none fit. You never decide eligibility; rules do that later."""
 
-_FIELD_TYPES = {"number": int | float, "bool": bool, "str": str}
+_FIELD_TYPES = {"number": int | float, "bool": bool, "str": str,
+                # The rule engine works ages out of this date, so it must be a real ISO date.
+                "date": Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$")]}
 
 # A forced choice with examples: as a plain dont_know flag, the model set it for "hmm" and "hello".
 ReplyKind = Annotated[
@@ -134,6 +136,8 @@ def profile_model(specs: dict[str, dict[str, Any]]) -> type[BaseModel]:
     fields = {}
     for name, spec in specs.items():
         hint = f" Known values: {', '.join(spec['known_values'])}." if spec.get("known_values") else ""
+        if spec["type"] == "date":
+            hint = " Write it as YYYY-MM-DD; leave it empty if the day, month or year is missing."
         kind = Amount if spec["type"] == "number" and income_period(name) else _FIELD_TYPES[spec["type"]]
         fields[name] = (kind | None, Field(None, description=f"{spec['type']}.{hint}"))
     return create_model("HouseholdProfile", __config__=ConfigDict(extra="forbid", strict=True), **fields)

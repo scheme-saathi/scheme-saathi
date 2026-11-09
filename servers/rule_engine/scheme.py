@@ -1,8 +1,19 @@
 """Validated, clause-linked rule records used by the eligibility evaluator."""
 
+import json
+from pathlib import Path
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+# Text fields shared across schemes have one list of values (decision F2), so rules agree on spelling.
+SHARED_VALUES: dict[str, list[str]] = {
+    field: values
+    for field, values in json.loads(
+        (Path(__file__).resolve().parents[2] / "data" / "field_values.json").read_text(encoding="utf-8")
+    ).items()
+    if not field.startswith("_")
+}
 
 
 class Record(BaseModel):
@@ -83,6 +94,8 @@ class SchemeRecord(Record):
     # Flat rule lists are combined using one connective. Mixed/nested expressions
     # can be added when a reviewed scheme actually requires them.
     rule_logic: Literal["all", "any"] = "all"
+    # Decision F1: schemes for organisations are left out of the citizen scheme list.
+    applicant_type: Literal["individual", "institution", "mixed"] = "individual"
 
     @model_validator(mode="after")
     def validate_clause_references(self) -> "SchemeRecord":
@@ -94,6 +107,10 @@ class SchemeRecord(Record):
             for condition in rule.conditions():
                 if condition.clause_id not in known_clauses:
                     raise ValueError(f"rule references unknown clause_id: {condition.clause_id}")
+                allowed = SHARED_VALUES.get(condition.field)
+                values = condition.value if isinstance(condition.value, list) else [condition.value]
+                if allowed is not None and not set(values) <= set(allowed):
+                    raise ValueError(f"{condition.field} values must come from data/field_values.json: {values}")
         return self
 
 

@@ -64,6 +64,7 @@
     "Documents (papers, patents, etc.)",
     "Clean record certificate"
   ],
+  "applicant_type": "institution",
   "rules": [
     {
       "field": "is_agricultural_scientist_in_icar_or_public_institution",

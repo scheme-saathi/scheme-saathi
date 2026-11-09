@@ -20,6 +20,7 @@
     "BPL certificate (if applicable)",
     "Project proposal or work-shed details (if required)"
   ],
+  "applicant_type": "mixed",
   "rules": [
     {"field": "is_khadi_registered", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-2", "status": "reviewed"},

@@ -30,7 +30,7 @@
   ],
   "rule_logic": "all",
   "rules": [
-    {"field": "social_category", "op": "in", "value": ["VJNT", "OBC", "SBC"], "clause_id": "elig-1", "status": "reviewed"},
+    {"field": "social_category", "op": "in", "value": ["VJ-A", "NT-B", "NT-C", "NT-D", "OBC", "SBC"], "clause_id": "elig-1", "status": "draft"},
     {"field": "age", "op": "gte", "value": 18, "clause_id": "elig-2", "status": "draft"},
     {"field": "is_medically_fit_to_drive", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"}
   ]

@@ -154,6 +154,7 @@
     "Affirmative Statement Regarding Implementation of Expenditure, Audit and Tender (EAT) Module and Opening of Corresponding Code (For State Government Proposals).",
     "Confirmations of the Compliance of Instructions Issued By Public Financial Management System (PFMS) Division (For State Government Proposals)."
   ],
+  "applicant_type": "institution",
   "rules": [
     {
       "field": "age",

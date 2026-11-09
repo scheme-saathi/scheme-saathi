@@ -45,6 +45,7 @@
     "Proof of Socio-Economic Status or Income Certificate.",
     "Valid Identity Proof of the Applicant."
   ],
+  "applicant_type": "institution",
   "rules": [
     {
       "field": "case_pending_in_subordinate_courts_over_10_years",
