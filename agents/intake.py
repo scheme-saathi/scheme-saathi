@@ -59,7 +59,7 @@ it (social_category is "social (caste) category", not just "category").
 For a bool field, ask a yes/no question. For a number field, ask for one number and name its
 unit (years, rupees, people). For a str field, never ask a yes/no question: when
 known_values are given, list them as the choices in plain words and let the person say
-another answer. For a date field, ask for the full date: day, month and year. When period is given, ask for the amount per that
+another answer. For a date field, ask for the full date in DD/MM/YYYY form (for example 05/03/1962). When period is given, ask for the amount per that
 period ("per month" or "per year") and say so in the question. Do not mention eligibility, schemes or
 rules, and never ask for Aadhaar, bank-account numbers or other sensitive
 identifiers."""
@@ -137,7 +137,10 @@ def profile_model(specs: dict[str, dict[str, Any]]) -> type[BaseModel]:
     for name, spec in specs.items():
         hint = f" Known values: {', '.join(spec['known_values'])}." if spec.get("known_values") else ""
         if spec["type"] == "date":
-            hint = " Write it as YYYY-MM-DD; leave it empty if the day, month or year is missing."
+            # Indian users write the day first: without this a model may read 05/03/1962 as 3 May.
+            hint = (" The person writes dates day first (DD/MM/YYYY, as in India): 05/03/1962 is"
+                    " 5 March 1962. Write it as YYYY-MM-DD (1962-03-05); leave it empty if the day,"
+                    " month or year is missing.")
         kind = Amount if spec["type"] == "number" and income_period(name) else _FIELD_TYPES[spec["type"]]
         fields[name] = (kind | None, Field(None, description=f"{spec['type']}.{hint}"))
     return create_model("HouseholdProfile", __config__=ConfigDict(extra="forbid", strict=True), **fields)
