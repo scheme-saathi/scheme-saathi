@@ -77,42 +77,82 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "widushi_employment",
+      "op": "in",
+      "value": [
+        "permanent, retiring within a year or retired from a government institution",
+        "temporary, not a permanent employee"
+      ],
+      "clause_id": "elig-2",
+      "status": "reviewed"
     },
     {
       "field": "has_phd_in_basic_or_applied_sciences",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "was_pi_of_at_least_2_rd_projects",
       "op": "eq",
       "value": true,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "gte",
+      "value": 57,
+      "clause_id": "elig-3",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "widushi_employment",
+          "op": "eq",
+          "value": "temporary, not a permanent employee",
+          "clause_id": "elig-9"
+        }
+      ]
     },
     {
       "field": "research_publications_with_impact_factor",
       "op": "gte",
-      "value": 10,
-      "clause_id": "elig-12",
-      "status": "draft"
+      "value": 20,
+      "clause_id": "elig-6",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "widushi_employment",
+          "op": "eq",
+          "value": "temporary, not a permanent employee",
+          "clause_id": "elig-12"
+        }
+      ]
     },
     {
       "field": "age",
       "op": "gte",
       "value": 45,
       "clause_id": "elig-9",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 62,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "research_publications_with_impact_factor",
+      "op": "gte",
+      "value": 10,
+      "clause_id": "elig-12",
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

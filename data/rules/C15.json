@@ -71,49 +71,56 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_woman_or_girl",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
-      "field": "is_only_girl_child_without_brothers",
+      "field": "is_only_child",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
-      "field": "age",
+      "field": "age_at_pg_admission",
       "op": "lte",
       "value": 30,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "admitted_full_time_first_year_masters",
       "op": "eq",
       "value": true,
       "clause_id": "elig-6",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "course_is_non_professional",
       "op": "eq",
       "value": true,
       "clause_id": "elig-7",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "studies_through_distance_education",
       "op": "eq",
       "value": false,
       "clause_id": "elig-8",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "institution_is_unfunded_deemed_university",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-2",
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

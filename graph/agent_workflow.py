@@ -475,7 +475,8 @@ def _eligibility_node(
     explanations = {}
     if not state.get("selected_scheme_id") and not _unconfirmed(state):
         explanations = {
-            s: agents.eligibility.invoke(EligibilityInput(scheme_id=s, evaluation=v)).explanation
+            s: tools.with_closed_note(
+                s, agents.eligibility.invoke(EligibilityInput(scheme_id=s, evaluation=v)).explanation)
             for s, v in verdicts.items()
         }
     return {"verdicts": verdicts, "explanations": explanations, **_selected_scheme_eligibility(agents, state)}
@@ -527,17 +528,26 @@ def _selected_scheme_eligibility(
     return {
         "eligibility": {
             **evaluation_data,
-            "explanation": narrative.explanation,
+            "explanation": tools.with_closed_note(scheme_id, narrative.explanation),
             "clarifying_questions": narrative.clarifying_questions,
         },
     }
 
 
+def _at_question_cap(state: AgentWorkflowState) -> bool:
+    """This intake has asked its maximum (an older thread may carry the stop flag instead)."""
+    return state.get("intake_stopped") == "question_cap" or state.get("questions_asked", 0) >= MAX_QUESTIONS
+
+
 def _route_after_eligibility(state: AgentWorkflowState) -> str:
-    # Still open: ask the next question, or, once intake has stopped, say what is missing.
-    # Once nothing left to ask can change a verdict, the open ones become a final "can't tell".
-    if _open_fields(state) and (
-        state.get("intake_stopped") or tools.next_question(state["verdicts"], _skipped_fields(state))
+    # Still open: ask the next question. At the question cap, or once nothing left to ask can
+    # change a verdict, the person confirms the facts given so far and gets every verdict:
+    # the decided ones, and the open ones as a final "can't tell" naming what is missing.
+    # (Stopping at the cap without that left 11 of 21 C2 development cases with no answer.)
+    if (
+        _open_fields(state)
+        and not _at_question_cap(state)
+        and tools.next_question(state["verdicts"], _skipped_fields(state))
     ):
         return "intake_question"
     if _unconfirmed(state):

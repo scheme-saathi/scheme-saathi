@@ -54,42 +54,78 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_charmakar_community",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 18,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 50,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_maharashtra_resident",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_knowledge_of_business_applied_for",
       "op": "eq",
       "value": true,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "household_below_bpl",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-6",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "annual_income",
+          "op": "lt",
+          "value": 120000,
+          "clause_id": "elig-7"
+        }
+      ]
+    },
+    {
+      "field": "household_below_bpl",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-6",
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "annual_income",
+          "op": "lt",
+          "value": 98000,
+          "clause_id": "elig-7"
+        },
+        {
+          "field": "lives_in_urban_area",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-7"
+        }
+      ]
     }
   ],
   "rule_logic": "all"

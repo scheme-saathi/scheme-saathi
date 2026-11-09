@@ -342,7 +342,7 @@ Eligibility: candidate schemes → rule engine → verdicts
     ↓
 A cant_tell verdict that an answer could settle?
     ├─ yes → Intake asks ONE question → the reply goes back to Intake
-    │        ("don't know", or no usable answer twice, skips that fact; 12 questions → stop and list what is missing)
+    │        ("don't know", or no usable answer twice, skips that fact; 12 questions → confirm and answer, open ones as can't tell)
     └─ no  → Confirm step: the person approves, edits or rejects the exact facts
              (verdicts still open only on skipped facts are final "can't tell" answers)
                 ↓
@@ -355,7 +355,8 @@ A cant_tell verdict that an answer could settle?
   (`get_field_specs`). The model gets that schema, and code validates each returned field on
   its own: `"67"` for a number, `"yes"` for a bool or an unknown field is dropped, not stored.
   Candidate schemes are the selected scheme, or else every scheme whose rules are fully
-  reviewed (today only `SYNTH-PENSION-001`, so live mode asks about age, income and widowhood).
+  reviewed (all 49 rule files since the Step 5 review on 9 Nov 2026, plus the test-only
+  `SYNTH-PENSION-001`; see `data/rules/REVIEW_STATUS.md`).
 - **Choosing the question.** `tools.next_question(verdicts, declined)` counts each field in the
   `missing_fields`/`unresolved_fields` of the `cant_tell` verdicts and picks the highest count
   (ties go alphabetically). A field from an already decided scheme is never asked. The model
@@ -368,12 +369,18 @@ A cant_tell verdict that an answer could settle?
   `monthly_income`). Questions ask in the field's own period, so a bare amount answering one is
   read in that period. With no question to anchor it, the amount is rejected and asked again.
   Income fields are recognised by name (a `shortcut:` in `agents/intake.py`).
+- **Plain answers.** When the pending question is yes/no and the reply starts with yes or no
+  (हाँ/नहीं, होय/नाही), code records it, whatever the model read. For a list question,
+  a leading "no" or "none of these" / "I am not a …" is recorded as `none of these`. A reply
+  with doubt ("No, I am not sure"), a second clause ("… but …") or a listed value is left to
+  the model.
 - **Stop rules.** The model classifies each reply as `answer`, `dont_know` or `other`.
   "Don't know" skips that one fact, and so does a field asked twice without a usable answer;
   intake goes on with the questions that can still change a verdict. When none is left, the
   person confirms the facts, and verdicts open only on skipped facts are given as "can't tell"
-  with the missing fact named. At most 12 questions are asked (`MAX_QUESTIONS`); reaching that
-  stops intake and lists what is missing. A reply with no facts at all
+  with the missing fact named. At most 12 questions are asked (`MAX_QUESTIONS`); at that point
+  the person confirms the facts given so far and gets every verdict, the open ones as "can't
+  tell" with the missing facts named. A reply with no facts at all
   goes back to the Supervisor, so a new request ("what documents do I need?") is routed rather
   than the question repeated. A new intake resets these counters.
 - **Confirm step.** Once the verdicts settle, the graph pauses with `interrupt()` and shows the

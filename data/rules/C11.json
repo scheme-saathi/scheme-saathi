@@ -50,28 +50,38 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
-      "field": "is_woman_or_from_sc_st",
+      "field": "is_woman_or_girl",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "social_category",
+          "op": "in",
+          "value": [
+            "SC",
+            "ST"
+          ]
+        }
+      ]
     },
     {
       "field": "age",
       "op": "gte",
       "value": 18,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "is_bank_loan_defaulter",
       "op": "eq",
       "value": false,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"
