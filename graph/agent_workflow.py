@@ -42,6 +42,7 @@ from graph.memory_nodes import (
     save_confirmed,
 )
 from graph.workflow import application_hash
+from observability.hooks import record_memory_operation
 from servers.rule_engine.rules import Evaluation
 
 logger = logging.getLogger(__name__)
@@ -638,7 +639,9 @@ def _memory_load_node(
         remembered = load_remembered(ctx, specs, _facts_so_far(state))
     except Exception:
         logger.warning("Memory could not be read; continuing without it.")
+        record_memory_operation("load", "error")
         return {}
+    record_memory_operation("load", "hit" if remembered else "miss")
     return {
         "memory_loaded": True,
         "subject": "self",
@@ -662,7 +665,9 @@ def _memory_save_node(
         )
     except Exception:
         logger.warning("Memory could not be updated; continuing without it.")
+        record_memory_operation("save", "error")
         return {}
+    record_memory_operation("save", "saved" if saved else "skipped")
     return {"memory_saved": saved, "remembered_facts": held}
 
 
@@ -920,7 +925,9 @@ def _remember_application(
         )
     except Exception:
         logger.warning("The submitted application could not be remembered.")
-        saved = False
+        record_memory_operation("reference", "error")
+        return {"reference_saved": False}
+    record_memory_operation("reference", "saved" if saved else "skipped")
     return {"reference_saved": saved}
 
 

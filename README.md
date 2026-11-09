@@ -330,10 +330,32 @@ Stage 1 records `scheme_saathi_http_requests_total` (method, route template, sta
 `scheme_saathi_http_request_duration_seconds`, `scheme_saathi_http_requests_in_progress`,
 `scheme_saathi_http_exceptions_total` (route, exception type only) and `scheme_saathi_build_info`,
 plus the standard Python process metrics. Requests that match no route are one `unmatched` series.
-A streamed response is timed to its end. Labels come from a fixed allowlist
-(`observability/metrics.py`), so a household, thread, application or user identifier, a fact value
-or an exception message cannot become a label. Run, outcome, model-cost and tool metrics, tracing
-(Langfuse or LangSmith) and the Prometheus and Grafana setup are added in later stages.
+A streamed response is timed to its end.
+
+Stage 2 records one **run** per workflow invocation, with `kind` one of `chat_turn`, `chat_decision`,
+`application_start`, `application_decision` or `legacy_chat`:
+
+| Metric | Labels | What it answers |
+|---|---|---|
+| `scheme_saathi_runs_total` | kind, outcome | How runs ended: `eligibility_checked`, `needs_information`, `awaiting_approval`, `submitted`, `approval_rejected`, `output_blocked`, `answer_not_found`, `cancelled`, `refused`, `not_found`, `conflict`, `tool_error`, `error` and the rest of the closed set in `observability/runs.py`. |
+| `scheme_saathi_run_duration_seconds` | kind | Latency per run. A streamed run is timed to its last event. |
+| `scheme_saathi_run_errors_total` | kind, error_type | Server-side failures only (`error`, `tool_error`, `budget_exceeded`, `storage_error`), by exception class name. A caller's mistake such as a refused or unknown thread is an outcome, not an error. |
+| `scheme_saathi_run_tool_calls` | kind | Tool calls made during one run. |
+| `scheme_saathi_stream_time_to_first_event_seconds` | kind | Time until a streamed run said anything. |
+| `scheme_saathi_runs_in_progress` | kind | Runs started and not finished. |
+| `scheme_saathi_tool_calls_total`, `..._tool_call_duration_seconds`, `..._tool_errors_total` | server, tool, outcome / error_code | The MCP tools (rule engine, schemes knowledge base, document checker, mock portal), fed by the existing `mcp_tool_call` audit event. |
+| `scheme_saathi_approvals_total` | action, result | Approval decisions, fed by the existing `application_approval` audit event. |
+| `scheme_saathi_eligibility_verdicts_total` | verdict | Final `eligible`, `not_eligible` and `cant_tell` verdicts, one per scheme checked, counted only when a check settles. |
+| `scheme_saathi_guardrail_blocks_total` | stage | Input or output the guardrails stopped. |
+| `scheme_saathi_memory_operations_total` | operation, result | Memory load, save, reference, consent and forget operations. |
+| `scheme_saathi_threads_expired_total` | kind, reason | Threads and chat sessions that expired, found by the cleanup timer (`cleanup`) or when used (`on_use`). |
+
+A run, tool call and the rest are recorded only while `OBSERVABILITY_ENABLED` is on. Labels come from
+a fixed allowlist (`observability/metrics.py`), so a household, thread, application or user
+identifier, a fact value or an exception message cannot become a label; a failure is recorded by
+its exception class name only. A stream that the client closes before it finishes is `cancelled`,
+unless its result had already been sent. Model cost and token metrics, tracing (Langfuse or
+LangSmith) and the Prometheus and Grafana setup are added in later stages.
 
 ## Intake agent
 

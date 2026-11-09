@@ -30,11 +30,25 @@ ALLOWED_LABELS = frozenset(
         "error_type",
         "version",
         "tracing_backend",
+        "kind",
+        "outcome",
+        "server",
+        "tool",
+        "error_code",
+        "verdict",
+        "action",
+        "result",
+        "stage",
+        "operation",
+        "reason",
     }
 )
 
 # Seconds. Wide enough for a model call or a streamed workflow, which can take a minute or more.
 LATENCY_BUCKETS = (0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60, 120)
+# A tool call is a local call, so most take milliseconds.
+TOOL_BUCKETS = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10)
+COUNT_BUCKETS = (0, 1, 2, 3, 5, 8, 13, 21, 34, 55)
 
 HTTP_METHODS = frozenset({"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"})
 
@@ -76,6 +90,58 @@ class Metrics:
         build = self._gauge("build_info", "The running version and tracing backend; always 1.", ["version", "tracing_backend"])
         build.labels(version=_version(), tracing_backend="none").set(1)
 
+        # Runs: one workflow invocation (a chat turn, a decision, an application step, a legacy chat turn).
+        self.runs = self._counter(
+            "runs_total", "Finished runs by kind and outcome (see observability.runs.OUTCOMES).", ["kind", "outcome"]
+        )
+        self.run_duration = self._histogram(
+            "run_duration_seconds", "Seconds from a run starting to it finishing, streams included.", ["kind"]
+        )
+        self.runs_in_progress = self._gauge("runs_in_progress", "Runs that have started and not finished.", ["kind"])
+        self.run_errors = self._counter(
+            "run_errors_total",
+            "Runs that ended in a server-side error, by exception type (never its message).",
+            ["kind", "error_type"],
+        )
+        self.run_tool_calls = self._histogram(
+            "run_tool_calls", "Tool calls made during one run.", ["kind"], buckets=COUNT_BUCKETS
+        )
+        self.stream_first_event = self._histogram(
+            "stream_time_to_first_event_seconds", "Seconds until a streamed run sent its first event.", ["kind"]
+        )
+
+        # Tool calls (the MCP servers: rule engine, schemes knowledge base, document checker, mock portal).
+        self.tool_calls = self._counter(
+            "tool_calls_total", "Tool calls by server, tool and outcome.", ["server", "tool", "outcome"]
+        )
+        self.tool_duration = self._histogram(
+            "tool_call_duration_seconds", "Seconds a tool call took.", ["server", "tool"], buckets=TOOL_BUCKETS
+        )
+        self.tool_errors = self._counter(
+            "tool_errors_total", "Failed tool calls by error code.", ["server", "tool", "error_code"]
+        )
+
+        # What the app decided and did.
+        self.approvals = self._counter(
+            "approvals_total", "Application approval decisions by action and result.", ["action", "result"]
+        )
+        self.verdicts = self._counter(
+            "eligibility_verdicts_total",
+            "Final eligibility verdicts (eligible, not_eligible, cant_tell), one per scheme checked.",
+            ["verdict"],
+        )
+        self.guardrail_blocks = self._counter(
+            "guardrail_blocks_total", "Requests or answers the guardrails stopped, by stage (input or output).", ["stage"]
+        )
+        self.memory_operations = self._counter(
+            "memory_operations_total", "Long-term memory operations by operation and result.", ["operation", "result"]
+        )
+        self.threads_expired = self._counter(
+            "threads_expired_total",
+            "Workflow threads and chat sessions that expired, found by the cleanup timer or when used.",
+            ["kind", "reason"],
+        )
+
     def _check(self, labels: Sequence[str]) -> None:
         unknown = set(labels) - ALLOWED_LABELS
         if unknown:
@@ -97,6 +163,7 @@ class Metrics:
 
 
 _metrics: Metrics | None = None
+_active = False
 
 
 def get_metrics() -> Metrics:
@@ -108,6 +175,21 @@ def get_metrics() -> Metrics:
 
 
 def set_metrics(metrics: Metrics | None) -> None:
-    """Replace the app's metrics (tests); None makes the next `get_metrics()` build a fresh set."""
-    global _metrics
+    """Replace the app's metrics (tests); None makes the next `get_metrics()` build a fresh set.
+
+    It also switches recording off, so call `activate()` afterwards to record into them.
+    """
+    global _metrics, _active
     _metrics = metrics
+    _active = False
+
+
+def activate() -> None:
+    """Start recording runs, tool calls and the rest. `install_observability` calls this."""
+    global _active
+    _active = True
+
+
+def active_metrics() -> Metrics | None:
+    """The metrics to record into, or None while observability is off (every hook is then a no-op)."""
+    return get_metrics() if _active else None

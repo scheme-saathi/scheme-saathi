@@ -17,6 +17,7 @@ from typing import Any
 
 from fastmcp import Client
 
+from observability.hooks import record_approval, record_tool_call
 from servers.mock_portal.authorization import (
     CapabilityError,
     application_payload_hash,
@@ -227,9 +228,11 @@ def _audit_tool_call(server: str, tool: str, outcome: str, started_at: float, er
         "duration_ms": round((time.perf_counter() - started_at) * 1000),
     }
     logger.info("mcp_tool_call %s", json.dumps(event, sort_keys=True))
+    record_tool_call(event["server"], event["tool"], outcome, time.perf_counter() - started_at, error_code)
 
 
 def audit_approval_event(action: str, outcome: str, authenticated: bool) -> None:
+    record_approval(action, outcome)
     event = {
         "action": action,
         "outcome": outcome,

@@ -29,6 +29,7 @@ from app.auth import AuthenticatedHousehold, authenticated_household
 from app.memory_runtime import memory_scope
 from graph import tools
 from graph.memory_nodes import NOTICE_VERSION, MemoryContext, save_application_reference
+from observability.hooks import record_memory_operation
 
 logger = logging.getLogger(__name__)
 
@@ -128,6 +129,8 @@ def change_consent(
             detail="Operators record the agreement of the person they help for each application, when it is approved.",
         )
     scope = memory_scope(principal)
+    operation = "consent_granted" if change.granted else "consent_withdrawn"
+    result = "changed"
     try:
         if change.granted:
             if service.active_consent(scope, change.purpose) is None:
@@ -143,6 +146,8 @@ def change_consent(
                         consent_reference=f"consent-{uuid4().hex}",
                     ),
                 )
+            else:
+                result = "unchanged"
         else:
             for _ in range(MAX_WITHDRAWALS):
                 consent = service.active_consent(scope, change.purpose)
@@ -151,7 +156,9 @@ def change_consent(
                 service.withdraw_consent(scope, consent.consent_reference)
     except Exception:
         logger.exception("Could not change the memory consent.")
+        record_memory_operation(operation, "error")
         raise HTTPException(status_code=500, detail="The choice could not be saved.")
+    record_memory_operation(operation, result)
     return {"purposes": _consent_state(service, principal)}
 
 
@@ -333,5 +340,7 @@ def remember_submission(
         )
     except Exception:
         logger.warning("The submitted application could not be remembered.")
-        saved = False
+        record_memory_operation("reference", "error")
+        return {"reference_saved": False}
+    record_memory_operation("reference", "saved" if saved else "skipped")
     return {"reference_saved": saved}
