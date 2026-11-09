@@ -60,42 +60,42 @@
       "op": "gte",
       "value": 18,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 45,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "is_unemployed_or_starting_new_venture",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "has_passed_class_7",
       "op": "eq",
       "value": true,
       "clause_id": "elig-6",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "family_member_already_beneficiary",
       "op": "eq",
       "value": false,
       "clause_id": "excl-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "availed_other_scheme_same_purpose",
       "op": "eq",
       "value": false,
       "clause_id": "excl-2",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

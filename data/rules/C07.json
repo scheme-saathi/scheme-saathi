@@ -70,21 +70,21 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "has_clean_service_record_last_5_years",
       "op": "eq",
       "value": true,
       "clause_id": "elig-6",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "lt",
       "value": 60,
       "clause_id": "elig-9",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

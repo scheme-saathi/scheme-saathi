@@ -59,35 +59,35 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "applicant_and_spouse_annual_income",
       "op": "lte",
       "value": 48000,
       "clause_id": "elig-3",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 60,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "gets_state_artist_pension_or_zcc_recommendation",
       "op": "eq",
       "value": true,
       "clause_id": "elig-5",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "gets_other_ministry_of_culture_assistance",
       "op": "eq",
       "value": false,
       "clause_id": "elig-6",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

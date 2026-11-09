@@ -10,8 +10,9 @@ from graph.workflow import build_graph
 from servers.rule_engine import server as rule_server
 
 ROOT = Path(__file__).resolve().parents[1]
-PMSBY_OK = {"has_bank_account": True, "age": 40, "consents_to_auto_debit": True}
-APY_OK = {"has_savings_account": True, "age": 30, "is_or_was_income_tax_payer": False}
+PMSBY_OK = {"has_bank_account": True, "age": 40, "age_nearer_birthday": 40, "consents_to_auto_debit": True}
+APY_OK = {"has_savings_account": True, "age": 30, "is_or_was_income_tax_payer": False,
+          "consents_to_auto_debit": True}
 
 
 @pytest.fixture
@@ -50,8 +51,10 @@ def test_preview_evaluates_draft_rules_but_never_drafts_or_submits(draft_rule_re
 
 
 def test_preview_rules_for_c02_at_the_age_limits(draft_rule_records):
-    verdict = lambda age: run({**PMSBY_OK, "age": age}, ["C02"], True)["verdicts"]["C02"]["verdict"]
-    assert [verdict(17), verdict(18), verdict(70), verdict(71)] == [
+    # The lower limit uses completed years; the upper limit uses age nearer birthday.
+    verdict = lambda age, nearer: run({**PMSBY_OK, "age": age, "age_nearer_birthday": nearer},
+                                      ["C02"], True)["verdicts"]["C02"]["verdict"]
+    assert [verdict(17, 17), verdict(18, 18), verdict(70, 70), verdict(70, 71)] == [
         "not_eligible", "eligible", "eligible", "not_eligible"]
 
 
@@ -62,7 +65,7 @@ def test_preview_does_not_change_the_stored_rules(draft_rule_records):
 
 def test_preview_intake_asks_only_for_the_rule_fields(draft_rule_records):
     state = run(PMSBY_OK, ["C02"], True)
-    assert set(state["profile"]) == {"has_bank_account", "age", "consents_to_auto_debit"}
+    assert set(state["profile"]) == {"has_bank_account", "age", "age_nearer_birthday", "consents_to_auto_debit"}
 
 
 def test_cli_preview_prints_banner_and_verdict():
@@ -90,6 +93,7 @@ def test_apy_draft_preview_observes_age_and_tax_payer_rules(draft_rule_records):
         "not_eligible", "eligible", "eligible", "not_eligible"
     ]
     assert verdict(is_or_was_income_tax_payer=True) == "not_eligible"
+    assert verdict(consents_to_auto_debit=False) == "not_eligible"
 
 
 def test_apy_drafts_fail_closed_without_preview_and_do_not_mutate(draft_rule_records):

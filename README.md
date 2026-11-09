@@ -296,11 +296,13 @@ the current rule results without enabling application preparation; return to
 chat to supply or correct details. Nothing is sent to a government portal.
 
 The portal header shows the signed-in account and provides **New chat**,
-**Privacy & consent**, and **Sign out**. On smaller screens these are in the
-account menu. Opening the privacy notice does not withdraw consent; withdrawal,
-starting a new chat, and signing out require confirmation before clearing the
-active conversation and its uploaded documents. Sign out clears the app session
-but does not explicitly end the Auth0 session.
+**Saved details**, **Privacy & consent**, and **Sign out**. On smaller screens
+these are in the account menu. **Saved details** opens what is remembered, the
+saved and family applications, and "Forget my data". Opening the privacy notice
+does not withdraw consent; withdrawal, starting a new chat, and signing out
+require confirmation before clearing the active conversation and deleting the
+active application with its saved details and uploaded documents. Sign out
+clears the app session but does not explicitly end the Auth0 session.
 
 Mock submission requires `MOCK_PORTAL_AUTH_SECRET` in the API environment.
 If it is missing, approval is blocked without consuming the pending decision.
@@ -340,8 +342,9 @@ Eligibility: candidate schemes → rule engine → verdicts
     ↓
 A cant_tell verdict that an answer could settle?
     ├─ yes → Intake asks ONE question → the reply goes back to Intake
-    ├─ "don't know", no usable answer twice, or 8 questions → stop and list what is missing
+    │        ("don't know", or no usable answer twice, skips that fact; 12 questions → stop and list what is missing)
     └─ no  → Confirm step: the person approves, edits or rejects the exact facts
+             (verdicts still open only on skipped facts are final "can't tell" answers)
                 ↓
              Eligibility on confirmed facts → cited verdict → documents / application
 ```
@@ -366,8 +369,11 @@ A cant_tell verdict that an answer could settle?
   read in that period. With no question to anchor it, the amount is rejected and asked again.
   Income fields are recognised by name (a `shortcut:` in `agents/intake.py`).
 - **Stop rules.** The model classifies each reply as `answer`, `dont_know` or `other`.
-  "Don't know" stops intake, a field asked twice without a usable answer counts as "don't
-  know", and at most 12 questions are asked (`MAX_QUESTIONS`). A reply with no facts at all
+  "Don't know" skips that one fact, and so does a field asked twice without a usable answer;
+  intake goes on with the questions that can still change a verdict. When none is left, the
+  person confirms the facts, and verdicts open only on skipped facts are given as "can't tell"
+  with the missing fact named. At most 12 questions are asked (`MAX_QUESTIONS`); reaching that
+  stops intake and lists what is missing. A reply with no facts at all
   goes back to the Supervisor, so a new request ("what documents do I need?") is routed rather
   than the question repeated. A new intake resets these counters.
 - **Confirm step.** Once the verdicts settle, the graph pauses with `interrupt()` and shows the
@@ -549,8 +555,8 @@ The source clauses and rule conditions are stored with each record. Review must 
 `--include-draft` lets a rule author preview a draft ruleset without changing its stored status:
 
 ```bash
-python -m graph.run --include-draft --scheme-id C02 --citizen '{"has_bank_account": true, "age": 40, "consents_to_auto_debit": true}'
-python -m graph.run --include-draft --scheme-id C04 --citizen '{"has_savings_account": true, "age": 30, "is_or_was_income_tax_payer": false}'
+python -m graph.run --include-draft --scheme-id C02 --citizen '{"has_bank_account": true, "age": 40, "age_nearer_birthday": 40, "consents_to_auto_debit": true}'
+python -m graph.run --include-draft --scheme-id C04 --citizen '{"has_savings_account": true, "age": 30, "is_or_was_income_tax_payer": false, "consents_to_auto_debit": true}'
 ```
 
 The output starts with a DRAFT PREVIEW banner. Draft rules are evaluated as in-memory copies (the files are not changed), and the workflow stops after the verdict and document list: no application is drafted, approved or submitted. Without the flag, draft rules still fail closed. Use this only while a scheme’s rules are under review; do not use preview results for citizen advice or applications.
@@ -569,7 +575,7 @@ Run the rule-engine unit and integration tests:
 python -m pytest -q tests/test_scheme.py tests/test_rule_engine.py
 ```
 
-The current evaluator supports reviewed scalar comparisons and membership checks. A scheme's flat rules are combined with either `all` or `any`; nested mixed expressions are not supported. The synthetic pension fixture is the current executable example. Other scheme records contain source material and have not yet been converted into reviewed machine-readable eligibility rules, so the evaluator does not provide verified eligibility decisions for them.
+The current evaluator supports reviewed scalar comparisons and membership checks. A scheme's flat rules are combined with either `all` or `any`. One level of OR inside a rule is supported: a rule may list `or_conditions`, and it passes when its own condition or any alternative holds (for example "BPL card **or** family income ≤ ₹21,000"). Deeper nesting is not supported. The synthetic pension fixture is the current executable example. Other scheme records contain source material and have not yet been converted into reviewed machine-readable eligibility rules, so the evaluator does not provide verified eligibility decisions for them.
 
 ### GPT agent workflow
 
@@ -626,8 +632,10 @@ The UI requests the OpenID `email` scope and displays the account email returned
 HTTP API (`app/api.py`):
 
 - Configure `AUTH0_DOMAIN`, `AUTH0_AUDIENCE` and `AUTH0_HOUSEHOLD_CLAIM` in `.env`. Auth0 access tokens must use RS256 and include a non-empty `sub` plus the configured custom namespaced household claim. Configure that claim in an Auth0 Action; never accept a household ID from the request body or headers. Protected API routes reject missing/invalid tokens, and fail closed with 503 if Auth0 is not configured.
+- CSC operators: set `AUTH0_ROLE_CLAIM` to a custom namespaced claim that an Auth0 Action fills with `"operator"` (or a list that contains it) for named operator accounts. An operator token needs no household claim. The API keeps an operator's work under `operator:<sub>`, a name no citizen household can have (a citizen token whose household claim starts with `operator:` is rejected), so an operator never reaches a citizen's remembered details. An operator has no standing consent. When they approve an application they choose whether the person they are helping agrees to it being kept on their list for 90 days; the tick starts unticked and is sent as `citizen_agreed` with the approve decision. That agreement is recorded for that one application, as taken in person and by whom, and is withdrawn when the entry is removed. An operator cannot remember or delete household details. Letting an operator act inside a citizen's household needs citizen-approved, time-limited grants, which are not built. Without `AUTH0_ROLE_CLAIM` every token is a citizen.
+- Workflow state: by default conversations and application workflows live in the server's memory and are lost on restart. Set `SCHEME_SAATHI_CHECKPOINT_DB` to a SQLite file to keep workflow state and thread owners across restarts, so a paused confirmation or approval can be resumed. Either way a workflow expires after 24 hours without use or 7 days after it started. An expired workflow is refused as "not found" the moment it is used, and its saved state and uploads are deleted then; the 5-minute cleanup deletes the ones nobody asks for. Using a workflow refreshes only the idle limit, never the 7-day one, and an expired workflow is never brought back by a later request. Chat sessions follow the same rule. A thread can be used or resumed only by its owner, even after a restart, and whose application it is for (the person's own, or a family member's) is kept with the thread, so a restarted application is not saved as the signed-in person's own. Starting a new chat, signing out from the menu and withdrawing consent delete the application workflow through `DELETE /api/threads/{thread_id}` (owner only, 404 when unknown or expired), so its profile and draft do not stay in this file; `DELETE /api/threads/{thread_id}/documents` still removes only the uploads. This file holds personal details: keep it private and Git-ignored. It is a storage exception to the ChromaDB-only design, because ChromaDB has no verified LangGraph checkpointer.
 - The Streamlit UI signs users in with the Auth0 Authorization Code flow with PKCE and sends the resulting access token to the API. Create an Auth0 "Single Page Application" (or Native) application, add `http://localhost:8501` to its Allowed Callback URLs, and set `AUTH0_CLIENT_ID` (and `AUTH0_REDIRECT_URI` if the UI is not served at `http://localhost:8501`). No client secret is used or stored. Without these values the UI shows a configuration message instead of a login form.
-- The mock portal HTTP routes also require an Auth0 access token. `POST /applications` additionally requires the exact, short-lived, one-use capability in `X-Write-Capability`; capabilities are bound to the authenticated household and form. `GET /applications/{application_id}` returns status only to the owning household. Keep the portal server private; this demo's capability issuer and nonce store are process-local.
+- The mock portal HTTP routes also require an Auth0 access token. `POST /applications` additionally requires the exact, short-lived, one-use capability in `X-Write-Capability`; capabilities are bound to the authenticated household and form. `GET /applications/{application_id}` returns status only to the owning household, and the `get_application_status` tool answers "not found" to any other household when it is told who is asking (every call in this app does). Keep the portal server private; this demo's capability issuer and nonce store are process-local.
 - `POST /api/chat` runs the graph on a `thread_id`. `known_facts` and `confirmed_facts` sent on a turn are merged with earlier turns. `next_step` tells the client what to show:
   - `needs_information`: one intake question in `response`; the field is `data.pending_field`.
   - `awaiting_confirmation`: `data.confirmation` holds the `facts` to confirm, their `payload_hash` and any `rejected_edits`.
@@ -639,6 +647,12 @@ HTTP API (`app/api.py`):
 
   A new message on a thread waiting for a confirmation or approval returns 409.
 - `POST /api/chat/{thread_id}/decision` takes `{"action": "approve" | "edit" | "reject", "payload_hash": "...", "changes": {}}` and resumes the graph, for the confirm step and the approval gate alike. It returns 404 for an unknown thread, 403 for another household, and 409 when nothing is waiting.
+- Long-term memory is opt-in and off until the person agrees. All of these routes take the household and the person from the access token only, never from the request, and return 503 when ChromaDB is not installed. Records are kept in `chroma_data/` (Git-ignored); set `SCHEME_SAATHI_MEMORY_DIR` to use another folder. Expired records are deleted every 5 minutes. The remembered fields and their periods are in `data/memory_policy.json`.
+  - `GET /api/memory/consent` returns what the person agreed to and the policy that applies. `PUT /api/memory/consent` with `{"purpose": "profile_facts" | "application_references", "granted": true | false}` records or withdraws one choice for a citizen; withdrawing deletes what was saved under it, and agreeing again while it is active changes nothing. An operator gets 403 here, because their agreements are recorded per application instead.
+  - `GET /api/memory` lists the remembered details with their dates. `DELETE /api/memory/facts/{field}` forgets one.
+  - `DELETE /api/memory` is "Forget my data" and covers every session of the household: remembered details, saved applications and consents; application workflows with their saved state and uploaded documents; and conversations with their saved state. Every store is attempted and the response lists each one under `surfaces`. It returns 200 only when all were cleared, otherwise 500 naming the ones that were not; deleting again is safe. Applications already submitted to a portal are not deleted. Uploads made before this change do not record their household, so they are found only through threads still known to the server and otherwise expire after 30 days.
+  - `GET /api/applications` lists saved applications as `for_me`, `family` and `for_others`. `family` holds one entry per family member, each with the `relation`, an optional `nickname` and their `applications`. Mother, father, grandmother, grandfather, son, daughter, wife and husband count as family (Hindi and Marathi words are recognised too); any other relation stays in `for_others`. A member is created by the first saved application that names the relation, needs no other consent, and goes when their last saved application is removed or expires. `PATCH /api/family/{relation}` with `{"nickname": "..."}` sets or clears a nickname (letters only), and `DELETE /api/family/{relation}` removes the member with their saved applications. Operators have the same list under their own account. `GET /api/applications/{application_id}/status` reads the live portal status, only for an application in the caller's own list. `DELETE /api/applications/{application_id}` removes one from the list.
+  - A submitted application is saved with the scheme, application number, date and whether it was for the person or someone else (with a relation word such as "mother"). `POST /api/analyze` takes optional `subject` and `relation` for this. Facts about someone else, including family members, are never remembered. A chat message asking about the status of an application is answered from the caller's own saved list, and naming a family member ("my mother's case") shows only theirs.
 
 Scheme questions ("What is the age limit for Atal Pension Yojana?") are answered from cited evidence:
 
@@ -649,7 +663,7 @@ Scheme questions ("What is the age limit for Atal Pension Yojana?") are answered
 
 This needs `data/chroma/` and the BGE-M3 model (Setup, steps 1 and 2). Without them every scheme question gets `answer_not_found`, and the cause appears only in the server log. The first question after startup also loads the model (about 15 seconds); later answers take about 6 to 7 seconds.
 
-Not wired in yet: authenticated household scoping, memory storage, document extraction, and persistent checkpoints (the API uses an in-memory checkpointer). Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
+Not wired in yet: operator access inside a citizen's household (it needs citizen-approved, time-limited grants), document extraction, and held-out cases and attacks for the memory evaluation. The evaluation harness itself, `python -m evaluation.memory_eval`, compares a returning person's questions with memory on and off on the synthetic households and exits 1 if a verdict changes; `--cases FILE` runs cases supplied by someone else. Workflow state is durable only when `SCHEME_SAATHI_CHECKPOINT_DB` is set. Eligibility remains `cant_tell` unless the deterministic rule engine supplies a validated evaluation. The GPT agent cannot approve or submit by itself.
 
 ## Guides
 

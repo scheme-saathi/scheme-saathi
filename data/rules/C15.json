@@ -71,49 +71,49 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "is_woman_or_girl",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "is_only_girl_child_without_brothers",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 30,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "admitted_full_time_first_year_masters",
       "op": "eq",
       "value": true,
       "clause_id": "elig-6",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "course_is_non_professional",
       "op": "eq",
       "value": true,
       "clause_id": "elig-7",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "studies_through_distance_education",
       "op": "eq",
       "value": false,
       "clause_id": "elig-8",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

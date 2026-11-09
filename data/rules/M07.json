@@ -54,56 +54,56 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "is_roadside_cobbler_identified_by_gram_panchayat",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "is_maharashtra_resident",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 18,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 50,
       "clause_id": "elig-4",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "is_charmakar_community",
       "op": "eq",
       "value": true,
       "clause_id": "elig-5",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "annual_family_income",
       "op": "lte",
       "value": 100000,
       "clause_id": "elig-6",
-      "status": "reviewed"
+      "status": "draft"
     },
     {
       "field": "has_knowledge_of_business_applied_for",
       "op": "eq",
       "value": true,
       "clause_id": "elig-7",
-      "status": "reviewed"
+      "status": "draft"
     }
   ],
   "rule_logic": "all"
