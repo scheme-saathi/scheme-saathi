@@ -8,8 +8,7 @@ The supervisor acts as a gatekeeper with three layers:
 This ensures safe, controlled information flow across all agents.
 
  Unified Classification Strategy:
-- Primary: gpt-4o-mini via OpenRouter (language + intent in single call)
-- Latency: ~50-100ms (one round-trip)
+- Primary: configured OpenRouter model (language + intent in single call)
 - Fallback: Character-based language + keyword intent detection (<1ms)
 - Hybrid approach ensures resilience if API is unavailable
 """
@@ -37,8 +36,8 @@ logger = logging.getLogger(__name__)
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1"
 SUPERVISOR_MODEL_ENV = "SUPERVISOR_MODEL"
+ROUTER_MODEL_ENV = "ROUTER_MODEL"
 OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
-UNIFIED_ROUTER_MODEL = "openai/gpt-4o-mini"  # Fast, cost-effective unified classification
 
 
 class ClassificationResult(TypedDict):
@@ -89,7 +88,7 @@ class RateLimitTracker:
 
 
 class UnifiedRouter:
-    """Unified language + intent classification via gpt-4o-mini.
+    """Unified language + intent classification via OpenRouter.
     
     Extracts both language and intent in a single API call to minimize latency
     and API costs. Includes automatic fallback to character-based detection
@@ -122,13 +121,14 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
 
     def __init__(self):
         self.openrouter_api_key = os.getenv(OPENROUTER_API_KEY_ENV)
-        self.api_available = bool(self.openrouter_api_key)
+        self.model = os.getenv(ROUTER_MODEL_ENV, "").strip() or os.getenv(SUPERVISOR_MODEL_ENV, "").strip()
+        self.api_available = bool(self.openrouter_api_key and self.model)
 
         if self.api_available:
-            logger.info(f"OpenRouter configured for {UNIFIED_ROUTER_MODEL} unified classification")
+            logger.info("OpenRouter configured for unified classification")
         else:
             logger.warning(
-                "OpenRouter API key not configured. "
+                "OpenRouter API key or classifier model not configured. "
                 "Will use character-based language detection + keyword intent matching."
             )
 
@@ -136,7 +136,7 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
         """Classify language and intent in a single API call with fallback.
         
         Strategy:
-        1. Try unified gpt-4o-mini classification via OpenRouter
+        1. Try unified classification via the configured OpenRouter model
         2. On failure: Fall back to character-based + keyword methods
         3. Always returns valid ClassificationResult
         
@@ -156,7 +156,7 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
         return self._classify_with_fallback(text)
 
     def _classify_with_api(self, text: str) -> ClassificationResult | None:
-        """Try unified classification via gpt-4o-mini on OpenRouter.
+        """Try unified classification via the configured OpenRouter model.
         
         Args:
             text: Input text to classify
@@ -173,7 +173,7 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
             }
 
             payload = {
-                "model": UNIFIED_ROUTER_MODEL,
+                "model": self.model,
                 "messages": [
                     {
                         "role": "system",
