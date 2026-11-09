@@ -81,14 +81,29 @@
       "status": "draft"
     },
     {
-      "field": "is_only_girl_child_without_brothers",
+      "field": "has_brother",
       "op": "eq",
-      "value": true,
-      "clause_id": "elig-2",
+      "value": false,
+      "clause_id": "excl-3",
       "status": "draft"
     },
     {
-      "field": "age",
+      "field": "is_only_girl_child",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "is_twin_daughter",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-3"
+        }
+      ]
+    },
+    {
+      "field": "age_at_pg_admission",
       "op": "lte",
       "value": 30,
       "clause_id": "elig-4",
@@ -113,6 +128,13 @@
       "op": "eq",
       "value": false,
       "clause_id": "elig-8",
+      "status": "draft"
+    },
+    {
+      "field": "institution_is_deemed_university_without_government_funds",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-2",
       "status": "draft"
     }
   ],

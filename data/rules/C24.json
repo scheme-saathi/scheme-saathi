@@ -61,18 +61,18 @@
       "status": "draft"
     },
     {
-      "field": "has_phd_md_ms_or_thesis_submitted",
+      "field": "has_phd_md_or_ms_degree",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
-    },
-    {
-      "field": "age",
-      "op": "lte",
-      "value": 35,
-      "clause_id": "elig-3",
-      "status": "draft"
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "has_submitted_phd_md_or_ms_thesis_awaiting_award",
+          "op": "eq",
+          "value": true
+        }
+      ]
     },
     {
       "field": "has_availed_npdf_before",
@@ -80,6 +80,41 @@
       "value": false,
       "clause_id": "elig-4",
       "status": "draft"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 40,
+      "clause_id": "elig-3",
+      "status": "draft"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 35,
+      "clause_id": "elig-3",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "social_category",
+          "op": "in",
+          "value": [
+            "SC",
+            "ST",
+            "OBC"
+          ]
+        },
+        {
+          "field": "has_disability",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "is_woman_or_girl",
+          "op": "eq",
+          "value": true
+        }
+      ]
     }
   ],
   "rule_logic": "all"

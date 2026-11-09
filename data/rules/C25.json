@@ -80,7 +80,22 @@
       "status": "draft"
     },
     {
-      "field": "has_phd_in_basic_or_applied_sciences",
+      "field": "widushi_employment_category",
+      "op": "eq",
+      "value": "permanent scientist at a government academic or research institution, retired or retiring within a year",
+      "clause_id": "elig-2",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "widushi_employment_category",
+          "op": "eq",
+          "value": "temporary (non-permanent) researcher who has completed 2 independent research projects as principal investigator",
+          "clause_id": "elig-8"
+        }
+      ]
+    },
+    {
+      "field": "has_phd_or_equivalent_in_basic_or_applied_sciences",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
@@ -94,25 +109,67 @@
       "status": "draft"
     },
     {
-      "field": "research_publications_with_impact_factor",
-      "op": "gte",
-      "value": 10,
-      "clause_id": "elig-12",
-      "status": "draft"
-    },
-    {
-      "field": "age",
-      "op": "gte",
-      "value": 45,
-      "clause_id": "elig-9",
-      "status": "draft"
-    },
-    {
       "field": "age",
       "op": "lte",
       "value": 62,
       "clause_id": "elig-3",
       "status": "draft"
+    },
+    {
+      "field": "widushi_employment_category",
+      "op": "ne",
+      "value": "permanent scientist at a government academic or research institution, retired or retiring within a year",
+      "clause_id": "elig-3",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 57
+        }
+      ]
+    },
+    {
+      "field": "widushi_employment_category",
+      "op": "ne",
+      "value": "temporary (non-permanent) researcher who has completed 2 independent research projects as principal investigator",
+      "clause_id": "elig-9",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "age",
+          "op": "gte",
+          "value": 45
+        }
+      ]
+    },
+    {
+      "field": "widushi_employment_category",
+      "op": "ne",
+      "value": "permanent scientist at a government academic or research institution, retired or retiring within a year",
+      "clause_id": "elig-6",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "research_publications_with_impact_factor",
+          "op": "gte",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "field": "widushi_employment_category",
+      "op": "ne",
+      "value": "temporary (non-permanent) researcher who has completed 2 independent research projects as principal investigator",
+      "clause_id": "elig-12",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "research_publications_with_impact_factor",
+          "op": "gte",
+          "value": 10
+        }
+      ]
     }
   ],
   "rule_logic": "all"

@@ -65,9 +65,41 @@
     {
       "field": "age",
       "op": "lte",
-      "value": 45,
+      "value": 50,
       "clause_id": "elig-1",
       "status": "draft"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 45,
+      "clause_id": "elig-1",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "social_category",
+          "op": "in",
+          "value": [
+            "SC",
+            "ST"
+          ]
+        },
+        {
+          "field": "is_woman_or_girl",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "is_ex_serviceman",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "has_disability",
+          "op": "eq",
+          "value": true
+        }
+      ]
     },
     {
       "field": "is_unemployed_or_starting_new_venture",
@@ -77,25 +109,46 @@
       "status": "draft"
     },
     {
-      "field": "has_passed_class_7",
-      "op": "eq",
-      "value": true,
-      "clause_id": "elig-6",
-      "status": "draft"
-    },
-    {
-      "field": "family_member_already_beneficiary",
+      "field": "family_member_already_got_cmegp",
       "op": "eq",
       "value": false,
       "clause_id": "excl-1",
       "status": "draft"
     },
     {
-      "field": "availed_other_scheme_same_purpose",
+      "field": "unit_already_got_government_subsidy",
       "op": "eq",
       "value": false,
       "clause_id": "excl-2",
       "status": "draft"
+    },
+    {
+      "field": "cmegp_project_cost_rupees",
+      "op": "lte",
+      "value": 1000000,
+      "clause_id": "elig-6",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "has_passed_class_7",
+          "op": "eq",
+          "value": true
+        }
+      ]
+    },
+    {
+      "field": "cmegp_project_cost_rupees",
+      "op": "lte",
+      "value": 2500000,
+      "clause_id": "elig-6",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "has_passed_class_10",
+          "op": "eq",
+          "value": true
+        }
+      ]
     }
   ],
   "rule_logic": "all"

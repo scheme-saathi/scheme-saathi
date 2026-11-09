@@ -90,6 +90,42 @@
       "value": true,
       "clause_id": "elig-5",
       "status": "draft"
+    },
+    {
+      "field": "annual_family_income",
+      "op": "lt",
+      "value": 120000,
+      "clause_id": "elig-7",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "household_below_bpl",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-6"
+        }
+      ]
+    },
+    {
+      "field": "area_type",
+      "op": "ne",
+      "value": "rural",
+      "clause_id": "elig-7",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "annual_family_income",
+          "op": "lt",
+          "value": 98000,
+          "clause_id": "elig-7"
+        },
+        {
+          "field": "household_below_bpl",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-6"
+        }
+      ]
     }
   ],
   "rule_logic": "all"

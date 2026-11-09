@@ -62,7 +62,7 @@
       "status": "draft"
     },
     {
-      "field": "applicant_and_spouse_annual_income",
+      "field": "applicant_and_spouse_annual_income_excluding_artist_pension",
       "op": "lte",
       "value": 48000,
       "clause_id": "elig-3",
@@ -76,11 +76,18 @@
       "status": "draft"
     },
     {
-      "field": "gets_state_artist_pension_or_zcc_recommendation",
-      "op": "eq",
-      "value": true,
+      "field": "state_artist_pension_per_month",
+      "op": "gte",
+      "value": 500,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "recommended_by_zonal_cultural_centre",
+          "op": "eq",
+          "value": true
+        }
+      ]
     },
     {
       "field": "gets_other_ministry_of_culture_assistance",

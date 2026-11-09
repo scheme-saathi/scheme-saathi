@@ -31,6 +31,10 @@
     {
       "clause_id": "elig-6",
       "text": "Out of the total outlay in a year, a minimum of 50% amount will be earmarked for Interest Subsidy to the girl candidates."
+    },
+    {
+      "clause_id": "details-5",
+      "text": "The scheme provides interest subsidy to the students belonging to the OBCs and EBCs on the interest payable for the period of the moratorium for the Education Loans for overseas studies to pursue approved courses of studies abroad at Masters, M.Phil. and PhD level."
     }
   ],
   "documents_required": [
@@ -43,6 +47,16 @@
     "Details of the Aadhaar-linked Bank Account."
   ],
   "rules": [
+    {
+      "field": "social_category",
+      "op": "in",
+      "value": [
+        "OBC",
+        "EBC"
+      ],
+      "clause_id": "details-5",
+      "status": "draft"
+    },
     {
       "field": "admitted_abroad_masters_mphil_or_phd",
       "op": "eq",

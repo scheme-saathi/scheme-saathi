@@ -47,6 +47,10 @@
     {
       "clause_id": "elig-10",
       "text": "Priority will be given to applicants from the Below Poverty Line (BPL)."
+    },
+    {
+      "clause_id": "details-1",
+      "text": "The scheme \"Ramai Awas (Gharkul) Scheme for SC & Nav-Buddha (Urban and Rural)\" is a housing scheme by the Department of Social Justice & Special Assistance of the Government of Maharashtra. The scheme aims to raise the standard of living of the individuals from the Scheduled Caste and Nav-Buddha communities residing in rural & urban areas of Maharashtra."
     }
   ],
   "documents_required": [
@@ -66,14 +70,52 @@
       "status": "draft"
     },
     {
-      "field": "annual_income",
+      "field": "social_category",
+      "op": "in",
+      "value": [
+        "SC",
+        "Nav-Buddha"
+      ],
+      "clause_id": "details-1",
+      "status": "draft"
+    },
+    {
+      "field": "residence_area_type",
+      "op": "ne",
+      "value": "rural",
+      "clause_id": "elig-3",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 100000
+        }
+      ]
+    },
+    {
+      "field": "residence_area_type",
+      "op": "ne",
+      "value": "municipal council",
+      "clause_id": "elig-4",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 150000
+        }
+      ]
+    },
+    {
+      "field": "annual_family_income",
       "op": "lte",
       "value": 200000,
       "clause_id": "elig-5",
       "status": "draft"
     },
     {
-      "field": "family_member_already_beneficiary",
+      "field": "family_member_already_got_ramai_awas",
       "op": "eq",
       "value": false,
       "clause_id": "elig-6",

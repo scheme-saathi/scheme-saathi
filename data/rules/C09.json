@@ -136,6 +136,34 @@
       "value": true,
       "clause_id": "elig-5",
       "status": "draft"
+    },
+    {
+      "field": "project_duration_months",
+      "op": "lte",
+      "value": 24,
+      "clause_id": "elig-4",
+      "status": "draft"
+    },
+    {
+      "field": "proposal_is_only_software_development",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-1",
+      "status": "draft"
+    },
+    {
+      "field": "proposal_is_only_patenting_without_prototype",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-2",
+      "status": "draft"
+    },
+    {
+      "field": "proposal_is_basic_research_without_commercial_use",
+      "op": "eq",
+      "value": false,
+      "clause_id": "excl-3",
+      "status": "draft"
     }
   ],
   "rule_logic": "all"

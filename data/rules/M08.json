@@ -93,6 +93,56 @@
       "value": true,
       "clause_id": "elig-5",
       "status": "draft"
+    },
+    {
+      "field": "annual_family_income",
+      "op": "lte",
+      "value": 120000,
+      "clause_id": "elig-8",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "household_below_bpl",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-7"
+        }
+      ]
+    },
+    {
+      "field": "area_type",
+      "op": "ne",
+      "value": "rural",
+      "clause_id": "elig-8",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 98000,
+          "clause_id": "elig-8"
+        },
+        {
+          "field": "household_below_bpl",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-7"
+        }
+      ]
+    },
+    {
+      "field": "loan_is_for_agricultural_project",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-6",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "has_7_12_extract_in_own_joint_or_husbands_name",
+          "op": "eq",
+          "value": true
+        }
+      ]
     }
   ],
   "rule_logic": "all"

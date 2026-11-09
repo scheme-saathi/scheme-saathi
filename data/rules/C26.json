@@ -56,6 +56,13 @@
       "status": "draft"
     },
     {
+      "field": "resides_in_india",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-1",
+      "status": "draft"
+    },
+    {
       "field": "has_phd_in_science_engineering_or_ms_md",
       "op": "eq",
       "value": true,
@@ -79,9 +86,37 @@
     {
       "field": "age",
       "op": "lte",
-      "value": 45,
+      "value": 50,
       "clause_id": "elig-4",
       "status": "draft"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 45,
+      "clause_id": "elig-4",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "social_category",
+          "op": "in",
+          "value": [
+            "SC",
+            "ST",
+            "OBC"
+          ]
+        },
+        {
+          "field": "has_disability",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "is_woman_or_girl",
+          "op": "eq",
+          "value": true
+        }
+      ]
     }
   ],
   "rule_logic": "all"

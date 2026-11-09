@@ -19,6 +19,14 @@
     {
       "clause_id": "elig-3",
       "text": "3)\tThe education qualification for Skilling and Training component would be as per NSQF norms and Education component would be as per NIOS norms. Candidates with aptitude and leadership qualities will be selected for Women Leadership and Entrepreneurship component."
+    },
+    {
+      "clause_id": "details-16",
+      "text": "1)\tIndian nationals belonging to the six notified minority communities: Muslims, Christians, Sikhs, Buddhists, Jains, and Parsis with following:"
+    },
+    {
+      "clause_id": "details-20",
+      "text": "2)\tUp to 25% non-minority (EWS) candidates may be included in Traditional Skilling and 15% in other components to promote inter-community solidarity."
     }
   ],
   "documents_required": [
@@ -27,6 +35,35 @@
     "3)     Educational Qualification in line with the training programme being applied for."
   ],
   "rules": [
+    {
+      "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "details-16",
+      "status": "draft"
+    },
+    {
+      "field": "religion",
+      "op": "in",
+      "value": [
+        "Muslim",
+        "Christian",
+        "Sikh",
+        "Buddhist",
+        "Jain",
+        "Parsi"
+      ],
+      "clause_id": "details-16",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "social_category",
+          "op": "eq",
+          "value": "EWS",
+          "clause_id": "details-20"
+        }
+      ]
+    },
     {
       "field": "age",
       "op": "gte",

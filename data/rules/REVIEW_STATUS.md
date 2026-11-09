@@ -72,6 +72,21 @@ Decided by Snehal Patel. They set the rules for Phases 1–4; they are not revie
 - **C16:** the ₹8 lakh limit is on total family income, so the rule uses `annual_family_income`. The applicant is a student with no income of their own, so elig-4's "total income of the applicant" means the family's income. The income-criteria amendment (https://socialjustice.gov.in/writereaddata/UploadFile/RICfor%20ISSC.pdf) can be added to the record as a second source.
 - **C19:** local body schools are not covered. Bal Vatika is covered.
 
+## Draft schemes fixed before review (Phase 2 of `docs/rule-fix-plan.md`, 9 Nov 2026)
+
+These were already draft and stay draft. The reviewer checks them as for any AI-drafted scheme.
+
+- **M08, M09:** income limits added. BPL households pass. Otherwise family income (F3) must be within ₹1,20,000, or ₹98,000 in a rural area (`area_type`, shared values). M08 says "up to" and M09 says "below". M08 also needs the 7/12 land extract, but only for agricultural project loans (elig-6).
+- **M12:** SC or Nav-Buddha only (details-1). Family income limits by area: ₹1 lakh rural, ₹1.5 lakh municipal council, ₹2 lakh municipal corporation (`residence_area_type`). ₹2 lakh caps every area. Its own "already got this scheme" field (F5).
+- **C24, C26:** age limits 35/40 and 45/50 with the F6 pattern for SC/ST/OBC, persons with disability and women. Under F2, OBC means OBC only. C24 asks "PhD/MD/MS" and "thesis submitted" as two questions. C26 needs residence in India.
+- **C25:** category A (permanent government scientist, retired or retiring within a year) needs age 57–62 and 20 publications. Category B (temporary researcher) needs age 45–62 and 10 publications. The PhD question says "or equivalent".
+- **C27:** Indian nationals from the six notified minorities, or EWS candidates (details-16 and details-20). It asks about religion, so the reviewer should check that the question says why it asks.
+- **C31:** the income limit leaves out the artist pension. "Pension of at least ₹500 a month" and "recommended by a Zonal Cultural Centre" are two questions.
+- **C09:** project duration of 24 months at most, and the three exclusions (only software, only patenting without a prototype, basic research without commercial use).
+- **C16:** OBC or EBC students (details-5).
+- **C15:** twin daughters pass. Deemed universities without government funds are excluded. The age is the age at PG admission, asked directly. A girl with sisters but no brothers still fails, until the official guidelines answer F7.
+- **M14:** age 18–45, or up to 50 for the groups elig-1 names (SC/ST, women, ex-servicemen, differently abled). Class 7 is needed above a ₹10 lakh project and class 10 above ₹25 lakh. The fields are CMEGP-specific (F5), including the project cost. Whether VJNT, OBC and minorities also get the relaxation waits for F7.
+
 ## Engine and intake changes (Phase 3 of `docs/rule-fix-plan.md`, 9 Nov 2026)
 
 - **`applicant_type`** (F1) is an optional key of a rule file, `individual` by default.
