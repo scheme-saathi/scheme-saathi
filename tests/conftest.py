@@ -38,3 +38,5 @@ def synthetic_scheme_fixture(monkeypatch):
     }
     load = kb_server._load_scheme_records
     monkeypatch.setattr(kb_server, "_load_scheme_records", lambda: {**load(), **fixtures})
+    from graph import tools
+    tools.scheme_is_closed.cache_clear()  # a test that swaps scheme records must not see another's cache

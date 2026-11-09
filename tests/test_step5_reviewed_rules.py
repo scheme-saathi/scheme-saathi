@@ -149,6 +149,7 @@ def test_or_questions_are_decided_by_code():
 
 def test_closed_schemes_say_so_in_the_answer():
     """F6: C11 and M14 are closed on myScheme; the verdict stands, and the answer says so."""
+    tools.scheme_is_closed.cache_clear()  # other tests swap in their own scheme records
     assert tools.with_closed_note("C11", "eligible: ...") == f"eligible: ... {tools.CLOSED_NOTE}"
     assert tools.with_closed_note("M14", "x").endswith(tools.CLOSED_NOTE)
     assert tools.with_closed_note("C01", "eligible: ...") == "eligible: ..."

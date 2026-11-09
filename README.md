@@ -322,7 +322,7 @@ Eligibility: candidate schemes → rule engine → verdicts
     ↓
 A cant_tell verdict that an answer could settle?
     ├─ yes → Intake asks ONE question → the reply goes back to Intake
-    │        ("don't know", or no usable answer twice, skips that fact; 12 questions → stop and list what is missing)
+    │        ("don't know", or no usable answer twice, skips that fact; 12 questions → confirm and answer, open ones as can't tell)
     └─ no  → Confirm step: the person approves, edits or rejects the exact facts
              (verdicts still open only on skipped facts are final "can't tell" answers)
                 ↓
@@ -356,8 +356,9 @@ A cant_tell verdict that an answer could settle?
   "Don't know" skips that one fact, and so does a field asked twice without a usable answer;
   intake goes on with the questions that can still change a verdict. When none is left, the
   person confirms the facts, and verdicts open only on skipped facts are given as "can't tell"
-  with the missing fact named. At most 12 questions are asked (`MAX_QUESTIONS`); reaching that
-  stops intake and lists what is missing. A reply with no facts at all
+  with the missing fact named. At most 12 questions are asked (`MAX_QUESTIONS`); at that point
+  the person confirms the facts given so far and gets every verdict, the open ones as "can't
+  tell" with the missing facts named. A reply with no facts at all
   goes back to the Supervisor, so a new request ("what documents do I need?") is routed rather
   than the question repeated. A new intake resets these counters.
 - **Confirm step.** Once the verdicts settle, the graph pauses with `interrupt()` and shows the
