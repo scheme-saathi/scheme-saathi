@@ -147,11 +147,11 @@ def test_document_screen_uploads_to_real_api_and_advances_to_review(tmp_path, mo
     response = client.post(
         "/api/analyze",
         json={
-            "citizen": {
-                "age": 35, "age_nearer_birthday": 35, "has_bank_account": True,
-                "consents_to_auto_debit": True,
+            "citizen": {  # C04 is live and needs exactly one document
+                "age": 35, "has_savings_account": True, "consents_to_auto_debit": True,
+                "is_or_was_income_tax_payer": False,
             },
-            "scheme_ids": ["C02"],
+            "scheme_ids": ["C04"],
         },
     )
     result = next(payload for name, payload in parse_events(response.content) if name == "result")

@@ -51,11 +51,12 @@ def test_preview_evaluates_draft_rules_but_never_drafts_or_submits(draft_rule_re
 
 
 def test_preview_rules_for_c02_at_the_age_limits(draft_rule_records):
-    # The lower limit uses completed years; the upper limit uses age nearer birthday.
+    # The lower limit uses completed years; the upper limit uses age nearer birthday, and 70 itself is
+    # out (checked against the official rules, decision F7).
     verdict = lambda age, nearer: run({**PMSBY_OK, "age": age, "age_nearer_birthday": nearer},
                                       ["C02"], True)["verdicts"]["C02"]["verdict"]
     assert [verdict(17, 17), verdict(18, 18), verdict(70, 70), verdict(70, 71)] == [
-        "not_eligible", "eligible", "eligible", "not_eligible"]
+        "not_eligible", "eligible", "not_eligible", "not_eligible"]
 
 
 def test_preview_does_not_change_the_stored_rules(draft_rule_records):

@@ -89,14 +89,14 @@ def test_a_stated_age_wins_over_the_derived_one():
 
 def test_c02_is_decided_from_the_date_of_birth_alone():
     profile = {"has_bank_account": True, "consents_to_auto_debit": True, "date_of_birth": "1990-01-01"}
-    assert tools.evaluate_scheme(profile, "C02")["verdict"] == "eligible"
+    assert tools.evaluate_scheme(profile, "C02", include_draft=True)["verdict"] == "eligible"
 
 
 def test_intake_asks_for_the_date_of_birth_not_age_nearer_birthday():
     verdicts = {"C02": {"verdict": "cant_tell", "unresolved_fields": ["age_nearer_birthday"]}}
     assert tools.next_question(verdicts) == "date_of_birth"
     assert tools.next_question(verdicts, declined=["date_of_birth"]) == "age_nearer_birthday"  # fallback
-    assert tools.field_specs(["C02"])["date_of_birth"] == {"type": "date", "known_values": []}
+    assert tools.field_specs(["C02"], include_draft=True)["date_of_birth"] == {"type": "date", "known_values": []}
 
 
 def test_a_date_of_birth_must_be_iso():
