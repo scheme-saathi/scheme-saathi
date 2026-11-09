@@ -164,14 +164,19 @@
       "status": "draft"
     },
     {
-      "field": "senior_care_need",
-      "op": "in",
-      "value": [
-        "indigent",
-        "dementia or needs continuous nursing care"
-      ],
-      "clause_id": "elig-3",
-      "status": "draft"
+      "field": "is_indigent",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-4",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "has_dementia_or_needs_continuous_nursing_care",
+          "op": "eq",
+          "value": true,
+          "clause_id": "elig-5"
+        }
+      ]
     }
   ],
   "rule_logic": "all"

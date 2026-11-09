@@ -10,7 +10,7 @@ from graph.workflow import build_graph
 from servers.rule_engine import server as rule_server
 
 ROOT = Path(__file__).resolve().parents[1]
-PMSBY_OK = {"has_bank_account": True, "age": 40, "age_nearer_birthday": 40, "consents_to_auto_debit": True}
+PMSBY_OK = {"has_bank_or_post_office_savings_account": True, "age": 40, "age_nearer_birthday": 40, "consents_to_auto_debit": True}
 APY_OK = {"has_savings_account": True, "age": 30, "is_or_was_income_tax_payer": False,
           "consents_to_auto_debit": True}
 
@@ -67,7 +67,7 @@ def test_preview_does_not_change_the_stored_rules(draft_rule_records):
 def test_preview_intake_asks_only_for_the_rule_fields(draft_rule_records):
     state = run(PMSBY_OK, ["C02"], True)
     # date_of_birth is asked first; this citizen has none, so age nearer birthday is asked next.
-    assert set(state["profile"]) == {"has_bank_account", "age", "date_of_birth", "age_nearer_birthday",
+    assert set(state["profile"]) == {"has_bank_or_post_office_savings_account", "age", "date_of_birth", "age_nearer_birthday",
                                      "consents_to_auto_debit"}
 
 

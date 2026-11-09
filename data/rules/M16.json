@@ -30,6 +30,7 @@
     "Medical Treatment Papers.",
     "Proof of Residence (One of Aadhaar Card/Passport/Driving Licence/Ration Sheet/Last Month's Electricity Bill/Gram Panchayat Certificate)."
   ],
+  "rule_logic": "all",
   "rules": [
     {"field": "is_building_or_construction_worker", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "registered_with_mbocww_board", "op": "eq", "value": true, "clause_id": "elig-2", "status": "draft"},

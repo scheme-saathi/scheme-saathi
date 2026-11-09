@@ -57,7 +57,14 @@
       "status": "draft"
     },
     {
-      "field": "is_roadside_cobbler_identified_by_gram_panchayat",
+      "field": "is_roadside_cobbler",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "draft"
+    },
+    {
+      "field": "cobbler_identified_by_gram_panchayat",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",

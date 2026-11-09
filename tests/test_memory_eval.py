@@ -23,7 +23,7 @@ from evaluation.memory_eval import (
 )
 
 ALLOWLIST = HouseholdAllowlist.from_policy_file()
-FACTS = {"age": 70, "annual_income": 40000, "is_maharashtra_resident": True, "is_indian_citizen": True}
+FACTS = {"age": 70, "annual_family_income": 40000, "is_maharashtra_resident": True, "is_indian_citizen": True}
 
 
 def outcome(questions=(), confirmations=1, verdict="eligible", prefilled=(), saved=()):
@@ -37,9 +37,9 @@ def test_the_persona_answers_only_from_its_own_facts():
     intake = PersonaIntake({"age": 70})
     assert intake.extract(IntakeExtractInput(request="hi"), {}).facts == {}
     assert intake.extract(IntakeExtractInput(request="70", pending_field="age"), {}).facts == {"age": 70}
-    unknown = intake.extract(IntakeExtractInput(request="?", pending_field="annual_income"), {})
+    unknown = intake.extract(IntakeExtractInput(request="?", pending_field="annual_family_income"), {})
     assert unknown.dont_know and unknown.facts == {}
-    assert intake.reply("age") == "70" and intake.reply("annual_income") == "I don't know"
+    assert intake.reply("age") == "70" and intake.reply("annual_family_income") == "I don't know"
 
 
 def test_every_question_is_counted():
@@ -62,7 +62,7 @@ def test_a_household_test_case_becomes_rule_fields_and_unknowns_stay_unknown():
     assert facts == {
         "is_indian_citizen": True,
         "age": 46,
-        "annual_income": 120000,
+        "annual_family_income": 120000,
         "annual_family_income": 120000,
         "is_maharashtra_resident": True,
     }
@@ -75,7 +75,7 @@ def test_a_household_test_case_becomes_rule_fields_and_unknowns_stay_unknown():
 def test_the_development_set_comes_from_the_repository_households():
     cases = household_cases()
     assert len(cases) > 10
-    assert all("age" in c.facts or "annual_income" in c.facts for c in cases)
+    assert all("age" in c.facts or "annual_family_income" in c.facts for c in cases)
     assert len(household_cases(3)) == 3
 
 
@@ -104,16 +104,16 @@ def stub_sessions(monkeypatch, first, on, off):
 def test_a_clean_case_passes_and_counts_the_questions_saved(monkeypatch):
     stub_sessions(
         monkeypatch,
-        first=outcome(["age", "annual_income"], saved=["age", "annual_income"]),
-        on=outcome([], prefilled=["age", "annual_income"]),
-        off=outcome(["age", "annual_income"]),
+        first=outcome(["age", "annual_family_income"], saved=["age", "annual_family_income"]),
+        on=outcome([], prefilled=["age", "annual_family_income"]),
+        off=outcome(["age", "annual_family_income"]),
     )
     result = evaluate_case(Case("c", FACTS), "C01", ALLOWLIST)
     assert result.failures == [] and result.completed
     summary = summarise([result])
     assert (summary["questions_return_without_memory"], summary["questions_return_with_memory"]) == (2, 0)
     assert (summary["questions_saved"], summary["reduction_percent"]) == (2, 100.0)
-    assert summary["prefilled_fields"] == {"age": 1, "annual_income": 1}
+    assert summary["prefilled_fields"] == {"age": 1, "annual_family_income": 1}
     assert summary["failed_runs"] == 0
 
 
@@ -125,12 +125,12 @@ def test_a_verdict_that_changes_with_memory_fails_the_run(monkeypatch):
 
 
 def test_memory_that_adds_questions_fails_the_run(monkeypatch):
-    stub_sessions(monkeypatch, first=outcome(["age"]), on=outcome(["age", "annual_income"]), off=outcome(["age"]))
+    stub_sessions(monkeypatch, first=outcome(["age"]), on=outcome(["age", "annual_family_income"]), off=outcome(["age"]))
     assert any("more questions" in f for f in evaluate_case(Case("c", FACTS), "C01", ALLOWLIST).failures)
 
 
 def test_an_inconsistent_control_fails_the_run(monkeypatch):
-    stub_sessions(monkeypatch, first=outcome(["age"]), on=outcome([]), off=outcome(["annual_income"]))
+    stub_sessions(monkeypatch, first=outcome(["age"]), on=outcome([]), off=outcome(["annual_family_income"]))
     assert any("control" in f for f in evaluate_case(Case("c", FACTS), "C01", ALLOWLIST).failures)
 
 

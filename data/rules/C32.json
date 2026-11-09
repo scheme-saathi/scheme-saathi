@@ -74,18 +74,45 @@
   ],
   "rules": [
     {
-      "field": "is_national_games_medalist_or_international_event_participant",
+      "field": "is_national_games_medalist",
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "participated_in_recognised_international_sporting_event",
+          "op": "eq",
+          "value": true
+        }
+      ]
     },
     {
-      "field": "institution_is_ugc_recognized_or_government_funded",
+      "field": "institution_type",
       "op": "eq",
-      "value": true,
-      "clause_id": "elig-1",
-      "status": "draft"
+      "value": "university or college under sections 2(f) and 12(b) of the UGC Act",
+      "clause_id": "elig-2",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "institution_type",
+          "op": "eq",
+          "value": "deemed university receiving UGC grants",
+          "clause_id": "elig-3"
+        },
+        {
+          "field": "institution_type",
+          "op": "eq",
+          "value": "university or college funded by the central or state government",
+          "clause_id": "elig-5"
+        },
+        {
+          "field": "institution_type",
+          "op": "eq",
+          "value": "institute of national importance",
+          "clause_id": "elig-6"
+        }
+      ]
     }
   ],
   "rule_logic": "all"

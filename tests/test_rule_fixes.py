@@ -40,7 +40,7 @@ def test_m13_family_exclusions_and_group_d_carve_outs(changes, expected):
 
 
 C03_OK = {"is_small_or_marginal_farmer": True, "cultivable_landholding_hectares": 2, "age": 30,
-          "name_in_land_records_on_2019_08_01": True, "has_aadhaar": True, "has_savings_or_pm_kisan_account": True,
+          "name_in_land_records_on_2019_08_01": True, "has_aadhaar": True, "has_bank_or_post_office_savings_account": True,
           "is_nps_member": False, "is_esic_member": False, "is_epfo_member": False,
           "covered_by_other_statutory_social_security_scheme": False,
           "opted_for_pm_sym_or_pm_vyapari_maandhan": False, "is_institutional_landholder": False,

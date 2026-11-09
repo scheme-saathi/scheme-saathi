@@ -54,7 +54,7 @@ def test_retention_window_follows_the_policy(policy):
 
 def test_valid_values_are_accepted(policy):
     policy.validate_fact("age", 34)
-    policy.validate_fact("annual_income", 120000.5)
+    policy.validate_fact("annual_family_income", 120000.5)
     policy.validate_fact("is_woman_or_girl", False)
     policy.validate_fact("marital_status", "married")
 

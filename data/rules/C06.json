@@ -34,6 +34,7 @@
     "BPL Card.",
     "Age Proof - For age, the birth certificate or school certificate may be relied on. In their absence ration card and EPIC may be considered. If there is no valid document, any Medical Officer of any government hospital may be authorized to issue the age certificate."
   ],
+  "rule_logic": "all",
   "rules": [
     {"field": "is_widow", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "age", "op": "gte", "value": 40, "clause_id": "elig-1", "status": "reviewed"},

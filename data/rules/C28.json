@@ -64,9 +64,9 @@
       "status": "draft"
     },
     {
-      "field": "age",
+      "field": "age_in_months",
       "op": "gte",
-      "value": 17.5,
+      "value": 210,
       "clause_id": "elig-2",
       "status": "draft"
     },
@@ -78,7 +78,14 @@
       "status": "draft"
     },
     {
-      "field": "meets_armed_forces_education_physical_and_medical_standards",
+      "field": "meets_armed_forces_education_qualification",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "draft"
+    },
+    {
+      "field": "meets_armed_forces_physical_and_medical_standards",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",

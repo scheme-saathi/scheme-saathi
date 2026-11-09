@@ -89,6 +89,31 @@ These were already draft and stay draft. The reviewer checks them as for any AI-
 - **C15:** only a single-child family with a girl (`is_only_child`, see F7 answers). Deemed universities without government funds are excluded. The age is the age at PG admission, 30 or under, asked directly.
 - **M14:** age 18–45, or up to 50 for the groups elig-1 names (SC/ST, women, ex-servicemen, differently abled). Class 7 is needed above a ₹10 lakh project and class 10 above ₹25 lakh. The fields are CMEGP-specific (F5), including the project cost. The relaxation also covers VJNT (VJ-A, NT-B/C/D), OBC and the six central minorities (benefits-11, see F7 answers).
 
+## Smaller fixes (Phase 4 of `docs/rule-fix-plan.md`, 9 Nov 2026)
+
+C01, C04, C05 and C10 are left untouched so they stay live. Their F3, F4 and F5 renames and C04's clause-text fixes wait until they are next reviewed. The other changed schemes were draft or already waiting for re-review.
+
+- **C11:** a woman, or a man from SC/ST, as two questions. The rule for enterprises (51% stake) is not added, because no sentence in the record states it.
+- **C18:** pregnant, more than 12 weeks and at most 40 weeks; residence in India.
+- **C21:** indigent, or dementia / continuous nursing care, as two questions. The senior-citizen age of 60 waits for F7.
+- **C22:** years the case has been pending (more than 10). Whether High Court cases count waits for F7.
+- **C28:** the 17.5-year minimum is 210 months, worked out from the date of birth. The armed-forces standards are two questions: education, and physical and medical. The upper age waits for F7.
+- **C32:** medal winner or international participant as two questions. The kind of institution is a choice, and each kind cites its own clause. National-level medals beyond the National Games wait for F7.
+- **C33:** the orthopedic disability must be permanent.
+- **C36:** course and year as a list of choices. CGPA of at least 7, or 65% or more. "Letter of acceptance". Whether 1st- and 2nd-year B.Tech students count waits for F7.
+- **M05:** enrolled in a Maharashtra-recognised institution (elig-3). The post-matric question says "class 11, 12 or a technical or professional degree".
+- **M06:** a child (under 18), with an intellectual disability, needing care and protection, as three questions.
+- **M07:** roadside cobbler, and identified by the Gram Panchayat, as two questions.
+- **M10:** family income (F3): below ₹18,000 a year for 100% assistance (elig-5), up to ₹24,000 for 50% (elig-6).
+- **M11:** unemployed (details-1); family income below ₹1 lakh (F3).
+- **M21:** `has_aadhaar` dropped, because an Aadhaar-linked bank account implies it.
+- **C02, C03 (F4):** `has_bank_or_post_office_savings_account`; C03 also accepts a PM-KISAN account. Gold profiles for C02 use the new field.
+- **Cleanup:**
+  - `rule_logic` is explicit in C02, C06, C17, C19, C30, C38, M13 and M16. This is metadata only, so live schemes stay live.
+  - C02's exit clauses quote the record word for word.
+  - Heading-only clauses are removed from C07, M09 and M12.
+- **Memory policy:** `annual_income` is removed, since no rule uses it now. The temporary-only list names `has_permanent_orthopedic_disability` and `has_intellectual_disability`.
+
 ## Engine and intake changes (Phase 3 of `docs/rule-fix-plan.md`, 9 Nov 2026)
 
 - **`applicant_type`** (F1) is an optional key of a rule file, `individual` by default.

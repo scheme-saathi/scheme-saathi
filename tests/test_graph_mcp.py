@@ -53,5 +53,5 @@ def test_rule_tools_are_read_only_and_evaluate_reviewed_rules():
     live = evaluate_profile({"age": 40, "has_individual_bank_or_post_office_account": True}, "C01")
     assert live["ok"]
     assert live["data"]["verdict"] == "eligible"
-    preview = evaluate_profile({"age": 40, "age_nearer_birthday": 40, "has_bank_account": True, "consents_to_auto_debit": True}, "C02", include_draft=True)
+    preview = evaluate_profile({"age": 40, "age_nearer_birthday": 40, "has_bank_or_post_office_savings_account": True, "consents_to_auto_debit": True}, "C02", include_draft=True)
     assert preview["data"]["verdict"] == "eligible"

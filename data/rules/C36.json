@@ -41,9 +41,17 @@
   ],
   "rules": [
     {
-      "field": "is_engineering_student_in_eligible_year",
-      "op": "eq",
-      "value": true,
+      "field": "engineering_course_and_year",
+      "op": "in",
+      "value": [
+        "pre-final or final year of B.E./B.Tech",
+        "integrated M.Tech",
+        "first or second year of M.E./M.Tech",
+        "MS (Research)",
+        "M.Sc. (Engineering)",
+        "dual degree B.Tech and M.Tech",
+        "another degree with at least 4 years of engineering studies"
+      ],
       "clause_id": "elig-1",
       "status": "draft"
     },
@@ -55,14 +63,21 @@
       "status": "draft"
     },
     {
-      "field": "previous_year_score_at_least_7_cgpa_or_65_percent",
-      "op": "eq",
-      "value": true,
+      "field": "previous_year_cgpa",
+      "op": "gte",
+      "value": 7,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "previous_year_percentage",
+          "op": "gte",
+          "value": 65
+        }
+      ]
     },
     {
-      "field": "has_paper_accepted_at_event_abroad",
+      "field": "has_letter_of_acceptance_for_paper_at_event_abroad",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",

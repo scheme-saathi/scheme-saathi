@@ -23,6 +23,7 @@
     "Form 3 -  A copy of a current refill slip consisting of a 17-digit LPG ID number",
     "Form 4 - A copy of a bank passbook's front page and a canceled cheque"
   ],
+  "rule_logic": "all",
   "rules": [
     {"field": "is_lpg_user", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "applicant_and_spouse_combined_taxable_income_previous_fy", "op": "lte", "value": 1000000, "clause_id": "elig-2", "status": "reviewed"}

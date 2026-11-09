@@ -68,13 +68,6 @@
       "status": "draft"
     },
     {
-      "field": "has_aadhaar",
-      "op": "eq",
-      "value": true,
-      "clause_id": "elig-4",
-      "status": "draft"
-    },
-    {
       "field": "has_aadhaar_linked_bank_account",
       "op": "eq",
       "value": true,

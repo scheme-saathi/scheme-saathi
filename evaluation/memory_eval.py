@@ -92,7 +92,7 @@ class CaseResult:
 def persona_facts(case: Mapping[str, Any]) -> dict[str, Any]:
     """The rule-field facts a household test case states. Anything it does not state stays unknown.
 
-    Household income stands in for both income fields the rules use, and the persona is an Indian
+    Household income stands in for the family income the rules use, and the persona is an Indian
     citizen by construction. Maharashtra residence follows the persona's state.
     """
     recorded = case.get("profile_facts") or {}
@@ -101,7 +101,6 @@ def persona_facts(case: Mapping[str, Any]) -> dict[str, Any]:
         facts["age"] = recorded["respondent_age"]
     income = recorded.get("approx_annual_household_income_inr", recorded.get("annual_household_income_inr"))
     if isinstance(income, (int, float)):
-        facts["annual_income"] = income
         facts["annual_family_income"] = income
     if isinstance(case.get("state"), str):
         facts["is_maharashtra_resident"] = case["state"].strip().lower() == "maharashtra"
@@ -114,7 +113,7 @@ def household_cases(limit: int | None = None) -> list[Case]:
     for path in HOUSEHOLD_TEST_CASES:
         for raw in json.loads(path.read_text(encoding="utf-8")):
             facts = persona_facts(raw)
-            if "age" in facts or "annual_income" in facts:
+            if "age" in facts or "annual_family_income" in facts:
                 cases.append(Case(str(raw.get("test_case_id") or raw.get("source_persona_id")), facts))
     return cases[:limit] if limit else cases
 

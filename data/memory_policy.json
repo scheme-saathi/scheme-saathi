@@ -15,11 +15,6 @@
       "purpose": "Age rules; it changes, so it is reconfirmed soon",
       "retention": {"store": true, "reconfirm_days": 30, "expiry_days": 90}
     },
-    "annual_income": {
-      "type": "number",
-      "purpose": "Income thresholds; shown for confirmation in every assessment",
-      "retention": {"store": true, "reconfirm_days": 30, "expiry_days": 30}
-    },
     "annual_family_income": {
       "type": "number",
       "purpose": "Family income thresholds; shown for confirmation in every assessment",
@@ -54,8 +49,8 @@
   "temporary_only": [
     "has_disability",
     "disability_percent",
-    "has_orthopedic_disability",
-    "is_child_with_intellectual_disability_needing_care",
+    "has_permanent_orthopedic_disability",
+    "has_intellectual_disability",
     "social_category",
     "has_tuberculosis",
     "worker_or_family_member_undergoing_critical_treatment"

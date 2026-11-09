@@ -113,11 +113,18 @@
       "status": "reviewed"
     },
     {
-      "field": "has_savings_or_pm_kisan_account",
+      "field": "has_bank_or_post_office_savings_account",
       "op": "eq",
       "value": true,
       "clause_id": "elig-6",
-      "status": "reviewed"
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "has_pm_kisan_account",
+          "op": "eq",
+          "value": true
+        }
+      ]
     },
     {
       "field": "is_nps_member",

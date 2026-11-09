@@ -18,6 +18,7 @@
     }
   ],
   "documents_required": [],
+  "rule_logic": "all",
   "rules": [
     {"field": "has_tuberculosis", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "government_notification_on_or_after_2018_04_01", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},

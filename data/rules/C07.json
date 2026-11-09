@@ -9,10 +9,6 @@
   },
   "clauses": [
     {
-      "clause_id": "elig-1",
-      "text": "General Conditions:"
-    },
-    {
       "clause_id": "elig-2",
       "text": "The applicant should be an Indian scientist working in agriculture or allied fields in ICAR institutes, public agricultural institutions, or Krishi Vigyan Kendras, and must have made significant contributions in India."
     },
@@ -35,10 +31,6 @@
     {
       "clause_id": "elig-7",
       "text": "The applicant should apply under only one category and cannot be considered for multiple categories."
-    },
-    {
-      "clause_id": "elig-8",
-      "text": "Category-wise Conditions:"
     },
     {
       "clause_id": "elig-9",

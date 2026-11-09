@@ -22,6 +22,7 @@
     }
   ],
   "documents_required": [],
+  "rule_logic": "all",
   "rules": [
     {"field": "is_indian_citizen", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "school_class", "op": "gte", "value": 1, "clause_id": "elig-2", "status": "draft", "or_conditions": [{"field": "is_in_bal_vatika_or_pre_school_class", "op": "eq", "value": true, "clause_id": "benefits-7"}]},

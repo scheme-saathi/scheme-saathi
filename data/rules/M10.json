@@ -72,11 +72,19 @@
       "status": "draft"
     },
     {
-      "field": "monthly_income",
-      "op": "lte",
-      "value": 2000,
-      "clause_id": "elig-6",
-      "status": "draft"
+      "field": "annual_family_income",
+      "op": "lt",
+      "value": 18000,
+      "clause_id": "elig-5",
+      "status": "draft",
+      "or_conditions": [
+        {
+          "field": "annual_family_income",
+          "op": "lte",
+          "value": 24000,
+          "clause_id": "elig-6"
+        }
+      ]
     }
   ],
   "rule_logic": "all"

@@ -61,7 +61,21 @@
       "status": "draft"
     },
     {
-      "field": "is_child_with_intellectual_disability_needing_care",
+      "field": "age",
+      "op": "lt",
+      "value": 18,
+      "clause_id": "elig-4",
+      "status": "draft"
+    },
+    {
+      "field": "has_intellectual_disability",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-4",
+      "status": "draft"
+    },
+    {
+      "field": "needs_care_and_protection",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",

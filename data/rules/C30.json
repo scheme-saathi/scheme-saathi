@@ -32,6 +32,7 @@
     "Any other document required by the College or the District Social Welfare Office"
   ],
   "applicant_type": "institution",
+  "rule_logic": "all",
   "rules": [
     {"field": "college_has_enrolled_students_with_disabilities", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "institution_ugc_approved_under_2f_and_12b", "op": "eq", "value": true, "clause_id": "elig-2", "status": "reviewed"},

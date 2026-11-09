@@ -36,7 +36,7 @@ ALLOWED_VALUES = {
                            "Andaman and Nicobar Islands"},
 }
 BANK_FIELDS = (
-    "has_individual_bank_or_post_office_account", "has_bank_account",
+    "has_individual_bank_or_post_office_account", "has_bank_or_post_office_savings_account",
     "has_savings_account", "has_savings_or_jandhan_account_with_ifsc",
 )
 

@@ -68,6 +68,7 @@
     "Ferfar",
     "Ration card etc"
   ],
+  "rule_logic": "all",
   "rules": [
     {"field": "is_cultivable_landholding_farmer_family", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},
     {"field": "held_qualifying_land_on_2019_02_01", "op": "eq", "value": true, "clause_id": "elig-1", "status": "reviewed"},

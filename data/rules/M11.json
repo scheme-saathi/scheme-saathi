@@ -31,6 +31,10 @@
     {
       "clause_id": "elig-6",
       "text": "The annual income of the applicant should be less than ₹1,00,000/-."
+    },
+    {
+      "clause_id": "details-1",
+      "text": "The \"Financial Assistance to Disabled for Self Employment\" is a scheme by the Department of Social Justice & Special Assistance, Govt. of Maharashtra. The objective of this scheme is to facilitate the self-employment of unemployed disabled persons. Under this scheme, financial assistance is provided to persons with disabilities for self-employment, small-scale business, and agro-based project. Only citizens who are permanent residents of the state of Maharashtra are eligible to apply for this scheme. This scheme is 100% funded by the Govt. of Maharashtra."
     }
   ],
   "documents_required": [
@@ -56,6 +60,13 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
+      "status": "draft"
+    },
+    {
+      "field": "is_unemployed",
+      "op": "eq",
+      "value": true,
+      "clause_id": "details-1",
       "status": "draft"
     },
     {
@@ -87,7 +98,7 @@
       "status": "draft"
     },
     {
-      "field": "annual_income",
+      "field": "annual_family_income",
       "op": "lt",
       "value": 100000,
       "clause_id": "elig-6",

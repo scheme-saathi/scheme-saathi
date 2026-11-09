@@ -62,14 +62,35 @@
   ],
   "rules": [
     {
-      "field": "is_pregnant_in_2nd_or_3rd_trimester",
+      "field": "is_pregnant",
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
       "status": "draft"
     },
     {
+      "field": "weeks_of_pregnancy",
+      "op": "gt",
+      "value": 12,
+      "clause_id": "elig-5",
+      "status": "draft"
+    },
+    {
+      "field": "weeks_of_pregnancy",
+      "op": "lte",
+      "value": 40,
+      "clause_id": "elig-6",
+      "status": "draft"
+    },
+    {
       "field": "is_indian_citizen",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-2",
+      "status": "draft"
+    },
+    {
+      "field": "resides_in_india",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",

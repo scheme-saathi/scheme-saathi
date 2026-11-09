@@ -48,9 +48,9 @@
   "applicant_type": "institution",
   "rules": [
     {
-      "field": "case_pending_in_subordinate_courts_over_10_years",
-      "op": "eq",
-      "value": true,
+      "field": "years_case_pending_in_subordinate_courts",
+      "op": "gt",
+      "value": 10,
       "clause_id": "elig-5",
       "status": "draft"
     },

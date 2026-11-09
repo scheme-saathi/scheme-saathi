@@ -69,6 +69,13 @@
       "status": "draft"
     },
     {
+      "field": "is_enrolled_in_maharashtra_recognised_institution",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-3",
+      "status": "draft"
+    },
+    {
       "field": "has_disability",
       "op": "eq",
       "value": true,
@@ -97,7 +104,7 @@
       "status": "draft"
     },
     {
-      "field": "is_pursuing_post_matric_course",
+      "field": "is_studying_class_11_12_or_a_technical_or_professional_degree",
       "op": "eq",
       "value": true,
       "clause_id": "elig-8",
