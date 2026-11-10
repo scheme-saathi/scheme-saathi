@@ -63,6 +63,26 @@ def test_edit_that_breaks_eligibility_never_reaches_approval_again():
     assert final["verdicts"]["SYNTH-PENSION-001"]["verdict"] == "not_eligible"
 
 
+def test_edit_with_an_unknown_field_is_rejected():
+    graph, config, _ = start("edit-unknown")
+    final = graph.invoke(
+        Command(resume={"action": "edit", "changes": {"is_admin": True}}),
+        config,
+    )
+    assert final["approval_status"] == "invalid"
+    assert final.get("submission") is None
+
+
+def test_edit_with_a_wrong_field_type_is_rejected():
+    graph, config, _ = start("edit-type")
+    final = graph.invoke(
+        Command(resume={"action": "edit", "changes": {"age": "99"}}),
+        config,
+    )
+    assert final["approval_status"] == "invalid"
+    assert final.get("submission") is None
+
+
 def test_submit_refuses_a_form_that_changed_after_approval():
     approved = {"scheme_id": "SYNTH-PENSION-001", "applicant": CITIZEN}
     changed = {"scheme_id": "SYNTH-PENSION-001", "applicant": {**CITIZEN, "age": 99}}

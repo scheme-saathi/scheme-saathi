@@ -148,15 +148,17 @@ def get_application_status(application_id: str, household_id: str | None = None)
         A JSON object with the current application status.
     """
     application = APPLICATIONS.get(application_id)
-    if application is None or (
-        household_id is not None and application.get("household_id") != household_id
-    ):
+    if not _application_owned_by(application, household_id):
         return {
             "ok": False,
             "access": "read",
             "error": {"code": "application_not_found", "message": f"Application '{application_id}' was not found."},
         }
     return {"ok": True, "access": "read", "data": {"application_id": application_id, "status": application["status"]}}
+
+
+def _application_owned_by(application: dict[str, Any] | None, household_id: str | None) -> bool:
+    return bool(household_id and application and application.get("household_id") == household_id)
 
 
 @app.post("/applications")

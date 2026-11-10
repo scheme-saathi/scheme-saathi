@@ -873,12 +873,10 @@ def test_submit_draft_rejects_unknown_and_already_submitted_drafts():
 def test_sensitive_input_is_rejected_before_routing_or_specialists():
     agents = build_agents()
 
-    result = build_agent_graph(agents).invoke(
-        {"request": "My Aadhar is 1234 5678 9012, am I eligible?", "selected_scheme_id": "C01"}
-    )
-
-    assert result["status"] == "validation_error"
-    assert "1234 5678 9012" not in result["response"]
+    with pytest.raises(ValueError, match="Sensitive information detected"):
+        build_agent_graph(agents).invoke(
+            {"request": "My Aadhar is 1234 5678 9012, am I eligible?", "selected_scheme_id": "C01"}
+        )
     assert agents.supervisor.calls == []
     assert agents.intake.asked == []
     assert agents.eligibility.calls == []

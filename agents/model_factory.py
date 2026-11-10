@@ -6,6 +6,9 @@ from typing import Literal
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 
+from observability.langchain_callbacks import ModelCallRecorder
+from observability.metrics import active_metrics
+
 ModelRole = Literal["supervisor", "specialist"]
 
 
@@ -33,6 +36,11 @@ def create_chat_model(role: ModelRole) -> ChatOpenAI:
             "Set OPENAI_API_KEY or OPENROUTER_API_KEY to use GPT-backed agents."
         )
 
+    options = {}
+    if base_url and "openrouter.ai" in base_url and active_metrics() is not None:
+        # Ask OpenRouter to report the cost of each call so it does not have to be estimated.
+        options["extra_body"] = {"usage": {"include": True}}
+
     return ChatOpenAI(
         model=model_name,
         api_key=api_key,
@@ -40,4 +48,6 @@ def create_chat_model(role: ModelRole) -> ChatOpenAI:
         temperature=0,
         timeout=30,
         max_retries=2,
+        callbacks=[ModelCallRecorder(role, model_name)],
+        **options,
     )

@@ -127,7 +127,7 @@ def evaluate_profile(profile: dict[str, object], scheme_id: str, include_draft: 
     Args:
         profile: Household facts keyed by field name.
         scheme_id: The scheme identifier to evaluate.
-        include_draft: Preview only: evaluate unreviewed draft rules. Never use for advice or decisions.
+        include_draft: Deprecated compatibility argument. Draft rules cannot produce a verdict.
 
     Returns:
         A JSON object with an ``ok`` flag and the evaluation payload under ``data``.
@@ -141,6 +141,30 @@ def evaluate_profile(profile: dict[str, object], scheme_id: str, include_draft: 
             "error": {"code": "scheme_not_found", "message": str(exc)},
         }
 
+    if include_draft:
+        return _error(
+            "draft_rules_not_allowed",
+            "Draft rules cannot produce an eligibility verdict; use the reviewer-only preview.",
+        )
+
+    return _evaluate(scheme, profile, preview=False)
+
+
+@mcp.tool()
+def preview_profile(profile: dict[str, object], scheme_id: str) -> dict[str, Any]:
+    """Reviewer-only informational preview; never an eligibility verdict or submission basis."""
+    try:
+        scheme = _load_scheme(scheme_id)
+    except ValueError as exc:
+        return {
+            "ok": False,
+            "access": "read",
+            "error": {"code": "scheme_not_found", "message": str(exc)},
+        }
+    return _evaluate(scheme, profile, preview=True)
+
+
+def _evaluate(scheme: SchemeRecord, profile: dict[str, object], preview: bool) -> dict[str, Any]:
     try:
         result = evaluate(derive_implied_facts(derive_age_fields(profile)), _conditions(scheme, include_draft))
     except Exception as exc:  # pragma: no cover - defensive guard for invalid runtime input

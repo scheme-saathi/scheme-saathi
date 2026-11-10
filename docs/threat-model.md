@@ -17,9 +17,11 @@ demo, not a production security certification.
 
 ## Trust boundaries and data flow
 
-1. User input enters through the API and is passed into a supervisor/specialist
-   graph. The supervisor validates inputs before routing and validates final
-   specialist responses before they leave the graph.
+1. Recognized sensitive identifiers in chat text, structured facts, and approval
+   edits are rejected at the API/service and graph invocation boundaries before
+   thread creation, checkpointing, or model calls. The UI also rejects recognized
+   identifiers before displaying or saving a chat turn. The supervisor validates
+   inputs before routing and validates final specialist responses.
 2. Scheme pages, retrieved text, tool outputs, and model outputs are untrusted
    data. They must not be interpreted as instructions or as authority to change
    eligibility rules.
@@ -63,7 +65,7 @@ demo, not a production security certification.
 | Direct request creates or submits an application without approval | Direct portal routes require Auth0 identity; POST additionally checks a one-use capability bound to the authenticated household and exact form. Workflow writes use the same capability mechanism after exact-payload approval. | Nonce tracking is process-local unless all portal processes share `MOCK_PORTAL_NONCE_DB`; the issuer uses a shared secret and the direct route bypasses the graph approval flow. Keep the portal private; replace with a separately authorized service boundary before production. |
 | Approval is replayed after form changes | Approval is bound to a canonical form hash; the submit node rechecks the approved hash and portal draft hash. | Keep tests for changed forms, wrong hashes, rejection, and edits; persistent storage must preserve these invariants. |
 | Caller accesses another household's thread or portal status | Protected API and portal routes derive household identity from a verified Auth0 token and check the stored owner. | Configure and test the Auth0 custom household claim carefully. Thread/application records and ownership maps are in memory and do not provide durable production isolation. |
-| Full Aadhaar, bank-account, or other identifier is exposed | The live supervisor rejects recognized sensitive input before routing and logs only a masked copy; output validation also rejects recognized sensitive output. MCP audit events omit tool payloads. | Detection is pattern-based and does not guarantee identification of every sensitive value. Review non-MCP logs, provider traces, and errors separately; use masked synthetic values in tests. |
+| Full Aadhaar, bank-account, or other identifier is exposed | The UI, chat and legacy API/service entry points, and graph execution wrappers reject recognized patterns before processing; sensitive edits do not consume approval. Uploaded filenames are checked too. Supervisor input and output logs omit message contents; MCP audit events omit tool payloads. | Detection is heuristic and can miss identifiers, passwords, OTPs, unusual formats, or values in financial fields, and can reject ordinary long numbers. It does not inspect uploaded document contents; users must redact documents before upload. Graph state updates or direct access to underlying storage bypass the execution wrapper. Previously saved data is not automatically scrubbed; review and remove it separately, including provider traces and other logs. |
 | Household data is copied into tool audit logs | MCP audit events record only actor/tool labels, outcome, safe error category and duration; arguments, results and exception text are excluded. | Other application, model-provider and server logs require their own review; this control covers the graph MCP boundary only. |
 | Document contents are treated as verified | Document checker and field comparison tool disclaim authenticity verification. | Document extraction/storage is not wired into the workflow. Do not present checklist matching as authenticity or legal validity verification. |
 | Model/API credential leaks | Model IDs and credentials are configured through environment variables; `.env` is intended to remain local. | Keep secrets out of source, logs, screenshots, and examples; use empty values in `.env.example` and rotate any exposed key. |
@@ -95,3 +97,11 @@ demo, not a production security certification.
   before persisting memory or application data.
 - Test unauthorized writes, direct-route bypass, invalid/replayed approvals,
   form edits, cross-household access, and sensitive-data masking.
+
+## Red-team evidence
+
+`tests/redteam/` holds 77 attacks and 24 legitimate cases, run with the defences off and on
+(`python tests/redteam/run_redteam.py`). After the recorded fixes, 80.5% of attacks get through
+with defences off and 0% with them on; no legitimate case is blocked with defences on.
+`tests/redteam/known_gaps.json` is empty for this suite. See `tests/redteam/README.md` for the
+method and limits; the suite still needs independent review by role 5.
