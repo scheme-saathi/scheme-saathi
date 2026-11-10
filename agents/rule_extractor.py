@@ -136,8 +136,14 @@ class RuleExtractor:
     def extract(self, value: ExtractionInput | dict, lessons: list[str] | None = None) -> Extraction:
         agent = StructuredGPTAgent(self._model, ExtractionInput, ClauseByClause, instructions_with(lessons or []))
         raw = agent.invoke(ExtractionInput.model_validate(value))
+        rules, seen = [], set()
+        for rule in (rule for clause in raw.clauses for rule in clause.rules):
+            key = rule.model_dump_json(exclude={"clause_id"})
+            if key not in seen:  # an exact duplicate (C07: age lt 60 three times) adds nothing
+                seen.add(key)
+                rules.append(rule)
         return Extraction(
-            rules=[rule for clause in raw.clauses for rule in clause.rules],
+            rules=rules,
             rule_logic=raw.rule_logic,
             open_questions=raw.open_questions,
             clause_notes={c.clause_id: c.note for c in raw.clauses if c.note},

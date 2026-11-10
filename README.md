@@ -963,7 +963,15 @@ python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_ex
 python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_extraction_configs/rx0_no_playbook.json
 ```
 
-It needs `SPECIALIST_MODEL` and `OPENROUTER_API_KEY` in `.env`, prints one line per scheme, and writes `schemes.jsonl` (each draft, its score and errors) and `summary.json` (exact-scheme and exact-rule rates, condition precision/recall/F1, errors by type, tokens, latency) to `data/evaluation-runs/`. `rx0_no_playbook` is the baseline: no lessons yet. The Reflexion loop (reflection step, reviewed playbook in the LangGraph store, frozen before the held-out run) is added next.
+It needs `SPECIALIST_MODEL` and `OPENROUTER_API_KEY` in `.env`, prints one line per scheme, and writes `schemes.jsonl` (each draft, its score and errors) and `summary.json` (exact-scheme and exact-rule rates, condition precision/recall/F1, errors by type, tokens, latency) to `data/evaluation-runs/`. `rx0_no_playbook` is the baseline: no lessons.
+
+**The Reflexion loop.** After a development run, the reflection step (`agents/rule_reflector.py`) sees each type of error with examples from several schemes and proposes at most three short lessons per type, each saying when it applies:
+
+```bash
+python tests/evaluation/reflect_rule_extraction.py --run data/evaluation-runs/<development run folder>
+```
+
+Proposed lessons are added to `data/playbook/rule_extractor.json` with status `proposed`, and the reflection tokens are written to the run's `reflection.json` (the cost of generating lessons, for E3). A person approves, edits or rejects each one; only approved lessons are loaded into the LangGraph store (namespace `playbook/rule_extractor`), and any lesson can be withdrawn. `rx1_playbook` gives the extractor the approved lessons relevant to each scheme: a lesson's keywords must appear in the scheme's text (a lesson without keywords always applies), top 5. Before the held-out run the playbook is frozen: every lesson must be reviewed, the approved ones get a version hash, and a `--final` run refuses a playbook that isn't frozen or changed since. Reflection refuses held-out runs, so lessons are learned on development schemes only.
 
 ## Single-agent baseline (L11)
 

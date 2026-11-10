@@ -57,17 +57,35 @@ def default_extractor(config: dict[str, Any]) -> Callable[[dict[str, Any], list[
     return lambda value, lessons: extractor.extract(value, lessons).model_dump()
 
 
-def lessons_for(scheme_id: str, config: dict[str, Any]) -> list[str]:
-    """Reviewed lessons relevant to this scheme. The playbook arrives in Phase 2; until then none."""
-    return []
+def playbook_store(config: dict[str, Any], final: bool = False):
+    """The approved lessons in a LangGraph store, or None for a run without a playbook."""
+    if not config.get("playbook"):
+        return None
+    from evaluation.playbook import Playbook, to_store
+
+    playbook = Playbook.load(ROOT / config["playbook"])
+    if final:
+        playbook.check_frozen()  # held-out runs use the frozen playbook only
+    return to_store(playbook)
+
+
+def lessons_for(value: dict[str, Any], store, config: dict[str, Any]) -> list[dict[str, Any]]:
+    """Reviewed lessons relevant to this scheme, read from the store; none without a playbook."""
+    if store is None:
+        return []
+    from evaluation.playbook import TOP_K, relevant_lessons
+
+    text = " ".join(c["text"] for c in value["clauses"])
+    return relevant_lessons(store, text, config.get("top_k", TOP_K))
 
 
 def run(config: dict[str, Any], split: str, limit: int | None = None,
         extract: Callable[[dict[str, Any], list[str]], dict[str, Any]] | None = None,
-        quiet: bool = False) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+        quiet: bool = False, final: bool = False) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     from langchain_core.callbacks import get_usage_metadata_callback
 
     scheme_ids = rx.load_split()[split][:limit] if limit else rx.load_split()[split]
+    store = playbook_store(config, final=final)
     extract = extract or default_extractor(config)
     vocabulary = rx.field_vocabulary()
     rows = []
@@ -75,17 +93,18 @@ def run(config: dict[str, Any], split: str, limit: int | None = None,
         _progress(f"Running {config['name']} on {len(scheme_ids)} {split} schemes...")
     for number, scheme_id in enumerate(scheme_ids, 1):
         value = rx.extraction_input(scheme_id, vocabulary)
-        lessons = lessons_for(scheme_id, config)
+        lessons = lessons_for(value, store, config)
         started = time.perf_counter()
         with get_usage_metadata_callback() as usage:
             try:
-                draft, error = extract(value, lessons), None
+                draft, error = extract(value, [lesson["text"] for lesson in lessons]), None
             except Exception as exc:  # a failed extraction is reported, never dropped
                 draft, error = {"rules": [], "rule_logic": "all"}, f"{type(exc).__name__}: {exc}"
         latency_ms = round((time.perf_counter() - started) * 1000, 1)
         result = rx.score(draft, rx.load_gold(scheme_id), value["clauses"])
         rows.append({
-            "scheme_id": scheme_id, "error": error, "lessons": lessons, "draft": draft, "score": result,
+            "scheme_id": scheme_id, "error": error, "lessons": [lesson["lesson_id"] for lesson in lessons],
+            "draft": draft, "score": result,
             "latency_ms": latency_ms,
             "tokens": {model: dict(u) for model, u in usage.usage_metadata.items()},
         })
@@ -109,6 +128,7 @@ def summarise(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "error_schemes": [r["scheme_id"] for r in rows if r["error"]],
         "exact_schemes": [r["scheme_id"] for r in rows if r["score"]["scheme_exact"]],
         "lessons_used": sum(len(r["lessons"]) for r in rows),
+        "lessons_by_id": dict(Counter(lesson for r in rows for lesson in r["lessons"])),
         "latency_ms": {"median": statistics.median(latencies) if latencies else None,
                        "max": max(latencies) if latencies else None},
         "tokens_by_model": {model: dict(c) for model, c in tokens.items()},
@@ -147,7 +167,7 @@ def main() -> int:
     if args.split == "held_out" and not args.final:
         parser.error("held-out schemes are for the final evaluation only; add --final if this is it")
     config = load_config(args.config)
-    rows, summary = run(config, args.split, args.limit)
+    rows, summary = run(config, args.split, args.limit, final=args.final)
     out = write_run(config, args.split, rows, summary)
     print(json.dumps({k: v for k, v in summary.items() if k != "exact_schemes"}, indent=2, ensure_ascii=False))
     print(f"\nWritten to {out.relative_to(ROOT)}")
