@@ -2,13 +2,9 @@ name: Scheme Saathi AWS CI/CD
 
 on:
   push:
-    branches: [main]
-    paths-ignore:
-      - "README.md"
+    branches: [main, develop]
   pull_request:
     branches: [main, develop]
-    paths-ignore:
-      - "README.md"
   workflow_dispatch:
 
 concurrency:
@@ -46,7 +42,7 @@ jobs:
   push_to_registry:
     name: Build and push Docker image
     needs: integration
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'))
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -102,7 +98,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ vars.DOCKERHUB_REPOSITORY }}:main
+            ${{ vars.DOCKERHUB_REPOSITORY }}:${{ github.ref_name }}
             ${{ vars.DOCKERHUB_REPOSITORY }}:sha-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
