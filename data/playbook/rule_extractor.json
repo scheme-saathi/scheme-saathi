@@ -1,0 +1,761 @@
+{
+  "lessons": [
+    {
+      "lesson_id": "L001",
+      "text": "When a clause specifies a group of individuals with a condition such as 'covered under any other statutory social security schemes', do not write a rule for that condition.",
+      "applies_when": "the clause mentions coverage under other schemes",
+      "keywords": [
+        "covered under",
+        "statutory social security schemes"
+      ],
+      "error_type": "extra_rule",
+      "examples": [
+        "C03"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Wrong: C03's reviewed rules exclude NPS, ESIC and EPFO members (three eq false rules)."
+    },
+    {
+      "lesson_id": "L002",
+      "text": "When a clause states that the applicant must be a specific type of professional or individual, such as 'an Indian scientist working in agriculture', write a rule that confirms their professional status without adding unnecessary conditions.",
+      "applies_when": "the clause specifies a professional requirement",
+      "keywords": [
+        "indian scientist",
+        "working in agriculture"
+      ],
+      "error_type": "extra_rule",
+      "examples": [
+        "C07"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Too vague to change behaviour."
+    },
+    {
+      "lesson_id": "L003",
+      "text": "A clause asking for a document, certificate or letter (\"No Objection Certificate\", \"letter of acceptance\") is something to submit: write no rule for it.",
+      "applies_when": "the clause mentions a document requirement",
+      "keywords": [
+        "certificate",
+        "no objection",
+        "document",
+        "letter"
+      ],
+      "error_type": "extra_rule",
+      "examples": [
+        "C09"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": null
+    },
+    {
+      "lesson_id": "L004",
+      "text": "When a clause specifies that an applicant must be the only girl child in the family, write a rule that checks if the applicant is a woman or girl.",
+      "applies_when": "the clause specifies 'only girl child in the family'",
+      "keywords": [
+        "only girl child",
+        "family"
+      ],
+      "error_type": "missing_rule",
+      "examples": [
+        "C15"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Wrong and specific: C15 needs is_only_child, not only a gender check."
+    },
+    {
+      "lesson_id": "L005",
+      "text": "When a clause says only one person per family can benefit, write family_member_already_beneficiary eq false.",
+      "applies_when": "the clause specifies 'only one person in the family'",
+      "keywords": [
+        "one person",
+        "only one",
+        "per family"
+      ],
+      "error_type": "missing_rule",
+      "examples": [
+        "M12"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": null
+    },
+    {
+      "lesson_id": "L006",
+      "text": "When a benefit can be had only once (\"eligible only once\", \"can be availed only once\"), write a has_availed_<scheme>_before eq false rule.",
+      "applies_when": "the clause specifies 'eligible only once during the course of study'",
+      "keywords": [
+        "only once",
+        "availed"
+      ],
+      "error_type": "missing_rule",
+      "examples": [
+        "C36"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": null
+    },
+    {
+      "lesson_id": "L007",
+      "text": "For former or present Ministers, MPs, MLAs, Mayors or District Panchayat chairpersons, use is_former_or_present_listed_political_office_holder when the clause is about the applicant, and family_has_former_or_present_listed_political_office_holder when it is about any family member.",
+      "applies_when": "the clause mentions political office holders.",
+      "keywords": [
+        "ministers",
+        "lok sabha",
+        "legislative",
+        "mayors"
+      ],
+      "error_type": "wrong_field",
+      "examples": [
+        "C03"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": null
+    },
+    {
+      "lesson_id": "L008",
+      "text": "When a clause refers to total income, use 'annual_family_income' instead of 'annual_income'.",
+      "applies_when": "the clause specifies total income from all sources.",
+      "keywords": [
+        "total income",
+        "₹ 8,00,000 per annum"
+      ],
+      "error_type": "wrong_field",
+      "examples": [
+        "C16"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Not general: C16 uses family income because of an official-source answer; C31's limit is applicant and spouse."
+    },
+    {
+      "lesson_id": "L009",
+      "text": "When a clause specifies eligibility based on gender for women scientists, use 'is_woman_or_girl' instead of 'is_permanent_employee'.",
+      "applies_when": "the clause specifies eligibility for women scientists.",
+      "keywords": [
+        "women scientists",
+        "permanent employees",
+        "retiring",
+        "retired",
+        "superannuated"
+      ],
+      "error_type": "wrong_field",
+      "examples": [
+        "C25"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Doesn't follow from the error (C25's category field)."
+    },
+    {
+      "lesson_id": "L010",
+      "text": "When a scheme specifies 'any' for eligibility, write the rule with 'or_conditions' to reflect that multiple conditions can be satisfied. If it specifies 'all', write the rule without 'or_conditions', indicating all conditions must be met.",
+      "applies_when": "the clause indicates eligibility based on 'any' or 'all'.",
+      "keywords": [],
+      "error_type": "wrong_logic",
+      "examples": [
+        "M20"
+      ],
+      "flags": [
+        "common keywords removed: any, all",
+        "no specific keyword left, so it would be sent for every scheme",
+        "based on one scheme only"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Confuses rule_logic (how rules combine) with or_conditions (alternatives inside one rule)."
+    },
+    {
+      "lesson_id": "L011",
+      "text": "An age relaxation of X years for named groups is two rules. Example: upper age 35, relaxed by 5 years: (1) age lte 40, the relaxed limit, for everyone; (2) age lte 35, the normal limit, with or_conditions for each relaxed group (social_category in [...], is_woman_or_girl eq true, has_disability eq true).",
+      "applies_when": "age relaxation is mentioned",
+      "keywords": [
+        "age relaxation",
+        "relaxed",
+        "relaxation"
+      ],
+      "error_type": "wrong_or",
+      "examples": [
+        "C24",
+        "C26"
+      ],
+      "flags": [],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Round 1 swapped the two limits in C24, C26 and M14."
+    },
+    {
+      "lesson_id": "L012",
+      "text": "When a clause lists several qualifying kinds of one requirement joined by EITHER/OR (courses, years of study, posts), write one rule for that requirement (a yes/no field, or field in [the kinds]), not one rule per kind.",
+      "applies_when": "multiple student categories are listed",
+      "keywords": [
+        "either"
+      ],
+      "error_type": "wrong_or",
+      "examples": [
+        "C36"
+      ],
+      "flags": [
+        "common keywords removed: OR",
+        "based on one scheme only"
+      ],
+      "status": "withdrawn",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "In C36 it produced the same condition twice as alternatives; no scheme improved."
+    },
+    {
+      "lesson_id": "L013",
+      "text": "'BPL OR income up to Rs N' is one rule: household_below_bpl eq true, with or_conditions [the income field the clause names, lte N]. Use annual_family_income only when the clause says the family's income.",
+      "applies_when": "BPL families or income limit is mentioned",
+      "keywords": [
+        "below poverty line",
+        "bpl"
+      ],
+      "error_type": "wrong_or",
+      "examples": [
+        "M01",
+        "M02"
+      ],
+      "flags": [],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Its example field spread into M12's applicant income rules."
+    },
+    {
+      "lesson_id": "L014",
+      "text": "When a clause states that an applicant 'must not exceed' a certain limit, write the rule with 'lte' using the specified limit. If it states 'must exceed', write 'gt' instead.",
+      "applies_when": "a limit is phrased as 'must not exceed' or 'must exceed'.",
+      "keywords": [
+        "must not exceed",
+        "must exceed"
+      ],
+      "error_type": "wrong_value",
+      "examples": [
+        "C31",
+        "M19"
+      ],
+      "flags": [],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": null
+    },
+    {
+      "lesson_id": "L015",
+      "text": "When a clause specifies a category or list of eligible conditions, ensure all specified conditions are included in the rule. If the clause lists multiple categories, write a rule that includes all of them.",
+      "applies_when": "a clause lists multiple categories or conditions for eligibility.",
+      "keywords": [
+        "one of the following",
+        "must be one of"
+      ],
+      "error_type": "wrong_value",
+      "examples": [
+        "C21",
+        "M01"
+      ],
+      "flags": [],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Vague; L012 covers the useful part."
+    },
+    {
+      "lesson_id": "L016",
+      "text": "An exclusion clause (excl-, or \"is not eligible\") names who is excluded, so its rule requires the opposite: field eq false.",
+      "applies_when": "a clause states that something is 'not eligible'.",
+      "keywords": [],
+      "error_type": "wrong_value",
+      "examples": [
+        "C15",
+        "M19"
+      ],
+      "flags": [],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T035902Z_rx0_no_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Now sent for every scheme: it never reached M19, whose exclusions don't use its keywords."
+    },
+    {
+      "lesson_id": "L017",
+      "text": "When a clause specifies a requirement for a specific profession or role (e.g., 'must be an Indian scientist', 'must be a Senior Citizen'), write a rule indicating that requirement as true.",
+      "applies_when": "a clause specifies a profession or role requirement.",
+      "keywords": [
+        "indian scientist",
+        "senior citizen",
+        "retired judicial officer"
+      ],
+      "error_type": "extra_rule",
+      "examples": [
+        "C07",
+        "C21",
+        "C22"
+      ],
+      "flags": [],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Generic; pushes towards more rules, the main error."
+    },
+    {
+      "lesson_id": "L018",
+      "text": "When a clause states that an applicant must have a specific interest or qualification (e.g., 'must have an insurable interest', 'must hold a Ph.D.'), write a rule indicating that interest or qualification as true.",
+      "applies_when": "a clause specifies a required interest or qualification.",
+      "keywords": [
+        "insurable interest",
+        "ph.d. degree",
+        "is student"
+      ],
+      "error_type": "extra_rule",
+      "examples": [
+        "C14",
+        "C26",
+        "C16"
+      ],
+      "flags": [],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Generic; pushes towards more rules, the main error."
+    },
+    {
+      "lesson_id": "L019",
+      "text": "When a clause specifies a condition that excludes certain individuals (e.g., 'the girl child will not be considered'), write a rule indicating that condition as false.",
+      "applies_when": "a clause specifies an exclusion condition.",
+      "keywords": [
+        "not be considered",
+        "not eligible",
+        "is only child"
+      ],
+      "error_type": "extra_rule",
+      "examples": [
+        "C15"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Covered by L016, now sent for every scheme."
+    },
+    {
+      "lesson_id": "L020",
+      "text": "'Senior Citizen' means age gte 60.",
+      "applies_when": "the clause specifies a type of applicant",
+      "keywords": [
+        "senior citizen"
+      ],
+      "error_type": "missing_rule",
+      "examples": [
+        "C21"
+      ],
+      "flags": [
+        "common keywords removed: must be",
+        "based on one scheme only"
+      ],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": null
+    },
+    {
+      "lesson_id": "L021",
+      "text": "When a clause excludes people covered under other social security schemes and names them (NPS, ESIC, EPFO), write one eq false rule per named scheme: is_nps_member, is_esic_member, is_epfo_member.",
+      "applies_when": "the clause mentions membership in other schemes",
+      "keywords": [
+        "covered under",
+        "nps",
+        "esic",
+        "epfo"
+      ],
+      "error_type": "missing_rule",
+      "examples": [
+        "C03"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": null
+    },
+    {
+      "lesson_id": "L022",
+      "text": "When a clause indicates that a specific status or condition must be true for eligibility (e.g., 'must possess a letter of acceptance'), write a rule that checks for that condition (e.g., 'has_paper_accepted_at_event_abroad eq true').",
+      "applies_when": "the clause specifies a required status or condition",
+      "keywords": [
+        "must possess"
+      ],
+      "error_type": "missing_rule",
+      "examples": [
+        "C36"
+      ],
+      "flags": [
+        "common keywords removed: must be",
+        "based on one scheme only"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Generic."
+    },
+    {
+      "lesson_id": "L023",
+      "text": "When a clause specifies a unique identifier for a rule (e.g., 'elig-2', 'elig-3'), ensure that the correct identifier is used in the rule. If the identifier in the draft does not match the gold standard, it indicates a wrong clause reference.",
+      "applies_when": "the clause includes a specific eligibility identifier",
+      "keywords": [
+        "elig-2",
+        "elig-3",
+        "elig-4"
+      ],
+      "error_type": "wrong_clause",
+      "examples": [
+        "C15",
+        "C32"
+      ],
+      "flags": [],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Trivial."
+    },
+    {
+      "lesson_id": "L024",
+      "text": "When a clause refers to a specific group or category (e.g., 'only girl child', 'Medal winners of National games'), ensure that the rule accurately reflects the specific eligibility criteria without altering the intended meaning.",
+      "applies_when": "the clause defines a specific group or category",
+      "keywords": [
+        "only girl child",
+        "medal winners",
+        "recognized international sporting events"
+      ],
+      "error_type": "wrong_clause",
+      "examples": [
+        "C15",
+        "C32"
+      ],
+      "flags": [],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Vague."
+    },
+    {
+      "lesson_id": "L025",
+      "text": "When a clause specifies a type of income limit ('total income', 'annual income'), use 'annual_family_income' for family income limits, not 'annual_income'.",
+      "applies_when": "an income limit clause",
+      "keywords": [
+        "total income",
+        "annual income"
+      ],
+      "error_type": "wrong_field",
+      "examples": [
+        "C16",
+        "M12"
+      ],
+      "flags": [],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Repeats L008, rejected in round 1."
+    },
+    {
+      "lesson_id": "L026",
+      "text": "When a clause specifies a type of applicant ('Women Scientists', 'Persons who paid Income Tax'), use the appropriate field that directly relates to that applicant type, not a general field.",
+      "applies_when": "a clause specifies a particular applicant type",
+      "keywords": [
+        "women scientists",
+        "persons who paid income tax"
+      ],
+      "error_type": "wrong_field",
+      "examples": [
+        "C25",
+        "C03"
+      ],
+      "flags": [],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Vague."
+    },
+    {
+      "lesson_id": "L027",
+      "text": "When a clause states that an applicant should not be receiving benefits from other schemes, use 'receives_other_government_housing_benefit' for housing schemes, not a general exclusion field.",
+      "applies_when": "a clause about receiving benefits from other schemes",
+      "keywords": [
+        "receiving benefits",
+        "other housing scheme"
+      ],
+      "error_type": "wrong_field",
+      "examples": [
+        "M12",
+        "C31"
+      ],
+      "flags": [],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Memorises M12's field."
+    },
+    {
+      "lesson_id": "L028",
+      "text": "When a clause specifies that eligibility is determined by 'any' condition being met, write a rule that uses 'any' logic. If it specifies 'all', write a rule that uses 'all' logic instead.",
+      "applies_when": "the clause indicates eligibility based on 'any' or 'all' conditions.",
+      "keywords": [],
+      "error_type": "wrong_logic",
+      "examples": [
+        "M20"
+      ],
+      "flags": [
+        "common keywords removed: any, all",
+        "no specific keyword left, so it would be sent for every scheme",
+        "based on one scheme only"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Like rejected L010; would be sent for every scheme."
+    },
+    {
+      "lesson_id": "L029",
+      "text": "When a clause states a range (e.g., 'Age: 57-62 years'), write one rule for the lower limit and one for the upper limit, using 'gte' for the lower limit and 'lte' for the upper limit, and include an 'or_conditions' for any additional criteria.",
+      "applies_when": "a range is specified",
+      "keywords": [
+        "age: 57-62 years",
+        "between"
+      ],
+      "error_type": "wrong_or",
+      "examples": [
+        "C25",
+        "C14"
+      ],
+      "flags": [
+        "common keywords removed: to"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "The range part is already in the instructions; the or_conditions part is wrong."
+    },
+    {
+      "lesson_id": "L030",
+      "text": "'More than X' or 'above X' does not include X: use gt, not gte.",
+      "applies_when": "a percentage threshold is specified",
+      "keywords": [
+        "more than",
+        "above"
+      ],
+      "error_type": "wrong_or",
+      "examples": [
+        "C29"
+      ],
+      "flags": [
+        "based on one scheme only"
+      ],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": null
+    },
+    {
+      "lesson_id": "L031",
+      "text": "When a clause mentions multiple qualifying conditions (e.g., 'is recommended by the Zonal Cultural Centres, Ministry of Culture'), write one rule for each condition using 'or_conditions'.",
+      "applies_when": "multiple qualifying conditions are mentioned",
+      "keywords": [
+        "recommended"
+      ],
+      "error_type": "wrong_or",
+      "examples": [
+        "C31"
+      ],
+      "flags": [
+        "common keywords removed: or, conditions",
+        "based on one scheme only"
+      ],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Vague (one scheme)."
+    },
+    {
+      "lesson_id": "L032",
+      "text": "When a clause states 'Excluding' certain groups, write a rule that sets the corresponding field to false for those groups: field eq false.",
+      "applies_when": "an exclusion clause that specifies groups or categories",
+      "keywords": [
+        "excluding",
+        "excludes",
+        "not eligible"
+      ],
+      "error_type": "wrong_value",
+      "examples": [
+        "C03",
+        "M19"
+      ],
+      "flags": [],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "Harmful: in C03 and M13 '(Excluding MTS / Class IV / Group D)' is an exception to an exclusion."
+    },
+    {
+      "lesson_id": "L033",
+      "text": "A caste or category requirement ('SC / ST', 'OBC', 'VJNT') is social_category in [the listed categories], spelled as in the field list; 'VJNT' means VJ-A, NT-B, NT-C and NT-D.",
+      "applies_when": "a clause specifies categories of applicants",
+      "keywords": [
+        "category",
+        "vjnt",
+        "obc",
+        "sc / st"
+      ],
+      "error_type": "wrong_value",
+      "examples": [
+        "C11",
+        "M01"
+      ],
+      "flags": [
+        "common keywords removed: in"
+      ],
+      "status": "approved",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": null
+    },
+    {
+      "lesson_id": "L034",
+      "text": "When a clause specifies an upper age limit and includes age relaxation for certain groups, write two rules: one for the upper limit and another for the relaxed age limit for each specified group.",
+      "applies_when": "an upper age limit with age relaxation for specific groups",
+      "keywords": [
+        "upper age limit",
+        "age relaxation",
+        "years"
+      ],
+      "error_type": "wrong_value",
+      "examples": [
+        "C24",
+        "C26"
+      ],
+      "flags": [],
+      "status": "rejected",
+      "proposed_on": "2026-11-10",
+      "proposed_by_run": "20261110T045333Z_rx1_playbook_development",
+      "reviewed_by": "Sharika",
+      "reviewed_on": "2026-11-10",
+      "review_note": "A vaguer copy of L011."
+    }
+  ],
+  "frozen": true,
+  "frozen_on": "2026-11-10",
+  "frozen_by": "Sharika",
+  "frozen_hash": "8bb30ce7dd22"
+}

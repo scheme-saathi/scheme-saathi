@@ -1,0 +1,7 @@
+{
+  "name": "rx0_no_playbook_gpt41mini",
+  "description": "Baseline on openai/gpt-4.1-mini (the brief's recommended specialist model): no lessons.",
+  "system": "rule_extractor",
+  "playbook": null,
+  "model": "openai/gpt-4.1-mini"
+}

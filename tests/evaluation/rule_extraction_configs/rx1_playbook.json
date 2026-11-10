@@ -1,0 +1,7 @@
+{
+  "name": "rx1_playbook",
+  "description": "Signature challenge A with the Reflexion playbook: the rule extractor gets the reviewed lessons relevant to each scheme (keyword match, top 5), read from the LangGraph store loaded from data/playbook/rule_extractor.json. E3's 'after' run; held-out needs the frozen playbook.",
+  "system": "rule_extractor",
+  "playbook": "data/playbook/rule_extractor.json",
+  "top_k": 5
+}
