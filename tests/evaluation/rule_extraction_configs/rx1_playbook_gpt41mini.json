@@ -1,0 +1,8 @@
+{
+  "name": "rx1_playbook_gpt41mini",
+  "description": "The Reflexion playbook on openai/gpt-4.1-mini. Compare only with rx0_no_playbook_gpt41mini (same model).",
+  "system": "rule_extractor",
+  "playbook": "data/playbook/rule_extractor.json",
+  "top_k": 5,
+  "model": "openai/gpt-4.1-mini"
+}

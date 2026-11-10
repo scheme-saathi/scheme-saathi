@@ -142,3 +142,15 @@ def test_held_out_needs_the_final_flag(monkeypatch, capsys):
     with pytest.raises(SystemExit):
         runner.main()
     assert "final evaluation only" in capsys.readouterr().err
+
+
+def test_a_config_can_choose_the_extractor_model_without_changing_the_app(monkeypatch):
+    seen = {}
+    monkeypatch.setenv("SPECIALIST_MODEL", "openai/gpt-4o-mini")
+    monkeypatch.setattr("agents.model_factory.create_chat_model",
+                        lambda role: seen.setdefault("model", __import__("os").environ["SPECIALIST_MODEL"]))
+    monkeypatch.setattr("agents.rule_extractor.RuleExtractor.__init__", lambda self, model: None)
+    config = runner.load_config(ROOT / "tests" / "evaluation" / "rule_extraction_configs" / "rx0_no_playbook_gpt41mini.json")
+    runner.default_extractor(config)
+    assert seen["model"] == "openai/gpt-4.1-mini"
+    assert __import__("os").environ["SPECIALIST_MODEL"] == "openai/gpt-4o-mini"  # restored

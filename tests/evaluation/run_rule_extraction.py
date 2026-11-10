@@ -49,11 +49,28 @@ def _progress(message: str) -> None:
 
 
 def default_extractor(config: dict[str, Any]) -> Callable[[dict[str, Any], list[str]], dict[str, Any]]:
-    """The extractor on SPECIALIST_MODEL; returns a callable (input, lessons) -> extraction dict."""
+    """The extractor on the config's "model" if it names one, else SPECIALIST_MODEL; returns a
+    callable (input, lessons) -> extraction dict. A config model changes only this run, not the
+    app's agents. Compare configs only when they use the same model (the brief: keep it fixed)."""
+    import os
+
+    from dotenv import load_dotenv
+
     from agents.model_factory import create_chat_model
     from agents.rule_extractor import RuleExtractor
 
-    extractor = RuleExtractor(create_chat_model("specialist"))
+    load_dotenv()
+    chosen, before = (config.get("model") or "").strip(), os.environ.get("SPECIALIST_MODEL")
+    try:
+        if chosen:
+            os.environ["SPECIALIST_MODEL"] = chosen
+        extractor = RuleExtractor(create_chat_model("specialist"))
+    finally:
+        if chosen:
+            if before is None:
+                os.environ.pop("SPECIALIST_MODEL", None)
+            else:
+                os.environ["SPECIALIST_MODEL"] = before
     return lambda value, lessons: extractor.extract(value, lessons).model_dump()
 
 

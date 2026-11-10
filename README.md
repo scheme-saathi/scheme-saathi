@@ -963,7 +963,7 @@ python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_ex
 python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_extraction_configs/rx0_no_playbook.json
 ```
 
-It needs `SPECIALIST_MODEL` and `OPENROUTER_API_KEY` in `.env`, prints one line per scheme, and writes `schemes.jsonl` (each draft, its score and errors) and `summary.json` (exact-scheme and exact-rule rates, condition precision/recall/F1, errors by type, tokens, latency) to `data/evaluation-runs/`. `rx0_no_playbook` is the baseline: no lessons.
+It needs `SPECIALIST_MODEL` and `OPENROUTER_API_KEY` in `.env`, prints one line per scheme, and writes `schemes.jsonl` (each draft, its score and errors) and `summary.json` (exact-scheme and exact-rule rates, condition precision/recall/F1, errors by type, tokens, latency) to `data/evaluation-runs/`. `rx0_no_playbook` is the baseline: no lessons. A config's optional `model` runs the extractor on that model for that run only (`*_gpt41mini` configs use `openai/gpt-4.1-mini`, the brief's recommended specialist model); compare configs only when they use the same model.
 
 **The Reflexion loop.** After a development run, the reflection step (`agents/rule_reflector.py`) sees each type of error with examples from several schemes and proposes at most three short lessons per type, each saying when it applies:
 
