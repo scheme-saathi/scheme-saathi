@@ -1,0 +1,6 @@
+{
+  "name": "rx0_no_playbook",
+  "description": "Signature challenge A baseline: the rule extractor (agents/rule_extractor.py) on SPECIALIST_MODEL with no lessons. Each draft is scored by code against the human-reviewed rules in data/rules/. E3's 'before' run.",
+  "system": "rule_extractor",
+  "playbook": null
+}
