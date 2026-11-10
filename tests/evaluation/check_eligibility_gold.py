@@ -19,15 +19,13 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from servers.rule_engine.rules import evaluate  # noqa: E402
-from servers.rule_engine.scheme import SchemeRecord, live_conditions  # noqa: E402
+from servers.rule_engine.scheme import SHARED_VALUES, SchemeRecord, live_conditions  # noqa: E402
 
 GOLD_DIR = ROOT / "tests" / "evaluation" / "eligibility_gold_v1"
 SPLITS = ("development", "held_out")
 VERDICTS = {"eligible", "not_eligible", "cant_tell"}
 ALLOWED_VALUES = {
-    # "VJNT" is split as the state splits it: VJ-A, NT-B, NT-C, NT-D (Step 6)
-    "social_category": {"SC", "ST", "OBC", "VJ-A", "NT-B", "NT-C", "NT-D", "SBC", "Nav-Buddha", "EWS", "EBC",
-                        "General"},
+    **{field: set(values) for field, values in SHARED_VALUES.items()},
     "state_of_residence": {"Maharashtra", "Assam", "Jammu and Kashmir", "Bihar", "Karnataka",
                            "Andaman and Nicobar Islands"},
     "farmer_applicant_category": {

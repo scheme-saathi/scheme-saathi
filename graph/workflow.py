@@ -1,6 +1,7 @@
 import hashlib
 import json
 from contextlib import contextmanager
+from datetime import date
 from pathlib import Path
 from typing import Any, TypedDict
 
@@ -170,6 +171,17 @@ def application_hash(application: dict[str, Any]) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def _well_formed(field: str, value: Any) -> bool:
+    """The rule engine reads a date only as YYYY-MM-DD; any other form would be stored and ignored."""
+    if field != "date_of_birth":
+        return True
+    try:
+        date.fromisoformat(value)
+    except (TypeError, ValueError):
+        return False
+    return True
+
+
 def approval_node(state: GraphState) -> dict[str, Any]:
     """Pause for a person. Approval counts only if it names the hash of this exact form."""
     current = application_hash(state["application"])
@@ -196,8 +208,10 @@ def approval_node(state: GraphState) -> dict[str, Any]:
             tools.audit_approval_event("edit", "invalid", authenticated)
             return {"approved": False, "approval_status": "invalid"}
         tools.audit_approval_event("edit", "accepted", authenticated)
+        # A malformed date is dropped, so the stored one stays; the other changes still apply.
+        changes = {f: v for f, v in decision["changes"].items() if _well_formed(f, v)}
         # An edit can change an answer, so earlier verdicts no longer hold.
-        return {"profile": {**state["profile"], **decision["changes"]}, "verdicts": {}, "approved": False,
+        return {"profile": {**state["profile"], **changes}, "verdicts": {}, "approved": False,
                 "approved_hash": "", "approval_status": "edited", "draft_attempts": 0}
     tools.audit_approval_event(
         "reject" if action == "reject" else "invalid",

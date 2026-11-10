@@ -1,0 +1,5 @@
+{
+  "_note": "One spelling for text fields shared across schemes, so rules agree on it. Rule values must come from these lists, and intake offers the whole list as choices.",
+  "social_category": ["SC", "ST", "OBC", "VJ-A", "NT-B", "NT-C", "NT-D", "SBC", "Nav-Buddha", "EWS", "EBC", "General"],
+  "area_type": ["rural", "municipal council area", "municipal corporation"]
+}
