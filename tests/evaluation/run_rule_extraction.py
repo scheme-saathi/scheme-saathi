@@ -90,8 +90,9 @@ def run(config: dict[str, Any], split: str, limit: int | None = None,
             "tokens": {model: dict(u) for model, u in usage.usage_metadata.items()},
         })
         if not quiet:
-            outcome = f"ERROR {error}" if error else (
-                "exact" if result["scheme_exact"] else f"{len(result['errors'])} errors")
+            outcome = f"ERROR {error[:200]}" if error else (
+                f"{result['draft_rules']} of {result['gold_rules']} rules, "
+                + ("exact" if result["scheme_exact"] else f"{len(result['errors'])} errors"))
             _progress(f"[{number}/{len(scheme_ids)}] {scheme_id}: {outcome} ({latency_ms / 1000:.1f} s)")
     return rows, summarise(rows)
 

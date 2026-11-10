@@ -96,10 +96,22 @@ def test_the_extractor_returns_a_typed_draft():
 
     class FakeModel:
         def with_structured_output(self, schema):
-            return RunnableLambda(lambda prompt: {"rules": [AGE_FROM], "rule_logic": "all", "open_questions": []})
+            return RunnableLambda(lambda prompt: {"clauses": [
+                {"clause_id": "elig-1", "rules": [AGE_FROM, AGE_TO], "note": ""},
+                {"clause_id": "elig-2", "rules": [], "note": "a document, not a condition"}],
+                "rule_logic": "all", "open_questions": []})
 
     result = RuleExtractor(FakeModel()).extract(rx.extraction_input("C11"))
-    assert isinstance(result, Extraction) and result.rules[0].field == "age"
+    assert isinstance(result, Extraction) and [r.field for r in result.rules] == ["age", "age"]
+    assert result.clause_notes == {"elig-2": "a document, not a condition"}
+
+
+def test_the_extractor_caps_its_output_length():
+    from langchain_openai import ChatOpenAI
+    from agents.rule_extractor import MAX_OUTPUT_TOKENS
+
+    model = ChatOpenAI(model="x", api_key="test-only", base_url="http://localhost:9")
+    assert RuleExtractor(model)._model.max_tokens == MAX_OUTPUT_TOKENS
 
 
 def test_the_runner_scores_drafts_and_never_writes_rules(tmp_path):

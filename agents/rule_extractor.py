@@ -28,8 +28,10 @@ eligibility sentences, excl-N for exclusions), and the shared field list: the pr
 already in use, with their type and the values rules compare against.
 
 TASK
-Write one rule for each condition a person must meet to be eligible. An exclusion ("X is not
-eligible") becomes a rule that the person is not X. Cite the clause each rule comes from.
+Go through every clause in the input, in order. For each one, write a rule for each condition
+it sets that a person must meet to be eligible. An exclusion ("X is not eligible") becomes a
+rule that the person is not X. A clause that sets no condition (a heading, a document to
+submit, a benefit, a preference) gets no rules and a short note saying why.
 
 CONSTRAINTS
 - Use a field from the field list when one means the same thing; use its listed values.
@@ -45,17 +47,19 @@ CONSTRAINTS
 - Do not invent conditions the text does not state. List anything unclear in open_questions.
 {lessons}
 FORMAT
-Return rules, rule_logic and open_questions. Each rule has field, op (eq, ne, gt, gte, lt,
-lte, in, not_in), value (true/false, a number, a string, or a list of strings for in/not_in),
-clause_id, and optional or_conditions (each with field, op, value, clause_id).
+Return clauses (one entry per input clause, in input order, each with its clause_id, its rules
+and a note), rule_logic and open_questions. Each rule has field, op (eq, ne, gt, gte, lt, lte,
+in, not_in), value (true/false, a number, a string, or a list of strings for in/not_in),
+clause_id, and or_conditions (each with field, op, value, clause_id; empty when none).
 
 EXAMPLE
 Clauses: elig-1 "The applicant should be a resident of the state."; elig-2 "Age between 21
 and 60 years."; elig-3 "Family income below Rs 50,000 or holding an Antyodaya card.";
 excl-1 "Income tax payers are not eligible."
-Rules: is_state_resident eq true (elig-1); age gte 21 (elig-2); age lte 60 (elig-2);
-annual_family_income lt 50000 (elig-3) with or_conditions [ration_card_type eq "antyodaya"
-(elig-3)]; is_income_tax_payer eq false (excl-1). rule_logic: all."""
+Clauses: elig-1 -> is_state_resident eq true; elig-2 -> age gte 21, age lte 60; elig-3 ->
+annual_family_income lt 50000 with or_conditions [ration_card_type eq "antyodaya"];
+excl-1 -> is_income_tax_payer eq false. A heading clause such as "General conditions:"
+gets no rules and the note "heading". rule_logic: all."""
 
 LESSONS_HEADER = "\nLESSONS FROM REVIEWED EXTRACTIONS (apply each only when its condition holds)\n"
 
@@ -89,10 +93,28 @@ class ExtractedRule(ExtractedCondition):
     or_conditions: list[ExtractedCondition] = Field(default_factory=list)
 
 
+class ClauseRules(BaseModel):
+    clause_id: str
+    rules: list[ExtractedRule] = Field(default_factory=list)
+    note: str = ""
+
+
+class ClauseByClause(BaseModel):
+    """What the model returns: one entry per source clause, so none is skipped unread."""
+    clauses: list[ClauseRules]
+    rule_logic: Literal["all", "any"] = "all"
+    open_questions: list[str] = Field(default_factory=list)
+
+
 class Extraction(BaseModel):
     rules: list[ExtractedRule]
     rule_logic: Literal["all", "any"] = "all"
     open_questions: list[str] = Field(default_factory=list)
+    clause_notes: dict[str, str] = Field(default_factory=dict)
+
+
+# A runaway structured answer (seen on C07: 16,384 tokens in 223 s) stops here instead.
+MAX_OUTPUT_TOKENS = 4096
 
 
 def instructions_with(lessons: list[str]) -> str:
@@ -107,8 +129,16 @@ class RuleExtractor:
     """One extraction per call; the lessons can differ per scheme, so the prompt is built per call."""
 
     def __init__(self, model: BaseChatModel) -> None:
+        if "max_tokens" in getattr(type(model), "model_fields", {}):
+            model = model.model_copy(update={"max_tokens": MAX_OUTPUT_TOKENS})
         self._model = model
 
     def extract(self, value: ExtractionInput | dict, lessons: list[str] | None = None) -> Extraction:
-        agent = StructuredGPTAgent(self._model, ExtractionInput, Extraction, instructions_with(lessons or []))
-        return agent.invoke(ExtractionInput.model_validate(value))
+        agent = StructuredGPTAgent(self._model, ExtractionInput, ClauseByClause, instructions_with(lessons or []))
+        raw = agent.invoke(ExtractionInput.model_validate(value))
+        return Extraction(
+            rules=[rule for clause in raw.clauses for rule in clause.rules],
+            rule_logic=raw.rule_logic,
+            open_questions=raw.open_questions,
+            clause_notes={c.clause_id: c.note for c in raw.clauses if c.note},
+        )
