@@ -60,8 +60,9 @@ it (social_category is "social (caste) category", not just "category").
 For a bool field, ask a yes/no question. For a number field, ask for one number and name its
 unit (years, rupees, people). For a str field, never ask a yes/no question: when
 known_values are given, list them as the choices in plain words and let the person say
-another answer. When period is given, ask for the amount per that
-period ("per month" or "per year") and say so in the question. Do not mention eligibility, schemes or
+another answer. For a date field, ask for the full date in DD/MM/YYYY form (for example 05/03/1962). When period is given, ask for the amount per that
+period ("per month" or "per year") and say so in the question. When meaning is given, ask exactly
+that, keeping its time words ("now", "ever", "last year"). Do not mention eligibility, schemes or
 rules, and never ask for Aadhaar, bank-account numbers or other sensitive
 identifiers."""
 
@@ -83,7 +84,9 @@ occupation, age, gender, family, need). known_facts holds what the person has al
 (field: value); use it together with the request. Return only ids from the list, best fit first, at most
 8. Return an empty list when none fit. You never decide eligibility; rules do that later."""
 
-_FIELD_TYPES = {"number": int | float, "bool": bool, "str": str}
+_FIELD_TYPES = {"number": int | float, "bool": bool, "str": str,
+                # The rule engine works ages out of this date, so it must be a real ISO date.
+                "date": Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$")]}
 
 # shortcut: word lists for en + common hi/mr replies; extend from evaluation transcripts.
 _YES = {"yes", "yeah", "yep", "haan", "han", "ji", "हाँ", "हां", "हा", "होय", "हो", "जी"}
@@ -151,6 +154,17 @@ class Amount(BaseModel):
     period: Literal["month", "year", "unstated"]
 
 
+# Fields whose names alone are worded the same way by the model; each question must keep its
+# own meaning (a live run asked "Are you currently paying income tax?" for both personal fields).
+FIELD_MEANINGS = {
+    "is_or_was_income_tax_payer": "whether they have ever paid income tax, now or in any past year",
+    "is_income_tax_payer": "whether they pay income tax now",
+    "family_has_income_tax_payer": "whether anyone in their family pays income tax now",
+    "family_has_member_who_paid_income_tax_in_last_assessment_year":
+        "whether anyone in their family paid income tax in the last assessment year",
+}
+
+
 def income_period(field: str) -> Literal["month", "year"] | None:
     """The period an income rule field is measured in; None for other fields."""
     # shortcut: read from the field name, upgrade when rule records carry units.
@@ -181,6 +195,11 @@ def profile_model(specs: dict[str, dict[str, Any]]) -> type[BaseModel]:
     fields = {}
     for name, spec in specs.items():
         hint = f" Known values: {', '.join(spec['known_values'])}." if spec.get("known_values") else ""
+        if spec["type"] == "date":
+            # Indian users write the day first: without this a model may read 05/03/1962 as 3 May.
+            hint = (" The person writes dates day first (DD/MM/YYYY, as in India): 05/03/1962 is"
+                    " 5 March 1962. Write it as YYYY-MM-DD (1962-03-05); leave it empty if the day,"
+                    " month or year is missing.")
         kind = Amount if spec["type"] == "number" and income_period(name) else _FIELD_TYPES[spec["type"]]
         fields[name] = (kind | None, Field(None, description=f"{spec['type']}.{hint}"))
     return create_model("HouseholdProfile", __config__=ConfigDict(extra="forbid", strict=True), **fields)
@@ -270,6 +289,8 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
     def ask(self, value: IntakeAskInput | dict) -> IntakeQuestion:
         """One question for one field; the field comes from the caller, never from the model."""
         request = IntakeAskInput.model_validate(value)
+        if request.meaning is None and request.field in FIELD_MEANINGS:
+            request = request.model_copy(update={"meaning": FIELD_MEANINGS[request.field]})
         return IntakeQuestion(field=request.field, question=self._asker.invoke(request).question)
 
     def answer(self, value: IntakeAnswerInput | dict) -> IntakeAnswer:

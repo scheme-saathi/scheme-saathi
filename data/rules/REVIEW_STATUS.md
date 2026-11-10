@@ -61,6 +61,16 @@ Two conditions were added because a verdict of "eligible" overstated what the ru
 - **C24 (elig-5, elig-6) and C26 (elig-5, elig-6):** the mentor's conditions. C24: a mentor with a regular position and a PhD in science or engineering, who has at most one NPDF fellow now (a mentor may not have more than two). C26: a mentor at Associate Professor / Scientist E level or higher, with no other TARE candidate.
 - **M08 and M09:** the NSFDC limit is "rural" or "urban" in the source, so the urban limit now asks `lives_in_urban_area` instead of matching two municipality names; an answer of "urban" was refused before. M12 keeps its three area types, which its source names.
 
+## Engine and intake support (from `fix/rule-phase`, 9 Nov 2026)
+
+These change how rules are read and asked, not any rule's meaning.
+
+- **`applicant_type`:** an optional rule-file key (`individual` by default). The citizen scheme list leaves out `institution` schemes (C07, C21, C22, C30), which can still be checked by id. C10 and C11 are `mixed` and stay.
+- **Shared values:** `data/field_values.json` holds the one spelling of `social_category` and `area_type`. A rule file that uses another value fails to load, and intake offers the whole list as choices.
+- **Citations:** a rule that passes cites one reason, the first condition that held. A failing or undecided rule cites every condition it tried.
+- **Ages from the date of birth:** `age`, `age_nearer_birthday` and `age_in_months` are worked out from `date_of_birth` (YYYY-MM-DD; shown and typed as DD/MM/YYYY). Intake asks for the date of birth instead of an age that needs more than whole years, and asks the age field itself only if the person can't give the date. C28 can use `age_in_months` for its 17.5-year minimum (F5 on this file).
+- **Income-tax questions:** the four income-tax fields carry their exact meaning to the question writer ("ever paid", "pays now", "anyone in the family", "last assessment year"). An answer that follows from another is filled in: never paid income tax means not paying it now, and paying now means having paid.
+
 ## Adding a new AI-drafted rule set
 
 Keep its rules `draft` and list it in `AI_DRAFTED_IDS` in `tests/test_scheme_gold_set.py`. To make it live, check every rule against its cited sentence, as in Steps 1, 4 and 5: the clause, field, operator and value, the `all`/`any` logic, any `or_conditions`, and the boundary cases. Then set its rules' status to `reviewed` and move it to `AI_DRAFTED_REVIEWED_IDS`.
