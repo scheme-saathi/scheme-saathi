@@ -116,7 +116,7 @@ def test_mock_portal_http_workflow():
         "household-1", "auth0|citizen-1"
     )
 
-    status = get_application_status(application_id)
+    status = get_application_status(application_id, "household-1")
     assert status["ok"] is True
     assert status["data"]["status"] == "draft"
 
