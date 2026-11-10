@@ -25,7 +25,7 @@ from observability import (
     record_tool_call,
     set_metrics,
 )
-from observability.runs import error_type, normalise_outcome, outcome_for_exception, outcome_from_payload
+from observability.runs import error_type, normalise_outcome, outcome_for_exception, outcome_from_payload, start_series_at_zero
 
 PREFIX = "scheme_saathi_"
 
@@ -520,3 +520,60 @@ def test_no_identifier_or_fact_reaches_the_metrics(served, metrics):
     assert "scheme_saathi_runs_total" in scrape  # the runs above were recorded, so the check below means something
     for secret in ("LEAK", "household-1", "conv_abc", "test|household-1"):
         assert secret not in scrape
+
+
+def test_the_series_alerts_read_exist_at_zero_before_anything_happens(metrics):
+    start_series_at_zero(metrics)
+    sample = metrics.registry.get_sample_value
+    assert sample(PREFIX + "runs_total", {"kind": "chat_turn", "outcome": "error"}) == 0
+    assert sample(PREFIX + "eligibility_verdicts_total", {"verdict": "cant_tell"}) == 0
+    assert sample(PREFIX + "traces_total", {"result": "failed"}) == 0
+    assert sample(PREFIX + "guardrail_blocks_total", {"stage": "input"}) == 0
+
+
+def test_waiting_approvals_follow_how_runs_on_the_thread_end(metrics, monkeypatch):
+    from observability import runs as run_module
+
+    monkeypatch.setattr(run_module, "_waiting_approvals", {})
+    run_module.start_series_at_zero(metrics)
+    waiting = lambda: metrics.registry.get_sample_value(PREFIX + "approvals_waiting")
+
+    run_module.note_approval_state("t1", "awaiting_approval")
+    run_module.note_approval_state("t2", "awaiting_approval")
+    run_module.note_approval_state("t1", "refused")  # another household poking at it changes nothing
+    run_module.note_approval_state("t1", "error")  # nor does a server failure before a decision
+    assert waiting() == 2
+    run_module.note_approval_state("t1", "submitted")
+    run_module.note_approval_state("t2", "approval_rejected")
+    assert waiting() == 0
+
+    run_module.note_approval_state("t3", "awaiting_approval")
+    run_module._waiting_approvals["t3"] -= run_module.APPROVAL_EXPIRY_SECONDS + 1  # the thread has expired
+    assert waiting() == 0
+
+
+def test_sensitive_ids_and_conversations_are_counted_by_type_only(metrics):
+    from agents.persona_validator import SensitiveInputError, reject_sensitive_input
+    from observability import record_conversation_started, record_sensitive_id
+
+    with pytest.raises(SensitiveInputError):
+        reject_sensitive_input({"note": "my aadhaar is 2345 6789 0123"})
+    record_sensitive_id("output", "1234 5678 9012")  # a value passed by mistake becomes "other", never a label
+    record_conversation_started()
+
+    assert value(metrics, "sensitive_ids_detected_total", stage="input", id_type="aadhar") == 1
+    assert value(metrics, "sensitive_ids_detected_total", stage="output", id_type="other") == 1
+    assert value(metrics, "conversations_started_total") == 1
+    assert "1234" not in generate_latest(metrics.registry).decode()
+
+
+def test_verdicts_count_when_confirming_facts_settles_the_check_but_not_again_on_a_draft_decision(served, metrics):
+    client, workflow, _ = served
+    verdicts = {"C06": {"verdict": "cant_tell"}, "M01": {"verdict": "eligible"}}
+    workflow.result = {**workflow.result, "status": "eligibility_checked", "data": {"verdicts": verdicts}}
+    assert client.post("/api/chat/conv_abc/decision", json={"action": "approve"}).status_code == 200
+    workflow.result = {**workflow.result, "status": "submitted"}  # same verdicts echoed on the draft approval
+    assert client.post("/api/chat/conv_abc/decision", json={"action": "approve"}).status_code == 200
+
+    assert value(metrics, "eligibility_verdicts_total", verdict="cant_tell") == 1
+    assert value(metrics, "eligibility_verdicts_total", verdict="eligible") == 1

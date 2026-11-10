@@ -34,7 +34,13 @@ from app.memory_api import FORGET_NOTE, optional_memory, remember_submission, ro
 from app.memory_runtime import forget_memory, memory_scope
 from app.periodic import PeriodicTask
 from app.thread_registry import ThreadRegistry, TouchResult
-from observability import RunRecorder, install_observability, record_memory_operation, record_thread_expired
+from observability import (
+    RunRecorder,
+    install_observability,
+    record_conversation_started,
+    record_memory_operation,
+    record_thread_expired,
+)
 from graph.memory_nodes import memory_config
 
 if __package__:
@@ -406,6 +412,9 @@ class AgentWorkflowService:
             "result": result,
         }
         self.conversations[thread_id]["turns"].append(turn)
+        if turn["turn_number"] == 1:
+            # shortcut: a conversation resumed after an app restart counts again; fine while restarts are rare.
+            record_conversation_started()
     
     def get_conversation(self, thread_id: str) -> dict[str, Any] | None:
         """Get conversation by thread ID."""

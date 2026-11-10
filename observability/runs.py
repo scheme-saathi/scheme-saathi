@@ -92,7 +92,57 @@ FINAL_CHECK_OUTCOMES = frozenset(
     }
 )
 VERDICT_KINDS = frozenset({"chat_turn", "legacy_chat", "application_start"})
+# In the chat graph the verdicts arrive when the person confirms their facts, which is a decision run. Only that
+# outcome counts, so approving or editing a draft does not count the same verdicts again.
+DECISION_VERDICT_OUTCOME = "eligibility_checked"
 VERDICTS = frozenset({"eligible", "not_eligible", "cant_tell"})
+TRACE_RESULTS = ("exported", "sampled_out", "dropped", "failed")
+
+# Outcomes that leave a waiting draft where it was: the caller was refused, or the server failed before deciding.
+KEEPS_APPROVAL_WAITING = SERVER_SIDE_ERRORS | {"refused", "conflict", "invalid_request", "validation_error", "cancelled"}
+# A thread idle this long is deleted by the expiry timer (app/api.py), and its waiting draft with it.
+APPROVAL_EXPIRY_SECONDS = 24 * 60 * 60
+_waiting_approvals: dict[str, float] = {}  # thread -> when its draft was shown; in memory only, never exported
+_waiting_lock = threading.Lock()
+
+
+def note_approval_state(thread: str | None, outcome: str) -> None:
+    """Track which threads have a draft waiting for approval, from how each run on the thread ended."""
+    if not thread:
+        return
+    with _waiting_lock:
+        if outcome == "awaiting_approval":
+            _waiting_approvals[thread] = time.monotonic()
+        elif outcome not in KEEPS_APPROVAL_WAITING:
+            _waiting_approvals.pop(thread, None)
+
+
+def approvals_waiting() -> int:
+    """Drafts waiting now. shortcut: an expired thread is dropped by age, not by the expiry timer itself,
+    and the count restarts at 0 with the app; read it from the store if that matters."""
+    cutoff = time.monotonic() - APPROVAL_EXPIRY_SECONDS
+    with _waiting_lock:
+        for thread in [t for t, shown in _waiting_approvals.items() if shown < cutoff]:
+            del _waiting_approvals[thread]
+        return len(_waiting_approvals)
+
+
+def start_series_at_zero(metrics: Metrics) -> None:
+    """Create the series that alerts and ratios read, at 0.
+
+    Prometheus's rate() and increase() miss the first increment of a series it never saw at 0, so the first
+    error, can't-tell verdict or lost trace would otherwise not count, and an error ratio would be empty, not 0.
+    """
+    for kind in RUN_KINDS:
+        for outcome in SERVER_SIDE_ERRORS:
+            metrics.runs.labels(kind=kind, outcome=outcome)
+    for verdict in VERDICTS:
+        metrics.verdicts.labels(verdict=verdict)
+    for result in TRACE_RESULTS:
+        metrics.traces.labels(result=result)
+    for stage in ("input", "output"):
+        metrics.guardrail_blocks.labels(stage=stage)
+    metrics.approvals_waiting.set_function(approvals_waiting)
 
 _OUTCOME_ALIASES = {"needs_details": "needs_information"}
 
@@ -329,13 +379,17 @@ class RunRecorder:
         metrics.run_duration.labels(kind=kind).observe(duration)
         metrics.run_tool_calls.labels(kind=kind).observe(self._record.tool_calls)
         self._observe_models(metrics)
+        note_approval_state(self._record.thread, final)
         if final in SERVER_SIDE_ERRORS:
             metrics.run_errors.labels(kind=kind, error_type=self._record.error_type or "unknown").inc()
         if final == "output_blocked":
             metrics.guardrail_blocks.labels(stage="output").inc()
         elif final == "validation_error":
             metrics.guardrail_blocks.labels(stage="input").inc()
-        if kind in VERDICT_KINDS and final in FINAL_CHECK_OUTCOMES and isinstance(self._record.verdicts, dict):
+        settled = (kind in VERDICT_KINDS and final in FINAL_CHECK_OUTCOMES) or (
+            kind == "chat_decision" and final == DECISION_VERDICT_OUTCOME
+        )
+        if settled and isinstance(self._record.verdicts, dict):
             for verdict in self._record.verdicts.values():
                 name = verdict.get("verdict") if isinstance(verdict, dict) else None
                 if name in VERDICTS:

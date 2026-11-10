@@ -21,6 +21,8 @@ APPROVAL_ACTIONS = frozenset({"approve", "edit", "reject", "invalid"})
 APPROVAL_RESULTS = frozenset({"accepted", "rejected", "invalid"})
 MEMORY_OPERATIONS = frozenset({"load", "save", "reference", "consent_granted", "consent_withdrawn", "forget"})
 MEMORY_RESULTS = frozenset({"hit", "miss", "saved", "skipped", "changed", "unchanged", "partial", "success", "error"})
+SENSITIVE_STAGES = frozenset({"input", "output"})
+ID_TYPES = frozenset({"aadhar", "pan", "ifsc", "bank_account", "phone", "otp", "password", "field"})
 EXPIRED_KINDS = frozenset({"agent", "chat_session", "application"})
 EXPIRED_REASONS = frozenset({"cleanup", "on_use"})
 
@@ -97,3 +99,19 @@ def note_run_error(error: BaseException) -> None:
         return
     run.outcome = outcome_for_exception(error)
     run.error_type = error_type(error)
+
+
+@guarded
+def record_sensitive_id(stage: str, id_type: str | None) -> None:
+    """An ID number refused in input or removed from output. Only its type is recorded, never the value."""
+    metrics = active_metrics()
+    if metrics is not None:
+        metrics.sensitive_ids.labels(stage=bounded(stage, SENSITIVE_STAGES), id_type=bounded(id_type, ID_TYPES)).inc()
+
+
+@guarded
+def record_conversation_started() -> None:
+    """A chat conversation got its first turn."""
+    metrics = active_metrics()
+    if metrics is not None:
+        metrics.conversations_started.inc()
