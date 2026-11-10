@@ -44,8 +44,8 @@ def test_a_record_with_no_owner_is_not_shown_to_any_household():
     assert status("app-legacy", "hh1")["ok"] is False
 
 
-def test_a_lookup_without_a_household_keeps_the_earlier_behaviour():
-    assert status("app-1")["ok"] is True
+def test_a_lookup_without_a_household_is_denied():
+    assert status("app-1")["ok"] is False
 
 
 @pytest.mark.parametrize(
