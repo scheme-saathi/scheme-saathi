@@ -53,5 +53,21 @@ def test_rule_tools_are_read_only_and_evaluate_reviewed_rules():
     live = evaluate_profile({"age": 40, "age_nearer_birthday": 40, "has_bank_account": True, "consents_to_auto_debit": True}, "C02")
     assert live["ok"]
     assert live["data"]["verdict"] == "eligible"
-    preview = evaluate_profile({"age": 40, "age_nearer_birthday": 40, "has_bank_account": True, "consents_to_auto_debit": True}, "C02", include_draft=True)
-    assert preview["data"]["verdict"] == "eligible"
+    rejected_preview = evaluate_profile(
+        {"age": 40, "age_nearer_birthday": 40, "has_bank_account": True, "consents_to_auto_debit": True},
+        "C02",
+        include_draft=True,
+    )
+    assert rejected_preview["error"]["code"] == "draft_rules_not_allowed"
+    with tools.acting_as("rule_reviewer"):
+        preview = tools.evaluate_scheme(
+            {"age": 40, "age_nearer_birthday": 40, "has_bank_account": True, "consents_to_auto_debit": True},
+            "C02",
+            include_draft=True,
+        )
+    assert preview["verdict"] == "eligible"
+
+
+def test_only_the_rule_reviewer_can_preview_draft_rules():
+    with tools.acting_as("eligibility"), pytest.raises(tools.ToolCallError, match="rule reviewer"):
+        tools.evaluate_scheme({"age": 40}, "C02", include_draft=True)

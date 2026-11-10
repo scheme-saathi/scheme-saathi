@@ -106,6 +106,9 @@ def test_draft_fields_are_hidden_outside_preview(tmp_path, monkeypatch):
 
 
 def verdicts(facts, schemes=(PENSION,), include_draft=False):
+    if include_draft:
+        with tools.acting_as("rule_reviewer"):
+            return {s: tools.evaluate_scheme(facts, s, include_draft) for s in schemes}
     return {s: tools.evaluate_scheme(facts, s, include_draft) for s in schemes}
 
 

@@ -74,21 +74,25 @@ def eligibility_node(state: GraphState) -> dict[str, Any]:
         schemes = tools.search_schemes(
             state["profile"], state.get("scheme_ids"), preview
         )
-        # Answers only add facts: a decided verdict stays decided, and an open one can change
-        # only if it was waiting on the field just asked. An edit clears verdicts, forcing a full check.
-        earlier = state.get("verdicts") or {}
-        asked = state.get("last_asked")
+    # Answers only add facts: a decided verdict stays decided, and an open one can change
+    # only if it was waiting on the field just asked. An edit clears verdicts, forcing a full check.
+    earlier = state.get("verdicts") or {}
+    asked = state.get("last_asked")
 
-        def stale(scheme: str) -> bool:
-            verdict = earlier.get(scheme)
-            return verdict is None or (
-                verdict["verdict"] == "cant_tell" and asked in verdict.get("unresolved_fields", [])
-            )
+    def stale(scheme: str) -> bool:
+        verdict = earlier.get(scheme)
+        return verdict is None or (
+            verdict["verdict"] == "cant_tell" and asked in verdict.get("unresolved_fields", [])
+        )
 
-        verdicts = {
-            scheme: tools.evaluate_scheme(state["profile"], scheme, preview) if stale(scheme) else earlier[scheme]
-            for scheme in schemes
-        }
+    verdicts = {}
+    for scheme in schemes:
+        if not stale(scheme):
+            verdicts[scheme] = earlier[scheme]
+            continue
+        actor = "rule_reviewer" if preview else "eligibility"
+        with tools.acting_as(actor):
+            verdicts[scheme] = tools.evaluate_scheme(state["profile"], scheme, preview)
     return {"verdicts": verdicts}
 
 
@@ -188,6 +192,9 @@ def approval_node(state: GraphState) -> dict[str, Any]:
         tools.audit_approval_event("approve", "invalid", authenticated)
         return {"approved": False, "approval_status": "invalid"}
     if action == "edit" and isinstance(decision.get("changes"), dict):
+        if not _valid_profile_edits(decision["changes"]):
+            tools.audit_approval_event("edit", "invalid", authenticated)
+            return {"approved": False, "approval_status": "invalid"}
         tools.audit_approval_event("edit", "accepted", authenticated)
         # An edit can change an answer, so earlier verdicts no longer hold.
         return {"profile": {**state["profile"], **decision["changes"]}, "verdicts": {}, "approved": False,
@@ -198,6 +205,26 @@ def approval_node(state: GraphState) -> dict[str, Any]:
         authenticated,
     )
     return {"approved": False, "approval_status": "rejected" if action == "reject" else "invalid"}
+
+
+def _valid_profile_edits(changes: dict[str, Any]) -> bool:
+    with tools.acting_as("application"):
+        scheme_ids = tools.search_schemes({})
+        specs = tools.field_specs(scheme_ids)
+    specs.setdefault("income", {"type": "number"})
+    specs.setdefault("occupation", {"type": "str"})
+    for field, value in changes.items():
+        spec = specs.get(field)
+        if spec is None:
+            return False
+        kind = spec["type"]
+        if kind == "bool" and not isinstance(value, bool):
+            return False
+        if kind == "number" and (not isinstance(value, (int, float)) or isinstance(value, bool)):
+            return False
+        if kind == "str" and not isinstance(value, str):
+            return False
+    return True
 
 
 def route_after_approval(state: GraphState) -> str:

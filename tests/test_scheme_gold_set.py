@@ -81,10 +81,11 @@ def test_c05_exclusions_reject_members_and_tax_payers():
           "has_savings_or_jandhan_account_with_ifsc": True, "is_income_tax_payer": False,
           "is_organized_sector_worker": False, "is_epfo_member": False, "is_nps_member": False,
           "is_esic_member": False, "is_nps_traders_member": False}
-    verdict = lambda **c: tools.evaluate_scheme({**ok, **c}, "C05", include_draft=True)["verdict"]
+    def verdict(**changes):
+        with tools.acting_as("rule_reviewer"):
+            return tools.evaluate_scheme({**ok, **changes}, "C05", include_draft=True)["verdict"]
     assert verdict() == "eligible"
     assert verdict(is_nps_traders_member=True) == "not_eligible"
     assert verdict(is_epfo_member=True) == "not_eligible"
     assert verdict(monthly_income=15001) == "not_eligible"
     assert verdict(age=41) == "not_eligible"
-

@@ -74,6 +74,18 @@ def test_normal_facts_are_not_rejected():
     })
 
 
+@pytest.mark.parametrize("text", [
+    "aadhaar 2345.6789.0123",
+    "aadhaar 2345\u200b6789\u200b0123",
+    "call me on +91 98765 43210",
+    "my otp is 482913",
+    "password: hunter2",
+])
+def test_obfuscated_identifiers_and_secrets_are_rejected(text):
+    with pytest.raises(SensitiveInputError):
+        reject_sensitive_input(text)
+
+
 @pytest.mark.parametrize("build", [build_graph, lambda checkpointer: build_agent_graph(make_agents(), checkpointer)])
 def test_graph_rejects_resume_and_stream_before_checkpoint(build):
     saver = MemorySaver()
