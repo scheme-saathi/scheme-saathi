@@ -167,3 +167,60 @@ def test_the_extractor_drops_exact_duplicates():
 def test_the_committed_playbook_loads_and_holds_no_unreviewed_approval():
     book = Playbook.load()
     assert all(l.reviewed_by for l in book.lessons if l.status in ("approved", "rejected", "withdrawn"))
+
+
+def test_common_keywords_are_removed_and_flagged():
+    kept, flags = reflect_cli.checked_keywords(["or", "Priority", "must be"])
+    assert kept == ["priority"] and flags == ["common keywords removed: or, must be"]
+    kept, flags = reflect_cli.checked_keywords(["all", "every", "must"])
+    assert kept == [] and "every scheme" in flags[-1]
+    assert reflect_cli.checked_keywords([]) == ([], [])
+
+
+def test_reflection_flags_generic_lessons_and_more_extra_rule_examples(tmp_path):
+    def reflect(value):
+        return Reflection(lessons=[ProposedLesson(text="x", applies_when="y", keywords=["is", "not"], examples=["C09"])])
+    proposals, _ = reflect_cli.propose(fake_run(tmp_path), Playbook(), reflect=reflect)
+    assert proposals[0].keywords == [] and "based on one scheme only" in proposals[0].flags
+    assert reflect_cli.MAX_EXAMPLES_BY_TYPE["extra_rule"] > reflect_cli.MAX_EXAMPLES
+
+
+def test_unreviewed_proposals_can_be_discarded_before_reflecting_again():
+    book = Playbook(lessons=[lesson("L001", status="approved"), lesson("L002"), lesson("L003")])
+    assert book.discard_proposed() == ["L002", "L003"]
+    assert [l.lesson_id for l in book.lessons] == ["L001"]
+
+
+def test_a_runaway_extraction_is_tried_once_more():
+    from langchain_core.runnables import RunnableLambda
+    from agents.rule_extractor import RuleExtractor
+
+    class LengthFinishReasonError(Exception):
+        pass
+
+    calls = []
+
+    def answer(prompt):
+        calls.append(1)
+        if len(calls) == 1:
+            raise LengthFinishReasonError("length limit reached")
+        return {"clauses": [{"clause_id": "elig-1", "rules": [], "note": "heading"}]}
+
+    class FakeModel:
+        def with_structured_output(self, schema):
+            return RunnableLambda(answer)
+
+    RuleExtractor(FakeModel()).extract(rx.extraction_input("M14"))
+    assert len(calls) == 2
+
+
+def test_the_reflection_model_can_be_chosen_separately(monkeypatch):
+    seen = {}
+    monkeypatch.setenv("SUPERVISOR_MODEL", "openai/gpt-4o-mini")
+    monkeypatch.setenv("REFLECTION_MODEL", "openai/gpt-4o")
+    monkeypatch.setattr("agents.model_factory.create_chat_model",
+                        lambda role: seen.setdefault("model", __import__("os").environ["SUPERVISOR_MODEL"]) and None)
+    monkeypatch.setattr("agents.rule_reflector.RuleReflector.__init__", lambda self, model: None)
+    reflect_cli.default_reflector()
+    assert seen["model"] == "openai/gpt-4o"
+    assert __import__("os").environ["SUPERVISOR_MODEL"] == "openai/gpt-4o-mini"  # restored

@@ -135,7 +135,15 @@ class RuleExtractor:
 
     def extract(self, value: ExtractionInput | dict, lessons: list[str] | None = None) -> Extraction:
         agent = StructuredGPTAgent(self._model, ExtractionInput, ClauseByClause, instructions_with(lessons or []))
-        raw = agent.invoke(ExtractionInput.model_validate(value))
+        request = ExtractionInput.model_validate(value)
+        try:
+            raw = agent.invoke(request)
+        except Exception as error:
+            # A runaway answer that hit the output cap (M14 in the baseline) is tried once more;
+            # anything else, or a second runaway, is reported as a failed extraction.
+            if type(error).__name__ != "LengthFinishReasonError":
+                raise
+            raw = agent.invoke(request)
         rules, seen = [], set()
         for rule in (rule for clause in raw.clauses for rule in clause.rules):
             key = rule.model_dump_json(exclude={"clause_id"})

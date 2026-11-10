@@ -32,28 +32,46 @@ the rule a person reviewed and approved ("gold", the right answer) and what the 
 ("draft"). It also lists lessons the extractor already has.
 
 TASK
-Write the fewest short lessons that would stop this type of error, at most three. Each lesson
-says when it applies and what to do, in one or two sentences, and gives the words in a
-scheme's text that signal it applies.
+Find the patterns behind these mistakes: what in the clause's wording led the extractor
+wrong. Write one lesson per pattern seen in at least two schemes, at most three lessons. Each
+lesson names the wording that triggers it and the exact rule to write (or not to write).
 
 CONSTRAINTS
-- A lesson is general: it must not name one scheme, one field or one value unless that field is
-  meant to be reused (e.g. "use age, not age_years").
-- Base each lesson on the examples; don't add rules of your own.
-- Don't repeat an existing lesson. If the examples show no common pattern, return no lessons.
-- If a "gold" rule looks wrong to you, say so in doubts instead of writing a lesson against it.
+- Concrete, never generic. A lesson must quote or describe the triggering wording ("is
+  eligible only in subsequent years", "receive priority", "State/UT Government") and say
+  exactly what to do with it ("write no rule", "write field eq false", "one rule with
+  or_conditions"). Lessons that only say "ensure", "make sure", "accurately", "correctly" or
+  "use the right field" are useless: don't write them.
+- General across schemes: don't name one scheme. Name a field only if it should always be
+  reused for that meaning (e.g. "use age for a person's age, never for pregnancy weeks").
+- Base each lesson on the examples; don't add conventions of your own.
+- Two lessons must never contradict each other or an existing lesson. Don't repeat an
+  existing lesson. If no pattern repeats across schemes, return no lessons.
+- keywords are specific words or phrases from the example clauses that signal the lesson
+  applies ("priority", "terminate", "panchayat"), never common words ("or", "is", "must",
+  "all", "not", "eligible", "applicant"). Use an empty list only for a lesson that truly
+  applies to every scheme.
+- If a "gold" rule looks wrong to you, say so in doubts, naming the scheme and clause, instead
+  of writing a lesson against it. Leave doubts empty otherwise.
 
 FORMAT
 lessons: each with text, applies_when (a short condition), keywords (2-6 lower-case words or
 short phrases found in scheme text, or empty if it always applies) and examples (scheme ids it
 comes from). doubts: anything a reviewer should look at.
 
-EXAMPLE
+EXAMPLES (the shape of a good lesson; these errors are illustrations, not from your input)
 Error: wrong_operator. Examples: "age below 60" gold age lt 60, draft age lte 60; "income
 below Rs 1 lakh" gold lt, draft lte.
-Lesson: "When a limit says 'below' or 'less than', the limit itself is not included: use lt,
-not lte." applies_when: "an age or income limit worded 'below' or 'less than'". keywords:
-["below", "less than"]."""
+Bad lesson: "Make sure the right operator is used for limits." (generic)
+Good lesson: "When a limit says 'below' or 'less than', the limit itself is not included: use
+lt, not lte." applies_when: "an age or income limit worded 'below' or 'less than'".
+keywords: ["below", "less than"].
+
+Error: missing_rule. Examples: "aged 18 to 40 years" gold age gte 18 and age lte 40, draft only
+age gte 18; "between 21 and 60 years" the same.
+Good lesson: "When a scheme gives an age range ('18 to 40', 'between 21 and 60'), write two
+rules, one for each end, and include both ends unless the text says otherwise."
+applies_when: "an age range". keywords: ["between", "years of age", "age group"]."""
 
 
 class ErrorExample(BaseModel):

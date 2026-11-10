@@ -37,6 +37,7 @@ class Lesson(BaseModel):
     keywords: list[str] = Field(default_factory=list, description="Words in a scheme's text that signal it applies; empty means always.")
     error_type: str
     examples: list[str] = Field(default_factory=list)
+    flags: list[str] = Field(default_factory=list, description="Checks by code for the reviewer.")
     status: Status = "proposed"
     proposed_on: str = ""
     proposed_by_run: str = ""
@@ -89,6 +90,13 @@ class Playbook(BaseModel):
         if text:
             lesson.text = text
         return lesson
+
+    def discard_proposed(self) -> list[str]:
+        """Drop proposals no one has reviewed yet (before reflecting again on the same errors)."""
+        self._unfrozen()
+        dropped = [lesson.lesson_id for lesson in self.lessons if lesson.status == "proposed"]
+        self.lessons = [lesson for lesson in self.lessons if lesson.status != "proposed"]
+        return dropped
 
     def withdraw(self, lesson_id: str, reviewer: str, note: str) -> Lesson:
         self._unfrozen()

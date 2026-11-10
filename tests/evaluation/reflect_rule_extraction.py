@@ -27,7 +27,15 @@ from agents.rule_reflector import ERROR_MEANINGS, ErrorExample, Reflection, Refl
 from evaluation import rule_extraction as rx  # noqa: E402
 from evaluation.playbook import PLAYBOOK_FILE, Lesson, Playbook  # noqa: E402
 
-MAX_EXAMPLES = 8  # per error type, spread over schemes
+MAX_EXAMPLES = 12  # per error type, spread over schemes
+MAX_EXAMPLES_BY_TYPE = {"extra_rule": 16}  # 134 of the baseline's 195 errors
+# A keyword this common would match nearly every scheme, so the lesson would always be sent.
+COMMON_WORDS = {
+    "a", "an", "and", "any", "all", "applicant", "applicants", "be", "by", "can", "clause", "condition",
+    "conditions", "criteria", "eligibility", "eligible", "every", "following", "for", "from", "id", "in",
+    "including", "is", "must", "must be", "not", "of", "on", "only", "or", "scheme", "schemes", "should",
+    "should be", "the", "to", "who", "with",
+}
 
 
 def _clause_of(shown: str | None) -> str | None:
@@ -58,20 +66,45 @@ def error_examples(rows: list[dict[str, Any]], max_examples: int = MAX_EXAMPLES)
             by_type[kind].append(items)
     chosen: dict[str, list[ErrorExample]] = {}
     for kind, schemes in by_type.items():
+        limit = MAX_EXAMPLES_BY_TYPE.get(kind, max_examples)
         picked, depth = [], 0
-        while len(picked) < max_examples and any(depth < len(s) for s in schemes):
-            picked += [s[depth] for s in schemes if depth < len(s)][: max_examples - len(picked)]
+        while len(picked) < limit and any(depth < len(s) for s in schemes):
+            picked += [s[depth] for s in schemes if depth < len(s)][: limit - len(picked)]
             depth += 1
         chosen[kind] = picked
     return chosen
 
 
 def default_reflector() -> Callable[[ReflectionInput], Reflection]:
+    """The reflection model: REFLECTION_MODEL if set (only a few calls, so a stronger model is
+    cheap here), else SUPERVISOR_MODEL."""
+    import os
+
+    from dotenv import load_dotenv
+
     from agents.model_factory import create_chat_model
     from agents.rule_reflector import RuleReflector
 
-    reflector = RuleReflector(create_chat_model("supervisor"))
+    load_dotenv()
+    chosen, before = os.getenv("REFLECTION_MODEL", "").strip(), os.environ.get("SUPERVISOR_MODEL")
+    try:
+        if chosen:
+            os.environ["SUPERVISOR_MODEL"] = chosen
+        reflector = RuleReflector(create_chat_model("supervisor"))
+    finally:
+        if chosen:
+            os.environ.pop("SUPERVISOR_MODEL") if before is None else os.environ.__setitem__("SUPERVISOR_MODEL", before)
     return reflector.reflect
+
+
+def checked_keywords(keywords: list[str]) -> tuple[list[str], list[str]]:
+    """Keywords that can tell schemes apart, and flags for the reviewer about the rest."""
+    kept = [k.strip().lower() for k in keywords if k.strip() and k.strip().lower() not in COMMON_WORDS]
+    dropped = [k for k in keywords if k.strip().lower() in COMMON_WORDS]
+    flags = [f"common keywords removed: {', '.join(dropped)}"] if dropped else []
+    if keywords and not kept:
+        flags.append("no specific keyword left, so it would be sent for every scheme")
+    return kept, flags
 
 
 def propose(run_dir: Path, playbook: Playbook, reflect: Callable[[ReflectionInput], Reflection] | None = None,
@@ -94,9 +127,12 @@ def propose(run_dir: Path, playbook: Playbook, reflect: Callable[[ReflectionInpu
             tokens.update({k: v for k, v in used.items() if isinstance(v, int)})
         doubts += [f"{kind}: {d}" for d in result.doubts]
         for item in result.lessons:
+            keywords, flags = checked_keywords(item.keywords)
+            if len(set(item.examples)) < 2:
+                flags.append("based on one scheme only")
             proposals.append(Lesson(
                 lesson_id=f"L{next_number:03d}", text=item.text, applies_when=item.applies_when,
-                keywords=item.keywords, error_type=kind, examples=item.examples,
+                keywords=keywords, flags=flags, error_type=kind, examples=item.examples,
                 proposed_on=today or date.today().isoformat(), proposed_by_run=run_dir.name))
             next_number += 1
     playbook.add_proposals(proposals)
@@ -108,15 +144,21 @@ def propose(run_dir: Path, playbook: Playbook, reflect: Callable[[ReflectionInpu
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--run", required=True, help="a development run folder in data/evaluation-runs/")
+    parser.add_argument("--discard-proposed", action="store_true",
+                        help="first drop proposals no one has reviewed yet (to reflect again)")
     args = parser.parse_args()
     run_dir = Path(args.run)
     playbook = Playbook.load()
+    if args.discard_proposed:
+        dropped = playbook.discard_proposed()
+        print(f"Discarded {len(dropped)} unreviewed proposals: {', '.join(dropped) or 'none'}")
     proposals, report = propose(run_dir, playbook)
     playbook.save()
     (run_dir / "reflection.json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     for lesson in proposals:
         print(f"{lesson.lesson_id} [{lesson.error_type}] {lesson.text}\n    applies when: {lesson.applies_when}; "
-              f"keywords: {', '.join(lesson.keywords) or '(always)'}")
+              f"keywords: {', '.join(lesson.keywords) or '(always)'}"
+              + (f"\n    flags: {'; '.join(lesson.flags)}" if lesson.flags else ""))
     if report["doubts"]:
         print("\nDoubts for the reviewer:\n- " + "\n- ".join(report["doubts"]))
     print(f"\n{len(proposals)} lessons proposed in {PLAYBOOK_FILE.relative_to(ROOT)}; tokens {report['reflection_tokens']}")
