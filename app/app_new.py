@@ -11,7 +11,7 @@ import time
 from collections.abc import Iterator
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
@@ -42,7 +42,7 @@ JOURNEY_STEPS = (
 )
 
 
-def _render_brand_image(width: int = 313) -> None:
+def _render_brand_image(width: int | Literal["stretch"] = 313) -> None:
     """Render the official Scheme Saathi image at a consistent header size."""
     with st.container(key="page-brand"):
         st.image(
@@ -415,25 +415,6 @@ def _subject_line(prefix: str, source: dict[str, Any]) -> str:
     return _t(f"{prefix}_other", relation=relation) if relation else _t(f"{prefix}_someone")
 
 
-# Stored as YYYY-MM-DD for the rule engine; shown and typed in the Indian order, DD/MM/YYYY.
-DATE_FIELDS = {"date_of_birth"}
-
-
-def _indian_date(value: Any) -> str:
-    try:
-        return datetime.strptime(str(value), "%Y-%m-%d").strftime("%d/%m/%Y")
-    except ValueError:
-        return str(value)
-
-
-def _iso_date(text: str) -> str | None:
-    """DD/MM/YYYY as typed, in the stored YYYY-MM-DD form; None when it isn't a real date."""
-    try:
-        return datetime.strptime(text.strip(), "%d/%m/%Y").date().isoformat()
-    except ValueError:
-        return None
-
-
 def _short_date(value: Any) -> str:
     try:
         return datetime.fromisoformat(str(value)).strftime("%d %b %Y")
@@ -783,7 +764,6 @@ def _render_workflow_fields(fields: dict[str, Any]) -> None:
                         else "Yes" if value is True
                         else "No" if value is False
                         else "Not provided" if value is None
-                        else _indian_date(value) if field in DATE_FIELDS
                         else str(value)
                     ),
                 }
@@ -868,7 +848,6 @@ def _render_review_step(
         edit_revision = st.session_state["application_edit_revision"]
         with st.form("edit-application-profile"):
             changes: dict[str, Any] = {}
-            bad_dates: list[str] = []
             edit_columns = st.columns(2, gap="small")
             for index, (field, value) in enumerate(profile.items()):
                 with edit_columns[index % len(edit_columns)]:
@@ -891,18 +870,6 @@ def _render_review_step(
                             value=value,
                             key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
                         )
-                    elif field in DATE_FIELDS:
-                        typed = st.text_input(
-                            f"{_field_label(field)} (DD/MM/YYYY)",
-                            value=_indian_date(value) if value else "",
-                            placeholder="DD/MM/YYYY",
-                            key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
-                        )
-                        updated = _iso_date(typed)
-                        if updated is None:
-                            if typed.strip():
-                                bad_dates.append(_field_label(field))
-                            continue
                     elif isinstance(value, str):
                         updated = st.text_input(
                             _field_label(field),
@@ -915,9 +882,6 @@ def _render_review_step(
                         changes[field] = updated
             edit_submitted = st.form_submit_button("Save changes and recheck eligibility")
         if edit_submitted:
-            if bad_dates:
-                st.error(f"Enter {', '.join(bad_dates)} as DD/MM/YYYY, for example 05/03/1962.")
-                return
             if not changes:
                 st.info("Change a detail before saving.")
                 return
@@ -1796,7 +1760,7 @@ def _render_consent_page() -> None:
                 [1.5, 1.1, 1.1], vertical_alignment="center"
             )
             with image_col:
-                _render_brand_image()
+                _render_brand_image(width="stretch")
             tagline_col.caption("PUBLIC SUPPORT, MADE SIMPLE")
             with step_col:
                 st.markdown("**BEFORE YOU BEGIN**")
@@ -1805,7 +1769,7 @@ def _render_consent_page() -> None:
         with st.container(border=True, key="consent-shell"):
             _render_signed_in_account()
             st.markdown(":material/verified_user: PRIVACY & CONSENT")
-            st.title("Your information. Your choice.")
+            st.subheader("Your information. Your choice.")
             st.write(
                 "Please review how information is used before continuing to "
                 "your scheme search."
@@ -1845,6 +1809,7 @@ def _render_consent_page() -> None:
                 "I do not agree — return to sign in",
                 key="decline-consent",
                 on_click=_decline_consent,
+                type="primary",
                 width="stretch",
             )
 
@@ -1943,7 +1908,7 @@ def _render_chat_header() -> None:
                 [1.4, 1.6, 1.4], gap="medium", vertical_alignment="center"
             )
             with image_col:
-                _render_brand_image()
+                _render_brand_image(width="stretch")
             with title_col:
                 st.markdown("#### Scheme Saathi")
                 st.caption("Your guide to government schemes")
