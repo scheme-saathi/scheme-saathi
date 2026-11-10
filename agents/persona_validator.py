@@ -272,6 +272,7 @@ class SensitivePatternDetector:
     # Sensitive patterns
     AADHAR_PATTERN = r"\b\d{4}[\s\-]?\d{4}[\s\-]?\d{4}\b"
     PAN_PATTERN = r"\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b"
+    IFSC_PATTERN = r"\b[A-Z]{4}0[A-Z0-9]{6}\b"
     BANK_ACCOUNT_PATTERN = r"\b\d{9,18}\b"
     PHONE_PATTERN = r"\b[6-9]\d{9}\b"  # Indian phone numbers
 
@@ -289,8 +290,10 @@ class SensitivePatternDetector:
 
         if re.search(cls.AADHAR_PATTERN, text):
             return "aadhar"
-        if re.search(cls.PAN_PATTERN, text):
+        if re.search(cls.PAN_PATTERN, text, re.IGNORECASE):
             return "pan"
+        if re.search(cls.IFSC_PATTERN, text, re.IGNORECASE):
+            return "ifsc"
         if re.search(cls.BANK_ACCOUNT_PATTERN, text):
             return "bank_account"
         if re.search(cls.PHONE_PATTERN, text):
@@ -311,7 +314,12 @@ class SensitiveDataMasker:
     def mask_pan(text: str) -> str:
         """Mask PAN numbers."""
         import re
-        return re.sub(r"[A-Z]{5}[0-9]{4}[A-Z]{1}", "XXXXX0000X", text)
+        return re.sub(SensitivePatternDetector.PAN_PATTERN, "XXXXX0000X", text, flags=re.IGNORECASE)
+
+    @staticmethod
+    def mask_ifsc(text: str) -> str:
+        import re
+        return re.sub(SensitivePatternDetector.IFSC_PATTERN, "[IFSC REDACTED]", text, flags=re.IGNORECASE)
 
     @staticmethod
     def mask_bank_account(text: str) -> str:
@@ -330,7 +338,59 @@ class SensitiveDataMasker:
         """Apply all masking rules."""
         text = cls.mask_aadhar(text)
         text = cls.mask_pan(text)
+        text = cls.mask_ifsc(text)
         text = cls.mask_bank_account(text)
         text = cls.mask_phone(text)
         return text
 
+
+SENSITIVE_INPUT_MESSAGE = (
+    "Sensitive information detected. Do not share Aadhaar, PAN, IFSC, phone, "
+    "bank account or other ID numbers, passwords, or OTPs. Remove them and try again."
+)
+
+
+class SensitiveInputError(ValueError):
+    """A request contains a potentially sensitive identifier."""
+
+
+def reject_sensitive_input(value: Any, field: str = "") -> None:
+    """Reject recognized identifiers without including their contents in the error."""
+    if isinstance(value, dict):
+        for key, item in value.items():
+            reject_sensitive_input(str(key))
+            reject_sensitive_input(item, str(key))
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            reject_sensitive_input(item, field)
+    elif value is not None and not isinstance(value, bool):
+        normalized = field.lower().replace("-", "_").replace(" ", "_")
+        sensitive_field = any(
+            name in normalized
+            for name in (
+                "aadhaar", "aadhar", "ifsc", "pan_number", "account_number",
+                "bank_account", "phone_number", "mobile_number", "id_number", "password",
+            )
+        ) or normalized in {"pan", "phone", "mobile", "otp"} or "otp" in normalized.split("_")
+        financial_field = any(
+            name in normalized for name in ("income", "amount", "salary", "price", "cost")
+        )
+        if sensitive_field or (
+            (isinstance(value, str) or (isinstance(value, int) and not financial_field))
+            and SensitivePatternDetector.detect_sensitive_type(str(value))
+        ):
+            raise SensitiveInputError(SENSITIVE_INPUT_MESSAGE)
+
+
+def reject_sensitive_graph_input(value: Any) -> None:
+    from langgraph.types import Command
+
+    if isinstance(value, Command):
+        reject_sensitive_input([value.resume, value.update])
+    elif isinstance(value, dict):
+        reject_sensitive_input({
+            key: item for key, item in value.items()
+            if key not in {"actor_id", "thread_id"}
+        })
+    else:
+        reject_sensitive_input(value)

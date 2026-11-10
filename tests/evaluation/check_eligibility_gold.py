@@ -25,7 +25,11 @@ GOLD_DIR = ROOT / "tests" / "evaluation" / "eligibility_gold_v1"
 SPLITS = ("development", "held_out")
 VERDICTS = {"eligible", "not_eligible", "cant_tell"}
 ALLOWED_VALUES = {
-    "social_category": {"VJNT", "OBC", "SBC", "SC", "ST", "General"},
+    # "VJNT" is split as the state splits it: VJ-A, NT-B, NT-C, NT-D (Step 6)
+    "social_category": {"SC", "ST", "OBC", "VJ-A", "NT-B", "NT-C", "NT-D", "SBC", "Nav-Buddha", "EWS", "EBC",
+                        "General"},
+    "state_of_residence": {"Maharashtra", "Assam", "Jammu and Kashmir", "Bihar", "Karnataka",
+                           "Andaman and Nicobar Islands"},
     "farmer_applicant_category": {
         "individual owner cultivator", "joint borrower owner cultivator", "tenant farmer",
         "oral lessee", "sharecropper", "farmer self-help group",

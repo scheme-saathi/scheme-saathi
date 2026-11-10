@@ -117,3 +117,40 @@ def test_the_workflows_offer_to_check_eligibility_is_not_a_claim():
     from graph.agent_workflow import CHECK_ELIGIBILITY_INSTEAD
     for text in CHECK_ELIGIBILITY_INSTEAD.values():
         assert run_eval.eligibility_claims([{"role": "agent", "text": text}]) == []
+
+
+def test_the_c2_config_raises_the_rate_limit_for_the_simulated_citizen():
+    """Four development cases stopped at validation_error: the citizen replies faster than 10 a minute."""
+    from types import SimpleNamespace
+    from agents.supervisor import InputValidator
+    config = run_eval.load_config(CONFIG_DIR / "c2_agent_team.json")
+    agents = SimpleNamespace(supervisor=SimpleNamespace(input_validator=InputValidator()))
+    run_eval.apply_rate_limit(agents, config)
+    limiter = agents.supervisor.input_validator.rate_limiter
+    assert all(limiter.is_allowed("eval-runner") for _ in range(50))
+    untouched = SimpleNamespace(supervisor=SimpleNamespace(input_validator=InputValidator()))
+    run_eval.apply_rate_limit(untouched, {})
+    assert untouched.supervisor.input_validator.rate_limiter.max_requests == 10
+
+
+def test_the_heartbeat_reports_progress_while_a_case_runs():
+    lines = []
+    beat = run_eval.Heartbeat(total=4, every=60, emit=lines.append)
+    assert beat.line().startswith("... still running: 0/4 cases done")
+    beat.case("F04a")
+    beat.finished()
+    beat.case("F04b")
+    line = beat.line()
+    assert "1/4 cases done" in line and "F04b running for" in line and "left" in line
+
+
+def test_a_slow_case_gets_heartbeat_lines(monkeypatch, capsys):
+    import time as _time
+    def slow(case, config):
+        _time.sleep(0.35)
+        return {"verdicts": {}, "questions_asked": 0}
+    monkeypatch.setitem(run_eval.SYSTEMS, "fixed_workflow", slow)
+    run_eval.run(run_eval.load_config(CONFIG_DIR / "c0_fixed_workflow.json"), "development", limit=1,
+                 heartbeat_seconds=0.1)
+    err = capsys.readouterr().err
+    assert "still running: 0/1 cases done" in err and "[1/1]" in err

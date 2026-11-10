@@ -51,21 +51,21 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "lacks_legal_aid_due_to_social_or_economic_barriers",
       "op": "eq",
       "value": true,
       "clause_id": "elig-6",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "suffering_delay_in_investigation_or_trial",
       "op": "eq",
       "value": true,
       "clause_id": "elig-7",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

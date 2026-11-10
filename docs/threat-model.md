@@ -17,9 +17,11 @@ demo, not a production security certification.
 
 ## Trust boundaries and data flow
 
-1. User input enters through the API and is passed into a supervisor/specialist
-   graph. The supervisor validates inputs before routing and validates final
-   specialist responses before they leave the graph.
+1. Recognized sensitive identifiers in chat text, structured facts, and approval
+   edits are rejected at the API/service and graph invocation boundaries before
+   thread creation, checkpointing, or model calls. The UI also rejects recognized
+   identifiers before displaying or saving a chat turn. The supervisor validates
+   inputs before routing and validates final specialist responses.
 2. Scheme pages, retrieved text, tool outputs, and model outputs are untrusted
    data. They must not be interpreted as instructions or as authority to change
    eligibility rules.
@@ -60,10 +62,10 @@ demo, not a production security certification.
 | Prompt injection in scheme text or tool output | Agent prompts describe external text as untrusted task data. | Validate outputs and constrain tool parameters; prompt wording alone is not a security boundary. |
 | Unauthorized agent invokes a tool through the graph | `graph.tools.call_tool` allow-lists all tools, restricts reads in explicit per-agent contexts, and restricts portal writes to application/baseline contexts. `doc-check` is limited to the document checker. | Context-free calls are trusted in-process calls, and `acting_as` is caller-controlled Python state. These checks prevent accidental graph misuse, not malicious code execution. |
 | An agent makes excessive MCP calls in one workflow run | Compiled graphs stop before exceeding their fixed per-invocation budget and emit metadata-only audit events. Agent and baseline graphs allow 40 calls; the legacy full-corpus graph allows 1,200. | The budget is process-local to each invocation; it is not a household rate limit or a distributed quota. The legacy limit is high to accommodate its current full-corpus evaluation and must be revisited if corpus or field counts grow. |
-| Direct request creates or submits an application without approval | Direct portal routes require Auth0 identity; POST additionally checks a one-use capability bound to the authenticated household and exact form. Workflow writes use the same capability mechanism after exact-payload approval. | The capability issuer uses a shared secret and in-memory nonce tracking, and the direct route bypasses the graph approval flow. Keep the portal private; replace with a separately authorized service boundary before production. |
+| Direct request creates or submits an application without approval | Direct portal routes require Auth0 identity; POST additionally checks a one-use capability bound to the authenticated household and exact form. Workflow writes use the same capability mechanism after exact-payload approval. | Nonce tracking is process-local unless all portal processes share `MOCK_PORTAL_NONCE_DB`; the issuer uses a shared secret and the direct route bypasses the graph approval flow. Keep the portal private; replace with a separately authorized service boundary before production. |
 | Approval is replayed after form changes | Approval is bound to a canonical form hash; the submit node rechecks the approved hash and portal draft hash. | Keep tests for changed forms, wrong hashes, rejection, and edits; persistent storage must preserve these invariants. |
 | Caller accesses another household's thread or portal status | Protected API and portal routes derive household identity from a verified Auth0 token and check the stored owner. | Configure and test the Auth0 custom household claim carefully. Thread/application records and ownership maps are in memory and do not provide durable production isolation. |
-| Full Aadhaar, bank-account, or other identifier is exposed | The live supervisor rejects recognized sensitive input before routing and logs only a masked copy; output validation also rejects recognized sensitive output. MCP audit events omit tool payloads. | Detection is pattern-based and does not guarantee identification of every sensitive value. Review non-MCP logs, provider traces, and errors separately; use masked synthetic values in tests. |
+| Full Aadhaar, bank-account, or other identifier is exposed | The UI, chat and legacy API/service entry points, and graph execution wrappers reject recognized patterns before processing; sensitive edits do not consume approval. Uploaded filenames are checked too. Supervisor input and output logs omit message contents; MCP audit events omit tool payloads. | Detection is heuristic and can miss identifiers, passwords, OTPs, unusual formats, or values in financial fields, and can reject ordinary long numbers. It does not inspect uploaded document contents; users must redact documents before upload. Graph state updates or direct access to underlying storage bypass the execution wrapper. Previously saved data is not automatically scrubbed; review and remove it separately, including provider traces and other logs. |
 | Household data is copied into tool audit logs | MCP audit events record only actor/tool labels, outcome, safe error category and duration; arguments, results and exception text are excluded. | Other application, model-provider and server logs require their own review; this control covers the graph MCP boundary only. |
 | Document contents are treated as verified | Document checker and field comparison tool disclaim authenticity verification. | Document extraction/storage is not wired into the workflow. Do not present checklist matching as authenticity or legal validity verification. |
 | Model/API credential leaks | Model IDs and credentials are configured through environment variables; `.env` is intended to remain local. | Keep secrets out of source, logs, screenshots, and examples; use empty values in `.env.example` and rotate any exposed key. |
@@ -88,8 +90,8 @@ demo, not a production security certification.
 - Keep tests for supervisor input/output checks and the MCP budget/audit boundary.
 - Configure and verify the Auth0 tenant, audience and namespaced household
   claim in the deployment environment.
-- Replace the demo capability secret and process-local nonce tracking with a
-  separately authorized portal service boundary before production.
+- Replace the demo capability secret and nonce tracking with a separately
+  authorized portal service boundary before production.
 - Review non-MCP logs and model-provider traces independently for sensitive data.
 - Decide and implement consent, retention/expiry, and household-wide deletion
   before persisting memory or application data.

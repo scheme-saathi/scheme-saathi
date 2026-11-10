@@ -53,35 +53,77 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_phd_in_science_engineering_or_ms_md",
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "holds_regular_position_in_state_university_college_or_private_institution",
       "op": "eq",
       "value": true,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_ongoing_research_project_or_fellowship",
       "op": "eq",
       "value": false,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
+    },
+    {
+      "field": "age",
+      "op": "lte",
+      "value": 50,
+      "clause_id": "elig-4",
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 45,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed",
+      "or_conditions": [
+        {
+          "field": "social_category",
+          "op": "in",
+          "value": [
+            "SC",
+            "ST",
+            "OBC"
+          ]
+        },
+        {
+          "field": "is_woman_or_girl",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "field": "has_disability",
+          "op": "eq",
+          "value": true
+        }
+      ]
+    },
+    {
+      "field": "has_mentor_at_associate_professor_or_scientist_e_level",
+      "op": "eq",
+      "value": true,
+      "clause_id": "elig-5",
+      "status": "reviewed"
+    },
+    {
+      "field": "mentor_has_another_tare_candidate",
+      "op": "eq",
+      "value": false,
+      "clause_id": "elig-6",
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

@@ -8,8 +8,7 @@ The supervisor acts as a gatekeeper with three layers:
 This ensures safe, controlled information flow across all agents.
 
  Unified Classification Strategy:
-- Primary: gpt-4o-mini via OpenRouter (language + intent in single call)
-- Latency: ~50-100ms (one round-trip)
+- Primary: configured OpenRouter model (language + intent in single call)
 - Fallback: Character-based language + keyword intent detection (<1ms)
 - Hybrid approach ensures resilience if API is unavailable
 """
@@ -29,16 +28,25 @@ from agents.base import StructuredGPTAgent
 from agents.contracts import Intent, Language, SupervisorInput, SupervisorPlan
 from agents.persona_validator import (
     PersonaValidationError,
-    SensitiveDataMasker,
     SensitivePatternDetector,
 )
+from observability.llm import record_llm_call
+from observability.metrics import active_metrics
 
 logger = logging.getLogger(__name__)
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1"
 SUPERVISOR_MODEL_ENV = "SUPERVISOR_MODEL"
+ROUTER_MODEL_ENV = "ROUTER_MODEL"
 OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
-UNIFIED_ROUTER_MODEL = "openai/gpt-4o-mini"  # Fast, cost-effective unified classification
+
+
+class RouterHTTPError(Exception):
+    """OpenRouter answered the router call with a status other than 200."""
+
+    def __init__(self, status_code: int) -> None:
+        super().__init__(f"HTTP {status_code}")
+        self.status_code = status_code
 
 
 class ClassificationResult(TypedDict):
@@ -89,7 +97,7 @@ class RateLimitTracker:
 
 
 class UnifiedRouter:
-    """Unified language + intent classification via gpt-4o-mini.
+    """Unified language + intent classification via OpenRouter.
     
     Extracts both language and intent in a single API call to minimize latency
     and API costs. Includes automatic fallback to character-based detection
@@ -122,13 +130,14 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
 
     def __init__(self):
         self.openrouter_api_key = os.getenv(OPENROUTER_API_KEY_ENV)
-        self.api_available = bool(self.openrouter_api_key)
+        self.model = os.getenv(ROUTER_MODEL_ENV, "").strip() or os.getenv(SUPERVISOR_MODEL_ENV, "").strip()
+        self.api_available = bool(self.openrouter_api_key and self.model)
 
         if self.api_available:
-            logger.info(f"OpenRouter configured for {UNIFIED_ROUTER_MODEL} unified classification")
+            logger.info("OpenRouter configured for unified classification")
         else:
             logger.warning(
-                "OpenRouter API key not configured. "
+                "OpenRouter API key or classifier model not configured. "
                 "Will use character-based language detection + keyword intent matching."
             )
 
@@ -136,7 +145,7 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
         """Classify language and intent in a single API call with fallback.
         
         Strategy:
-        1. Try unified gpt-4o-mini classification via OpenRouter
+        1. Try unified classification via the configured OpenRouter model
         2. On failure: Fall back to character-based + keyword methods
         3. Always returns valid ClassificationResult
         
@@ -156,7 +165,7 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
         return self._classify_with_fallback(text)
 
     def _classify_with_api(self, text: str) -> ClassificationResult | None:
-        """Try unified classification via gpt-4o-mini on OpenRouter.
+        """Try unified classification via the configured OpenRouter model.
         
         Args:
             text: Input text to classify
@@ -173,7 +182,7 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
             }
 
             payload = {
-                "model": UNIFIED_ROUTER_MODEL,
+                "model": self.model,
                 "messages": [
                     {
                         "role": "system",
@@ -188,22 +197,45 @@ Respond ONLY with a valid, raw JSON object containing the keys 'intent' and 'lan
                 "temperature": 0.0,  # Deterministic for routing stability
                 "max_tokens": 30,
             }
+            if active_metrics() is not None:
+                payload["usage"] = {"include": True}  # ask OpenRouter to report the cost of the call
 
-            response = requests.post(
-                f"{OPENROUTER_URL}/chat/completions",
-                headers=headers,
-                json=payload,
-                timeout=10,  # 10 second timeout
-            )
+            started = time.perf_counter()
+            try:
+                response = requests.post(
+                    f"{OPENROUTER_URL}/chat/completions",
+                    headers=headers,
+                    json=payload,
+                    timeout=10,  # 10 second timeout
+                )
+            except requests.exceptions.RequestException as error:
+                record_llm_call("router", self.model, time.perf_counter() - started, error=error)
+                raise
 
             if response.status_code != 200:
+                record_llm_call(
+                    "router", self.model, time.perf_counter() - started, error=RouterHTTPError(response.status_code)
+                )
                 logger.warning(
                     f"OpenRouter returned status {response.status_code}: {response.text}"
                 )
                 return None
 
-            data = response.json()
-
+            try:
+                data = response.json()
+            except ValueError as error:
+                record_llm_call("router", self.model, time.perf_counter() - started, error=error)
+                raise
+            usage = data.get("usage") if isinstance(data, dict) else None
+            usage = usage if isinstance(usage, dict) else {}
+            record_llm_call(
+                "router",
+                self.model,
+                time.perf_counter() - started,
+                usage.get("prompt_tokens"),
+                usage.get("completion_tokens"),
+                usage.get("cost"),
+            )
             if not data.get("choices") or not data["choices"][0].get("message"):
                 logger.debug("OpenRouter returned unexpected response structure")
                 return None
@@ -458,9 +490,8 @@ class InputValidator:
                 f"Request contains sensitive information ({sensitive_type}). "
                 "Please avoid sharing Aadhar, account numbers, or other sensitive data."
             )
-            # Log masked version
-            masked = SensitiveDataMasker.mask_all_sensitive(request)
-            logger.warning(f"Sensitive data rejected in request from {actor_id}: {masked}")
+            logger.warning("Sensitive data rejected in request.")
+            return ValidationResult(passed=False, errors=errors, warnings=warnings)
 
         # 4. Unified classification (language + intent in single call)
         if is_reply:
@@ -689,8 +720,8 @@ class OutputValidator:
         sensitive_type = SensitivePatternDetector.detect_sensitive_type(response_text)
         if sensitive_type:
             errors.append(f"Response contains sensitive information ({sensitive_type})")
-            masked_content = SensitiveDataMasker.mask_all_sensitive(response_text)
-            logger.error(f"Agent {agent_name} exposed {sensitive_type}: {masked_content}")
+            masked_content = "[Sensitive content removed]"
+            logger.error("Agent %s exposed sensitive data (%s).", agent_name, sensitive_type)
 
         # 4. Agent-specific validation
         if agent_name == "intake":

@@ -29,6 +29,8 @@ else:
     from app import memory_text, ui_auth
     from app.api import create_api
 
+from agents.persona_validator import SensitiveInputError, reject_sensitive_input
+
 CSS_PATH = Path(__file__).with_name("style.css")
 BRAND_IMAGE_PATH = Path(__file__).with_name("images") / "main_image.png"
 JOURNEY_STEPS = (
@@ -53,10 +55,12 @@ def _render_brand_image(width: int = 313) -> None:
 @st.cache_resource
 def _start_local_api(port: int) -> uvicorn.Server:
     """Start one local FastAPI server and share it across Streamlit reruns."""
+    # Loopback unless a deployment asks otherwise, e.g. so Prometheus in another container can scrape /metrics.
+    host = os.environ.get("SCHEME_SAATHI_CHAT_API_HOST", "").strip() or "127.0.0.1"
     server = uvicorn.Server(
         uvicorn.Config(
             create_api(),
-            host="127.0.0.1",
+            host=host,
             port=port,
             log_level="warning",
         )
@@ -1363,11 +1367,20 @@ def _render_application_workflow(api_base: str, current_step: int) -> None:
 
 def _handle_chat_submission(
     api_base: str, submission: Any, response_slot: Any
-) -> None:
+) -> bool:
     """Render a submitted turn and its streaming response above the chat composer."""
     text = submission if isinstance(submission, str) else submission.text
     files = [] if isinstance(submission, str) else submission.files
     user_text = text.strip()
+    try:
+        reject_sensitive_input([user_text, *[upload.name for upload in files]])
+    except SensitiveInputError as error:
+        with response_slot:
+            message = str(error)
+            if files:
+                message += " The attachments were not uploaded."
+            st.warning(message)
+        return False
     display_text = "\n".join(
         [
             *([user_text] if user_text else []),
@@ -1509,6 +1522,7 @@ def _handle_chat_submission(
                     "result": assistant_result if _shows_verdicts(assistant_result) else None,
                 }
             )
+    return True
 
 
 def _initialize_portal_state() -> None:
@@ -2255,8 +2269,8 @@ def _render_chat_page() -> None:
         )
 
     if prompt:       
-        _handle_chat_submission(api_base, prompt, response_slot)
-        st.rerun()
+        if _handle_chat_submission(api_base, prompt, response_slot):
+            st.rerun()
 
 
 def _render_citizen_portal() -> None:

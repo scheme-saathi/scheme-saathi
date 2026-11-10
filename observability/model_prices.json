@@ -1,0 +1,9 @@
+{
+  "_about": "Model prices in US dollars per million tokens, used when the provider does not report a cost. The key is the model ID exactly as set in SUPERVISOR_MODEL, SPECIALIST_MODEL or ROUTER_MODEL. A model that is not listed has its calls counted as unpriced rather than as free. Prices are entered by hand: confirm them against your provider's price list and update them when it changes. Point MODEL_PRICES_FILE at another file to keep your prices out of the repository.",
+  "_example": {
+    "provider/model-id": {"input": 0.0, "output": 0.0}
+  },
+  "models": {
+    "openai/gpt-4o-mini": {"input": 0.15, "output": 0.60}
+  }
+}

@@ -44,42 +44,42 @@
       "op": "eq",
       "value": true,
       "clause_id": "elig-1",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "gte",
       "value": 18,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "age",
       "op": "lte",
       "value": 35,
       "clause_id": "elig-2",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_passed_12th_iti_diploma_or_higher",
       "op": "eq",
       "value": true,
       "clause_id": "elig-3",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_aadhaar",
       "op": "eq",
       "value": true,
       "clause_id": "elig-4",
-      "status": "draft"
+      "status": "reviewed"
     },
     {
       "field": "has_aadhaar_linked_bank_account",
       "op": "eq",
       "value": true,
       "clause_id": "elig-5",
-      "status": "draft"
+      "status": "reviewed"
     }
   ],
   "rule_logic": "all"

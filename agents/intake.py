@@ -5,6 +5,7 @@ open verdicts (graph.tools.next_question). The model only reads facts from the m
 and words the question.
 """
 
+import re
 from typing import Annotated, Any, Literal
 
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -84,6 +85,52 @@ occupation, age, gender, family, need). known_facts holds what the person has al
 
 _FIELD_TYPES = {"number": int | float, "bool": bool, "str": str}
 
+# shortcut: word lists for en + common hi/mr replies; extend from evaluation transcripts.
+_YES = {"yes", "yeah", "yep", "haan", "han", "ji", "हाँ", "हां", "हा", "होय", "हो", "जी"}
+_NO = {"no", "nope", "nahi", "nahin", "नहीं", "नही", "ना", "नाही", "नको"}
+NONE_OF_THESE = "none of these"
+_NONE_OF_LIST = re.compile(
+    r"\b(?:none|neither|not an?\s|not any|don't fall|do not fall|doesn't fall|does not fall)\b"
+    r"|कोई नहीं|इनमें से कोई|यापैकी कोणी|यापैकी नाही|काहीही नाही"
+)
+# A reply with doubt or a second clause is not a plain answer: "No, I am not sure",
+# "I am not a farmer but I am a tenant farmer". Those go to the model (PR #67 review).
+_UNSURE = re.compile(
+    r"\b(?:not sure|unsure|don'?t know|do not know|no idea|not certain|maybe|perhaps|probably|i think|"
+    r"i guess|pata nahi|pata nahin|malum nahi|maloom nahi)\b"
+    r"|पता नहीं|मालूम नहीं|शायद|माहित नाही|माहीत नाही|कदाचित|बहुतेक"
+)
+_SECOND_CLAUSE = re.compile(r"\b(?:but|however|except|although|though|only if)\b|लेकिन|पर |पण |परंतु|मगर")
+
+
+def direct_answer(reply: str, spec: dict[str, Any] | None) -> Any:
+    """A reply that answers the pending question by its first word, decided by code.
+
+    For a yes/no field, a reply that starts with yes or no ("No.", "No, she is not remarried",
+    "नाही") is that answer; questions are always asked about the field as named. For a field
+    with listed values, "none of these" / "I am not a farmer" / a plain "No" becomes
+    NONE_OF_THESE, which matches no listed value. Only plain answers count: a reply that shows
+    doubt, adds a second clause ("but ...") or names one of the listed values is left to the
+    model, which can read it or mark it unanswered so the question is asked again.
+    """
+    if not spec:
+        return None
+    text = reply.strip().lower()
+    if _UNSURE.search(text) or _SECOND_CLAUSE.search(text):
+        return None
+    if any(value.lower() in text for value in spec.get("known_values") or []):
+        return None
+    first = re.split(r"[\s,.!?।]+", text, maxsplit=1)[0] if text else ""
+    if spec.get("type") == "bool":
+        if first in _YES:
+            return True
+        if first in _NO:
+            return False
+    elif spec.get("type") == "str" and spec.get("known_values"):
+        if first in _NO or _NONE_OF_LIST.search(text):
+            return NONE_OF_THESE
+    return None
+
 # A forced choice with examples: as a plain dont_know flag, the model set it for "hmm" and "hello".
 ReplyKind = Annotated[
     Literal["answer", "dont_know", "other"],
@@ -159,6 +206,11 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
         request = IntakeExtractInput.model_validate(value)
         result = self._extract_once(request, specs)
         pending = request.pending_field
+        direct = direct_answer(request.request, specs.get(pending)) if pending else None
+        if direct is not None:
+            # Code reads a plain yes/no (or "none of these") to the question just asked; the model
+            # misread a bare "No", and flipped "No" for a field named is_excluded_...
+            return result.model_copy(update={"facts": {**result.facts, pending: direct}, "dont_know": False})
         if pending in specs and pending not in result.facts and len(specs) > 1:
             # Against a wide schema the model read a bare "No" as dont_know; one field alone it reads reliably.
             narrow = self._extract_once(request, {pending: specs[pending]})

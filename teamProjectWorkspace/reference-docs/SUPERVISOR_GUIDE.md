@@ -634,10 +634,10 @@ validator = InputValidator(rate_limiter)
 
 Language and intent come from `UnifiedRouter` in `agents/supervisor.py`:
 
-1. **Primary:** one OpenRouter chat-completion call (needs `OPENROUTER_API_KEY`) returning JSON `{intent, language}`. Invalid values fall back to `other` / `en`.
-2. **Fallback** (no key, timeout, error, or unparsable reply): Devanagari/Latin character ratios for language and keyword matching for intent.
+1. **Primary:** one OpenRouter chat-completion call (needs `OPENROUTER_API_KEY` and a model) returning JSON `{intent, language}`. Invalid values fall back to `other` / `en`.
+2. **Fallback** (no key or model, timeout, error, or unparsable reply): Devanagari/Latin character ratios for language and keyword matching for intent.
 
-To customize the fallback, edit `UnifiedRouter._classify_intent_fallback()` and `_detect_language_fallback()`. The primary model is the `UNIFIED_ROUTER_MODEL` constant in `agents/supervisor.py`, separate from `SUPERVISOR_MODEL`, which drives `SupervisorAgent.invoke()` routing.
+To customize the fallback, edit `UnifiedRouter._classify_intent_fallback()` and `_detect_language_fallback()`. Set `ROUTER_MODEL` to choose the classifier model; if it is empty, the classifier uses `SUPERVISOR_MODEL`, which also drives `SupervisorAgent.invoke()` routing.
 
 In tests, set `router.api_available = False` on the `UnifiedRouter` so no network call is made.
 

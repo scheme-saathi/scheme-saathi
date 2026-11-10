@@ -1,0 +1,13 @@
+apiVersion: 1
+
+# Only the data source is provisioned. Dashboards are built in Grafana (see docs/observability.md).
+datasources:
+  - name: Prometheus
+    uid: scheme-saathi-prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: 15s
