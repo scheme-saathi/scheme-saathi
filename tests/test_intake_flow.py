@@ -707,15 +707,30 @@ def test_ambiguous_tax_questions_carry_their_exact_meaning():
 
 
 @pytest.mark.parametrize("known, implied", [
-    ({"is_or_was_income_tax_payer": False}, {"is_income_tax_payer": False}),   # never paid: not paying now
-    ({"is_income_tax_payer": True}, {"is_or_was_income_tax_payer": True}),     # paying now: has paid
+    ({"is_or_was_income_tax_payer": False},                                    # never paid: not now, not last year
+     {"is_income_tax_payer": False, "paid_income_tax_in_last_assessment_year": False}),
+    ({"is_income_tax_payer": True},                                           # paying now: has paid, family has a payer
+     {"is_or_was_income_tax_payer": True, "family_has_income_tax_payer": True}),
     ({"is_or_was_income_tax_payer": True}, {}),                               # paid once: may not pay now
     ({"is_income_tax_payer": False}, {}),                                     # not now: may have paid before
-    ({"is_or_was_income_tax_payer": False, "is_income_tax_payer": True}, {}),  # stated answers win
+    ({"has_passed_class_10": True}, {"has_passed_class_7": True}),             # passed 10: passed 7
+    ({"has_passed_class_7": False}, {"has_passed_class_10": False,             # not 7: not 10, not 12th
+                                      "has_passed_12th_iti_diploma_or_higher": False}),
+    ({"has_passed_class_10": False}, {"has_passed_12th_iti_diploma_or_higher": False}),  # may have passed 7
+    ({"has_passed_12th_iti_diploma_or_higher": True},                         # chains through class 10 to 7
+     {"has_passed_class_10": True, "has_passed_class_7": True}),
+    ({"has_passed_class_10": True, "has_passed_class_7": False}, {}),  # stated answers win
 ])
-def test_one_tax_answer_settles_the_other_only_when_it_follows(known, implied):
+def test_one_answer_settles_another_only_when_it_follows(known, implied):
     from servers.rule_engine.implied import derive_implied_facts
     assert derive_implied_facts(known) == {**known, **implied}
+
+
+def test_every_implied_field_is_a_rule_field():
+    from pathlib import Path
+    from servers.rule_engine.implied import IMPLIES
+    text = "".join(p.read_text() for p in Path("data/rules").glob("*.json"))
+    assert all(f'"{f}"' in text for row in IMPLIES for f in (row[0], row[2]))
 
 
 def test_never_paid_tax_is_not_asked_again_as_paying_now():
