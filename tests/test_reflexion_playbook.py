@@ -224,3 +224,21 @@ def test_the_reflection_model_can_be_chosen_separately(monkeypatch):
     reflect_cli.default_reflector()
     assert seen["model"] == "openai/gpt-4o"
     assert __import__("os").environ["SUPERVISOR_MODEL"] == "openai/gpt-4o-mini"  # restored
+
+
+review_cli = _load("review_lessons")
+
+
+def test_review_decisions_apply_edits_and_must_cover_every_proposal():
+    book = Playbook(lessons=[lesson("L001"), lesson("L002")])
+    with pytest.raises(ValueError, match="missing"):
+        review_cli.apply(book, [{"lesson_id": "L001", "decision": "approved"}], "Sharika", "2026-11-10")
+    assert all(l.status == "proposed" for l in book.lessons)  # nothing changed
+    lines = review_cli.apply(book, [
+        {"lesson_id": "L001", "decision": "approved", "text": "Edited.", "keywords": ["Below", " "]},
+        {"lesson_id": "L002", "decision": "rejected", "note": "vague"},
+    ], "Sharika", "2026-11-10")
+    assert lines == ["L001: approved (edited)", "L002: rejected"]
+    assert (book.get("L001").text, book.get("L001").keywords) == ("Edited.", ["below"])
+    assert (book.get("L002").review_note, book.get("L002").reviewed_by) == ("vague", "Sharika")
+

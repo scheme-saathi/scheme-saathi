@@ -77,8 +77,9 @@ class Playbook(BaseModel):
             self.lessons.append(proposal.model_copy(update={"status": "proposed"}))
 
     def review(self, lesson_id: str, decision: Literal["approved", "rejected"], reviewer: str,
-               text: str | None = None, note: str | None = None, on: str | None = None) -> Lesson:
-        """A person's decision. An edit replaces the text before approval."""
+               text: str | None = None, note: str | None = None, on: str | None = None,
+               keywords: list[str] | None = None) -> Lesson:
+        """A person's decision. An edit replaces the text (and keywords) before approval."""
         self._unfrozen()
         if not reviewer.strip():
             raise ValueError("a lesson needs a named reviewer")
@@ -89,6 +90,8 @@ class Playbook(BaseModel):
         lesson.reviewed_on, lesson.review_note = on or date.today().isoformat(), note
         if text:
             lesson.text = text
+        if keywords is not None:
+            lesson.keywords = [k.strip().lower() for k in keywords if k.strip()]
         return lesson
 
     def discard_proposed(self) -> list[str]:
