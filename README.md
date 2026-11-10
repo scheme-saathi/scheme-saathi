@@ -947,6 +947,24 @@ python -m servers.schemes_kb.import_schemes
 Omitting `--export-only` combines Excel conversion and the database import in one
 command. Export-only does not load the embedding model or open ChromaDB.
 
+## Rule extractor and Reflexion (signature challenge A)
+
+`agents/rule_extractor.py` turns a scheme's eligibility and exclusion sentences into draft JSON rules (field, operator, value, source clause, and `or_conditions` for one level of OR). Its output is always a draft, written only to the run folder; a person reviews rules before they go live, and only the rule engine decides eligibility.
+
+`evaluation/rule_extraction.py` scores each draft by code against the human-reviewed rules in `data/rules/` and names every error: missing or extra rule, wrong field, operator, value, alternatives (`or_conditions`), clause or `rule_logic`. Gold rules that cite a section the extractor never sees (Details, Benefits) are reported as out of section, not as misses. The extractor gets the shared field list (every field the reviewed rules use, with its type and values), so field names are scored exactly.
+
+Split (`tests/evaluation/rule_extraction_split.json`): development is the 34 AI-drafted schemes a person reviewed in Steps 4–6; held-out is the 15 hand-coded gold schemes, for the final evaluation only (`--final`).
+
+```bash
+python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_extraction_configs/rx0_no_playbook.json --limit 3
+```
+
+```bash
+python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_extraction_configs/rx0_no_playbook.json
+```
+
+It needs `SPECIALIST_MODEL` and `OPENROUTER_API_KEY` in `.env`, prints one line per scheme, and writes `schemes.jsonl` (each draft, its score and errors) and `summary.json` (exact-scheme and exact-rule rates, condition precision/recall/F1, errors by type, tokens, latency) to `data/evaluation-runs/`. `rx0_no_playbook` is the baseline: no lessons yet. The Reflexion loop (reflection step, reviewed playbook in the LangGraph store, frozen before the held-out run) is added next.
+
 ## Single-agent baseline (L11)
 
 `graph/baseline.py` is one ReAct agent holding every MCP tool, used later to compare against the supervisor-and-specialists team. It shares the same tools, hash-bound approval gate and model setting (`SUPERVISOR_MODEL`, `OPENROUTER_API_KEY`), and stops at a fixed step budget (`MAX_STEPS`). `summarize()` reports LLM calls, tool calls, tokens and budget use. Run it with `python -m graph.baseline --decision approve`; tests use a scripted model and need no key.
