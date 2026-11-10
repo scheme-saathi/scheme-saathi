@@ -166,7 +166,7 @@ def preview_profile(profile: dict[str, object], scheme_id: str) -> dict[str, Any
 
 def _evaluate(scheme: SchemeRecord, profile: dict[str, object], preview: bool) -> dict[str, Any]:
     try:
-        result = evaluate(derive_implied_facts(derive_age_fields(profile)), _conditions(scheme, include_draft))
+        result = evaluate(derive_implied_facts(derive_age_fields(profile)), _conditions(scheme, preview))
     except Exception as exc:  # pragma: no cover - defensive guard for invalid runtime input
         return {
             "ok": False,
