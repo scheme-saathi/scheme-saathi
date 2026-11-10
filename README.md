@@ -973,6 +973,26 @@ python tests/evaluation/reflect_rule_extraction.py --run data/evaluation-runs/<d
 
 The reflection model is `REFLECTION_MODEL` if set (a stronger model is cheap here: one call per error type), else `SUPERVISOR_MODEL`. Code removes keywords too common to tell schemes apart and flags lessons with no specific keyword or only one source scheme; `--discard-proposed` drops unreviewed proposals before reflecting again. Proposed lessons are added to `data/playbook/rule_extractor.json` with status `proposed`, and the reflection tokens are written to the run's `reflection.json` (the cost of generating lessons, for E3). A person approves, edits or rejects each one (`python tests/evaluation/review_lessons.py --decisions <file> --reviewer <name>` applies a decisions file and refuses one that misses a proposal); only approved lessons are loaded into the LangGraph store (namespace `playbook/rule_extractor`), and any lesson can be withdrawn. `rx1_playbook` gives the extractor the approved lessons relevant to each scheme: a lesson's keywords must appear in the scheme's text (a lesson without keywords always applies), top 5. Before the held-out run the playbook is frozen: every lesson must be reviewed, the approved ones get a version hash, and a `--final` run refuses a playbook that isn't frozen or changed since. Reflection refuses held-out runs, so lessons are learned on development schemes only.
 
+**Freeze and E3.** When the lessons are final, freeze the playbook (every lesson must be reviewed; it records who froze it, when, and a version hash), commit it, then run the held-out schemes three times without and three times with it, on the same model, and compare:
+
+```bash
+python tests/evaluation/freeze_playbook.py --by <name>
+```
+
+```bash
+python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_extraction_configs/rx0_no_playbook_gpt41mini.json --split held_out --final
+```
+
+```bash
+python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_extraction_configs/rx1_playbook_gpt41mini.json --split held_out --final
+```
+
+```bash
+python tests/evaluation/e3_report.py --before <3 run folders> --after <3 run folders> --reflection <development run>/reflection.json
+```
+
+Each run records the playbook version it used. The report refuses runs that aren't held-out, mix models, use lessons on the "before" side or use different or unfrozen playbooks on the "after" side. It writes `e3_report.md` and `e3_report.json`: each measure's mean and range over runs and whether the change is beyond the run-to-run spread, errors by type, per-scheme results with the lessons each scheme received, lessons that reached a scheme that got worse, and the cost of generating the lessons.
+
 ## Single-agent baseline (L11)
 
 `graph/baseline.py` is one ReAct agent holding every MCP tool, used later to compare against the supervisor-and-specialists team. It shares the same tools, hash-bound approval gate and model setting (`SUPERVISOR_MODEL`, `OPENROUTER_API_KEY`), and stops at a fixed step budget (`MAX_STEPS`). `summarize()` reports LLM calls, tool calls, tokens and budget use. Run it with `python -m graph.baseline --decision approve`; tests use a scripted model and need no key.

@@ -258,3 +258,58 @@ def test_an_approved_lesson_can_be_edited_or_withdrawn_in_a_later_review():
     assert book.get("L001").keywords == [] and book.get("L002").review_note == "made M12 worse"
     with pytest.raises(ValueError, match="not proposed or approved"):
         review_cli.apply(book, [{"lesson_id": "L002", "decision": "approved"}], "Sharika", "2026-11-11")
+
+
+e3 = _load("e3_report")
+
+
+def test_freezing_records_who_and_refuses_twice_or_an_empty_playbook():
+    with pytest.raises(ValueError, match="no approved lessons"):
+        Playbook(lessons=[lesson("L001", status="rejected")]).freeze()
+    book = Playbook(lessons=[lesson("L001", status="approved")])
+    book.freeze(on="2026-11-10", by="Sharika")
+    assert (book.frozen_by, book.frozen_on) == ("Sharika", "2026-11-10")
+    with pytest.raises(ValueError, match="already frozen"):
+        book.freeze()
+
+
+def held_out_run(tmp_path, name, config, extract):
+    rows, summary = runner.run(config, "held_out", limit=3, extract=extract, quiet=True, final=True)
+    out = runner.write_run(config, "held_out", rows, summary, runs_dir=tmp_path / name)
+    return e3.load_run(out)
+
+
+def test_the_e3_report_compares_frozen_runs_and_names_schemes_that_got_worse(tmp_path):
+    book = Playbook(lessons=[lesson("L001", text="An exclusion is eq false.", keywords=[], status="approved")])
+    book.freeze(by="Sharika")
+    book.save(tmp_path / "playbook.json")
+    model = "openai/gpt-4.1-mini"
+    before_cfg = {"name": "rx0", "system": "rule_extractor", "model": model}
+    after_cfg = {"name": "rx1", "system": "rule_extractor", "model": model, "playbook": str(tmp_path / "playbook.json")}
+
+    def perfect(value, lessons):
+        return rx.gold_as_draft(rx.load_gold(value["scheme_id"]), value["clauses"])
+
+    def half(value, lessons):  # drops a rule from the second scheme only
+        draft = perfect(value, lessons)
+        if value["scheme_id"] == rx.load_split()["held_out"][1]:
+            draft["rules"] = draft["rules"][:-1]
+        return draft
+
+    before = [held_out_run(tmp_path, f"b{i}", before_cfg, perfect) for i in range(3)]
+    after = [held_out_run(tmp_path, f"a{i}", after_cfg, half) for i in range(3)]
+    assert after[0]["meta"]["playbook"]["frozen"] and after[0]["meta"]["playbook"]["approved_lessons"] == 1
+    result = e3.report(before, after, [{"reflection_tokens": {"total_tokens": 8697}}])
+    worse = rx.load_split()["held_out"][1]
+    assert result["per_scheme"][worse]["verdict"] == "worse" and result["per_scheme"][worse]["lessons"] == ["L001"]
+    assert result["lessons_that_made_results_worse"] == ["L001"]
+    assert result["measures"]["condition_f1"]["change"] < 0 and result["cost"]["reflection_tokens"]["total_tokens"] == 8697
+    assert "# E3: did the lessons help?" in e3.markdown(result)
+
+    with pytest.raises(ValueError, match="same model"):
+        e3.report([{**before[0], "meta": {**before[0]["meta"], "config": {**before_cfg, "model": "openai/gpt-4o-mini"}}}],
+                  after, [])
+    with pytest.raises(ValueError, match="'before' run used a playbook"):
+        e3.report(after, after, [])
+    with pytest.raises(ValueError, match="held-out runs only"):
+        e3.report([{**before[0], "meta": {**before[0]["meta"], "split": "development"}}], after, [])

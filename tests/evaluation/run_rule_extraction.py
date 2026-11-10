@@ -74,16 +74,24 @@ def default_extractor(config: dict[str, Any]) -> Callable[[dict[str, Any], list[
     return lambda value, lessons: extractor.extract(value, lessons).model_dump()
 
 
-def playbook_store(config: dict[str, Any], final: bool = False):
-    """The approved lessons in a LangGraph store, or None for a run without a playbook."""
+def load_playbook(config: dict[str, Any], final: bool = False):
+    """The run's playbook, or None for a run without one. Held-out runs need it frozen."""
     if not config.get("playbook"):
         return None
-    from evaluation.playbook import Playbook, to_store
+    from evaluation.playbook import Playbook
 
     playbook = Playbook.load(ROOT / config["playbook"])
     if final:
         playbook.check_frozen()  # held-out runs use the frozen playbook only
-    return to_store(playbook)
+    return playbook
+
+
+def playbook_store(config: dict[str, Any], final: bool = False):
+    """The approved lessons in a LangGraph store, or None for a run without a playbook."""
+    from evaluation.playbook import to_store
+
+    playbook = load_playbook(config, final)
+    return None if playbook is None else to_store(playbook)
 
 
 def lessons_for(value: dict[str, Any], store, config: dict[str, Any]) -> list[dict[str, Any]]:
@@ -168,7 +176,11 @@ def write_run(config: dict[str, Any], split: str, rows: list[dict[str, Any]], su
     out.mkdir(parents=True, exist_ok=False)
     (out / "schemes.jsonl").write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows),
                                        encoding="utf-8")
-    meta = {"config": config, "split": split, "git_commit": _git_commit(), "finished_at": stamp}
+    playbook = load_playbook(config)
+    meta = {"config": config, "split": split, "git_commit": _git_commit(), "finished_at": stamp,
+            "playbook": None if playbook is None else {
+                "approved_lessons": len(playbook.approved()), "version": playbook.version_hash(),
+                "frozen": playbook.frozen, "frozen_hash": playbook.frozen_hash}}
     (out / "summary.json").write_text(json.dumps({**meta, "summary": summary}, indent=2, ensure_ascii=False),
                                       encoding="utf-8")
     return out

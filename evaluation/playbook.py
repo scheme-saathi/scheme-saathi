@@ -50,6 +50,7 @@ class Playbook(BaseModel):
     lessons: list[Lesson] = Field(default_factory=list)
     frozen: bool = False
     frozen_on: str | None = None
+    frozen_by: str | None = None
     frozen_hash: str | None = None
 
     # ------------------------------------------------------------ file
@@ -114,10 +115,15 @@ class Playbook(BaseModel):
                               for lesson in sorted(self.approved(), key=lambda x: x.lesson_id)], sort_keys=True)
         return hashlib.sha256(payload.encode()).hexdigest()[:12]
 
-    def freeze(self, on: str | None = None) -> str:
+    def freeze(self, on: str | None = None, by: str | None = None) -> str:
+        if self.frozen:
+            raise ValueError("the playbook is already frozen")
         if any(lesson.status == "proposed" for lesson in self.lessons):
             raise ValueError("review every proposed lesson before freezing")
-        self.frozen, self.frozen_on, self.frozen_hash = True, on or date.today().isoformat(), self.version_hash()
+        if not self.approved():
+            raise ValueError("there are no approved lessons to freeze")
+        self.frozen, self.frozen_on, self.frozen_by = True, on or date.today().isoformat(), by
+        self.frozen_hash = self.version_hash()
         return self.frozen_hash
 
     def check_frozen(self) -> None:
