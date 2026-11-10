@@ -242,3 +242,19 @@ def test_review_decisions_apply_edits_and_must_cover_every_proposal():
     assert (book.get("L001").text, book.get("L001").keywords) == ("Edited.", ["below"])
     assert (book.get("L002").review_note, book.get("L002").reviewed_by) == ("vague", "Sharika")
 
+
+
+def test_an_approved_lesson_can_be_edited_or_withdrawn_in_a_later_review():
+    book = Playbook(lessons=[lesson("L001", status="approved"), lesson("L002", status="approved"), lesson("L003")])
+    with pytest.raises(ValueError, match="must be approved or withdrawn"):
+        review_cli.apply(book, [{"lesson_id": "L003", "decision": "approved"},
+                                {"lesson_id": "L001", "decision": "rejected"}], "Sharika", "2026-11-11")
+    lines = review_cli.apply(book, [
+        {"lesson_id": "L003", "decision": "rejected"},
+        {"lesson_id": "L001", "decision": "approved", "keywords": []},           # now always applies
+        {"lesson_id": "L002", "decision": "withdrawn", "note": "made M12 worse"},
+    ], "Sharika", "2026-11-11")
+    assert lines == ["L003: rejected", "L001: approved (edited)", "L002: withdrawn"]
+    assert book.get("L001").keywords == [] and book.get("L002").review_note == "made M12 worse"
+    with pytest.raises(ValueError, match="not proposed or approved"):
+        review_cli.apply(book, [{"lesson_id": "L002", "decision": "approved"}], "Sharika", "2026-11-11")
