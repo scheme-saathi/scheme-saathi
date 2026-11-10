@@ -754,7 +754,8 @@
       "review_note": "A vaguer copy of L011."
     }
   ],
-  "frozen": false,
-  "frozen_on": null,
-  "frozen_hash": null
+  "frozen": true,
+  "frozen_on": "2026-11-10",
+  "frozen_by": "Sharika",
+  "frozen_hash": "8bb30ce7dd22"
 }
