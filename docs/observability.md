@@ -7,6 +7,8 @@ One dashboard, **Scheme Saathi**, is provisioned with Grafana (see [Dashboard](#
 
 Nothing is recorded unless `OBSERVABILITY_ENABLED=true`. For how the pieces fit together and what is and is not
 traced, see [observability-architecture.md](./observability-architecture.md).
+For a step-by-step Docker Compose quick start, see
+[Run Streamlit and Grafana with Docker Compose](./docker-compose-grafana-quickstart.md).
 
 ## What a run is
 

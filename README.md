@@ -385,6 +385,8 @@ recorded, never a prompt or a response.
 ### Grafana dashboard
 
 Streamlit, Prometheus, and Grafana run together in Docker Compose. You need Docker Desktop running.
+For the complete one-command setup, token rotation, and troubleshooting steps, see
+[Run Streamlit and Grafana with Docker Compose](docs/docker-compose-grafana-quickstart.md).
 
 **One-time setup**
 
