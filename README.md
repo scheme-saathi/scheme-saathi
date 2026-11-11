@@ -9,7 +9,9 @@ A welfare-scheme navigator for citizens and CSC operators. It identifies eligibl
 - `graph/` - LangGraph orchestration and checkpointing
 - `tests/` - unit and evaluation tests
 - `data/schemes/` - scheme corpus (URL and collection date recorded per scheme)
-- `docs/` - tool list, threat model, memory policy
+- `docs/` - tool list, threat model, memory policy, evaluation report and experiment log
+
+**Evaluation:** results of experiments E1–E4 are in [docs/evaluation-report.md](docs/evaluation-report.md), and every run behind them is listed in [docs/experiment-log.md](docs/experiment-log.md).
 
 ## Setup
 
@@ -783,6 +785,8 @@ Not wired in yet: operator access inside a citizen's household (it needs citizen
 
 - [Tool inventory](docs/tool-list.md) — current MCP tools, access types, and graph access checks.
 - [Threat model](docs/threat-model.md) — security boundaries, current controls, and deployment follow-ups.
+- [Evaluation report](docs/evaluation-report.md) — experiments E1–E4: setup, results, limits and how to reproduce them.
+- [Experiment log](docs/experiment-log.md) — every evaluation run, with its config, split, run folder and result.
 - [60-scheme review workbook](docs/Scheme-Saathi-60-Schemes-Schema-Review.xlsx) — manual review of scheme details and source information. Excel edits do not automatically update scheme JSON or ChromaDB.
 
 - [Scheme relationships](docs/scheme-data-relationships.md)

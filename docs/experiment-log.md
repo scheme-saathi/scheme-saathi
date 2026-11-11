@@ -1,0 +1,24 @@
+# Experiment log
+
+*The runs behind [evaluation-report.md](evaluation-report.md), newest first. Run folders are in the git-ignored `data/evaluation-runs/` on the machine that ran them; each holds its config, split, git commit and full results. "Commit" is the code the run used.*
+
+| Date | Experiment | Config, split | Run folder or commit | Result | Note |
+| --- | --- | --- | --- | --- | --- |
+| 11 Nov | E4 LLM vs rule engine | `e4_llm_direct_gpt41mini`, held-out, 3 runs | `20261111T033407Z_e4_llm_direct_gpt41mini_held_out` (commit `1a2c0fe`) | LLM 0.909 (0.905–0.916), rule engine 1.000; 0 boundary errors either way | 7 of the LLM's errors are C23's pilot-state rule, not in the text it was shown |
+| 11 Nov | E4 question order | `c0_fixed_workflow` vs `c0_fixed_questionnaire`, development and held-out; `*_all_schemes` on both | not saved (run in a test session) | candidates: 5.5 vs 5.5 and 6.7 vs 6.9 questions; all schemes: 147 vs 163 (development), 138 vs 163 (held-out); 100% verdicts in all | full form: 8.0 / 8.5 fields with candidates, 163 with all schemes |
+| 11 Nov | E1 C0 | `c0_fixed_workflow`, development and held-out | not saved (run in a test session) | 39/39 and 95/95; 5.5 and 6.7 questions; 0.28 s and 0.29 s median | rerun on the current rules |
+| 10 Nov | E3 report | 3 + 3 held-out runs below | `20261110T070845Z_e3_report` | F1 0.880 → 0.868; C10 better, M13 worse (L007) | playbook `8bb30ce7dd22` |
+| 10 Nov | E3 with lessons | `rx1_playbook_gpt41mini`, held-out ×3 | `20261110T065945Z`, `…070040Z`, `…070221Z` | F1 0.856–0.875 | frozen playbook |
+| 10 Nov | E3 without lessons | `rx0_no_playbook_gpt41mini`, held-out ×3 | `20261110T065317Z`, `…065702Z`, `…065748Z` | F1 0.876–0.885 | |
+| 10 Nov | Rule extractor, 12 lessons | `rx1_playbook_gpt41mini`, development | `20261110T064200Z` | F1 0.764; missing rules 10 | |
+| 10 Nov | Rule extractor, no lessons | `rx0_no_playbook_gpt41mini`, development ×2 | `20261110T062805Z`, `…063406Z` | F1 0.751, 0.736 | model switched to `gpt-4.1-mini` |
+| 10 Nov | Rule extractor, 12 lessons (round 2) | `rx1_playbook`, development ×2 | `20261110T060203Z`, `…061151Z` | F1 0.713, 0.690 | run-to-run spread measured |
+| 10 Nov | Reflection round 2 | on `…045333Z` | `reflection.json` in that folder | 18 proposals; 4 approved, 4 corrections to round 1 | Step 8 review |
+| 10 Nov | Rule extractor, 9 lessons (round 1) | `rx1_playbook`, development | `20261110T045333Z` | F1 0.700 | |
+| 10 Nov | Reflection round 1 | on `…035902Z` | `reflection.json` in that folder | first attempt 13 generic proposals (discarded); rerun 16, 9 approved | Step 7 review |
+| 10 Nov | Rule extractor baseline | `rx0_no_playbook`, development | `20261110T035902Z` | F1 0.637; 134 extra rules; M14 failed | `gpt-4o-mini` |
+| 9 Nov | E1 C2 | `c2_agent_team`, development | `20261109T102455Z_c2_agent_team_development` (commit `dbc5a49`) | 14/39 verdicts; 100% when answered; 36% answered; 11 cases stopped at the question limit | 49 live schemes; question-limit fix followed |
+| 9 Nov | E2 red-team | `tests/redteam`, 77 attacks + 24 legitimate | see `tests/redteam/README.md` | attack success 80.5% off, 0% on; 0% legitimate blocked on | run by the red-team owner |
+| 8 Nov | E1 C2 | `c2_agent_team`, development | commit `335ef71` | 14/39 verdicts; 93% when answered; 4 cases hit the rate limit | rate limit raised for evaluation after this |
+| 8 Nov | E1 C2 (earlier runs) | `c2_agent_team`, development | before commit `335ef71` | unbacked eligibility claims found | led to the claim guardrail and routing fixes |
+| 8 Nov | Gold label review | rule engine vs labels, both splits | — | 3 labels corrected, 1 rule fixed (C04), 3 cases rewritten | before any agent run |
