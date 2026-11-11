@@ -101,7 +101,8 @@ def get_required_documents(scheme_id: str) -> dict[str, Any]:
 
 @mcp.tool()
 def search_scheme_evidence(question: str, top_k: int = 5, scheme_id: str | None = None) -> dict[str, Any]:
-    """Read-only evidence search over approved scheme pages and PDFs (hybrid BM25 + vectors, LLM reranked).
+    """Read-only evidence search over approved scheme pages and PDFs (hybrid BM25 + vectors, the question
+    plus an English scheme-wording rewrite fused with RRF, LLM reranked).
 
     Args:
         question: The user's question, at most 2000 characters.
@@ -116,7 +117,8 @@ def search_scheme_evidence(question: str, top_k: int = 5, scheme_id: str | None 
     from servers.schemes_kb.search import search_schemes as search_index
 
     try:
-        response = search_index(question, top_k=top_k, scheme_id=scheme_id, method="hybrid", rerank=True)
+        response = search_index(question, top_k=top_k, scheme_id=scheme_id, method="hybrid", rerank=True,
+                                rewrite=True)
     except ValueError as error:
         return {"ok": False, "access": "read", "error": {"code": "invalid_search", "message": str(error)}}
     # Without a rerank (it failed), scores are not 0-10, so the caller's answer step decides relevance.

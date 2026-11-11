@@ -106,8 +106,10 @@ def test_evidence_tool_drops_low_rerank_scores_and_strips_tables(monkeypatch):
         {**PASSAGE, "id": "low", "kind": "text", "rank_score": 2.0},
         {**PASSAGE, "id": "unscored", "kind": "text", "rank_score": None},
     ]
+    calls = []
     monkeypatch.setattr(kb_search, "search_schemes",
-                        lambda *a, **k: {"ranking": "hybrid+llm_rerank", "results": rows})
+                        lambda *a, **k: calls.append(k) or {"ranking": "hybrid+rewrite+llm_rerank", "results": rows})
     data = search_scheme_evidence("q")["data"]
+    assert calls[0]["rewrite"] is True and calls[0]["rerank"] is True
     assert [p["id"] for p in data] == ["C04:eligibility:1", "t"]
     assert data[1]["text"] == "Limit 20%"
