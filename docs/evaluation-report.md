@@ -2,7 +2,7 @@
 
 *Experiments E1–E4, run 8–11 November 2026. Every run is listed in [experiment-log.md](experiment-log.md).*
 
-**Summary.** Eligibility decided by the deterministic rule engine is right on every gold verdict (39/39 development, 95/95 held-out) at no model cost. Letting a model decide directly from the scheme text is 91% right, never wrong at a numeric boundary, but wrong on conditions the text it is shown does not state (E4). With the same model and budget, the agent team got 54% of held-out verdicts right, against 100% for the fixed workflow and the single agent, mainly because it missed the right scheme for 39% of verdicts; it cost about 20 times as much as the single agent and took about 69 seconds a case (E1). The defences block 85 of 96 attacks without blocking legitimate work; the 11 that get through (a planted scam page, requests to misstate facts, rules from unofficial sources) are known gaps whose defences are pending (E2). The reviewed lessons improved rule extraction on development schemes but not on held-out schemes (E3). With memory on, a returning citizen is asked 15.9% fewer questions, and no verdict changes (L9).
+**Summary.** Eligibility decided by the deterministic rule engine is right on every gold verdict (39/39 development, 95/95 held-out) at no model cost. Letting a model decide directly from the scheme text is 91% right, never wrong at a numeric boundary, but wrong on conditions the text it is shown does not state (E4). With the same model and budget, the agent team got 54% of held-out verdicts right, against 100% for the fixed workflow and the single agent when those are given the candidate schemes; it missed the right scheme for 39% of verdicts and cost about 20 times as much as the single agent. Without the candidate schemes the fixed workflow needs 138 questions a case, against the agent team's 9, so the agent team makes a short conversation possible, but its scheme choice is not reliable yet (E1). The defences block 85 of 96 attacks without blocking legitimate work; the 11 that get through (a planted scam page, requests to misstate facts, rules from unofficial sources) are known gaps whose defences are pending (E2). The reviewed lessons improved rule extraction on development schemes but not on held-out schemes (E3). With memory on, a returning citizen is asked 15.9% fewer questions, and no verdict changes (L9).
 
 ## 1. Setup
 
@@ -57,7 +57,15 @@ On development (21 cases, 39 verdicts, one run each on 10–11 Nov, same models)
 - **No eligibility claims without the rule engine in C2.** The output guardrail blocks them. C1's 35 flagged cases come from the keyword check, which was written for C2's replies; C1's free-form summary after calling the rule engine ("You are eligible for C01…") trips it. They have not been reviewed and are probably false positives; the claim judge (section 7) is the way to check them.
 - **Cost and time.** C2 cost about 20 times as much as C1 per case and took about 11 times as long; C0 needs no model and answers in a fraction of a second.
 
-**Conclusion.** On this task, with the same model and budget, the agent team does not justify its cost. When the candidate schemes are known, the fixed workflow gives every verdict right, at once and for nothing. What the agent team adds is choosing schemes and interviewing in free text, and today that loses more than it gains: it misses 39% of the right schemes and gives some wrong verdicts. It would be worth its cost only if it found the schemes itself reliably, so the shortlist is the next thing to fix.
+**Conclusion.** Given the candidate schemes, the agent team does not justify its cost: the fixed workflow gets every verdict right, at once and for nothing. But a real citizen does not arrive with that list. Without it, the fixed workflow has to keep all 49 schemes open, and E4 measured what that costs on the same held-out cases:
+
+| Held-out | Knows the right schemes in advance? | Questions per case | Verdicts right |
+| --- | --- | --- | --- |
+| C0, given the candidate schemes (this section) | yes, from the gold set | 6.7 | 100% |
+| C0, all 49 schemes open (E4, section 5) | no | 138 | 100% |
+| C2 agent team (this section) | no, it chooses its own | 9.3 | 54% |
+
+So the agent team is what makes a short conversation possible, 9 questions instead of 138, but its choice of schemes is not reliable yet: it misses 39% of the right ones. It would justify its cost once its shortlist finds the schemes reliably, which makes the shortlist the next thing to fix. (The all-schemes C0 run had a 1,200-call budget, because 138 questions need more than 150 calls; it calls no model.)
 
 **Limits of the comparison.** C0 and C1 get the gold candidate schemes; C1 also gets the profile, asks no questions, and is scored on its rule-engine results, not on what its final reply said. C2 does the whole task, and a verdict counts only once the person was told it. So E1 compares systems end to end; it is not a clean test of the number of agents alone. C2's cost includes the simulated citizen, which stands in for the person. Costs are estimates from `observability/model_prices.json`, not an invoice.
 
