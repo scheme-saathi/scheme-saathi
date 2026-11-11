@@ -997,22 +997,6 @@ python tests/evaluation/e3_report.py --before <3 run folders> --after <3 run fol
 
 Each run records the playbook version it used. The report refuses runs that aren't held-out, mix models, use lessons on the "before" side or use different or unfrozen playbooks on the "after" side. It writes `e3_report.md` and `e3_report.json`: each measure's mean and range over runs and whether the change is beyond the run-to-run spread, errors by type, per-scheme results with the lessons each scheme received, lessons that reached a scheme that got worse, and the cost of generating the lessons.
 
-## E4: the signature ablation
-
-E4 has two halves. **LLM vs rule engine:** for every gold persona and candidate scheme, a model decides eligibility directly from the scheme's eligibility and exclusion text and the case's facts (the same facts the rule engine gets), with no rule engine. Both are scored against the human labels, and errors on boundary verdicts (a numeric fact at or next to one of the scheme's limits, such as age 40 against a minimum of 40) are counted separately. This is an ablation only; in the app the model never decides eligibility.
-
-```bash
-python tests/evaluation/run_e4.py --config tests/evaluation/e4_configs/e4_llm_direct_gpt41mini.json --split held_out --final --repeat 3
-```
-
-It writes `verdicts.jsonl`, `summary.json` and `e4_report.md` to `data/evaluation-runs/`. **Question order:** the fixed workflow asks either the field that settles the most open verdicts (`c0_fixed_workflow`, planned) or the candidate schemes' fields in form order (`c0_fixed_questionnaire`); both stop when no answer can settle an open verdict. No model is needed:
-
-```bash
-python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_questionnaire.json --split held_out --final
-```
-
-The `*_all_schemes` configs repeat the comparison against every live scheme.
-
 ## Single-agent baseline (L11)
 
 `graph/baseline.py` is one ReAct agent holding every MCP tool, used later to compare against the supervisor-and-specialists team. It shares the same tools, hash-bound approval gate and model setting (`SUPERVISOR_MODEL`, `OPENROUTER_API_KEY`), and stops at a fixed step budget (`MAX_STEPS`). `summarize()` reports LLM calls, tool calls, tokens and budget use. Run it with `python -m graph.baseline --decision approve`; tests use a scripted model and need no key.
