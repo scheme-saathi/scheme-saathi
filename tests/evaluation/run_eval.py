@@ -15,12 +15,14 @@ Systems
                     simulated citizen in simulated_citizen.py. The team picks its own schemes
                     (scheme_selection "system"); the confirm step is approved as shown, and any
                     confirmed fact that differs from the hidden profile is recorded.
-    single_agent    C1: graph/baseline.py with the same tools (not built yet).
+    single_agent  C1: graph/baseline.py, one model-driven agent with the full baseline tool set.
 """
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
+import os
 import re
 import statistics
 import subprocess
@@ -76,7 +78,7 @@ def run_fixed_workflow(case: dict, config: dict) -> dict:
         request["question_order"] = config["question_order"]  # E4: planned vs fixed questionnaire
     graph = build_graph()
     thread = {"configurable": {"thread_id": f"eval-{case['case_id']}-{uuid.uuid4().hex[:8]}"}}
-    with tools.tool_call_budget(config.get("tool_call_limit", 1200)) as budget:
+    with tools.tool_call_budget(config.get("tool_call_limit", 150)) as budget:
         state = graph.invoke(request, thread)
     asked = [field for field in state.get("profile", {})]
     return {
@@ -85,7 +87,126 @@ def run_fixed_workflow(case: dict, config: dict) -> dict:
         "asked_fields": asked,
         "tool_calls": budget.used,
         "stopped_at": "approval" if "__interrupt__" in state else "end",
+        "estimated_cost_usd": 0.0,
     }
+
+
+@contextlib.contextmanager
+def shared_model_environment(config: dict):
+    """Use one explicitly selected model for both supervisor and specialists."""
+    model = config.get("model")
+    if not model:
+        raise ValueError("Set --model (or config.model) so C1 and C2 use the same model.")
+    names = ("SUPERVISOR_MODEL", "SPECIALIST_MODEL")
+    previous = {name: os.environ.get(name) for name in names}
+    try:
+        for name in names:
+            os.environ[name] = model
+        yield
+    finally:
+        for name, value in previous.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+
+
+def _decode_tool_result(value: Any) -> Any:
+    if isinstance(value, str):
+        try:
+            return json.loads(value)
+        except ValueError:
+            return None
+    if isinstance(value, list):
+        for item in value:
+            decoded = _decode_tool_result(item)
+            if decoded is not None:
+                return decoded
+    return value
+
+
+def run_single_agent(case: dict, config: dict) -> dict:
+    """C1: one ReAct agent uses the baseline's full tool set to check the case."""
+    from langchain_core.callbacks import get_usage_metadata_callback
+    from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+    from langgraph.prebuilt import create_react_agent
+
+    from agents.model_factory import create_chat_model
+    from graph.baseline import build_tools
+
+    profile = {field: value for field, value in case["hidden_profile"].items() if value is not None}
+    request = (
+        f"Citizen request: {case['opening_message']}\n"
+        f"Evaluate these candidate scheme IDs: {', '.join(case['candidate_scheme_ids'])}."
+    )
+    started = time.perf_counter()
+    with shared_model_environment(config):
+        model = create_chat_model("supervisor")
+        agent = create_react_agent(
+            model,
+            build_tools(profile),
+            prompt=(
+                "Check eligibility for the citizen using the available tools. Use the reviewed rule "
+                "engine for every verdict; do not infer eligibility from scheme text. Evaluate the "
+                "candidate schemes named in the request and cite tool results. The submit_application "
+                "tool pauses for exact-payload human approval; never bypass that approval. If a "
+                "candidate cannot be evaluated, say so."
+            ),
+        )
+        with tools.tool_call_budget(config.get("tool_call_limit", 150)) as budget, \
+                get_usage_metadata_callback() as usage:
+            result = agent.invoke(
+                {"messages": [HumanMessage(request)]},
+                {"configurable": {"thread_id": f"e1-{case['case_id']}-{uuid.uuid4().hex[:8]}"},
+                 "recursion_limit": config.get("max_steps", 25)},
+            )
+    latency_ms = round((time.perf_counter() - started) * 1000, 1)
+
+    calls: dict[str, tuple[str, dict[str, Any]]] = {}
+    verdicts: dict[str, str] = {}
+    transcripts = []
+    for message in result.get("messages", []):
+        if isinstance(message, AIMessage):
+            transcripts.append({"role": "agent", "text": str(message.content)})
+            for call in message.tool_calls:
+                calls[call["id"]] = (call["name"], call.get("args", {}))
+        elif isinstance(message, ToolMessage):
+            call = calls.get(message.tool_call_id)
+            if call and call[0] == "check_eligibility":
+                scheme_id = call[1].get("scheme_id")
+                payload = _decode_tool_result(message.content)
+                if isinstance(payload, dict) and payload.get("verdict") in VERDICTS:
+                    verdicts[scheme_id] = payload["verdict"]
+
+    tokens = {name: dict(value) for name, value in usage.usage_metadata.items()}
+    return {
+        "verdicts": verdicts,
+        "questions_asked": 0,
+        "tool_calls": budget.used,
+        "tokens": tokens,
+        "estimated_cost_usd": estimate_cost(tokens) if tokens else None,
+        "latency_ms": latency_ms,
+        "stopped_at": "budget_exceeded" if result.get("budget_exceeded") else "end",
+        "unbacked_eligibility_claims": eligibility_claims(transcripts),
+        "transcript": transcripts,
+    }
+
+
+def estimate_cost(tokens_by_model: dict[str, dict[str, Any]]) -> float | None:
+    """Estimate model spend from the project's configured price table; None means unpriced."""
+    if not tokens_by_model:
+        return 0.0
+    from observability.pricing import price_for
+
+    total = 0.0
+    for model, usage in tokens_by_model.items():
+        price = price_for(model)
+        input_tokens = usage.get("input_tokens", 0)
+        output_tokens = usage.get("output_tokens", 0)
+        if price is None or not isinstance(input_tokens, int) or not isinstance(output_tokens, int):
+            return None
+        total += price.cost(input_tokens, output_tokens)
+    return round(total, 8)
 
 
 ACTOR_ID = "eval-runner"
@@ -120,8 +241,9 @@ def run_agent_team(case: dict, config: dict, graph: Any = None, citizen: Any = N
     if graph is None:
         from langgraph.checkpoint.memory import MemorySaver
         from graph.agent_workflow import AgentSet, build_agent_graph
-        agents = apply_rate_limit(AgentSet.from_environment(), config)
-        graph = build_agent_graph(agents=agents, checkpointer=MemorySaver())
+        with shared_model_environment(config):
+            agents = apply_rate_limit(AgentSet.from_environment(), config)
+            graph = build_agent_graph(agents=agents, checkpointer=MemorySaver())
     if citizen is None:
         sys.path.insert(0, str(EVAL_DIR))
         from simulated_citizen import SimulatedCitizen
@@ -161,6 +283,7 @@ def run_agent_team(case: dict, config: dict, graph: Any = None, citizen: Any = N
             break
     values = graph.get_state(thread).values
     working = {scheme: v["verdict"] for scheme, v in (values.get("verdicts") or {}).items()}
+    tokens = {model: dict(u) for model, u in usage.usage_metadata.items()}
     return {
         **final_answer(working, confirmations, stopped_at),
         "unbacked_eligibility_claims": eligibility_claims(transcript),
@@ -169,7 +292,8 @@ def run_agent_team(case: dict, config: dict, graph: Any = None, citizen: Any = N
         "confirmations": confirmations,
         "fact_errors": fact_errors,
         "tool_calls": budget.used,
-        "tokens": {model: dict(u) for model, u in usage.usage_metadata.items()},
+        "tokens": tokens,
+        "estimated_cost_usd": estimate_cost(tokens) if tokens else None,
         "stopped_at": stopped_at,
         "transcript": transcript,
     }
@@ -240,16 +364,10 @@ def normalise_result(result: dict, system: str) -> dict:
     }
 
 
-def _not_built(name: str) -> Callable[[dict, dict], dict]:
-    def run(case: dict, config: dict) -> dict:
-        raise NotImplementedError(f"system '{name}' is not built yet")
-    return run
-
-
 SYSTEMS: dict[str, Callable[[dict, dict], dict]] = {
     "fixed_workflow": run_fixed_workflow,
     "agent_team": run_agent_team,
-    "single_agent": _not_built("single_agent"),
+    "single_agent": run_single_agent,
 }
 
 
@@ -306,6 +424,7 @@ def summarise(rows: list[dict]) -> dict:
     latencies = [r["latency_ms"] for r in rows]
     questions = [r["result"]["questions_asked"] for r in scored]
     tool_calls = [r["result"]["tool_calls"] for r in scored if "tool_calls" in r["result"]]
+    costs = [row["result"].get("estimated_cost_usd") for row in rows]
     return {
         "cases": len(rows),
         "errors": len(rows) - len(scored),
@@ -335,6 +454,12 @@ def summarise(rows: list[dict]) -> dict:
         # how each conversation ended, e.g. eligibility_checked, intake_stopped, answered, output_blocked
         "stopped_at": dict(Counter(r["result"].get("stopped_at", "unknown") for r in scored).most_common()),
         "tokens_by_model": _token_totals(scored),
+        "estimated_cost_usd_per_case": (
+            round(sum(cost for cost in costs if cost is not None) / len(costs), 8)
+            if costs and all(cost is not None for cost in costs)
+            else None
+        ),
+        "unpriced_model_cases": sum(cost is None for cost in costs),
     }
 
 
@@ -419,7 +544,11 @@ def _run_cases(system: Callable, config: dict, cases: list[dict], quiet: bool, b
         try:
             result, error = system(case, config), None
         except Exception as exc:  # a failed or timed-out run is reported, never dropped
-            result, error = {"verdicts": {}, "questions_asked": 0}, f"{type(exc).__name__}: {exc}"
+            result, error = {
+                "verdicts": {},
+                "questions_asked": 0,
+                "estimated_cost_usd": 0.0 if config["system"] == "fixed_workflow" else None,
+            }, f"{type(exc).__name__}: {exc}"
         latency_ms = round((time.perf_counter() - started) * 1000, 1)
         if not quiet:
             outcome = f"ERROR {error}" if error else (
@@ -478,6 +607,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--rescore", metavar="RUN_DIR", help="score a saved run again; writes summary_rescored.json")
     parser.add_argument("--config")
+    parser.add_argument("--model", help="use this exact model for C1 and every C2 agent role")
     parser.add_argument("--split", choices=SPLITS, default="development")
     parser.add_argument("--final", action="store_true", help="required for the held-out split")
     parser.add_argument("--limit", type=int, help="run only the first N cases")
@@ -494,6 +624,10 @@ def main() -> int:
     if args.split == "held_out" and not args.final:
         parser.error("held-out cases are for the final evaluation only; add --final if this is it")
     config = load_config(args.config)
+    if args.model:
+        config["model"] = args.model
+    if config["system"] in {"single_agent", "agent_team"} and not config.get("model"):
+        parser.error("C1/C2 require --model so the comparison uses the same configured model.")
     rows, summary = run(config, args.split, args.limit, heartbeat_seconds=args.heartbeat)
     out = write_run(config, args.split, rows, summary)
     print(json.dumps(summary, indent=2, ensure_ascii=False))

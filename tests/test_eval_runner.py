@@ -1,6 +1,8 @@
 """The evaluation runner: configs load, scoring is correct, and the C0 baseline runs end to end."""
 import importlib.util
 import json
+import os
+import sys
 from pathlib import Path
 
 import pytest
@@ -8,9 +10,16 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 _spec = importlib.util.spec_from_file_location("run_eval", ROOT / "tests" / "evaluation" / "run_eval.py")
 run_eval = importlib.util.module_from_spec(_spec)
+sys.modules[_spec.name] = run_eval
 _spec.loader.exec_module(run_eval)
 
 CONFIG_DIR = ROOT / "tests" / "evaluation" / "configs"
+_e1_report_spec = importlib.util.spec_from_file_location(
+    "e1_report", ROOT / "tests" / "evaluation" / "e1_report.py"
+)
+e1_report = importlib.util.module_from_spec(_e1_report_spec)
+sys.modules[_e1_report_spec.name] = e1_report
+_e1_report_spec.loader.exec_module(e1_report)
 
 
 @pytest.mark.parametrize("path", sorted(CONFIG_DIR.glob("*.json")), ids=lambda p: p.stem)
@@ -18,6 +27,92 @@ def test_every_config_loads_and_names_a_known_system(path):
     config = run_eval.load_config(path)
     assert config["system"] in run_eval.SYSTEMS
     assert config["name"] == path.stem
+
+
+def test_e1_c1_is_a_real_system_and_shares_the_configured_budget():
+    assert run_eval.SYSTEMS["single_agent"] is run_eval.run_single_agent
+    for path in (CONFIG_DIR / "c0_fixed_workflow.json",
+                 CONFIG_DIR / "c1_single_agent.json",
+                 CONFIG_DIR / "c2_agent_team.json"):
+        assert run_eval.load_config(path)["tool_call_limit"] == 150
+
+
+def test_shared_model_environment_sets_both_agent_roles_and_restores(monkeypatch):
+    monkeypatch.setenv("SUPERVISOR_MODEL", "old-supervisor")
+    monkeypatch.delenv("SPECIALIST_MODEL", raising=False)
+    with run_eval.shared_model_environment({"model": "same-model"}):
+        assert os.environ["SUPERVISOR_MODEL"] == os.environ["SPECIALIST_MODEL"] == "same-model"
+    assert os.environ["SUPERVISOR_MODEL"] == "old-supervisor"
+    assert "SPECIALIST_MODEL" not in os.environ
+
+
+def test_single_agent_runner_scores_the_rule_engine_tool_result(monkeypatch):
+    from langchain_core.messages import AIMessage, ToolMessage
+    import langgraph.prebuilt
+    import agents.model_factory
+    import graph.baseline
+
+    class FakeAgent:
+        def invoke(self, *_args, **_kwargs):
+            return {"messages": [
+                AIMessage(content="", tool_calls=[{
+                    "id": "call-1", "name": "check_eligibility", "args": {"scheme_id": "C01"}
+                }]),
+                ToolMessage(
+                    content='{"verdict":"eligible"}',
+                    tool_call_id="call-1",
+                    name="check_eligibility",
+                ),
+                AIMessage(content="C01: eligible, according to the rule engine."),
+            ]}
+
+    def create_model(_role):
+        assert os.environ["SUPERVISOR_MODEL"] == os.environ["SPECIALIST_MODEL"] == "fake/model"
+        return object()
+
+    monkeypatch.setattr(agents.model_factory, "create_chat_model", create_model)
+    monkeypatch.setattr(
+        graph.baseline, "build_tools",
+        lambda _profile: [object(), object(), object(), object()],
+    )
+
+    def create_agent(_model, tools, **_kwargs):
+        assert len(tools) == 4
+        return FakeAgent()
+
+    monkeypatch.setattr(langgraph.prebuilt, "create_react_agent", create_agent)
+    case = {
+        "case_id": "fake",
+        "opening_message": "Check the pension rules.",
+        "candidate_scheme_ids": ["C01"],
+        "hidden_profile": {"age": 62},
+    }
+
+    result = run_eval.run_single_agent(case, {"model": "fake/model", "tool_call_limit": 150})
+
+    assert result["verdicts"] == {"C01": "eligible"}
+    assert result["unbacked_eligibility_claims"] == []
+    assert result["estimated_cost_usd"] is None
+
+
+def test_e1_report_rejects_different_budgets_and_models():
+    def run(system, model="same/model", budget=150):
+        return {
+            "meta": {"config": {"system": system, "model": model, "tool_call_limit": budget}, "split": "development"},
+            "rows": [{"case_id": "F02a"}],
+            "summary": {},
+        }
+
+    runs = {
+        "c0": run("fixed_workflow"),
+        "c1": run("single_agent"),
+        "c2": run("agent_team", budget=400),
+    }
+    with pytest.raises(ValueError, match="same explicit MCP"):
+        e1_report.validate(runs)
+    runs["c2"] = run("agent_team", model="different/model")
+    with pytest.raises(ValueError, match="same explicit model"):
+        e1_report.validate(runs)
 
 
 def test_scoring_uses_only_candidate_schemes():
@@ -37,6 +132,8 @@ def test_a_failed_case_is_reported_not_dropped(monkeypatch):
     rows, summary = run_eval.run(run_eval.load_config(CONFIG_DIR / "c0_fixed_workflow.json"), "development", limit=2)
     assert summary["errors"] == 2 and len(rows) == 2
     assert rows[0]["error"] == "RuntimeError: model timed out"
+    assert summary["estimated_cost_usd_per_case"] == 0.0
+    assert summary["unpriced_model_cases"] == 0
 
 
 def test_c0_fixed_workflow_matches_gold_on_development(tmp_path):
