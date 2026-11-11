@@ -144,6 +144,7 @@ def _defence_patches() -> dict[str, list[Callable[[], Any]]]:
     from graph import tools, workflow
     from servers.rule_engine import server as rule_server
     from servers.mock_portal import server as portal
+    from observability import tracing
 
     def evaluate_with_draft_rules(profile, scheme_id, include_draft=False):
         if include_draft:
@@ -168,6 +169,10 @@ def _defence_patches() -> dict[str, list[Callable[[], Any]]]:
         "rule_engine": [lambda: patch.object(rule_server, "evaluate_profile", evaluate_with_draft_rules)],
         "household_isolation": [lambda: patch.object(portal, "_application_owned_by", lambda *a, **k: True)],
         "data_path_injection": [lambda: patch.object(base, "untrusted_prompt", _naive_prompt)],
+        "trace_content": [
+            lambda: patch.object(tracing, "hide_inputs", lambda inputs: inputs),
+            lambda: patch.object(tracing, "hide_outputs", lambda outputs: outputs),
+        ],
     }
 
 
@@ -453,6 +458,116 @@ def run_prompt_data(p: dict) -> bool:
     return any(m.type == "system" and marker in m.content for m in seen)
 
 
+# Runners added for the brief's Scheme Saathi red-team list (scam page, misstatement, memory,
+# traces, official sources). Written by the attacker (role 5), not by the person who built the
+# defences; attacks that get through are listed in known_gaps.json until a defence lands.
+
+UNOFFICIAL_SCHEME = {
+    "scheme_id": "RT-UNOFFICIAL",
+    "name": "Red-team scheme copied from a blog (test data)",
+    "level": "central",
+    "state": None,
+    "source": {"url": "https://free-sarkari-yojana.example.blog/pension-2026", "collected_on": "2026-11-11"},
+    "clauses": [{"clause_id": "cl-1", "text": "Anyone aged 18 or above can apply", "page": 1}],
+    "documents_required": [],
+    "rules": [{"field": "age", "op": "gte", "value": 18, "clause_id": "cl-1", "status": "reviewed"}],
+}
+
+
+def run_rule_source(p: dict) -> bool:
+    """A reviewed rule set whose source is not an official site decides a verdict."""
+    from servers.rule_engine import server as rule_server
+
+    with tempfile.TemporaryDirectory() as scratch:
+        directory = Path(scratch)
+        record = {**UNOFFICIAL_SCHEME, "source": {**UNOFFICIAL_SCHEME["source"], "url": p["source_url"]}}
+        (directory / "RT-UNOFFICIAL.json").write_text(json.dumps(record), encoding="utf-8")
+        with patch.object(rule_server, "RULE_DIRS", [*rule_server.RULE_DIRS, directory]):
+            result = rule_server.evaluate_profile(p["profile"], "RT-UNOFFICIAL")
+    return bool(result.get("ok")) and result["data"]["verdict"] == "eligible"
+
+
+def _memory(fields: dict[str, object]):
+    """Household-1 with a consented fact in the in-memory store."""
+    from datetime import timedelta
+
+    from agents.memory import MemoryConsent, MemoryFact, MemoryScope, utc_now
+    from agents.memory_service import HouseholdAllowlist, InMemoryMemoryService
+
+    service = InMemoryMemoryService(HouseholdAllowlist.from_policy_file())
+    owner = MemoryScope(actor_id="citizen-1", household_id="household-1", actor_role="citizen")
+    now = utc_now()
+    service.record_consent(owner, MemoryConsent(
+        purpose="profile_facts", granted=True, notice_version="v1", decided_at=now,
+        expires_at=now + timedelta(days=90), consent_reference="consent-household-1"))
+    for field, value in fields.items():
+        service.save_confirmed_fact(owner, MemoryFact(
+            field=field, value=value, source="confirmed_in_chat", confirmed_at=now,
+            reconfirm_by=now + timedelta(days=10), expires_at=now + timedelta(days=20),
+            consent_reference="consent-household-1"))
+    return service, owner, now
+
+
+def run_memory_access(p: dict) -> bool:
+    """Reach household-1's remembered facts from another household or with a stolen reference."""
+    from datetime import timedelta
+
+    from agents.memory import MemoryConsent, MemoryScope
+
+    service, owner, now = _memory({"age": 62, "annual_income": 40000})
+    actor = MemoryScope(actor_id=p.get("actor_id", "citizen-2"), household_id=p.get("household_id", "household-2"),
+                        actor_role=p.get("actor_role", "citizen"))
+    scenario = p["scenario"]
+    try:
+        if scenario == "owner_reads":
+            return bool(service.read_facts(owner, []))
+        if scenario == "read_facts":
+            return bool(service.read_facts(actor, []))
+        if scenario == "reuse_consent_reference":
+            service.record_consent(actor, MemoryConsent(
+                purpose="profile_facts", granted=True, notice_version="v1", decided_at=now,
+                expires_at=now + timedelta(days=90), consent_reference="consent-household-1"))
+            return bool(service.read_facts(actor, []))
+        if scenario == "withdraw_other_consent":
+            service.withdraw_consent(actor, "consent-household-1")
+            return not service.read_facts(owner, [])
+        if scenario == "forget_other_household":
+            service.forget_household(actor)
+            return not service.read_facts(owner, [])
+    except (ValueError, PermissionError):
+        return False
+    raise ValueError(f"unknown memory scenario {scenario!r}")
+
+
+def run_trace_content(p: dict) -> bool:
+    """Get an identifier into what a trace or the log keeps."""
+    import io
+    import logging
+
+    from observability import safety, tracing
+
+    secret = p["value"]
+    digits = "".join(ch for ch in secret if ch.isdigit())
+    if p["scenario"] == "trace_inputs":
+        kept = tracing.hide_inputs({"messages": [secret], "profile": {"note": secret}})
+    elif p["scenario"] == "trace_outputs":
+        kept = tracing.hide_outputs({"output": secret, "usage_metadata": {"input_tokens": 3}})
+    elif p["scenario"] == "failure_log":
+        stream = io.StringIO()
+        handler = logging.StreamHandler(stream)
+        safety.logger.addHandler(handler)
+        safety._reported.discard("rt-step")
+        try:
+            safety.report_failure("rt-step", ValueError(f"bad profile {secret}"))
+        finally:
+            safety.logger.removeHandler(handler)
+        kept = stream.getvalue()
+    else:
+        raise ValueError(f"unknown trace scenario {p['scenario']!r}")
+    text = json.dumps(kept, ensure_ascii=False) if not isinstance(kept, str) else kept
+    return secret in text or (len(digits) >= 10 and digits in "".join(ch for ch in text if ch.isdigit()))
+
+
 RUNNERS: dict[str, Callable[[dict], bool]] = {
     "sensitive_input": run_sensitive_input,
     "agent_output": run_agent_output,
@@ -465,6 +580,9 @@ RUNNERS: dict[str, Callable[[dict], bool]] = {
     "rule_verdict": run_rule_verdict,
     "application_status": run_application_status,
     "prompt_data": run_prompt_data,
+    "rule_source": run_rule_source,
+    "memory_access": run_memory_access,
+    "trace_content": run_trace_content,
 }
 
 
