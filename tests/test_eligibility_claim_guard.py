@@ -73,6 +73,9 @@ class AnsweringIntake(StubIntake):
     def answer(self, value):
         return self.result
 
+    def answer_with_trace(self, value):
+        return self.answer(value), []
+
 
 @pytest.mark.parametrize("language", ["en", "hi", "mr"])
 def test_blocked_scheme_answer_offers_a_proper_eligibility_check(monkeypatch, language):
