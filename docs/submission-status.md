@@ -6,7 +6,6 @@
 
 The core system and three of the four experiments are done. The biggest gaps:
 
-- E1, the agent-team comparison
 - demo 2's safety cases
 - a one-command Docker Compose with a CI eval gate
 - the LLM judge
@@ -50,7 +49,7 @@ Six lectures are fully met (L4–L6, L7, L8, L9, L12 and L14). The others each m
 | L8 Orchestration | Done | LangGraph, typed state, checkpointer, resume (`test_resume_cli`), graph diagram (`graph/diagram.py`) | Rehearse the live stop-and-resume demo |
 | L9 Memory | Done | Long-term store with consent, expiry and "forget me"; memory policy with correcting and short-term context sections; short-term context summarised into typed state (`tests/test_short_term_context.py`); memory on vs off in the evaluation report (742 → 624 questions, −15.9%, 0 verdicts changed) | Trim the policy to one page (about 1,900 words now); held-out memory cases written by someone who did not build memory |
 | L10 Planning | Partial | Supervisor routing plan (`next_agent` + reason); citizen journey and rule-result-driven revisions; opt-in, read-only ReAct for the intake specialist's scheme questions | ReAct is limited to scheme questions; test with the configured model and assess latency, cost and answer quality before wider use |
-| L11 Multi-agent | Partial | Supervisor + intake, eligibility, document checker and application agents with typed contracts; single-agent baseline built (`graph/baseline.py`) | Run the baseline (see E1) |
+| L11 Multi-agent | Done | Supervisor + intake, eligibility, document checker and application agents with typed contracts; single-agent baseline built (`graph/baseline.py`) | Baseline run in E1 (held-out ×3) |
 | L12 Improvement | Done | Reflexion on the rule extractor: 34 proposed lessons, 13 approved, 21 rejected with reasons, 12 frozen; held-out ×3 before/after; harmful lesson L007 named | — |
 | L13 Evaluation | Partial | Golden set of 71 cases (21 dev, 50 held-out); traces; Grafana dashboard (PR #81) | LLM judge from a different model family, checked against 20+ human labels with Cohen's kappa |
 | L14 Human control | Done | `interrupt()` with approve, edit, reject; approval tied to `payload_hash`; an edit invalidates it; pre-tool budget and permission checks; post-tool logging | Rehearse the edit-invalidates-approval demo |
@@ -107,11 +106,11 @@ latency and cost, is still needed before enabling the feature more widely.
 
 ## Experiments E1–E4
 
-E2, E3 and E4 are done. E1 is the largest single gap: without it, the report cannot say whether the agent team justifies its cost.
+E1, E3 and E4 are done; E2 has three known gaps waiting for defences.
 
 | Experiment | Status | Result so far | Pending |
 | --- | --- | --- | --- |
-| E1: does the agent justify its cost? | Partial | C0 fixed workflow: 39/39 dev, 95/95 held-out verdicts. C2 agent team: one dev run (9 Nov), 14/39 verdicts, 100% right when answered but only 36% answered; the main cause was fixed afterwards | Wire C1 (single agent) into the runner; rerun C2 after the fix; run C0, C1, C2 on held-out ×3 with the same model, tools and budget; report cost and p50/p95 latency |
+| E1: does the agent justify its cost? | Done | Held-out, same model (`gpt-4o-mini`) and budget, C1 and C2 ×3: verdicts right C0 100%, C1 100%, C2 54.0% (50.5–56.8%); C2 misses the right scheme for 39% of verdicts; cost per case $0 / $0.0004 / $0.0081; median latency 0.13 s / 6.3 s / 68.9 s. Conclusion: the agent team does not justify its cost yet; its shortlist is the next fix | Review C1's 35 keyword-flagged replies with the claim judge |
 | E2: do the defences work? | Partial | 9 Nov: 77 attacks, success 80.5% off, 0% on. 11 Nov, with role 5's 19 new attacks: 96 attacks, 79.2% off, 11.5% on (11 known gaps: scam page, misstatement, unofficial rule source); 29 legitimate cases, 0% blocked with defences on | Role 4 builds the three defences, then rerun and update `docs/redteam-report.md` and section 3 of `docs/evaluation-report.md`, which still give the 77-attack result |
 | E3: did the lessons help? | Done | Held-out rule-extraction F1 0.880 → 0.868 (3 runs each); dev +0.01 to +0.08; harmful lesson L007 named; cost about 37,500 tokens | — |
 | E4: signature ablation | Done | LLM directly from text 0.909 vs rule engine 1.000 on 95 held-out verdicts, 0 boundary errors either way; planned vs fixed question order 138 vs 163 questions with all schemes open | Merge PR #83 |
@@ -143,7 +142,7 @@ Merge the two open PRs first, because much of the evidence above lives in them. 
 
 - [ ] Merge PR #81 (Grafana dashboard, alerts) and PR #83 (E4, evaluation report, experiment log) (role 6, role 5)
 - [ ] Merge the `feature/query-rewrite` PR (the live search tool now uses the rewrite, about 1.2 s more per search). Add a retrieval section to the evaluation report linking `docs/retrieval-evaluation.md` (role 2)
-- [ ] E1: wire C1 into the runner, rerun C2, run C0/C1/C2 on held-out ×3 with the same model, tools and budget (role 3 builds, role 5 runs)
+- [x] E1: C0/C1/C2 on held-out, C1 and C2 ×3, same model and budget (11 Nov; `docs/evaluation-report.md` §2)
 - [ ] Demo 2 and L15 defences (role 4): a payment-request check for the scam page (output guardrail and scheme index) with the page planted in the corpus; a refusal that explains when asked to misstate income or age; an official-source allow-list for rules. The attacks are already in the suite (role 5, 11 Nov): clear each fixed case from `tests/redteam/known_gaps.json` and rerun E2
 - [ ] L15 write-up (role 4): cut the threat model to one page; add Prompt Guard 2 on CPU or explain why the own guardrails replace Llama Guard / Prompt Guard; have someone other than its author review the first 77 attacks
 - [ ] One `docker compose up` for app, MCP servers, Chroma, Prometheus and Grafana; a CI step that fails below an eval threshold; one deliberately failed CI run with an explanation; install on a clean machine (role 6)
