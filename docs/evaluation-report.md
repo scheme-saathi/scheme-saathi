@@ -2,7 +2,7 @@
 
 *Experiments E1–E4, run 8–11 November 2026. Every run is listed in [experiment-log.md](experiment-log.md).*
 
-**Summary.** Eligibility decided by the deterministic rule engine is right on every gold verdict (39/39 development, 95/95 held-out) at no model cost. Letting a model decide directly from the scheme text is 91% right, never wrong at a numeric boundary, but wrong on conditions the text it is shown does not state (E4). The agent team is right whenever it gives an answer but, in the last measured run, answered only about a third of the scheme verdicts; a fix for the main cause followed (E1). The defences block all 77 attacks without blocking legitimate work (E2). The reviewed lessons improved rule extraction on development schemes but not on held-out schemes (E3).
+**Summary.** Eligibility decided by the deterministic rule engine is right on every gold verdict (39/39 development, 95/95 held-out) at no model cost. Letting a model decide directly from the scheme text is 91% right, never wrong at a numeric boundary, but wrong on conditions the text it is shown does not state (E4). The agent team is right whenever it gives an answer but, in the last measured run, answered only about a third of the scheme verdicts; a fix for the main cause followed (E1). The defences block all 77 attacks without blocking legitimate work (E2). The reviewed lessons improved rule extraction on development schemes but not on held-out schemes (E3). With memory on, a returning citizen is asked 15.9% fewer questions, and no verdict changes (L9).
 
 ## 1. Setup
 
@@ -115,16 +115,36 @@ The fixed workflow asked either the field that settles the most open verdicts (p
 
 With the 2–4 candidate schemes of a persona, the order hardly matters; asking stops early, saving a fifth to a third of a full form. With every live scheme open, the planned order saves 10–15%, but 138–147 questions is far too many for a person. **Choosing the right few schemes matters far more than the order of questions**, which is why C2's shortlist (section 2) is the next thing to fix.
 
-## 6. Limits
+## 6. Memory on vs off (L9)
+
+A returning citizen is asked fewer questions when memory is on, and no verdict changes (`python -m evaluation.memory_eval`, 11 Nov). The harness runs the real graph, rule engine and memory policy. A scripted persona answers from its own recorded facts in place of the model, so it needs no model and gives the same result every run.
+
+Each of the 50 synthetic households makes a first visit on each of three schemes (C01–C03), answering every question and confirming. It then returns twice: once with memory on and once with memory off (the control).
+
+| 150 return visits (50 households × 3 schemes) | Memory off | Memory on |
+| --- | --- | --- |
+| Questions asked, total | 742 | **624** (−118, −15.9%) |
+| Questions per visit, mean | 4.95 | **4.16** |
+| Visits with fewer questions | — | 118 of 150 |
+| Verdicts that changed | — | **0** |
+| Visits where memory added a question | — | 0 |
+| Failed runs | 0 | 0 |
+
+- **Why only `age`.** It is the only field C01–C03 use that the memory policy allows storing, so each saving is one question. Schemes that use income, residence or marital status would save more.
+- **The 32 visits with no saving** are all C03. With memory off and with memory on, intake reached its 12-question cap. With memory on, age was prefilled and the freed question went to the next field, so the visit got further without asking fewer questions.
+- **Memory never decides.** A prefilled fact is shown unconfirmed, and every return visit had exactly one confirm step.
+
+## 7. Limits
 
 - **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
 - **Role separation.** The person who labelled the held-out personas also fixed agent behaviour, and verified the held-out gold rules used in E3 while reviewing its lessons. Nothing was tuned after held-out results were seen.
 - **Judge not calibrated.** Unbacked eligibility claims are found by a keyword check; the LLM judge from a different family, checked against 20+ human labels with kappa, has not been built.
 - **E1 incomplete.** C0, C1 and C2 each have one development run (same model and budget); the held-out three-run comparison is missing, so E1 cannot yet say whether the agent team justifies its cost. On development it did not: 8/21 cases right against 21/21, at about 16 times C1's estimated cost and 8 times its latency.
 - **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts (E3 development F1 moved by 0.015–0.02), so small differences are not reliable.
+- **Memory evaluation on development cases only.** The 50 households come from the repository and are not held-out cases; held-out memory cases written by someone who did not build memory are still to do. It covers three schemes and one stored field.
 - **Order of work.** The 34 development rule sets were drafted by an AI before the extractor existed and then reviewed by a person; the extractor was measured against the reviewed versions.
 
-## 7. Reproduce
+## 8. Reproduce
 
 ```bash
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_workflow.json --split held_out --final
@@ -133,6 +153,7 @@ python tests/redteam/run_redteam.py
 python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_extraction_configs/rx1_playbook_gpt41mini.json --split held_out --final
 python tests/evaluation/run_e4.py --config tests/evaluation/e4_configs/e4_llm_direct_gpt41mini.json --split held_out --final --repeat 3
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_questionnaire.json --split held_out --final
+python -m evaluation.memory_eval
 ```
 
-Model runs need `OPENROUTER_API_KEY`, `SUPERVISOR_MODEL`, `SPECIALIST_MODEL` and `CITIZEN_MODEL` in `.env`; C0, the red-team suite and the question-order runs need no model.
+Model runs need `OPENROUTER_API_KEY`, `SUPERVISOR_MODEL`, `SPECIALIST_MODEL` and `CITIZEN_MODEL` in `.env`; C0, the red-team suite, the question-order runs and the memory evaluation need no model.
