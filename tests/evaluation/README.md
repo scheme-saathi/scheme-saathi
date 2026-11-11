@@ -13,7 +13,7 @@ limit by default:
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_workflow.json --model <model-id>
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c1_single_agent.json --model <model-id>
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c2_agent_team.json --model <model-id>
-python tests/evaluation/e1_report.py --c0 <c0-run-directory> --c1 <c1-run-directory> --c2 <c2-run-directory>
+python tests/evaluation/e1_report.py --c0 <c0-run> --c1 <c1-run> <c1-run> <c1-run> --c2 <c2-run> <c2-run> <c2-run>
 ```
 
 The report rejects different models, splits, case sets, or tool-call limits. It also

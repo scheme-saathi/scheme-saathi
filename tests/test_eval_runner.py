@@ -95,24 +95,75 @@ def test_single_agent_runner_scores_the_rule_engine_tool_result(monkeypatch):
     assert result["estimated_cost_usd"] is None
 
 
-def test_e1_report_rejects_different_budgets_and_models():
-    def run(system, model="same/model", budget=150):
-        return {
-            "meta": {"config": {"system": system, "model": model, "tool_call_limit": budget}, "split": "development"},
-            "rows": [{"case_id": "F02a"}],
-            "summary": {},
-        }
-
-    runs = {
-        "c0": run("fixed_workflow"),
-        "c1": run("single_agent"),
-        "c2": run("agent_team", budget=400),
+def _e1_run(system, model="openai/same-model", budget=150, split="held_out", tokens=None, accuracy=1.0,
+            name="run"):
+    summary = {
+        "verdict_accuracy": accuracy, "case_success_rate": accuracy, "answered_rate": 1.0,
+        "accuracy_when_answered": 1.0, "shortlist_recall": 1.0, "cases_with_unbacked_eligibility_claims": 0,
+        "cases_with_fact_errors": 0, "questions_per_case": {"mean": 5.0}, "tool_calls_per_case": {"mean": 10.0},
+        "latency_ms": {"median": 1000.0, "p95": 2000.0}, "estimated_cost_usd_per_case": 0.001, "errors": 0,
+        "tokens_by_model": tokens or {},
     }
+    return {"name": name, "rows": [{"case_id": "F02a"}], "summary": summary,
+            "meta": {"config": {"system": system, "model": model, "tool_call_limit": budget},
+                     "split": split, "git_commit": "abc1234"}}
+
+
+def _e1_runs(**c2):
+    agent = {"openai/same-model": {"total_tokens": 10}}
+    return {
+        "c0": [_e1_run("fixed_workflow")],
+        "c1": [_e1_run("single_agent", tokens=agent) for _ in range(3)],
+        "c2": [_e1_run("agent_team", tokens={**agent, "anthropic/citizen": {"total_tokens": 5}}, **c2)
+               for _ in range(3)],
+    }
+
+
+def test_e1_report_rejects_different_budgets_and_models():
+    runs = _e1_runs()
+    runs["c2"][1] = _e1_run("agent_team", budget=400)
     with pytest.raises(ValueError, match="same explicit MCP"):
         e1_report.validate(runs)
-    runs["c2"] = run("agent_team", model="different/model")
+    runs["c2"][1] = _e1_run("agent_team", model="different/model")
     with pytest.raises(ValueError, match="same explicit model"):
         e1_report.validate(runs)
+    runs = _e1_runs()
+    runs["c1"][0] = _e1_run("single_agent", split="development")
+    with pytest.raises(ValueError, match="same gold-set split"):
+        e1_report.validate(runs)
+
+
+def test_e1_report_checks_the_models_that_actually_used_tokens():
+    runs = _e1_runs()
+    # a router or supervisor quietly on another model (e.g. ROUTER_MODEL set in .env)
+    runs["c1"][2] = _e1_run("single_agent", tokens={"openai/same-model-2024-07-18": {}, "openai/other": {}})
+    with pytest.raises(ValueError, match="C1 run .* used other models: openai/other"):
+        e1_report.validate(runs)
+    runs = _e1_runs()
+    runs["c2"][0] = _e1_run("agent_team", tokens={"openai/same-model": {}, "anthropic/citizen": {},
+                                                  "openai/router": {}})
+    with pytest.raises(ValueError, match="more than one model besides"):
+        e1_report.validate(runs)
+    runs = _e1_runs()
+    runs["c2"][2] = _e1_run("agent_team", tokens={"openai/same-model": {}, "meta-llama/other-citizen": {}})
+    with pytest.raises(ValueError, match="same simulated citizen"):
+        e1_report.validate(runs)
+
+
+def test_e1_report_gives_the_spread_over_repeated_runs():
+    runs = _e1_runs()
+    for run, accuracy in zip(runs["c2"], (0.5, 0.6, 0.7)):
+        run["summary"]["verdict_accuracy"] = accuracy
+    data = e1_report.report(runs)
+    c2 = data["measures"]["Verdict accuracy"]["c2"]
+    assert (c2["mean"], c2["min"], c2["max"], c2["runs"]) == (0.6, 0.5, 0.7, 3)
+    assert data["citizen_model"] == "anthropic/citizen"
+    assert data["notes"] == []
+    text = e1_report.markdown(data)
+    assert "| Verdict accuracy | 1 | 1 (all runs) | 0.6 (0.5–0.7) |" in text
+
+    runs["c2"] = runs["c2"][:2]
+    assert any("C2 has 2 run(s)" in note for note in e1_report.report(runs)["notes"])
 
 
 def test_scoring_uses_only_candidate_schemes():
