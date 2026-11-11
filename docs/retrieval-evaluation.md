@@ -65,7 +65,7 @@ Run files: `hybrid-held_out-20261111T{050927937314,051159185061,051414448085}Z`,
   - 6 Nov runs used a local copy that was never committed (sha `171fac99`). It has the same 20 development case IDs.
   - 11 Nov runs used sha `5ffc3801`. That version changes only the corpus hashes, after the 28 Oct re-collection changed collection dates and link metadata; all 28 labelled evidence sentences are unchanged. See `corpus_manifest_note` in the file.
 - **Reranker variance.** The rerank configurations vary between identical runs (6 Nov). The 11 Nov held-out runs were repeated 3 times for this reason.
-- **The live tool does not use the rewrite yet.** `search_scheme_evidence` in `servers/schemes_kb/server.py` still calls `hybrid` with `rerank=True` and no rewrite. Turning it on is a one-argument change, at about 1.2 s more per search.
+- **The live tool uses the rewrite from 11 Nov.** `search_scheme_evidence` in `servers/schemes_kb/server.py` calls `hybrid` with `rerank=True` and `rewrite=True`: the held-out winner above. It costs about 1.2 s more per search, and if the rewrite call fails the tool searches the original question only.
 
 ## Reproduce
 

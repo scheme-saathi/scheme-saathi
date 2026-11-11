@@ -45,7 +45,7 @@ Four lectures are fully met (L7, L8, L12 and L14). The others each miss one or t
 
 | Lecture | Status | Done | Pending |
 | --- | --- | --- | --- |
-| L4–L6 Retrieval | Partial | 59 scheme records with URL and date; bge-m3 vectors + BM25 fused with RRF; LLM reranker; **query rewrite (multi-query) added 11 Nov**; **Recall@5 before/after recorded** on 32 queries in `docs/retrieval-evaluation.md` (BM25 0.625 → hybrid 1.000 on dev, 25 Oct; held-out 0.917 → 1.000 with the rewrite, 3 runs) | Turn the rewrite on in the live `search_scheme_evidence` tool; review the 32 retrieval labels (all still pending review); the reranker is an LLM, not a cross-encoder (say why) |
+| L4–L6 Retrieval | Partial | 59 scheme records with URL and date; bge-m3 vectors + BM25 fused with RRF; LLM reranker; **query rewrite (multi-query) added and on in the live search tool, 11 Nov**; **Recall@5 before/after recorded** on 32 queries in `docs/retrieval-evaluation.md` (BM25 0.625 → hybrid 1.000 on dev, 25 Oct; held-out 0.917 → 1.000 with the rewrite, 3 runs) | Review the 32 retrieval labels (all still pending review); the reranker is an LLM, not a cross-encoder (say why) |
 | L7 MCP tools | Done | 4 FastMCP servers (schemes_kb, rule_engine, doc_check, mock_portal); read/write marked in `docs/tool-list.md`; only the application agent can write | Confirm every tool has its own test |
 | L8 Orchestration | Done | LangGraph, typed state, checkpointer, resume (`test_resume_cli`), graph diagram (`graph/diagram.py`) | Rehearse the live stop-and-resume demo |
 | L9 Memory | Partial | Long-term store with consent, expiry and "forget me"; memory policy; `evaluation/memory_eval.py` (memory on vs off) | Put the memory on/off result in the report; add short-term trimming or summarising |
@@ -94,7 +94,7 @@ Signature challenge A is done and B is nearly done. Nothing is built yet for dem
 Merge the two open PRs first, because much of the evidence above lives in them. The role in brackets follows the brief's six roles.
 
 - [ ] Merge PR #81 (Grafana dashboard, alerts) and PR #83 (E4, evaluation report, experiment log) (role 6, role 5)
-- [ ] Merge the `feature/query-rewrite` PR. Decide whether the live search tool uses the rewrite (about 1.2 s more per search). Add a retrieval section to the evaluation report linking `docs/retrieval-evaluation.md` (role 2)
+- [ ] Merge the `feature/query-rewrite` PR (the live search tool now uses the rewrite, about 1.2 s more per search). Add a retrieval section to the evaluation report linking `docs/retrieval-evaluation.md` (role 2)
 - [ ] E1: wire C1 into the runner, rerun C2, run C0/C1/C2 on held-out ×3 with the same model, tools and budget (role 3 builds, role 5 runs)
 - [ ] Demo 2: add a planted scam page to the corpus and an income-misstatement refusal. Add both to the red-team suite, written by someone other than the person building the defence (role 4 defends, role 5 attacks)
 - [ ] One `docker compose up` for app, MCP servers, Chroma, Prometheus and Grafana; a CI step that fails below an eval threshold; one deliberately failed CI run with an explanation; install on a clean machine (role 6)
