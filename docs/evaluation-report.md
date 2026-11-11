@@ -32,27 +32,27 @@ The simulated citizen plays a persona from its hidden profile and answers only w
 
 | | C0 fixed workflow | C1 single agent | C2 agent team |
 | --- | --- | --- | --- |
-| Split, runs | development and held-out, 1 run (deterministic) | development, 1 run (`gpt-4o-mini`) | development, 1 run |
-| Verdicts right | 39/39 and 95/95 | 39/39 | 14/39 (0.36) |
-| Cases fully right | 21/21 and 50/50 | 21/21 | 5/21 |
-| Right when an answer was given | 100% | 100% | 100% |
-| Verdicts answered | 100% | 100% | 36% |
+| Split, runs | development and held-out, 1 run (deterministic) | development, 1 run (`gpt-4o-mini`) | development, 1 run (agents `gpt-4o-mini`, citizen `claude-haiku-5.5`) |
+| Verdicts right | 39/39 and 95/95 | 39/39 | 22/39 (0.56) |
+| Cases fully right | 21/21 and 50/50 | 21/21 | 8/21 |
+| Right when an answer was given | 100% | 100% | 85% (22 of 26) |
+| Verdicts answered | 100% | 100% | 67% (26 of 39) |
 | Policy violations (eligibility claimed without the rule engine) | 0 | 17 of 21 cases flagged (keyword heuristic, not reviewed) | 0 |
-| Questions per case, mean (max) | 5.5 (14) and 6.7 (16) | profile given, none asked | 8.7 (12) |
-| Tool calls per case, mean | 16.5 and 18.6 | not recorded here | 67.6 |
-| Cost per case | no model tokens | about $0.0004 (estimated, unverified price table) | about 48,000 tokens |
-| Latency, median (p95) | 0.28 s (0.71 s) and 0.29 s (0.77 s) | 5.8 s median | 58.5 s (93.8 s) |
+| Questions per case, mean (max) | 5.5 (14) and 6.7 (16) | profile given, none asked | 7.6 (12) |
+| Tool calls per case, mean | 16.5 and 18.6 | not recorded here | 60.5 |
+| Cost per case | no model tokens | about $0.0004 (estimated, unverified price table) | about $0.0067 (estimated: 760k agent and 156k citizen tokens in total) |
+| Latency, median (p95) | 0.28 s (0.71 s) and 0.29 s (0.77 s) | 5.8 s median | 48.8 s (70.4 s) |
 | Errors (failed cases) | 0 | 0 | 0 |
 
 C0 gives the person the rule engine's answers for the case's candidate schemes, asking one question at a time from the persona's facts; it is the upper bound for verdict accuracy because it never has to pick schemes or read free text. The C2 run (commit `dbc5a49`, 49 live schemes) shows two problems. **It picks its own schemes**, and the right one was missing from its shortlist for 11 of 39 verdicts. **It stopped without an answer** in 11 of 21 cases: at its 12-question limit it said the results were "in the list below" but gave none. That second cause was fixed the same day (the person now confirms the facts given and gets every verdict, open ones as "can't tell"); the agent team has not been re-measured since. Earlier C2 runs led to fixes for unbacked eligibility claims (now blocked by an output guardrail), personal questions sent to scheme Q&A, a bare "No" not being read as an answer, and one "don't know" ending the whole intake.
 
-C1 (`graph/baseline.py`, run with `tests/evaluation/run_eval.py --config tests/evaluation/configs/c1_single_agent.json --model <model-id>`) was given the candidate schemes and the full profile, so it answers all 39 verdicts by calling the rule engine; it is not asked questions, so it is not directly comparable with C2's conversation. All three arms use a 150 tool-call limit; `tests/evaluation/e1_report.py` rejects runs with different models, budgets, splits or cases. The C2 run with the shared model failed on all 21 cases because `CITIZEN_MODEL` must be a different family from the agents; see `tests/evaluation/e1-development-report.md`.
+C1 (`graph/baseline.py`, run with `tests/evaluation/run_eval.py --config tests/evaluation/configs/c1_single_agent.json --model <model-id>`) was given the candidate schemes and the full profile, so it answers all 39 verdicts by calling the rule engine; it is not asked questions, so it is not directly comparable with C2's conversation. All three arms use a 150 tool-call limit; `tests/evaluation/e1_report.py` rejects runs with different models, budgets, splits or cases. The C2 row is a fresh development run on 11 Nov with the same agent model as C1 and a different-family citizen (`anthropic/claude-haiku-5.5`), which fixed the earlier all-cases failure (`CITIZEN_MODEL` was unset). The first C2 attempt had the citizen on the agent's family and was rejected by the runner; a first model choice was retired, and a second was blocked by a workspace guardrail. Neither produced a measurement. C2 gave an answer for 26 of 39 verdicts and was right on 22 of them. The other 13 verdicts are nine for schemes C2 never evaluated (shortlist recall 0.77) and four with no final answer. Its cost is an estimate from the price table, which has no invoice behind it.
 
 **Not done:** the final comparison of C0, C1 and C2 on held-out, three times each with the same model, tools and budget, has not been run. Until it is, E1 cannot say whether the agent team justifies its cost.
 
 ## 3. E2: do the defences work?
 
-From the red-team suite (`tests/redteam/`, 9 Nov; code defences, no model needed):
+From the red-team suite (`tests/redteam/`, rerun 11 Nov on current code, same result as 9 Nov; code defences, no model needed). The full write-up is [redteam-report.md](redteam-report.md):
 
 | | Defences off | Defences on |
 | --- | --- | --- |
@@ -120,7 +120,7 @@ With the 2–4 candidate schemes of a persona, the order hardly matters; asking 
 - **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
 - **Role separation.** The person who labelled the held-out personas also fixed agent behaviour, and verified the held-out gold rules used in E3 while reviewing its lessons. Nothing was tuned after held-out results were seen.
 - **Judge not calibrated.** Unbacked eligibility claims are found by a keyword check; the LLM judge from a different family, checked against 20+ human labels with kappa, has not been built.
-- **E1 incomplete.** C1 has one development run only, C2 has one development run before its latest fix, and the held-out three-run comparison is missing.
+- **E1 incomplete.** C0, C1 and C2 each have one development run (same model and budget); the held-out three-run comparison is missing, so E1 cannot yet say whether the agent team justifies its cost. On development it did not: 8/21 cases right against 21/21, at about 16 times C1's estimated cost and 8 times its latency.
 - **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts (E3 development F1 moved by 0.015–0.02), so small differences are not reliable.
 - **Order of work.** The 34 development rule sets were drafted by an AI before the extractor existed and then reviewed by a person; the extractor was measured against the reviewed versions.
 
