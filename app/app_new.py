@@ -11,7 +11,7 @@ import time
 from collections.abc import Iterator
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
@@ -42,7 +42,7 @@ JOURNEY_STEPS = (
 )
 
 
-def _render_brand_image(width: int = 313) -> None:
+def _render_brand_image(width: int | Literal["stretch"] = 313) -> None:
     """Render the official Scheme Saathi image at a consistent header size."""
     with st.container(key="page-brand"):
         st.image(
@@ -1796,7 +1796,7 @@ def _render_consent_page() -> None:
                 [1.5, 1.1, 1.1], vertical_alignment="center"
             )
             with image_col:
-                _render_brand_image()
+                _render_brand_image(width="stretch")
             tagline_col.caption("PUBLIC SUPPORT, MADE SIMPLE")
             with step_col:
                 st.markdown("**BEFORE YOU BEGIN**")
@@ -1805,7 +1805,7 @@ def _render_consent_page() -> None:
         with st.container(border=True, key="consent-shell"):
             _render_signed_in_account()
             st.markdown(":material/verified_user: PRIVACY & CONSENT")
-            st.title("Your information. Your choice.")
+            st.subheader("Your information. Your choice.")
             st.write(
                 "Please review how information is used before continuing to "
                 "your scheme search."
@@ -1845,6 +1845,7 @@ def _render_consent_page() -> None:
                 "I do not agree — return to sign in",
                 key="decline-consent",
                 on_click=_decline_consent,
+                type="primary",
                 width="stretch",
             )
 
@@ -1943,7 +1944,7 @@ def _render_chat_header() -> None:
                 [1.4, 1.6, 1.4], gap="medium", vertical_alignment="center"
             )
             with image_col:
-                _render_brand_image()
+                _render_brand_image(width="stretch")
             with title_col:
                 st.markdown("#### Scheme Saathi")
                 st.caption("Your guide to government schemes")

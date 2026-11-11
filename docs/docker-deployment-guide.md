@@ -1,9 +1,12 @@
 # Docker and AWS deployment guide
 
-This guide covers building Scheme Saathi from a Dockerfile, running it locally,
-updating the image, and deploying it from GitHub Actions to Amazon ECS on AWS.
-Commands for your Windows development machine use PowerShell; commands in the
-GitHub Actions workflow use the runner's Linux shell.
+This guide covers building Scheme Saathi from a Dockerfile and running it
+locally. Its ECS/Fargate section is an optional deployment alternative. The
+current [CI/CD workflow](../.github/workflows/cicd.yaml) pushes to Docker Hub
+and deploys to an EC2 instance with a self-hosted runner; see
+[AWS EC2 CI/CD setup](aws-cicd-credentials-setup.md) for the active deployment.
+Commands for your Windows development machine use PowerShell; GitHub Actions
+scripts use a Linux shell.
 
 ## 1. Prerequisites
 
@@ -241,15 +244,16 @@ dependencies automatically. Change and review `pyproject.toml` explicitly.
 Keep the previous image tag until the upgraded container is confirmed healthy
 so you can start it again as a rollback.
 
-## 6. Deploy from GitHub to AWS
+## 6. Optional: deploy from GitHub to AWS ECS/Fargate
 
-This example uses GitHub Actions to build a Linux container, push it to Docker
-Hub, and update an Amazon Elastic Container Service (ECS) service running on
-Fargate. It deploys the image; AWS resources, networking, secrets, domain, and
-persistent storage must be configured first.
+The instructions in this section describe an ECS/Fargate alternative, not the
+repository's current workflow. The current workflow deploys directly to an EC2
+host using a self-hosted runner. Do not configure ECS-specific variables for
+the current workflow; follow the linked EC2 setup guide instead.
 
-For step-by-step instructions to configure GitHub credentials, AWS OIDC, and
-application secrets, see [AWS CI/CD credentials setup](aws-cicd-credentials-setup.md).
+For step-by-step instructions to configure GitHub credentials, the EC2 runner,
+and application settings, see
+[AWS EC2 CI/CD setup](aws-cicd-credentials-setup.md).
 
 ### 6.1 Prepare AWS resources
 
@@ -377,57 +381,20 @@ required by your chosen configuration. The ECS task execution role needs
 `secretsmanager:GetSecretValue` (and `kms:Decrypt` for a customer-managed KMS
 key) for only the referenced secrets.
 
-### 6.3 Add the GitHub Actions workflow
+### 6.3 ECS workflow note
 
-The repository workflow is `.github/workflows/cicd.yaml`. It runs the test
-suite on pull requests to `main`, and on pushes to `main`.
-Deployment runs only after tests pass, on a push to `main` (or a manual run
-started from `main`). It builds and pushes the image to Docker Hub, then
-authenticates to AWS with GitHub OIDC and updates the ECS service.
-
-Configure these GitHub Actions values before running the workflow:
-
-- Secret `AWS_ROLE_TO_ASSUME`: the ARN of the GitHub OIDC deployment role.
-- Secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`: Docker Hub push
-  credentials.
-- Variables `AWS_REGION`, `DOCKERHUB_REPOSITORY`, `ECS_CLUSTER`, `ECS_SERVICE`,
-  `ECS_TASK_DEFINITION`, and `ECS_CONTAINER_NAME`.
-- `DOCKERHUB_REPOSITORY` must be the full `namespace/image` name.
-  `ECS_TASK_DEFINITION` should point to the task definition JSON file in the
-  repository, and `ECS_CONTAINER_NAME` must match its container name.
-
-Before logging in or deploying, the workflow checks that all required secrets
-and variables are non-empty and that the task-definition file exists. This
-preflight verifies configuration presence, not whether credentials are valid;
-Docker Hub login and AWS authentication verify those during the run.
-
-The `production` GitHub Environment can require approval before deployment.
-Restrict the OIDC role trust policy to this repository and the `production`
-environment, and grant it only the ECS deployment permissions needed for this
-service. The deploy job uses the shared `deploy-production` concurrency group
-with cancellation disabled, so only one production deployment runs at a time.
-
-The commit SHA tag identifies exactly what was deployed; `latest` is convenient
-for browsing but should not be used as the production rollback reference. A
-successful workflow waits for ECS to reach a stable state. If it fails, inspect
-the Actions log, ECS service events, and stopped-task reason before retrying.
-Keep a previous task definition revision and image tag for rollback.
+To use ECS/Fargate instead, create a separate ECS-specific workflow and configure
+its ECR/ECS deployment settings. Do not overwrite
+`.github/workflows/cicd.yaml`, which deploys to EC2. The ECS task definition,
+GitHub OIDC role, task execution role, and task secrets described above are
+specific to that alternative.
 
 ### 6.4 Deploy and verify
 
-Commit and push the workflow, task definition, and application changes to the
-configured deployment branch. In GitHub, open **Actions → CI/CD to AWS ECS**,
-confirm the tests pass, then confirm the image build, Docker Hub push, and ECS
-deployment steps pass.
-
-Then verify that:
-
-- the ECS service has the expected number of healthy tasks;
-- the ALB target group reports healthy targets;
-- the deployed HTTPS address loads the app;
-- CloudWatch logs show no configuration, database, or model-loading errors;
-- database-backed scheme search works if the database and model were included;
-- uploaded documents persist and expire as intended after a task replacement.
+For the optional ECS/Fargate alternative, deploy using the separate ECS
+workflow and verify the resulting ECS service. For the active EC2 deployment,
+follow the run and troubleshooting steps in
+[AWS EC2 CI/CD setup](aws-cicd-credentials-setup.md).
 
 Deployments must use synthetic test profiles until privacy, authentication,
 retention, access controls, and operational monitoring have been reviewed.
