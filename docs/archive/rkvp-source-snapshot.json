@@ -1,0 +1,1395 @@
+{
+  "id": "C07",
+  "slug": "rkvp",
+  "name": "Rashtriya Krishi Vigyan Puraskar",
+  "level": "Central",
+  "source_level": "Central",
+  "area": "India",
+  "categories": "Agriculture,Rural & Environment",
+  "applicant_type": "Individual",
+  "beneficiaries": "Individual",
+  "ministry": "Ministry Of Agriculture and Farmers Welfare",
+  "department": "Department of Agriculture Research and Education",
+  "tags": "Krishi; Award; Farmer; Sciences; Technologies",
+  "brief": "The Rashtriya Krishi Vigyan Puraskar (RKVP) aims to honor scientists and technical experts for outstanding contributions and innovations in agriculture and allied sciences.",
+  "url": "https://www.myscheme.gov.in/schemes/rkvp",
+  "source_id": "69c3b7129d266e2072493bb0",
+  "snapshot_date": "2026-10-24",
+  "hash": "bec611b8d87b3688a9cf16ab3e8295c85e3c3fc81542ae34db34a680946f7013",
+  "open_date": null,
+  "close_date": null,
+  "sections": [
+    {
+      "section": "Details",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.detailedDescription[0]",
+          "text": "The Rashtriya Krishi Vigyan Puraskar under Indian Council of Agricultural Research (ICAR),Ministry of Agriculture & Farmers Welfare, Government of India, recognizes and honors scientists and technical personnel who have made outstanding contributions in agriculture, agricultural education, extension, and allied sciences. This includes the development of new processes, products, tools, technologies, and innovative practices that enhance agricultural productivity and sustainability in India.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[1]",
+          "text": "Fields Covered:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Fields Covered:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[2]",
+          "text": "The awards are categorized under three main streams, each covering the following four fields:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "The awards are categorized under three main streams, each covering the following four fields:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[3].children[0]",
+          "text": "Crops & Horticultural Sciences",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "The awards are categorized under three main streams, each covering the following four fields:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[3].children[1]",
+          "text": "Natural Resources Management & Agricultural Engineering",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "The awards are categorized under three main streams, each covering the following four fields:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[3].children[2]",
+          "text": "Animal & Fisheries Sciences",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "The awards are categorized under three main streams, each covering the following four fields:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[3].children[3]",
+          "text": "Social Sciences",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "The awards are categorized under three main streams, each covering the following four fields:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[4]",
+          "text": "Award Categories & Number of Awardees:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Award Categories & Number of Awardees:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[5].children[0]",
+          "text": "Innovation & Technology in Agriculture & Allied Sciences – 4 awardees",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Award Categories & Number of Awardees:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[5].children[1]",
+          "text": "Research in Agriculture & Allied Sciences – 4 awardees",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Award Categories & Number of Awardees:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[5].children[2]",
+          "text": "Outstanding Interdisciplinary Team Research in Agriculture, Agricultural Education, Extension & Allied Sciences – 1 awardee",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Award Categories & Number of Awardees:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[5].children[3]",
+          "text": "Outstanding Woman Scientist in Agriculture, Agricultural Education, Extension & Allied Sciences – 1 awardee",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Award Categories & Number of Awardees:"
+        },
+        {
+          "path": "en.schemeContent.detailedDescription[5].children[4]",
+          "text": "Outstanding Young Scientist in Agriculture & Allied Sciences – 4 awardees",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Award Categories & Number of Awardees:"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "Benefits",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.benefits[0]",
+          "text": "i. In the Award Ceremony, the Awardees shall be presented a Sanad (certificate) signed by the Hon'ble Union Minister (Agriculture & Farmers Welfare) & President, ICAR. A commemorative brochure, containing the citation and photograph of the awardees shall also be released on the day of the ceremony.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.schemeContent.benefits[1]",
+          "text": "ii. The decoration to such persons who are not able to attend the award ceremony due to personal reasons (including indisposition, preoccupation, etc.) shall be deemed to have been conferred. No other person (including the spouse/next of kin) should be allowed to receive the award on behalf of the absentee awardee except in posthumous cases.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "Eligibility",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0]",
+          "text": "General Conditions:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "General Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[0]",
+          "text": "The applicant should be an Indian scientist working in agriculture or allied fields in ICAR institutes, public agricultural institutions, or Krishi Vigyan Kendras, and must have made significant contributions in India.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "General Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[1]",
+          "text": "The applicant should have work (research, innovation, or extension) that shows clear and proven impact on society, economy, or environment, supported by the Head of the Institution.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "General Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[2]",
+          "text": "The applicant can apply at any stage of their career, as no minimum service period is required.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "General Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[3]",
+          "text": "The applicant should submit only one application for a particular contribution in a year, and the application will be valid only for that year.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "General Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[4]",
+          "text": "The applicant should have a clean service record, with no pending enquiry or major punishment in the last five years.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "General Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[1].children[5]",
+          "text": "The applicant should apply under only one category and cannot be considered for multiple categories.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "General Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[2]",
+          "text": "Category-wise Conditions:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Category-wise Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[3].children[0]",
+          "text": "The applicant can apply individually or as part of a team (maximum five members) for innovation and research awards, and must be below 60 years of age.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Category-wise Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[3].children[1]",
+          "text": "The applicant applying for interdisciplinary research should be part of a team of at least three members from different disciplines, and the team leader must be below 60 years of age.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Category-wise Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[3].children[2]",
+          "text": "The applicant applying for the women scientist category should be a woman working in agriculture or allied fields, and must be below 60 years of age.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Category-wise Conditions:"
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[3].children[3]",
+          "text": "The applicant applying for the young scientist category should have a doctoral degree, hold a regular position, and must be below 45 years of age.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Category-wise Conditions:"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "Exclusions",
+      "channel": "",
+      "blocks": [],
+      "state": "Empty or absent in source",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "Applicant documents",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "documents.en.documents_required[0].children[0]",
+          "text": "Filled application",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[1]",
+          "text": "Details of your work",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[2]",
+          "text": "Proof your work helped people/environment",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[3]",
+          "text": "Documents (papers, patents, etc.)",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[4]",
+          "text": "Clean record certificate",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "Application process",
+      "channel": "Online",
+      "blocks": [
+        {
+          "path": "en.applicationProcess[0].process[0]",
+          "text": "Registration:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Registration:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[1]",
+          "text": "Step 1: Visit the official website and click on the Registration button.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Registration:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[2]",
+          "text": "Step 2: Select your category: Individual or Organization.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Registration:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[3]",
+          "text": "Step 3: Fill in the required details:",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Registration:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[4]",
+          "text": "Individual: Name, Date of Birth, Nominator Type, Mobile, Email, Aadhaar Number.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Registration:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[5]",
+          "text": "Organization: Type, Authorized Person Name, Date of Birth, Organization Description, Designation, Mobile, Email, Aadhaar Number.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Registration:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[6]",
+          "text": "Step 4: Click Submit to complete registration.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Registration:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[7]",
+          "text": "Apply:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Apply:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[8]",
+          "text": "Step 1: Log in to the portal using your registered credentials.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Apply:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[9]",
+          "text": "Step 2: Select the scheme from the list of awards and click \"Nominate / Apply Now\".",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Apply:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[10]",
+          "text": "Step 3: Fill in all mandatory fields in the online application form.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Apply:"
+        },
+        {
+          "path": "en.applicationProcess[0].process[11]",
+          "text": "Step 4: Click Submit to complete your application.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": "Apply:"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[0]",
+          "text": "What is Rashtriya Krishi Vigyan Puraskar (RKVP)?\nIt is an award given to agricultural scientists and professionals for outstanding contributions in agriculture and allied sciences.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[1]",
+          "text": "What type of work is considered for the award?\nThe applicant’s work must include research, innovation, or extension activities with proven impact on society, economy, or environment.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[2]",
+          "text": "Is there any minimum experience required?\nNo, the applicant can apply at any stage of their career as no minimum service period is required.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[3]",
+          "text": "Can a person apply more than once in a year?\nNo, the applicant can submit only one application for one contribution in a year.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[4]",
+          "text": "How many members are allowed in a team?\nThe applicant can be part of a team of up to 5 members (or minimum 3 for interdisciplinary category).",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[5]",
+          "text": "Can the same person apply in multiple categories?\nNo, the applicant can apply in only one category.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[6]",
+          "text": "Who can nominate the applicant?\nThe applicant can be nominated by institutions, government bodies, or can also self-nominate.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[7]",
+          "text": "What happens if the awardee cannot attend the ceremony?\nThe award is still considered given, but no one else can receive it on their behalf (except in posthumous cases).",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[8]",
+          "text": "How long is the application valid?\nThe applicant’s application is valid for one year only and is not carried forward.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/rkvp"
+    }
+  ],
+  "links": [
+    {
+      "url": "https://awards.gov.in/",
+      "title": "fficial website",
+      "path": ".scheme.applicationProcess[0].process[1].children[2]"
+    },
+    {
+      "url": "https://awards.gov.in/Registration/SignUp",
+      "title": " Registration button.",
+      "path": ".scheme.applicationProcess[0].process[1].children[4]"
+    },
+    {
+      "url": "https://awards.gov.in/Login",
+      "title": "Log in",
+      "path": ".scheme.applicationProcess[0].process[8].children[2]"
+    },
+    {
+      "url": "https://awards.gov.in/Home/AwardLibrary",
+      "title": "Nominate / Apply Now\".",
+      "path": ".scheme.applicationProcess[0].process[9].children[2]"
+    },
+    {
+      "url": "https://icar.org.in/hi/node/22890",
+      "title": "Website",
+      "path": ".scheme.schemeContent.references[1]"
+    }
+  ],
+  "flags": [
+    "Empty/absent source section: Exclusions. Not evidence of no requirement.",
+    "Preserve source subheadings and conditional applicability.",
+    "Complex component/stage/subject semantics. Human rule modelling required."
+  ],
+  "schema_hints": [
+    "Person age / date of birth",
+    "Gender / applicant category",
+    "Registration / membership",
+    "Institution type / accreditation",
+    "Time period / history",
+    "Component / category-specific branch"
+  ],
+  "original": null,
+  "raw": {
+    "slug": "rkvp",
+    "old_id": null,
+    "user_example": true,
+    "scheme": {
+      "_id": "69c3b7129d266e2072493bb0",
+      "en": {
+        "applicationProcess": [
+          {
+            "mode": "Online",
+            "process": [
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Registration:"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 1: "
+                  },
+                  {
+                    "text": "Visit the o"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "fficial website"
+                      }
+                    ],
+                    "link": "https://awards.gov.in/",
+                    "type": "link"
+                  },
+                  {
+                    "text": " and click on the"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": " Registration button."
+                      }
+                    ],
+                    "link": "https://awards.gov.in/Registration/SignUp",
+                    "type": "link"
+                  },
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 2: "
+                  },
+                  {
+                    "text": "Select your category: Individual or Organization."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 3: "
+                  },
+                  {
+                    "text": "Fill in the required details:"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Individual: Name, Date of Birth, Nominator Type, Mobile, Email, Aadhaar Number."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Organization: Type, Authorized Person Name, Date of Birth, Organization Description, Designation, Mobile, Email, Aadhaar Number."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 4: "
+                  },
+                  {
+                    "text": "Click Submit to complete registration."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Apply:"
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 1:"
+                  },
+                  {
+                    "text": " "
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Log in"
+                      }
+                    ],
+                    "link": "https://awards.gov.in/Login",
+                    "type": "link"
+                  },
+                  {
+                    "text": " to the portal using your registered credentials."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 2: "
+                  },
+                  {
+                    "text": "Select the scheme from the list of awards and click \""
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Nominate / Apply Now\"."
+                      }
+                    ],
+                    "link": "https://awards.gov.in/Home/AwardLibrary",
+                    "type": "link"
+                  },
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 3: "
+                  },
+                  {
+                    "text": "Fill in all mandatory fields in the online application form."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Step 4:"
+                  },
+                  {
+                    "text": " Click Submit to complete your application."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "process_md": "**Registration:**\n**Step 1:** Visit the o[fficial website](https://awards.gov.in/) and click on the[ Registration button.](https://awards.gov.in/Registration/SignUp)\n**Step 2:** Select your category: Individual or Organization.\n**Step 3:** Fill in the required details:\nIndividual: Name, Date of Birth, Nominator Type, Mobile, Email, Aadhaar Number.\nOrganization: Type, Authorized Person Name, Date of Birth, Organization Description, Designation, Mobile, Email, Aadhaar Number.\n**Step 4:** Click Submit to complete registration.\n**Apply:**\n**Step 1:** [Log in](https://awards.gov.in/Login) to the portal using your registered credentials.\n**Step 2:** Select the scheme from the list of awards and click &quot;[Nominate / Apply Now&quot;.](https://awards.gov.in/Home/AwardLibrary)\n**Step 3:** Fill in all mandatory fields in the online application form.\n**Step 4:** Click Submit to complete your application.\n<br>\n\n"
+          }
+        ],
+        "basicDetails": {
+          "dbtScheme": false,
+          "level": {
+            "label": "Central",
+            "value": "central"
+          },
+          "nodalDepartmentName": {
+            "label": "Department of Agriculture Research and Education",
+            "value": 513
+          },
+          "nodalMinistryName": {
+            "label": "Ministry Of Agriculture and Farmers Welfare",
+            "value": 498
+          },
+          "schemeCategory": [
+            {
+              "label": "Agriculture,Rural & Environment",
+              "value": "628ce6ead6d1a3bde4685252"
+            }
+          ],
+          "schemeFor": "Individual",
+          "schemeName": "Rashtriya Krishi Vigyan Puraskar",
+          "schemeOpenDate": null,
+          "schemeShortTitle": "RKVP",
+          "schemeSubCategory": [
+            {
+              "label": "Agricultural Inputs- seeds, fertilizer etc.",
+              "value": "Agricultural Inputs- seeds, fertilizer etc."
+            }
+          ],
+          "schemeType": {
+            "label": "Central Sector Scheme",
+            "value": "central-sector-scheme"
+          },
+          "tags": [
+            "Krishi",
+            "Award",
+            "Farmer",
+            "Sciences",
+            "Technologies"
+          ],
+          "targetBeneficiaries": [
+            {
+              "label": "Individual",
+              "value": "individual"
+            }
+          ]
+        },
+        "eligibilityCriteria": {
+          "eligibilityDescription": [
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "General Conditions:",
+                  "underline": true
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The applicant should be an Indian scientist working in agriculture or allied fields in ICAR institutes, public agricultural institutions, or Krishi Vigyan Kendras, and must have made significant contributions in India."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant should have work (research, innovation, or extension) that shows clear and proven impact on society, economy, or environment, supported by the Head of the Institution."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant can apply at any stage of their career, as no minimum service period is required."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant should submit only one application for a particular contribution in a year, and the application will be valid only for that year."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant should have a clean service record, with no pending enquiry or major punishment in the last five years."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant should apply under only one category and cannot be considered for multiple categories."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ol_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "Category-wise Conditions:",
+                  "underline": true
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The applicant can apply individually or as part of a team (maximum five members) for innovation and research awards, and must be below 60 years of age."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant applying for interdisciplinary research should be part of a team of at least three members from different disciplines, and the team leader must be below 60 years of age."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant applying for the women scientist category should be a woman working in agriculture or allied fields, and must be below 60 years of age."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant applying for the young scientist category should have a doctoral degree, hold a regular position, and must be below 45 years of age."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ol_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "eligibilityDescription_md": "**General Conditions:**\n\n1. The applicant should be an Indian scientist working in agriculture or allied fields in ICAR institutes, public agricultural institutions, or Krishi Vigyan Kendras, and must have made significant contributions in India.\n1. The applicant should have work (research, innovation, or extension) that shows clear and proven impact on society, economy, or environment, supported by the Head of the Institution.\n1. The applicant can apply at any stage of their career, as no minimum service period is required.\n1. The applicant should submit only one application for a particular contribution in a year, and the application will be valid only for that year.\n1. The applicant should have a clean service record, with no pending enquiry or major punishment in the last five years.\n1. The applicant should apply under only one category and cannot be considered for multiple categories.\n\n**Category-wise Conditions:**\n\n1. The applicant can apply individually or as part of a team (maximum five members) for innovation and research awards, and must be below 60 years of age.\n1. The applicant applying for interdisciplinary research should be part of a team of at least three members from different disciplines, and the team leader must be below 60 years of age.\n1. The applicant applying for the women scientist category should be a woman working in agriculture or allied fields, and must be below 60 years of age.\n1. The applicant applying for the young scientist category should have a doctoral degree, hold a regular position, and must be below 45 years of age.\n\n<br>\n\n"
+        },
+        "schemeContent": {
+          "benefitTypes": {
+            "id": 2,
+            "label": "In Kind",
+            "value": "in-kind"
+          },
+          "benefits": [
+            {
+              "children": [
+                {
+                  "text": "i. In the Award Ceremony, the Awardees shall be presented a Sanad (certificate) signed by the Hon'ble Union Minister (Agriculture & Farmers Welfare) & President, ICAR. A commemorative brochure, containing the citation and photograph of the awardees shall also be released on the day of the ceremony."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": "ii. The decoration to such persons who are not able to attend the award ceremony due to personal reasons (including indisposition, preoccupation, etc.) shall be deemed to have been conferred. No other person (including the spouse/next of kin) should be allowed to receive the award on behalf of the absentee awardee except in posthumous cases."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "benefits_md": "i. In the Award Ceremony, the Awardees shall be presented a Sanad (certificate) signed by the Hon&#39;ble Union Minister (Agriculture &amp; Farmers Welfare) &amp; President, ICAR. A commemorative brochure, containing the citation and photograph of the awardees shall also be released on the day of the ceremony.\nii. The decoration to such persons who are not able to attend the award ceremony due to personal reasons (including indisposition, preoccupation, etc.) shall be deemed to have been conferred. No other person (including the spouse/next of kin) should be allowed to receive the award on behalf of the absentee awardee except in posthumous cases.\n<br>\n\n",
+          "briefDescription": "The Rashtriya Krishi Vigyan Puraskar (RKVP) aims to honor scientists and technical experts for outstanding contributions and innovations in agriculture and allied sciences.",
+          "detailedDescription": [
+            {
+              "children": [
+                {
+                  "text": "The Rashtriya Krishi Vigyan Puraskar under Indian Council of Agricultural Research (ICAR),Ministry of Agriculture & Farmers Welfare, Government of India, recognizes and honors scientists and technical personnel who have made outstanding contributions in agriculture, agricultural education, extension, and allied sciences. This includes the development of new processes, products, tools, technologies, and innovative practices that enhance agricultural productivity and sustainability in India."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "Fields Covered:",
+                  "underline": true
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "The awards are categorized under three main streams, each covering the following four fields:",
+                  "underline": true
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Crops & Horticultural Sciences"
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Natural Resources Management & Agricultural Engineering"
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Animal & Fisheries Sciences"
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Social Sciences"
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ol_list"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "Award Categories & Number of Awardees:",
+                  "underline": true
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Innovation & Technology in Agriculture & Allied Sciences – 4 awardees"
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Research in Agriculture & Allied Sciences – 4 awardees"
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Outstanding Interdisciplinary Team Research in Agriculture, Agricultural Education, Extension & Allied Sciences – 1 awardee"
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Outstanding Woman Scientist in Agriculture, Agricultural Education, Extension & Allied Sciences – 1 awardee"
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Outstanding Young Scientist in Agriculture & Allied Sciences – 4 awardees"
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ol_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "detailedDescription_md": "The Rashtriya Krishi Vigyan Puraskar under Indian Council of Agricultural Research (ICAR),Ministry of Agriculture &amp; Farmers Welfare, Government of India, recognizes and honors scientists and technical personnel who have made outstanding contributions in agriculture, agricultural education, extension, and allied sciences. This includes the development of new processes, products, tools, technologies, and innovative practices that enhance agricultural productivity and sustainability in India.\n**Fields Covered:**\n**The awards are categorized under three main streams, each covering the following four fields:**\n\n1. Crops &amp; Horticultural Sciences\n1. Natural Resources Management &amp; Agricultural Engineering\n1. Animal &amp; Fisheries Sciences\n1. Social Sciences\n\n**Award Categories &amp; Number of Awardees:**\n\n1. Innovation &amp; Technology in Agriculture &amp; Allied Sciences – 4 awardees\n1. Research in Agriculture &amp; Allied Sciences – 4 awardees\n1. Outstanding Interdisciplinary Team Research in Agriculture, Agricultural Education, Extension &amp; Allied Sciences – 1 awardee\n1. Outstanding Woman Scientist in Agriculture, Agricultural Education, Extension &amp; Allied Sciences – 1 awardee\n1. Outstanding Young Scientist in Agriculture &amp; Allied Sciences – 4 awardees\n\n<br>\n\n",
+          "exclusions": [
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "exclusions_md": "<br>\n\n",
+          "references": [
+            {
+              "title": "Guidelines",
+              "url": "https://awards.gov.in/Home/AwardLibrary"
+            },
+            {
+              "title": "Website",
+              "url": "https://icar.org.in/hi/node/22890"
+            }
+          ],
+          "schemeImageUrl": ""
+        },
+        "schemeDefinitions": []
+      },
+      "slug": "rkvp"
+    },
+    "documents": {
+      "_id": "69c3b7883a55ddf096376e54",
+      "en": {
+        "documentsRequired_md": "\n1. Filled application\n1. Details of your work\n1. Proof your work helped people/environment\n1. Documents (papers, patents, etc.)\n1. Clean record certificate\n\n<br>\n\n",
+        "documents_required": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Filled application"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Details of your work"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Proof your work helped people/environment"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Documents (papers, patents, etc.)"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Clean record certificate"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "type": "ol_list"
+          },
+          {
+            "children": [
+              {
+                "text": ""
+              }
+            ],
+            "type": "paragraph"
+          }
+        ]
+      },
+      "schemeId": "69c3b7129d266e2072493bb0"
+    },
+    "faqs": {
+      "_id": "69c3b8729d266e207249428a",
+      "en": {
+        "faqs": [
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "It is an award given to agricultural scientists and professionals for outstanding contributions in agriculture and allied sciences."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "It is an award given to agricultural scientists and professionals for outstanding contributions in agriculture and allied sciences.\n<br>\n\n",
+            "question": "What is Rashtriya Krishi Vigyan Puraskar (RKVP)?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The applicant’s work must include research, innovation, or extension activities with proven impact on society, economy, or environment."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The applicant’s work must include research, innovation, or extension activities with proven impact on society, economy, or environment.\n<br>\n\n",
+            "question": "What type of work is considered for the award?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "No, the applicant can apply at any stage of their career as no minimum service period is required."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "No, the applicant can apply at any stage of their career as no minimum service period is required.\n<br>\n\n",
+            "question": "Is there any minimum experience required?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "No, the applicant can submit only one application for one contribution in a year."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "No, the applicant can submit only one application for one contribution in a year.\n<br>\n\n",
+            "question": "Can a person apply more than once in a year?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The applicant can be part of a team of up to 5 members (or minimum 3 for interdisciplinary category)."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The applicant can be part of a team of up to 5 members (or minimum 3 for interdisciplinary category).\n<br>\n\n",
+            "question": "How many members are allowed in a team?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "No, the applicant can apply in only one category."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "No, the applicant can apply in only one category.\n<br>\n\n",
+            "question": "Can the same person apply in multiple categories?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The applicant can be nominated by institutions, government bodies, or can also self-nominate."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The applicant can be nominated by institutions, government bodies, or can also self-nominate.\n<br>\n\n",
+            "question": "Who can nominate the applicant?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The award is still considered given, but no one else can receive it on their behalf (except in posthumous cases)."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The award is still considered given, but no one else can receive it on their behalf (except in posthumous cases).\n<br>\n\n",
+            "question": "What happens if the awardee cannot attend the ceremony?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The applicant’s application is valid for one year only and is not carried forward."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The applicant’s application is valid for one year only and is not carried forward.\n<br>\n\n",
+            "question": "How long is the application valid?"
+          }
+        ]
+      },
+      "schemeId": "69c3b7129d266e2072493bb0"
+    }
+  }
+}

@@ -1,0 +1,1343 @@
+{
+  "id": "C10",
+  "slug": "kvyoj",
+  "name": "Khadi Gramodyog Vikas Yojana: Khadi Vikas Yojana",
+  "level": "Central",
+  "source_level": "Central",
+  "area": "India",
+  "categories": "Business & Entrepreneurship",
+  "applicant_type": "Individual",
+  "beneficiaries": "Business Entity",
+  "ministry": "Ministry Of Micro, Small and Medium Enterprises",
+  "department": "",
+  "tags": "Khadi; Gramodyog; Khadi Production; Village Industries; Khadi Artisans; Interest Subsidy",
+  "brief": "The scheme aims to increase productivity and wages of Khadi artisans, improve production infrastructure, boost employment and sales, revive traditional rural skills, modernize sales outlets, and promote marketing and exports.",
+  "url": "https://www.myscheme.gov.in/schemes/kvyoj",
+  "source_id": "698b1adbb3c2d7b0a51cdc11",
+  "snapshot_date": "2026-10-24",
+  "hash": "a0b2c5ebc170f32f4f2d42fcd85fad998c4d95e183987d520ddc2e94f6d6cbe0",
+  "open_date": null,
+  "close_date": null,
+  "sections": [
+    {
+      "section": "Details",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.detailedDescription[0].children[0]",
+          "text": "The scheme \"Khadi Vikas Yojana\" is an umbrella scheme under \"Khadi Gramodyog Vikas Yojana\" and has been implemented by the Khadi and Village Industries Commission (KVIC), Ministry of Micro, Small and Medium Enterprises (MSME), Governemnt of India. It aims to support Khadi institutions and artisans by providing financial assistance, infrastructure development, interest subsidy, and marketing support. The scheme offers subsidies on Khadi production, reduces the interest burden on bank loans, facilitates the construction of worksheds for artisans, strengthens existing weak Khadi institutions, and enhances marketing infrastructure, including the renovation and modernization of sales outlets. Additionally, the scheme supports quality assurance initiatives, exhibitions, science and technology interventions, and the establishment of Centres of Excellence for Khadi",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "Benefits",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.schemeContent.benefits[0]",
+          "text": "Assistance provided under different components of Scheme:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Assistance provided under different components of Scheme:"
+        },
+        {
+          "path": "en.schemeContent.benefits[1]",
+          "text": "Modified Market Development Assistance (MMDA):",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Modified Market Development Assistance (MMDA):"
+        },
+        {
+          "path": "en.schemeContent.benefits[2].children[0].children[0]",
+          "text": "Subsidy @ 35% on Prime Cost for Cotton/Muslin, Wool and Polyvastra and @ 20% on Prime Cost for Silk Khadi",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Modified Market Development Assistance (MMDA):"
+        },
+        {
+          "path": "en.schemeContent.benefits[2].children[1]",
+          "text": "Interest Subsidy Eligibility Certificate Scheme (ISEC):",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Interest Subsidy Eligibility Certificate Scheme (ISEC):"
+        },
+        {
+          "path": "en.schemeContent.benefits[2].children[2].children[0]",
+          "text": "Khadi Institution is required to pay only 4% interest rate. The difference between the actual Interest charged by the Bank and 4% is borne by the KVIC as “Interest Subsidy”.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Interest Subsidy Eligibility Certificate Scheme (ISEC):"
+        },
+        {
+          "path": "en.schemeContent.benefits[3]",
+          "text": "Work-shed Scheme for Khadi Artisans:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Work-shed Scheme for Khadi Artisans:"
+        },
+        {
+          "path": "en.schemeContent.benefits[4].children[0].children[0]",
+          "text": "Individual workshed (20 Sq. mtrs): ₹1,20,000/- or 75% of the cost of workshed including toilet (90% for NER), whichever is less.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Work-shed Scheme for Khadi Artisans:"
+        },
+        {
+          "path": "en.schemeContent.benefits[4].children[0].children[1]",
+          "text": "Group workshed (10 Sq. mtrs per artisans): ₹80,000 or 75% of the cost of the workshed including toilet (90% for NER), whichever is less.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Work-shed Scheme for Khadi Artisans:"
+        },
+        {
+          "path": "en.schemeContent.benefits[5]",
+          "text": "Strengthening Infrastructure of Existing Weak Khadi Institutions and Assistance for Marketing Infrastructure:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Strengthening Infrastructure of Existing Weak Khadi Institutions and Assistance for Marketing Infrastructure:"
+        },
+        {
+          "path": "en.schemeContent.benefits[6].children[0].children[0]",
+          "text": "Financial assistance for revival of khadi institution with ceiling limit of ₹15.00 lakh(Capital Expenditure +working fund).",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Strengthening Infrastructure of Existing Weak Khadi Institutions and Assistance for Marketing Infrastructure:"
+        },
+        {
+          "path": "en.schemeContent.benefits[6].children[0].children[1]",
+          "text": "Financial assistance under Marketing Infrastructure for renovation of departmental sales outlets of KVIC /KVIB and institutional sales with the ceiling limit of ₹25.00 lakh.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Strengthening Infrastructure of Existing Weak Khadi Institutions and Assistance for Marketing Infrastructure:"
+        },
+        {
+          "path": "en.schemeContent.benefits[6].children[1]",
+          "text": "Other Components:",
+          "heading": true,
+          "node_type": "paragraph",
+          "context": "Other Components:"
+        },
+        {
+          "path": "en.schemeContent.benefits[6].children[2].children[0]",
+          "text": "Centre of Excellence for Khadi",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Other Components:"
+        },
+        {
+          "path": "en.schemeContent.benefits[6].children[2].children[1]",
+          "text": "Khadi Quality Assurance",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Other Components:"
+        },
+        {
+          "path": "en.schemeContent.benefits[6].children[2].children[2]",
+          "text": "Marketing(Exhibition)",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Other Components:"
+        },
+        {
+          "path": "en.schemeContent.benefits[6].children[2].children[3]",
+          "text": "Science & Technology (S&T)",
+          "heading": false,
+          "node_type": "list_item",
+          "context": "Other Components:"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "Eligibility",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[0]",
+          "text": "The applicant must be a Khadi artisan or Khadi Institution registered with KVIC or KVIB.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[1]",
+          "text": "The applicant must be between 18 to 55 years of age.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[2]",
+          "text": "The applicant must have a valid Aadhaar card or government-issued ID.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[3]",
+          "text": "One person per family is eligible under the scheme.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[4]",
+          "text": "The applicant should not have availed benefits from any other government scheme for the same purpose.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[5]",
+          "text": "Preference is given to SC/ST, women, unemployed youth, and BPL category applicants.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "en.eligibilityCriteria.eligibilityDescription[0].children[6]",
+          "text": "The beneficiaries may be identified by KVIC, KVIBs, NGOs, DICs, FPOs, or Khadi Institutions.",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "Exclusions",
+      "channel": "",
+      "blocks": [],
+      "state": "Empty or absent in source",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "Applicant documents",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "documents.en.documents_required[0].children[0]",
+          "text": "Aadhaar Card or other government-issued identity proof",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[1]",
+          "text": "Age proof document",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[2]",
+          "text": "Khadi artisan card or Khadi Institution registration certificate",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[3]",
+          "text": "Bank account details",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[4]",
+          "text": "Caste certificate (if applicable)",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[5]",
+          "text": "BPL certificate (if applicable)",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        },
+        {
+          "path": "documents.en.documents_required[0].children[6]",
+          "text": "Project proposal or work-shed details (if required)",
+          "heading": false,
+          "node_type": "list_item",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "Application process",
+      "channel": "Online",
+      "blocks": [
+        {
+          "path": "en.applicationProcess[0].process[0].children[0]",
+          "text": "Step 1: Visit official website to apply under the scheme.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.applicationProcess[0].process[0].children[1]",
+          "text": "Step 2: On the KVIC online portal and click on “Online Registration of Khadi Institutions.”",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.applicationProcess[0].process[0].children[2]",
+          "text": "Step 3: Fill in all required details of the institution, including name, address, type of registration, authorised person, number of artisans, and infrastructure information, then save the form.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.applicationProcess[0].process[0].children[3]",
+          "text": "Step 4: After submission, receive a Username, Password, and Unique ID on your registered email and mobile, and download the acknowledgement for reference.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.applicationProcess[0].process[0].children[4]",
+          "text": "Step 5: Login using your credentials and upload all required documents such as registration certificate, list of artisans, workshed details, and bylaws.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        },
+        {
+          "path": "en.applicationProcess[0].process[0].children[5]",
+          "text": "Step 6: The KVIC office verifies the application and documents, and once approved, the Certificate of Registration (CoR) is issued online for download.",
+          "heading": false,
+          "node_type": "paragraph",
+          "context": ""
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[0]",
+          "text": "What is Khadi Vikas Yojana (KGVY)?\nKhadi Vikas Yojana is a Government of India scheme implemented by the Khadi and Village Industries Commission (KVIC) to promote Khadi production, improve artisan livelihoods, strengthen Khadi institutions, and expand marketing and exports of Khadi products.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[1]",
+          "text": "What financial assistance is provided under the scheme?\nThe scheme provides production subsidy under Modified Market Development Assistance (MMDA), interest subsidy through the Interest Subsidy Eligibility Certificate (ISEC), assistance for worksheds, revival of weak institutions, and support for marketing infrastructure.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[2]",
+          "text": "What is Modified Market Development Assistance (MMDA)?\nMMDA provides subsidy of 35% on the prime cost for Cotton, Muslin, Wool, and Polyvastra Khadi, and 20% for Silk Khadi, helping institutions reduce production costs and increase artisan wages.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[3]",
+          "text": "What is the ISEC scheme under KGVY?\nUnder the Interest Subsidy Eligibility Certificate (ISEC) scheme, Khadi institutions pay only 4% interest on bank loans, while the remaining interest is borne by KVIC as a subsidy.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[4]",
+          "text": "What support is given for worksheds?\nThe scheme provides financial assistance for individual and group worksheds for Khadi artisans, including toilets, to improve working conditions and productivity, with higher assistance for the North Eastern Region.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[5]",
+          "text": "Is there support for weak Khadi institutions?\nYes, financial assistance up to ₹15 lakh is provided for the revival of existing weak Khadi institutions, covering capital expenditure and working capital requirements.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[6]",
+          "text": "Does the scheme support marketing infrastructure?\nThe scheme supports renovation and modernization of departmental and institutional sales outlets, with financial assistance up to ₹25 lakh, to improve product display and customer outreach.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[7]",
+          "text": "Are there any additional components under the scheme?\nYes, the scheme includes support for Khadi quality assurance, exhibitions, science and technology initiatives, and the establishment of Centres of Excellence for Khadi.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[8]",
+          "text": "What is the age limit for applicants?\nApplicants must be between 18 and 55 years of age and must possess valid identity proof such as an Aadhaar card or other government-issued ID.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    },
+    {
+      "section": "FAQ",
+      "channel": "",
+      "blocks": [
+        {
+          "path": "faqs.en.faqs[9]",
+          "text": "Can more than one person from a family apply?\nNo, only one person from one family is eligible to receive assistance under Khadi Vikas Yojana.",
+          "heading": false,
+          "context": "",
+          "node_type": "faq"
+        }
+      ],
+      "state": "Present",
+      "source_url": "https://www.myscheme.gov.in/schemes/kvyoj"
+    }
+  ],
+  "links": [
+    {
+      "url": "https://www.kviconline.gov.in/",
+      "title": "official website ",
+      "path": ".scheme.applicationProcess[0].process[0].children[0].children[2]"
+    },
+    {
+      "url": "https://kviconline.gov.in/mdaclaims/certKhadi/index.jsp",
+      "title": "KVIC online portal",
+      "path": ".scheme.applicationProcess[0].process[0].children[1].children[2]"
+    },
+    {
+      "url": "https://kviconline.gov.in/mdaclaims/certKhadi/khadiCertificateRenew.jsp?app=1",
+      "title": "Online Registration of Khadi Institutions",
+      "path": ".scheme.applicationProcess[0].process[0].children[1].children[4]"
+    },
+    {
+      "url": "https://kviconline.gov.in/mdaclaims/certKhadi/certApplicantLogin.jsp",
+      "title": "Login",
+      "path": ".scheme.applicationProcess[0].process[0].children[4].children[2]"
+    },
+    {
+      "url": "https://www.dcmsme.gov.in/ebook/MSMESchemebooklet2025-26.pdf",
+      "title": "Guidelines Page No. 28",
+      "path": ".scheme.schemeContent.references[0]"
+    }
+  ],
+  "flags": [
+    "Empty/absent source section: Exclusions. Not evidence of no requirement.",
+    "Complex component/stage/subject semantics. Human rule modelling required."
+  ],
+  "schema_hints": [
+    "Person age / date of birth",
+    "Social category",
+    "Gender / applicant category",
+    "Household relationships / prior benefits",
+    "Project attributes",
+    "Registration / membership",
+    "Institution type / accreditation",
+    "Credit / repayment",
+    "Transactions / eligible sales",
+    "Employment / employer",
+    "Preference, not automatically mandatory",
+    "Benefit cap formula",
+    "Time period / history",
+    "Temporal condition",
+    "Component / category-specific branch"
+  ],
+  "original": null,
+  "raw": {
+    "slug": "kvyoj",
+    "old_id": null,
+    "user_example": true,
+    "scheme": {
+      "_id": "698b1adbb3c2d7b0a51cdc11",
+      "en": {
+        "applicationProcess": [
+          {
+            "mode": "Online",
+            "process": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "bold": true,
+                        "text": "Step 1: "
+                      },
+                      {
+                        "text": "Visit "
+                      },
+                      {
+                        "children": [
+                          {
+                            "text": "official website "
+                          }
+                        ],
+                        "link": "https://www.kviconline.gov.in/",
+                        "type": "link"
+                      },
+                      {
+                        "text": "to apply under the scheme."
+                      }
+                    ],
+                    "type": "paragraph"
+                  },
+                  {
+                    "children": [
+                      {
+                        "bold": true,
+                        "text": "Step 2:"
+                      },
+                      {
+                        "text": " On the "
+                      },
+                      {
+                        "children": [
+                          {
+                            "text": "KVIC online portal"
+                          }
+                        ],
+                        "link": "https://kviconline.gov.in/mdaclaims/certKhadi/index.jsp",
+                        "type": "link"
+                      },
+                      {
+                        "text": " and click on “"
+                      },
+                      {
+                        "children": [
+                          {
+                            "text": "Online Registration of Khadi Institutions"
+                          }
+                        ],
+                        "link": "https://kviconline.gov.in/mdaclaims/certKhadi/khadiCertificateRenew.jsp?app=1",
+                        "type": "link"
+                      },
+                      {
+                        "text": ".”"
+                      }
+                    ],
+                    "type": "paragraph"
+                  },
+                  {
+                    "children": [
+                      {
+                        "bold": true,
+                        "text": "Step 3: "
+                      },
+                      {
+                        "text": "Fill in all required details of the institution, including name, address, type of registration, authorised person, number of artisans, and infrastructure information, then save the form."
+                      }
+                    ],
+                    "type": "paragraph"
+                  },
+                  {
+                    "children": [
+                      {
+                        "bold": true,
+                        "text": "Step 4:"
+                      },
+                      {
+                        "text": " After submission, receive a Username, Password, and Unique ID on your registered email and mobile, and download the acknowledgement for reference."
+                      }
+                    ],
+                    "type": "paragraph"
+                  },
+                  {
+                    "children": [
+                      {
+                        "bold": true,
+                        "text": "Step 5:"
+                      },
+                      {
+                        "text": " "
+                      },
+                      {
+                        "children": [
+                          {
+                            "text": "Login"
+                          }
+                        ],
+                        "link": "https://kviconline.gov.in/mdaclaims/certKhadi/certApplicantLogin.jsp",
+                        "type": "link"
+                      },
+                      {
+                        "text": " using your credentials and upload all required documents such as registration certificate, list of artisans, workshed details, and bylaws."
+                      }
+                    ],
+                    "type": "paragraph"
+                  },
+                  {
+                    "children": [
+                      {
+                        "bold": true,
+                        "text": "Step 6:"
+                      },
+                      {
+                        "text": " The KVIC office verifies the application and documents, and once approved, the Certificate of Registration (CoR) is issued online for download."
+                      }
+                    ],
+                    "type": "paragraph"
+                  }
+                ],
+                "type": "align_justify"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "process_md": "**Step 1:** Visit [official website ](https://www.kviconline.gov.in/)to apply under the scheme.\n**Step 2:** On the [KVIC online portal](https://kviconline.gov.in/mdaclaims/certKhadi/index.jsp) and click on “[Online Registration of Khadi Institutions](https://kviconline.gov.in/mdaclaims/certKhadi/khadiCertificateRenew.jsp?app=1).”\n**Step 3:** Fill in all required details of the institution, including name, address, type of registration, authorised person, number of artisans, and infrastructure information, then save the form.\n**Step 4:** After submission, receive a Username, Password, and Unique ID on your registered email and mobile, and download the acknowledgement for reference.\n**Step 5:** [Login](https://kviconline.gov.in/mdaclaims/certKhadi/certApplicantLogin.jsp) using your credentials and upload all required documents such as registration certificate, list of artisans, workshed details, and bylaws.\n**Step 6:** The KVIC office verifies the application and documents, and once approved, the Certificate of Registration (CoR) is issued online for download.\n<br>\n\n"
+          }
+        ],
+        "basicDetails": {
+          "dbtScheme": false,
+          "level": {
+            "label": "Central",
+            "value": "central"
+          },
+          "nodalDepartmentName": null,
+          "nodalMinistryName": {
+            "label": "Ministry Of Micro, Small and Medium Enterprises",
+            "value": 497
+          },
+          "schemeCategory": [
+            {
+              "label": "Business & Entrepreneurship",
+              "value": "628ce733d6d1a3bde4685278"
+            }
+          ],
+          "schemeFor": "Individual",
+          "schemeName": " Khadi Gramodyog Vikas Yojana: Khadi Vikas Yojana",
+          "schemeOpenDate": null,
+          "schemeShortTitle": "KGVYKVY",
+          "schemeSubCategory": null,
+          "schemeType": {
+            "label": "Centrally Sponsored Scheme",
+            "value": "centrally-sponsored-scheme"
+          },
+          "tags": [
+            "Khadi",
+            "Gramodyog",
+            "Khadi Production",
+            "Village Industries",
+            "Khadi Artisans",
+            "Interest Subsidy"
+          ],
+          "targetBeneficiaries": [
+            {
+              "label": "Business Entity",
+              "value": "business-entity"
+            }
+          ]
+        },
+        "eligibilityCriteria": {
+          "eligibilityDescription": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must be a Khadi artisan or Khadi Institution registered with KVIC or KVIB."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must be between 18 to 55 years of age."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant must have a valid Aadhaar card or government-issued ID."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "One person per family is eligible under the scheme."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The applicant should not have availed benefits from any other government scheme for the same purpose."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Preference is given to SC/ST, women, unemployed youth, and BPL category applicants."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "The beneficiaries may be identified by KVIC, KVIBs, NGOs, DICs, FPOs, or Khadi Institutions."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ol_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "eligibilityDescription_md": "\n1. The applicant must be a Khadi artisan or Khadi Institution registered with KVIC or KVIB.\n1. The applicant must be between 18 to 55 years of age.\n1. The applicant must have a valid Aadhaar card or government-issued ID.\n1. One person per family is eligible under the scheme.\n1. The applicant should not have availed benefits from any other government scheme for the same purpose.\n1. Preference is given to SC/ST, women, unemployed youth, and BPL category applicants.\n1. The beneficiaries may be identified by KVIC, KVIBs, NGOs, DICs, FPOs, or Khadi Institutions.\n\n<br>\n\n"
+        },
+        "schemeContent": {
+          "benefitTypes": {
+            "id": 1,
+            "label": "Cash",
+            "value": "cash"
+          },
+          "benefits": [
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Assistance provided under different components of Scheme:",
+                  "underline": true
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Modified Market Development Assistance (MMDA):"
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Subsidy @ 35% on Prime Cost for Cotton/Muslin, Wool and Polyvastra and @ 20% on Prime Cost for Silk Khadi"
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                },
+                {
+                  "children": [
+                    {
+                      "bold": true,
+                      "italic": true,
+                      "text": "Interest Subsidy Eligibility Certificate Scheme (ISEC):"
+                    }
+                  ],
+                  "type": "paragraph"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Khadi Institution is required to pay only 4% interest rate. The difference between the actual Interest charged by the Bank and 4% is borne by the KVIC as “Interest Subsidy”."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                }
+              ],
+              "type": "align_justify"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Work-shed Scheme for Khadi Artisans:"
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Individual workshed (20 Sq. mtrs): ₹1,20,000/- or 75% of the cost of workshed including toilet (90% for NER), whichever is less. "
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Group workshed (10 Sq. mtrs per artisans): ₹80,000 or 75% of the cost of the workshed including toilet (90% for NER), whichever is less."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                }
+              ],
+              "type": "align_justify"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "italic": true,
+                  "text": "Strengthening Infrastructure of Existing Weak Khadi Institutions and Assistance for Marketing Infrastructure:"
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Financial assistance for revival of khadi institution with ceiling limit of ₹15.00 lakh(Capital Expenditure +working fund)."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Financial assistance under Marketing Infrastructure for renovation of departmental sales outlets of KVIC /KVIB and institutional sales with the ceiling limit of ₹25.00 lakh."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                },
+                {
+                  "children": [
+                    {
+                      "bold": true,
+                      "text": "Other Components:"
+                    }
+                  ],
+                  "type": "paragraph"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Centre of Excellence for Khadi"
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Khadi Quality Assurance"
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Marketing(Exhibition)"
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Science & Technology (S&T)"
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                }
+              ],
+              "type": "align_justify"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "benefits_md": "***Assistance provided under different components of Scheme:***\n***Modified Market Development Assistance (MMDA):***\n\n  - Subsidy @ 35% on Prime Cost for Cotton/Muslin, Wool and Polyvastra and @ 20% on Prime Cost for Silk Khadi\n\n***Interest Subsidy Eligibility Certificate Scheme (ISEC):***\n\n  - Khadi Institution is required to pay only 4% interest rate. The difference between the actual Interest charged by the Bank and 4% is borne by the KVIC as “Interest Subsidy”.\n\n***Work-shed Scheme for Khadi Artisans:***\n\n  - Individual workshed (20 Sq. mtrs): ₹1,20,000/- or 75% of the cost of workshed including toilet (90% for NER), whichever is less. \n  - Group workshed (10 Sq. mtrs per artisans): ₹80,000 or 75% of the cost of the workshed including toilet (90% for NER), whichever is less.\n\n***Strengthening Infrastructure of Existing Weak Khadi Institutions and Assistance for Marketing Infrastructure:***\n\n  - Financial assistance for revival of khadi institution with ceiling limit of ₹15.00 lakh(Capital Expenditure +working fund).\n  - Financial assistance under Marketing Infrastructure for renovation of departmental sales outlets of KVIC /KVIB and institutional sales with the ceiling limit of ₹25.00 lakh.\n\n**Other Components:**\n\n  - Centre of Excellence for Khadi\n  - Khadi Quality Assurance\n  - Marketing(Exhibition)\n  - Science &amp;amp; Technology (S&amp;amp;T)\n\n<br>\n\n",
+          "briefDescription": "The scheme aims to increase productivity and wages of Khadi artisans, improve production infrastructure, boost employment and sales, revive traditional rural skills, modernize sales outlets, and promote marketing and exports.",
+          "detailedDescription": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "The scheme \"Khadi Vikas Yojana\" is an umbrella scheme under \"Khadi Gramodyog Vikas Yojana\" and has been implemented by the Khadi and Village Industries Commission (KVIC), Ministry of Micro, Small and Medium Enterprises (MSME), Governemnt of India. It aims to support Khadi institutions and artisans by providing financial assistance, infrastructure development, interest subsidy, and marketing support. The scheme offers subsidies on Khadi production, reduces the interest burden on bank loans, facilitates the construction of worksheds for artisans, strengthens existing weak Khadi institutions, and enhances marketing infrastructure, including the renovation and modernization of sales outlets. Additionally, the scheme supports quality assurance initiatives, exhibitions, science and technology interventions, and the establishment of Centres of Excellence for Khadi"
+                    }
+                  ],
+                  "type": "paragraph"
+                }
+              ],
+              "type": "align_justify"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "detailedDescription_md": "The scheme &amp;quot;Khadi Vikas Yojana&amp;quot; is an umbrella scheme under &amp;quot;Khadi Gramodyog Vikas Yojana&amp;quot; and has been implemented by the Khadi and Village Industries Commission (KVIC), Ministry of Micro, Small and Medium Enterprises (MSME), Governemnt of India. It aims to support Khadi institutions and artisans by providing financial assistance, infrastructure development, interest subsidy, and marketing support. The scheme offers subsidies on Khadi production, reduces the interest burden on bank loans, facilitates the construction of worksheds for artisans, strengthens existing weak Khadi institutions, and enhances marketing infrastructure, including the renovation and modernization of sales outlets. Additionally, the scheme supports quality assurance initiatives, exhibitions, science and technology interventions, and the establishment of Centres of Excellence for Khadi\n<br>\n\n",
+          "exclusions": [
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "exclusions_md": "<br>\n\n",
+          "references": [
+            {
+              "title": "Guidelines Page No. 28",
+              "url": "https://www.dcmsme.gov.in/ebook/MSMESchemebooklet2025-26.pdf"
+            }
+          ],
+          "schemeImageUrl": ""
+        },
+        "schemeDefinitions": []
+      },
+      "slug": "kvyoj"
+    },
+    "documents": {
+      "_id": "698b1af8cb1b04954c2fbebc",
+      "en": {
+        "documentsRequired_md": "\n1. Aadhaar Card or other government-issued identity proof\n1. Age proof document\n1. Khadi artisan card or Khadi Institution registration certificate\n1. Bank account details\n1. Caste certificate (if applicable)\n1. BPL certificate (if applicable)\n1. Project proposal or work-shed details (if required)\n\n<br>\n\n",
+        "documents_required": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Aadhaar Card or other government-issued identity proof"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Age proof document"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Khadi artisan card or Khadi Institution registration certificate"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Bank account details"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Caste certificate (if applicable)"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "BPL certificate (if applicable)"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Project proposal or work-shed details (if required)"
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ol_list"
+          },
+          {
+            "children": [
+              {
+                "text": ""
+              }
+            ],
+            "type": "paragraph"
+          }
+        ]
+      },
+      "schemeId": "698b1adbb3c2d7b0a51cdc11"
+    },
+    "faqs": {
+      "_id": "698b1ca7cb1b04954c2fcbba",
+      "en": {
+        "faqs": [
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Khadi Vikas Yojana is a Government of India scheme implemented by the Khadi and Village Industries Commission (KVIC) to promote Khadi production, improve artisan livelihoods, strengthen Khadi institutions, and expand marketing and exports of Khadi products."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Khadi Vikas Yojana is a Government of India scheme implemented by the Khadi and Village Industries Commission (KVIC) to promote Khadi production, improve artisan livelihoods, strengthen Khadi institutions, and expand marketing and exports of Khadi products.\n<br>\n\n",
+            "question": "What is Khadi Vikas Yojana (KGVY)?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The scheme provides production subsidy under Modified Market Development Assistance (MMDA), interest subsidy through the Interest Subsidy Eligibility Certificate (ISEC), assistance for worksheds, revival of weak institutions, and support for marketing infrastructure."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The scheme provides production subsidy under Modified Market Development Assistance (MMDA), interest subsidy through the Interest Subsidy Eligibility Certificate (ISEC), assistance for worksheds, revival of weak institutions, and support for marketing infrastructure.\n<br>\n\n",
+            "question": "What financial assistance is provided under the scheme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "MMDA provides subsidy of 35% on the prime cost for Cotton, Muslin, Wool, and Polyvastra Khadi, and 20% for Silk Khadi, helping institutions reduce production costs and increase artisan wages."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "MMDA provides subsidy of 35% on the prime cost for Cotton, Muslin, Wool, and Polyvastra Khadi, and 20% for Silk Khadi, helping institutions reduce production costs and increase artisan wages.\n<br>\n\n",
+            "question": "What is Modified Market Development Assistance (MMDA)?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Under the Interest Subsidy Eligibility Certificate (ISEC) scheme, Khadi institutions pay only 4% interest on bank loans, while the remaining interest is borne by KVIC as a subsidy."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Under the Interest Subsidy Eligibility Certificate (ISEC) scheme, Khadi institutions pay only 4% interest on bank loans, while the remaining interest is borne by KVIC as a subsidy.\n<br>\n\n",
+            "question": "What is the ISEC scheme under KGVY?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The scheme provides financial assistance for individual and group worksheds for Khadi artisans, including toilets, to improve working conditions and productivity, with higher assistance for the North Eastern Region."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The scheme provides financial assistance for individual and group worksheds for Khadi artisans, including toilets, to improve working conditions and productivity, with higher assistance for the North Eastern Region.\n<br>\n\n",
+            "question": "What support is given for worksheds?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Yes, financial assistance up to ₹15 lakh is provided for the revival of existing weak Khadi institutions, covering capital expenditure and working capital requirements."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Yes, financial assistance up to ₹15 lakh is provided for the revival of existing weak Khadi institutions, covering capital expenditure and working capital requirements.\n<br>\n\n",
+            "question": "Is there support for weak Khadi institutions?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "The scheme supports renovation and modernization of departmental and institutional sales outlets, with financial assistance up to ₹25 lakh, to improve product display and customer outreach."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "The scheme supports renovation and modernization of departmental and institutional sales outlets, with financial assistance up to ₹25 lakh, to improve product display and customer outreach.\n<br>\n\n",
+            "question": "Does the scheme support marketing infrastructure?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Yes, the scheme includes support for Khadi quality assurance, exhibitions, science and technology initiatives, and the establishment of Centres of Excellence for Khadi."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Yes, the scheme includes support for Khadi quality assurance, exhibitions, science and technology initiatives, and the establishment of Centres of Excellence for Khadi.\n<br>\n\n",
+            "question": "Are there any additional components under the scheme?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "Applicants must be between 18 and 55 years of age and must possess valid identity proof such as an Aadhaar card or other government-issued ID."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "Applicants must be between 18 and 55 years of age and must possess valid identity proof such as an Aadhaar card or other government-issued ID.\n<br>\n\n",
+            "question": "What is the age limit for applicants?"
+          },
+          {
+            "answer": [
+              {
+                "children": [
+                  {
+                    "text": "No, only one person from one family is eligible to receive assistance under Khadi Vikas Yojana."
+                  }
+                ],
+                "type": "paragraph"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "answer_md": "No, only one person from one family is eligible to receive assistance under Khadi Vikas Yojana.\n<br>\n\n",
+            "question": "Can more than one person from a family apply?"
+          }
+        ]
+      },
+      "schemeId": "698b1adbb3c2d7b0a51cdc11"
+    }
+  }
+}
