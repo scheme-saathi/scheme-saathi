@@ -49,13 +49,61 @@ Six lectures are fully met (L4–L6, L7, L8, L9, L12 and L14). The others each m
 | L7 MCP tools | Done | 4 FastMCP servers (schemes_kb, rule_engine, doc_check, mock_portal); read/write marked in `docs/tool-list.md`; only the application agent can write | Confirm every tool has its own test |
 | L8 Orchestration | Done | LangGraph, typed state, checkpointer, resume (`test_resume_cli`), graph diagram (`graph/diagram.py`) | Rehearse the live stop-and-resume demo |
 | L9 Memory | Done | Long-term store with consent, expiry and "forget me"; memory policy with correcting and short-term context sections; short-term context summarised into typed state (`tests/test_short_term_context.py`); memory on vs off in the evaluation report (742 → 624 questions, −15.9%, 0 verdicts changed) | Trim the policy to one page (about 1,900 words now); held-out memory cases written by someone who did not build memory |
-| L10 Planning | Pending | Supervisor routing plan (`next_agent` + reason) | Show the user the plan (profile → schemes → rules → documents → draft); replan when a tool result contradicts it; capture a replan trace |
+| L10 Planning | Partial | Supervisor routing plan (`next_agent` + reason); citizen journey and rule-result-driven revisions; opt-in, read-only ReAct for the intake specialist's scheme questions | ReAct is limited to scheme questions; test with the configured model and assess latency, cost and answer quality before wider use |
 | L11 Multi-agent | Partial | Supervisor + intake, eligibility, document checker and application agents with typed contracts; single-agent baseline built (`graph/baseline.py`) | Run the baseline (see E1) |
 | L12 Improvement | Done | Reflexion on the rule extractor: 34 proposed lessons, 13 approved, 21 rejected with reasons, 12 frozen; held-out ×3 before/after; harmful lesson L007 named | — |
 | L13 Evaluation | Partial | Golden set of 71 cases (21 dev, 50 held-out); traces; Grafana dashboard (PR #81) | LLM judge from a different model family, checked against 20+ human labels with Cohen's kappa |
 | L14 Human control | Done | `interrupt()` with approve, edit, reject; approval tied to `payload_hash`; an edit invalidates it; pre-tool budget and permission checks; post-tool logging | Rehearse the edit-invalidates-approval demo |
 | L15 Security | Partial | Threat model; own input and output guardrails; least-privilege tools per agent; red-team suite of 96 attacks + 29 legitimate cases, including injection through scheme pages, documents and tool output. **11 Nov:** role 5 added 19 attacks from the brief's list: another household's memory (held), IDs in traces and logs (held), and three gaps now pinned in `tests/redteam/known_gaps.json`. Attack success 79.2% off → 11.5% on; 0% false blocks | (1) Planted scam page: no payment-request check in the output guardrail or scheme index (4 attacks get through). (2) Refuse and explain requests to misstate income or age (5 attacks get through). (3) Allow-list of official rule sources (2 attacks get through). (4) Llama Guard 4 / Prompt Guard 2 not used: add Prompt Guard 2 on CPU or write down why not. (5) Threat model is ~1,600 words; the brief asks for one page. (6) Only code defences are tested; no model run checks whether the agents obey injected text. (7) The first 77 attacks were written by the defence author and are not yet reviewed by someone else |
 | L16 Deployment | Partial | FastAPI with streaming; alerts including the can't-tell-rate jump (PR #81) | One `docker compose up` for app, MCP servers, Chroma, Prometheus, Grafana; CI eval gate that fails below a threshold; one failed CI run with an explanation; clean-machine install; prompts and model IDs in one versioned config |
+
+### L10 replan trace
+
+The deterministic integration test `test_rule_result_revises_application_plan_and_skips_drafting`
+starts with a conditional application plan for a synthetic pension case. The reviewed rule
+engine returns `not_eligible` for the confirmed facts. The checkpointed `journey_plan`
+records `conditional → not_eligible` with reason `rule_engine_not_eligible`, and the graph
+finishes without calling the document checker or application agent. For an application,
+the journey plan must be ready as well as the selected scheme eligible before document
+checking can start (older checkpoints without a journey plan retain the existing route). The API returns the
+plan separately from the supervisor's routing decision; Streamlit shows the plan and the
+reason for pausing documents and drafting. This trace uses stub agents and is not a live
+LLM trace. To reproduce it:
+
+```sh
+python -m pytest -q tests/test_agent_workflow.py -k rule_result_revises_application_plan
+```
+
+Documents and drafting remain conditional on a suitable result and the citizen's choice.
+The plan does not decide eligibility or replace human approval.
+
+### Specialist ReAct
+
+Set `SPECIALIST_SCHEME_REACT=true` before starting the API to enable the intake
+specialist's scheme-question loop. It is off when unset; `false` or `0` also disables it.
+The example `.env.example` sets it to `true`, so copying that setting into `.env`
+enables it. The configured specialist model must support tool calling.
+
+The existing knowledge-base search first retrieves passages. The model can then read those
+passages one at a time and submit a cited answer, or report insufficient evidence. Code
+rejects citations to passages the model did not read, denies other actions, and limits
+the loop to six model turns and eight tool calls. The response still passes the existing
+personal-eligibility output guard. Eligibility verdicts, document checks and application
+approval do not use this loop. This is a read-only evidence lookup, not an MCP call by
+the model or an autonomous application action.
+
+The API's `data.specialist_react_trace` contains action names and outcomes, not passage
+text, user messages or model reasoning. A loop or model failure returns `answer_error`
+rather than claiming the evidence was absent. The scripted-model tests exercise the
+tool loop, denied actions, limits, citation checks and the output guard:
+
+```sh
+python -m pytest -q tests/test_scheme_answer.py tests/test_personal_question_routing.py
+```
+
+These tests do not establish that a live model will resist every injected instruction or
+that answers are factually supported by their citations. A live evaluation, including
+latency and cost, is still needed before enabling the feature more widely.
 
 ## Experiments E1–E4
 
@@ -100,7 +148,7 @@ Merge the two open PRs first, because much of the evidence above lives in them. 
 - [ ] L15 write-up (role 4): cut the threat model to one page; add Prompt Guard 2 on CPU or explain why the own guardrails replace Llama Guard / Prompt Guard; have someone other than its author review the first 77 attacks
 - [ ] One `docker compose up` for app, MCP servers, Chroma, Prometheus and Grafana; a CI step that fails below an eval threshold; one deliberately failed CI run with an explanation; install on a clean machine (role 6)
 - [ ] LLM judge from a different model family, checked against 20+ hand labels with Cohen's kappa (role 5)
-- [ ] Planning: show the plan to the user, replan when a tool result contradicts it, capture the trace (role 3)
+- [ ] Planning: review the plan/replan trace and evaluate the opt-in specialist ReAct loop with the configured model (role 3)
 - [x] Short-term context documented and tested; memory on/off result in the evaluation report (role 2)
 - [ ] Trim the memory policy to one page; write held-out memory cases (someone other than the memory author) (role 2, role 5)
 - [ ] Caseworker referral for can't-tell verdicts and conflicting documents (role 3)

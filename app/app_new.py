@@ -604,6 +604,7 @@ def _clear_chat_state() -> None:
     """Forget the chat and application held in this browser session, without calling the API."""
     st.session_state["chat_session_id"] = None
     st.session_state["chat_messages"] = []
+    st.session_state["chat_journey_plan"] = None
     st.session_state["chat_known_facts"] = {}
     st.session_state["chat_eligibility_result"] = None
     st.session_state["chat_partial_result"] = None
@@ -645,6 +646,23 @@ def _start_application(
             payload["relation"] = relation
     with st.status("Preparing the application workflow...", expanded=True) as progress:
         application_result = _send_workflow(api_base, "/api/analyze", payload, progress)
+    if application_result.get("needs_human"):
+        raise RuntimeError(
+            "The application draft could not be validated and needs human review. Nothing was submitted."
+        )
+    if application_result.get("verdicts", {}).get(scheme_id, {}).get("verdict") != "eligible":
+        raise RuntimeError(
+            "The eligibility recheck did not confirm this scheme. Review the details before trying again."
+        )
+    application = application_result.get("application")
+    approval = application_result.get("approval")
+    if (
+        not isinstance(application, dict)
+        or application.get("scheme_id") != scheme_id
+        or not isinstance(approval, dict)
+        or not approval.get("payload_hash")
+    ):
+        raise RuntimeError("The application draft is unavailable. Nothing was submitted; please try again.")
     st.session_state["application_result"] = application_result
     st.session_state["application_subject"] = {"subject": subject, "relation": relation}
     st.session_state["application_uploads"] = {}
@@ -1080,6 +1098,8 @@ def _render_eligibility_screen(
 
 def _record_chat_result(result: dict[str, Any]) -> None:
     data = result["data"]
+    if "journey_plan" in data:
+        st.session_state["chat_journey_plan"] = data["journey_plan"]
     confirmation = data.get("confirmation") if result.get("status") == "awaiting_confirmation" else None
     if result.get("status") == "awaiting_confirmation" and (
         not isinstance(confirmation, dict)
@@ -1097,6 +1117,72 @@ def _record_chat_result(result: dict[str, Any]) -> None:
     st.session_state["chat_show_partial"] = False
     if result.get("status") == "eligibility_checked" and result.get("verdicts"):
         st.session_state["chat_eligibility_result"] = result
+
+
+JOURNEY_PLAN_TEXT = {
+    "en": {
+        "title": "Your plan",
+        "profile": "Collect and confirm details",
+        "schemes": "Find candidate schemes",
+        "rules": "Check reviewed eligibility rules",
+        "documents": "Check documents if you choose an eligible scheme",
+        "draft": "Prepare a draft for your review if you choose to apply",
+        "conditional": "Documents and drafting depend on the result and your choice.",
+        "ready": "A scheme is eligible; documents and drafting remain your choice.",
+        "not_eligible": "The reviewed rules found no eligible scheme in this check. Documents and drafting are paused.",
+        "cant_tell": "The result is uncertain. Documents and drafting are paused until eligibility can be confirmed.",
+        "updated": "The plan was updated after the check or a change to the details.",
+        "current": "Current stage",
+    },
+    "hi": {
+        "title": "आपकी योजना",
+        "profile": "जानकारी लें और पुष्टि करें",
+        "schemes": "संभावित योजनाएँ खोजें",
+        "rules": "समीक्षित पात्रता नियम जाँचें",
+        "documents": "पात्र योजना चुनने पर दस्तावेज़ जाँचें",
+        "draft": "आवेदन करने पर समीक्षा के लिए मसौदा तैयार करें",
+        "conditional": "दस्तावेज़ और मसौदा परिणाम और आपकी पसंद पर निर्भर हैं।",
+        "ready": "एक योजना में पात्रता मिली है; दस्तावेज़ और मसौदा आपकी पसंद हैं।",
+        "not_eligible": "इस जाँच में कोई पात्र योजना नहीं मिली। दस्तावेज़ और मसौदा अभी रुके हैं।",
+        "cant_tell": "परिणाम अनिश्चित है। पात्रता की पुष्टि तक दस्तावेज़ और मसौदा रुके हैं।",
+        "updated": "जाँच या जानकारी में बदलाव के बाद योजना अपडेट की गई।",
+        "current": "वर्तमान चरण",
+    },
+    "mr": {
+        "title": "तुमची योजना",
+        "profile": "माहिती घ्या आणि पुष्टी करा",
+        "schemes": "संभाव्य योजना शोधा",
+        "rules": "तपासलेले पात्रता नियम तपासा",
+        "documents": "पात्र योजना निवडल्यास कागदपत्रे तपासा",
+        "draft": "अर्ज करायचे ठरवल्यास पुनरावलोकनासाठी मसुदा तयार करा",
+        "conditional": "कागदपत्रे आणि मसुदा निकाल आणि तुमच्या निवडीवर अवलंबून आहेत.",
+        "ready": "एका योजनेसाठी पात्रता मिळाली आहे; पुढील पायऱ्या तुमच्या निवडीवर आहेत.",
+        "not_eligible": "या तपासणीत कोणतीही पात्र योजना मिळाली नाही. कागदपत्रे आणि मसुदा सध्या थांबले आहेत.",
+        "cant_tell": "निकाल अनिश्चित आहे. पात्रतेची पुष्टी होईपर्यंत कागदपत्रे आणि मसुदा थांबले आहेत.",
+        "updated": "तपासणीनंतर किंवा माहितीत बदल झाल्याने योजना अद्ययावत केली.",
+        "current": "सध्याचा टप्पा",
+    },
+}
+
+
+def _render_journey_plan(plan: Any, current_step: int) -> None:
+    if not isinstance(plan, dict) or not isinstance(plan.get("steps"), list):
+        return
+    text = JOURNEY_PLAN_TEXT.get(st.session_state.get("portal_language", "en"), JOURNEY_PLAN_TEXT["en"])
+    with st.expander(text["title"], expanded=True):
+        steps = [step for step in plan["steps"] if step in ("profile", "schemes", "rules", "documents", "draft")]
+        current = {1: "profile", 2: "rules", 3: "documents", 4: "draft"}.get(current_step)
+        if steps:
+            st.markdown("\n".join(
+                f"{index}. **{text[step]} — {text['current']}**" if step == current
+                else f"{index}. {text[step]}"
+                for index, step in enumerate(steps, 1)
+            ))
+        disposition = plan.get("disposition")
+        if plan.get("revisions"):
+            st.caption(text["updated"])
+        if disposition in ("conditional", "ready", "not_eligible", "cant_tell"):
+            st.caption(text[disposition])
 
 
 def _render_fact_confirmation(api_base: str) -> None:
@@ -2246,6 +2332,7 @@ def _render_chat_page() -> None:
     current_step, _ = _journey_step()
     _render_wizard(current_step)
     with st.container(key="workflow-screen"):
+        _render_journey_plan(st.session_state.get("chat_journey_plan"), current_step)
         if current_step == 1:
             _render_welcome()
             if st.session_state["chat_messages"]:

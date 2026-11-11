@@ -25,6 +25,7 @@ from agents.contracts import (
     SchemeChoice,
     SchemeChoiceInput,
 )
+from agents.scheme_react import ReactEvent, answer_with_react
 
 INSTRUCTIONS = """You are Scheme Saathi's intake specialist.
 Identify the user's language and task, extract only directly stated candidate facts,
@@ -206,8 +207,9 @@ def profile_model(specs: dict[str, dict[str, Any]]) -> type[BaseModel]:
 
 
 class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
-    def __init__(self, model: BaseChatModel) -> None:
+    def __init__(self, model: BaseChatModel, *, scheme_react: bool = False) -> None:
         super().__init__(model, IntakeInput, IntakeResult, INSTRUCTIONS)
+        self._scheme_react = scheme_react
         self._asker = StructuredGPTAgent(model, IntakeAskInput, IntakeQuestionText, ASK_INSTRUCTIONS)
         self._answerer = StructuredGPTAgent(model, IntakeAnswerInput, IntakeAnswer, ANSWER_INSTRUCTIONS)
         self._chooser = StructuredGPTAgent(model, SchemeChoiceInput, SchemeChoice, CHOOSE_INSTRUCTIONS)
@@ -296,8 +298,17 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
     def answer(self, value: IntakeAnswerInput | dict) -> IntakeAnswer:
         """A cited answer from the given passages. A citation outside them voids the answer."""
         request = IntakeAnswerInput.model_validate(value)
+        if self._scheme_react:
+            result, _ = answer_with_react(self._model, request, ANSWER_INSTRUCTIONS)
+            return result
         result = self._answerer.invoke(request)
         cited = set(result.cited_passage_ids)
         if not (result.found and result.answer.strip() and cited) or not cited <= {p.id for p in request.passages}:
             return IntakeAnswer(found=False)
         return result
+
+    def answer_with_trace(self, value: IntakeAnswerInput | dict) -> tuple[IntakeAnswer, list[ReactEvent]]:
+        request = IntakeAnswerInput.model_validate(value)
+        if self._scheme_react:
+            return answer_with_react(self._model, request, ANSWER_INSTRUCTIONS)
+        return self.answer(request), []

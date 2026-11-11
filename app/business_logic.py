@@ -406,7 +406,7 @@ class DemoService:
             self.registry.set_subject(thread_id, actor_id, subject, relation)  # kept with the thread, so a restart keeps it
         self._thread_subjects[thread_id] = (subject, relation)
         config = {"configurable": {"thread_id": thread_id}}
-        run_input: dict[str, Any] = {"simulated_citizen": citizen}
+        run_input: dict[str, Any] = {"simulated_citizen": citizen, "confirmed_profile": citizen}
         if actor_id is not None:
             run_input["actor_id"] = actor_id
         if scheme_ids:
