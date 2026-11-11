@@ -2,11 +2,28 @@
 
 This guide covers building Scheme Saathi from a Dockerfile and running it
 locally. Its ECS/Fargate section is an optional deployment alternative. The
-current [CI/CD workflow](../.github/workflows/cicd.yaml) pushes to Docker Hub
-and deploys to an EC2 instance with a self-hosted runner; see
-[AWS EC2 CI/CD setup](aws-cicd-credentials-setup.md) for the active deployment.
+current [CI/CD workflow](../.github/workflows/cicd.yaml) publishes both the app
+and provisioned Grafana images to Docker Hub. On pushes to `main`, it deploys
+Prometheus and Grafana to the EC2 host using the `scheme-saathi-deploy`
+self-hosted runner. The app deployment job is not enabled.
 Commands for your Windows development machine use PowerShell; GitHub Actions
 scripts use a Linux shell.
+
+The Grafana image is built from
+[`observability/deploy/grafana/Dockerfile`](../observability/deploy/grafana/Dockerfile);
+its provisioning files are included in the image. The registry name is the
+configured `DOCKERHUB_REPOSITORY` with `-grafana` appended, for example
+`your-dockerhub-user/scheme-saathi-grafana`. GitHub Actions publishes branch
+and `sha-<commit>` tags for both images.
+
+For CI/CD, configure `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` (push access),
+`DOCKERHUB_PULL_TOKEN`, `GRAFANA_ADMIN_PASSWORD`, and `METRICS_BEARER_TOKEN` as
+secrets in the `production` GitHub Environment, and set
+`DOCKERHUB_REPOSITORY` as an Actions variable. The production self-hosted runner
+must have the `self-hosted`, `linux`, `x64`, and `scheme-saathi-deploy` labels,
+Docker Compose, and `curl`. Only pushes to `main` and manual runs on `main`
+deploy the observability stack. It is installed under the runner user's
+`~/.scheme-saathi/observability`; its Docker volumes persist between deployments.
 
 ## 1. Prerequisites
 

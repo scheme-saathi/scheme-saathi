@@ -1,4 +1,4 @@
-name: Scheme Saathi AWS CI/CD
+name: Scheme Saathi CI/CD
 
 on:
   push:
@@ -69,9 +69,39 @@ jobs:
           path: /tmp/scheme-saathi.tar
           if-no-files-found: error
 
+  build_grafana_image:
+    name: Build Grafana image
+    needs: integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Grafana image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./observability/deploy/grafana
+          file: ./observability/deploy/grafana/Dockerfile
+          push: false
+          tags: scheme-saathi-grafana:${{ github.sha }}
+          outputs: type=docker,dest=/tmp/scheme-saathi-grafana.tar
+          cache-from: type=gha,scope=grafana
+          cache-to: type=gha,scope=grafana,mode=max
+
+      - name: Upload Grafana image
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'))
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheme-saathi-grafana-image
+          path: /tmp/scheme-saathi-grafana.tar
+          if-no-files-found: error
+
   push_to_registry:
     name: Push Docker image to Docker Hub
-    needs: build_image
+    needs: [build_image, build_grafana_image]
     if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'))
     runs-on: ubuntu-latest
     environment: production
@@ -104,8 +134,16 @@ jobs:
           name: scheme-saathi-image
           path: /tmp
 
+      - name: Download Grafana image
+        uses: actions/download-artifact@v4
+        with:
+          name: scheme-saathi-grafana-image
+          path: /tmp
+
       - name: Load Docker image
-        run: docker load --input /tmp/scheme-saathi.tar
+        run: |
+          docker load --input /tmp/scheme-saathi.tar
+          docker load --input /tmp/scheme-saathi-grafana.tar
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -119,13 +157,91 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          GRAFANA_REPOSITORY="${DOCKERHUB_REPOSITORY}-grafana"
           docker tag "scheme-saathi:${GITHUB_SHA}" "${DOCKERHUB_REPOSITORY}:${GITHUB_REF_NAME}"
           docker tag "scheme-saathi:${GITHUB_SHA}" "${DOCKERHUB_REPOSITORY}:sha-${GITHUB_SHA}"
+          docker tag "scheme-saathi-grafana:${GITHUB_SHA}" "${GRAFANA_REPOSITORY}:${GITHUB_REF_NAME}"
+          docker tag "scheme-saathi-grafana:${GITHUB_SHA}" "${GRAFANA_REPOSITORY}:sha-${GITHUB_SHA}"
           docker push "${DOCKERHUB_REPOSITORY}:${GITHUB_REF_NAME}"
           docker push "${DOCKERHUB_REPOSITORY}:sha-${GITHUB_SHA}"
+          docker push "${GRAFANA_REPOSITORY}:${GITHUB_REF_NAME}"
+          docker push "${GRAFANA_REPOSITORY}:sha-${GITHUB_SHA}"
 
   # continuous_deployment:
-  #   name: Deploy to AWS EC2
+  #   name: Deploy observability to AWS EC2
+  #   needs: push_to_registry
+  #   if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+  #   runs-on: [self-hosted, linux, x64, scheme-saathi-deploy]
+  #   environment: production
+  #   steps:
+  #     - name: Check out source
+  #       uses: actions/checkout@v4
+
+  #     - name: Validate deployment settings
+  #       env:
+  #         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         DOCKERHUB_PULL_TOKEN: ${{ secrets.DOCKERHUB_PULL_TOKEN }}
+  #         DOCKERHUB_REPOSITORY: ${{ vars.DOCKERHUB_REPOSITORY }}
+  #         GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+  #         METRICS_BEARER_TOKEN: ${{ secrets.METRICS_BEARER_TOKEN }}
+  #       run: |
+  #         set -euo pipefail
+  #         missing=()
+  #         for name in DOCKERHUB_USERNAME DOCKERHUB_PULL_TOKEN DOCKERHUB_REPOSITORY GRAFANA_ADMIN_PASSWORD METRICS_BEARER_TOKEN; do
+  #           if [[ -z "${!name}" ]]; then
+  #             missing+=("$name")
+  #           fi
+  #         done
+  #         if (( ${#missing[@]} > 0 )); then
+  #           printf 'Missing GitHub production secrets or variables: %s\n' "${missing[*]}"
+  #           exit 1
+  #         fi
+  #         if [[ ! "$DOCKERHUB_REPOSITORY" =~ ^[a-z0-9._-]+/[a-z0-9._-]+$ ]]; then
+  #           echo "DOCKERHUB_REPOSITORY must use namespace/image format."
+  #           exit 1
+  #         fi
+
+  #     - name: Log in to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_PULL_TOKEN }}
+
+  #     - name: Deploy Prometheus and Grafana
+  #       env:
+  #         DOCKERHUB_REPOSITORY: ${{ vars.DOCKERHUB_REPOSITORY }}
+  #         GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+  #         METRICS_BEARER_TOKEN: ${{ secrets.METRICS_BEARER_TOKEN }}
+  #       shell: bash
+  #       run: |
+  #         set -euo pipefail
+  #         DEPLOY_DIR="${HOME}/.scheme-saathi/observability"
+  #         mkdir -p "$DEPLOY_DIR/prometheus" "$DEPLOY_DIR/secrets"
+  #         chmod 700 "$DEPLOY_DIR" "$DEPLOY_DIR/secrets"
+  #         cp observability/deploy/docker-compose.yml "$DEPLOY_DIR/docker-compose.yml"
+  #         cp -a observability/deploy/prometheus/. "$DEPLOY_DIR/prometheus/"
+  #         printf '%s' "$METRICS_BEARER_TOKEN" > "$DEPLOY_DIR/secrets/metrics_token"
+  #         chmod 644 "$DEPLOY_DIR/secrets/metrics_token"
+  #         export GRAFANA_IMAGE="${DOCKERHUB_REPOSITORY}-grafana:sha-${GITHUB_SHA}"
+  #         cd "$DEPLOY_DIR"
+  #         docker compose pull
+  #         docker compose up -d --remove-orphans
+  #         for attempt in $(seq 1 24); do
+  #           if curl --fail --silent http://127.0.0.1:3000/api/health >/dev/null \
+  #             && curl --fail --silent http://127.0.0.1:9090/-/ready >/dev/null; then
+  #             echo "Grafana and Prometheus are healthy."
+  #             exit 0
+  #           fi
+  #           echo "Waiting for Grafana and Prometheus to become ready..."
+  #           sleep 5
+  #         done
+  #         echo "Observability stack did not become healthy."
+  #         docker compose ps
+  #         docker compose logs --tail 100
+  #         exit 1
+
+  # continuous_deployment:
+  #   name: Deploy Scheme Saathi application to AWS EC2
   #   needs: push_to_registry
   #   if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
   #   runs-on: [self-hosted, linux, x64, scheme-saathi-deploy]

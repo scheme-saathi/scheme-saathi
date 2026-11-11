@@ -53,25 +53,39 @@ hash of its thread ID. No scheme label is put on verdicts.
    On Linux also run `chmod 644` on it, because Prometheus runs as an unprivileged user inside its container.
 
 3. **Compose settings.** Copy `observability/deploy/.env.example` to `observability/deploy/.env` and set
-   `GRAFANA_ADMIN_PASSWORD`. Compose refuses to start without it.
+   `GRAFANA_ADMIN_PASSWORD`. Compose refuses to start without it. The example targets the app container at
+   `app:8766`; if running the app on the host instead, set `PROMETHEUS_APP_TARGET=host.docker.internal:8766`.
 
-4. **Start the stack** from `observability/deploy/`:
+4. **Start the app and observability stack** from `observability/deploy/`:
    ```powershell
-   docker compose up -d
+   docker compose --profile app up -d --build
    ```
-   - Prometheus: <http://localhost:9090> (Status > Targets shows the `scheme-saathi` job)
-   - Grafana: <http://localhost:3000>, user from `GRAFANA_ADMIN_USER`, with the **Prometheus** data source already added.
-   Both ports are bound to `127.0.0.1` only.
+   The command builds and starts Streamlit, Prometheus, and Grafana together. Open Streamlit at
+   <http://localhost:8501> and Grafana at <http://localhost:3000>, using `GRAFANA_ADMIN_USER` and the password
+   from the deploy `.env`. Prometheus is available at <http://localhost:9090> (Status > Targets should show
+   `scheme-saathi` as UP). All published ports are bound to `127.0.0.1`.
 
-5. **Start the app** (`streamlit run app/app_new.py`). It starts the API on `127.0.0.1:8766`, which the
+5. **Host-run alternative:** start the app with `streamlit run app/app_new.py`. It starts the API on `127.0.0.1:8766`, which the
    Prometheus container reaches as `host.docker.internal:8766`. Check the numbers directly with:
    ```powershell
    curl.exe -H "Authorization: Bearer <the token>" http://127.0.0.1:8766/metrics
    ```
 
-**App in a container.** The API listens on `127.0.0.1` by default. To scrape an app running in a container,
-set `SCHEME_SAATHI_CHAT_API_HOST=0.0.0.0` for it, put it on the same Docker network as Prometheus, and change
-the `targets` entry in `prometheus/prometheus.yml` to that container's name and port. This path is untested.
+The Compose `app` profile sets the API to listen on the container network and points Prometheus at `app:8766`.
+For the host-run alternative, omit `--profile app` and set `PROMETHEUS_APP_TARGET=host.docker.internal:8766`
+in the deploy `.env`.
+
+**Continuous deployment.** On pushes to `main`, the `production` GitHub Environment publishes the custom Grafana image
+to `<DOCKERHUB_REPOSITORY>-grafana` and deploys Prometheus and Grafana on the
+`[self-hosted, linux, x64, scheme-saathi-deploy]` runner. Configure the `DOCKERHUB_USERNAME`,
+`DOCKERHUB_TOKEN`, `DOCKERHUB_PULL_TOKEN`, `GRAFANA_ADMIN_PASSWORD`, and `METRICS_BEARER_TOKEN` environment secrets,
+and set `DOCKERHUB_REPOSITORY` (the application image, in `namespace/image` format). The runner needs Docker Compose,
+`curl`, and permission to run Docker. The stack and token file are kept under the runner user's
+`~/.scheme-saathi/observability`; the Docker volumes preserve Grafana and Prometheus data between deploys. The app
+must separately be configured with the same metrics token and expose its API on the Prometheus target
+`host.docker.internal:8766` for the dashboard to contain app metrics.
+Grafana and Prometheus bind to the EC2 loopback interface; use an SSH tunnel or a secured reverse proxy for remote access
+instead of opening ports 3000 or 9090 to the internet.
 
 **Prometheus rules.** `prometheus/rules.yml` holds recording rules (named `scheme_saathi:<what>:<how>`) so
 panels stay short; they are listed below. `prometheus/alerts.yml` holds alert rules with starting thresholds. They

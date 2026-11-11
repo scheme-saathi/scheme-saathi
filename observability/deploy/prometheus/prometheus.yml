@@ -16,9 +16,7 @@ scrape_configs:
       type: Bearer
       credentials_file: /etc/prometheus/secrets/metrics_token
     static_configs:
-      # The app on the host machine (streamlit run app/app_new.py starts the API on port 8766).
-      # If the app runs in a container on this Compose network, use that container's name and port instead.
-      - targets: ["host.docker.internal:8766"]
+      - targets: ["${PROMETHEUS_APP_TARGET}"]
 
   - job_name: prometheus
     static_configs:
