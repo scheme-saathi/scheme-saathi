@@ -894,10 +894,10 @@ RAG scripts recognize synthetic:// rule fixtures and skip them without altering 
 The comparison runner supports vector, BM25 and hybrid using the same source-labelled dataset. The gold dataset is intentionally not included in this commit; supply your local reviewed dataset:
 
 ```bash
-python -m servers.schemes_kb.evaluate_retrieval --dataset "/path/to/retrieval_gold_v1.json" --method hybrid --split development --allow-pending
+python -m servers.schemes_kb.evaluate_retrieval --dataset "/path/to/retrieval_gold_v1.json" --method hybrid --split development
 ```
 
-Add `--rerank` to compare the same method with LLM reranking; the report filename and `rerank` field record it.
+Add `--rerank` to compare the same method with LLM reranking; the report filename and `rerank` field record it. Add `--rewrite` to also search an English, scheme-wording rewrite of each question (multi-query, fused with RRF); each case's `queries` field records both queries. Results so far, with dates, are in [docs/retrieval-evaluation.md](docs/retrieval-evaluation.md).
 
 --allow-pending explicitly permits provisional labels; omit it for approved labels. Keep held-out cases untouched until final evaluation. Reports are saved under ignored data/evaluation-runs/ and include evidence coverage, scheme hits, language breakdowns, filter checks, latency and corpus fingerprints. Abstention cases are marked unsupported; retrieval alone does not generate an answer. Evidence scoring requires source references plus normalized source text, not a matching citation alone. Tests use small synthetic examples and do not include the gold dataset.
 
