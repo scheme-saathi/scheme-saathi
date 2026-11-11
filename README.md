@@ -384,7 +384,9 @@ recorded, never a prompt or a response.
 
 ### Grafana dashboard
 
-Prometheus and Grafana run in Docker; the app runs on your machine. You need Docker Desktop running.
+Streamlit, Prometheus, and Grafana run together in Docker Compose. You need Docker Desktop running.
+For the complete one-command setup, token rotation, and troubleshooting steps, see
+[Run Streamlit and Grafana with Docker Compose](docs/docker-compose-grafana-quickstart.md).
 
 **One-time setup**
 
@@ -410,17 +412,15 @@ Prometheus and Grafana run in Docker; the app runs on your machine. You need Doc
    ```
 4. Set the Grafana login. Copy `observability/deploy/.env.example` to `observability/deploy/.env` (git-ignored) and
    set `GRAFANA_ADMIN_PASSWORD`. Never put the password in `.env.example`: that file is committed.
-
 **Every time**
 
-1. Start Prometheus and Grafana:
+1. Start the app, Prometheus, and Grafana from `observability/deploy/`:
    ```bash
    cd observability/deploy
-   docker compose up -d
+   docker compose --profile app up -d --build
    ```
-2. Start the app from the project root: `streamlit run app/app_new.py`. It starts the API on `127.0.0.1:8766`, which
-   Prometheus reads every 15 seconds.
-3. Open <http://localhost:3000>, log in with `GRAFANA_ADMIN_USER` (default `admin`) and your password, and open
+2. Open <http://localhost:8501> for Streamlit and <http://localhost:3000> for Grafana. Log into Grafana with
+   `GRAFANA_ADMIN_USER` (default `admin`) and your password, then open
    **Dashboards > Scheme Saathi > Scheme Saathi**. Use the chat for a few turns; numbers appear within a minute.
 
 To stop: `docker compose down` in `observability/deploy` (the data is kept; add `-v` to delete it).
@@ -429,15 +429,16 @@ To stop: `docker compose down` in `observability/deploy` (the data is kept; add 
 
 | What you see | What to do |
 |---|---|
-| Every panel shows 0 or "No data" | Check <http://localhost:9090/targets>: the `scheme-saathi` job must be **UP**. If it is DOWN, the app is not running, `OBSERVABILITY_ENABLED` is not `true`, or the two tokens differ (401). Restart the app after changing `.env`. |
+| Every panel shows 0 or "No data" | Check <http://localhost:9090/targets>: the `scheme-saathi` job must be **UP**. If it is DOWN, the app container is not running or the metrics token in `.env` does not match `observability/deploy/secrets/metrics_token` (401). Recreate the app after changing `.env` with `docker compose --profile app up -d`. |
 | Target UP but panels still 0 | Nothing has happened yet in the selected time range. Chat for a few turns and pick **Last 15 minutes**. Lines on rate panels need a few minutes of data. |
 | Grafana rejects the password | Grafana keeps the password from its first start. After changing it in `observability/deploy/.env`, run `docker compose exec grafana grafana cli admin reset-admin-password '<new password>'`. |
-| `docker compose up` says to set `GRAFANA_ADMIN_PASSWORD` | `observability/deploy/.env` is missing or the password is empty (step 4). |
+| `docker compose` says to set `GRAFANA_ADMIN_PASSWORD` | `observability/deploy/.env` is missing or the password is empty (step 4). |
 | An alert shows as firing in the Health row | See the Alerts page at <http://localhost:9090/alerts>. `SchemeSaathiMetricsDown` just means the app is not running. |
 
 The dashboard file is `observability/deploy/grafana/provisioning/dashboards/json/scheme-saathi.json`. Grafana
 does not save edits to it; to change it, edit in Grafana, export the JSON (Share > Export > Save to file) and replace
-that file. What each panel and metric means is in [docs/observability.md](docs/observability.md).
+that file, then rebuild with `docker compose --profile app up -d --build`. What each panel and metric means is in
+[docs/observability.md](docs/observability.md).
 
 ### Tracing (LangSmith)
 
