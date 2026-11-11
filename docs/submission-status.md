@@ -30,8 +30,8 @@ Three of the nine items are done. The architecture diagram, contribution log and
 | Redrawn architecture diagram + numbered walkthrough | Pending | — | `graph/diagram.py` draws only the LangGraph graph; no full-system diagram with numbered steps |
 | Threat model (one page) | Done | `docs/threat-model.md` | 1,605 words; trim to one page |
 | Memory policy (one page) | Done | `docs/memory-policy.md`, `data/memory_policy.json` | 1,892 words; add a one-page summary at the top |
-| Evaluation report (4–6 pages) | Partial | `docs/evaluation-report.md` | E1–E4 and memory are in. No retrieval section (`docs/retrieval-evaluation.md` is not linked). About 3,150 words, already near 6 pages, so keep the retrieval section short |
-| Experiment log | Partial | `docs/experiment-log.md` | The retrieval runs (25 Oct–11 Nov) and the judge calibration run are not in it |
+| Evaluation report (4–6 pages) | Partial | `docs/evaluation-report.md` | E1–E4, retrieval and memory are in. About 3,800 words, likely over 6 pages: trim (for example the E1 history paragraph and the E2 category list) |
+| Experiment log | Partial | `docs/experiment-log.md` | The judge calibration run is not in it |
 | Contribution log | Pending | Role sheet in `teamProjectWorkspace/scheme-saathi project.xlsx` | No contribution log in the repo |
 | Slides | Partial | Draft deck, outside the repo | Placeholders for the architecture diagram, judge, deployment and final E2 numbers |
 | Backup demo recording | Pending | — | Not started |
@@ -42,7 +42,7 @@ Eight lectures are fully met (L4–L6, L7, L8, L9, L11, L12 and L14). L10 is pen
 
 | Lecture | Status | Done | Pending |
 | --- | --- | --- | --- |
-| L4–L6 Retrieval | Done | 59 scheme records with URL and date; bge-m3 vectors + BM25 fused with RRF; LLM reranker; query rewrite (multi-query) on in the live search tool; Recall@5 before/after on 32 queries in `docs/retrieval-evaluation.md` (BM25 0.625 → hybrid 1.000 on dev, 25 Oct; held-out 0.917 → 1.000 with the rewrite, 3 runs) | Write down why the reranker is an LLM, not a cross-encoder; link the retrieval results from the evaluation report |
+| L4–L6 Retrieval | Done | 59 scheme records with URL and date; bge-m3 vectors + BM25 fused with RRF; LLM reranker; query rewrite (multi-query) on in the live search tool; Recall@5 before/after on 32 queries in `docs/retrieval-evaluation.md` (BM25 0.625 → hybrid 1.000 on dev, 25 Oct; held-out 0.917 → 1.000 with the rewrite, 3 runs) | Write down why the reranker is an LLM, not a cross-encoder |
 | L7 MCP tools | Done | 4 FastMCP servers (schemes_kb, rule_engine, doc_check, mock_portal); read/write marked in `docs/tool-list.md`; only the application agent can write | Confirm every tool has its own test |
 | L8 Orchestration | Done | LangGraph, typed state, checkpointer, resume (`test_resume_cli`), graph diagram (`graph/diagram.py`) | Rehearse the live stop-and-resume demo |
 | L9 Memory | Done | Long-term store with consent, expiry and "forget me"; memory policy with correcting and short-term context sections; short-term context summarised into typed state (`tests/test_short_term_context.py`); memory on vs off in the evaluation report (742 → 624 questions, −15.9%, 0 verdicts changed); red-team attacks on another household's memory blocked | Trim the policy to one page; held-out memory cases written by someone who did not build memory |
@@ -95,13 +95,15 @@ The role in brackets follows the brief's six roles.
 - [ ] Planning (role 3): show the plan to the user, replan when a tool result contradicts it, capture the trace
 - [ ] L16 (role 6): a CI step that fails below an evaluation threshold; one deliberately failed CI run with an explanation; install on a clean machine; say in the README that the MCP servers and Chroma run inside the app container; prompts and model IDs in one versioned config; fix or remove `docs/aws-cicd-credentials-setup.md`
 - [ ] Judge (role 5): label a fresh 20+ messages before running the judge, report kappa, and run it on C1's 35 flagged E1 replies
-- [ ] Evaluation report and log (role 2, role 5): a short retrieval section linking `docs/retrieval-evaluation.md`, with why the reranker is an LLM; add the retrieval and judge runs to the experiment log
+- [ ] Why the reranker is an LLM, not a cross-encoder (role 2); add the judge calibration run to the experiment log (role 5)
+- [ ] Trim the evaluation report to 6 pages (about 3,800 words now)
 - [ ] Caseworker referral for can't-tell verdicts and conflicting documents (role 3)
 - [ ] Trim the memory policy to one page; write held-out memory cases (someone other than the memory author) (role 2, role 5)
 - [ ] If possible, add colloquial retrieval questions ("widow pension") written by someone other than role 2 (role 1, role 5)
 - [ ] Architecture diagram with numbered walkthrough, contribution log in the repo, slides, backup demo recording (role 1)
 - [ ] Rehearse the live demos: resume after a stop, edit invalidating an approval, demo 1, demo 3 (role 1)
 - [x] Merged: PRs #81, #82, #83, #85 (query rewrite), #86 (memory evidence), #87 (CI/CD and Compose), #88 (red-team attacks), #89 (claim judge), #90 (E1 held-out)
+- [x] Retrieval section in the evaluation report (§6) and the retrieval runs in the experiment log
 - [x] E1: C0/C1/C2 on held-out, C1 and C2 ×3, same model and budget (`docs/evaluation-report.md` §2)
 - [x] Short-term context documented and tested; memory on/off result in the evaluation report (role 2)
 

@@ -2,7 +2,7 @@
 
 *Experiments E1–E4, run 8–11 November 2026. Every run is listed in [experiment-log.md](experiment-log.md).*
 
-**Summary.** Eligibility decided by the deterministic rule engine is right on every gold verdict (39/39 development, 95/95 held-out) at no model cost. Letting a model decide directly from the scheme text is 91% right, never wrong at a numeric boundary, but wrong on conditions the text it is shown does not state (E4). With the same model and budget, the agent team got 54% of held-out verdicts right, against 100% for the fixed workflow and the single agent when those are given the candidate schemes; it missed the right scheme for 39% of verdicts and cost about 20 times as much as the single agent. Without the candidate schemes the fixed workflow needs 138 questions a case, against the agent team's 9, so the agent team makes a short conversation possible, but its scheme choice is not reliable yet (E1). The defences block 85 of 96 attacks without blocking legitimate work; the 11 that get through (a planted scam page, requests to misstate facts, rules from unofficial sources) are known gaps whose defences are pending (E2). The reviewed lessons improved rule extraction on development schemes but not on held-out schemes (E3). With memory on, a returning citizen is asked 15.9% fewer questions, and no verdict changes (L9).
+**Summary.** Eligibility decided by the deterministic rule engine is right on every gold verdict (39/39 development, 95/95 held-out) at no model cost. Letting a model decide directly from the scheme text is 91% right, never wrong at a numeric boundary, but wrong on conditions the text it is shown does not state (E4). With the same model and budget, the agent team got 54% of held-out verdicts right, against 100% for the fixed workflow and the single agent when those are given the candidate schemes; it missed the right scheme for 39% of verdicts and cost about 20 times as much as the single agent. Without the candidate schemes the fixed workflow needs 138 questions a case, against the agent team's 9, so the agent team makes a short conversation possible, but its scheme choice is not reliable yet (E1). The defences block 85 of 96 attacks without blocking legitimate work; the 11 that get through (a planted scam page, requests to misstate facts, rules from unofficial sources) are known gaps whose defences are pending (E2). The reviewed lessons improved rule extraction on development schemes but not on held-out schemes (E3). Retrieval finds the answer passage for every held-out query (Recall@5 1.000 over three runs) once the query rewrite is added; vectors alone lifted Hindi queries from 0.25 to 1.00 on development. With memory on, a returning citizen is asked 15.9% fewer questions, and no verdict changes (L9).
 
 ## 1. Setup
 
@@ -54,7 +54,7 @@ On development (21 cases, 39 verdicts, one run each on 10–11 Nov, same models)
 - **The result holds across runs and splits.** C2 got 54% of held-out verdicts right (50.5–56.8% over three runs) and 56% on development, far below the 100% of C0 and C1.
 - **The main cause is the shortlist.** C2 chooses its own schemes, and the right scheme was missing for 39% of verdicts (61% shortlist recall, against 77% on development). C0 and C1 are given the candidate schemes, so they never face this. E4 points the same way: choosing the right few schemes matters more than the order of questions.
 - **It was not always right when it answered.** At 92% right when it answered, about four verdicts per run that C2 gave the person were wrong. In 5–6 cases per run a fact the person confirmed differed from their hidden profile, so the rule engine was given a wrong fact; these are the likely source, and the `wrong` list in each run's `summary.json` names them.
-- **No eligibility claims without the rule engine in C2.** The output guardrail blocks them. C1's 35 flagged cases come from the keyword check, which was written for C2's replies; C1's free-form summary after calling the rule engine ("You are eligible for C01…") trips it. They have not been reviewed and are probably false positives; the claim judge (section 7) is the way to check them.
+- **No eligibility claims without the rule engine in C2.** The output guardrail blocks them. C1's 35 flagged cases come from the keyword check, which was written for C2's replies; C1's free-form summary after calling the rule engine ("You are eligible for C01…") trips it. They have not been reviewed and are probably false positives; the claim judge (section 8) is the way to check them.
 - **Cost and time.** C2 cost about 20 times as much as C1 per case and took about 11 times as long; C0 needs no model and answers in a fraction of a second.
 
 **Conclusion.** Given the candidate schemes, the agent team does not justify its cost: the fixed workflow gets every verdict right, at once and for nothing. But a real citizen does not arrive with that list. Without it, the fixed workflow has to keep all 49 schemes open, and E4 measured what that costs on the same held-out cases:
@@ -139,7 +139,26 @@ The fixed workflow asked either the field that settles the most open verdicts (p
 
 With the 2–4 candidate schemes of a persona, the order hardly matters; asking stops early, saving a fifth to a third of a full form. With every live scheme open, the planned order saves 10–15%, but 138–147 questions is far too many for a person. **Choosing the right few schemes matters far more than the order of questions**, which is why C2's shortlist (section 2) is the next thing to fix.
 
-## 6. Memory on vs off (L9)
+## 6. Retrieval (L4–L6)
+
+Scheme evidence is found by BM25 and multilingual `BAAI/bge-m3` vectors (local, on CPU) fused with RRF, then reranked by an LLM; on 11 Nov a query rewrite was added, which searches an LLM rewrite of the question together with the original. The gold set (`tests/evaluation/retrieval_gold_v1.json`) has 16 intents, each asked in English and Hindi: 16 development and 12 held-out queries that should find evidence, plus 4 filter and abstain checks. Each names the exact passage that answers it. Recall@5 is the share of queries whose answer passage is in the top 5 results. The full record of every run is in [retrieval-evaluation.md](retrieval-evaluation.md).
+
+| Change | Split | Recall@5 | English / Hindi | Latency |
+| --- | --- | --- | --- | --- |
+| BM25 only (25 Oct, 6 labelled schemes) | development | 0.625 | 1.00 / 0.25 | 9 ms p95 |
+| BM25 + vectors, RRF (25 Oct) | development | **1.000** | 1.00 / 1.00 | 100 ms p95 |
+| Same, all schemes indexed (6 Nov) | development | 0.938 | 1.00 / 0.88 | 303 ms p95 |
+| + LLM rerank (6 Nov, 2 runs) | development | 0.875, 0.938 | 1.00 / 0.75–0.88 | 6.8–8.8 s p95 |
+| + query rewrite, with rerank (11 Nov) | development | 0.938 | 1.00 / 0.88 | 10.8 s p95 |
+| Hybrid + rerank, frozen (11 Nov, 3 runs) | held-out | 0.917 in every run | 1.00 / 0.83 | 2.9–4.0 s median |
+| **Hybrid + rewrite + rerank, frozen (11 Nov, 3 runs)** | held-out | **1.000** in every run | 1.00 / 1.00 | 4.0–4.6 s median |
+
+- **Vectors fixed the Hindi queries.** BM25 cannot match Hindi questions to English scheme text; bge-m3 vectors found all of them, and RRF kept BM25's exact-term matching for English.
+- **The reranker did not raise recall** and added about 6 s a search; its runs varied between identical attempts. It stays on because it also gives the 0–10 relevance score the search tool uses to drop irrelevant passages.
+- **The rewrite's held-out gain is one query** (12 queries, so 0.083 each): with the reranker, the rewrite kept G12-hi's passage in the top 5. On development it changed nothing. It costs about 1.2 s a search. The live tool uses hybrid + rewrite + rerank, the held-out winner, chosen with the configuration frozen before the held-out runs.
+- **Limits.** The Hindi queries translate the English ones, so the 32 queries are not independent. Every question uses the scheme's formal name, so colloquial questions such as "widow pension", the rewrite's main use, are not tested. The labels were AI-drafted and reviewed by Snehal, who also tuned retrieval, and one author wrote both splits.
+
+## 7. Memory on vs off (L9)
 
 A returning citizen is asked fewer questions when memory is on, and no verdict changes (`python -m evaluation.memory_eval`, 11 Nov). The harness runs the real graph, rule engine and memory policy. A scripted persona answers from its own recorded facts in place of the model, so it needs no model and gives the same result every run.
 
@@ -158,7 +177,7 @@ Each of the 50 synthetic households makes a first visit on each of three schemes
 - **The 32 visits with no saving** are all C03. With memory off and with memory on, intake reached its 12-question cap. With memory on, age was prefilled and the freed question went to the next field, so the visit got further without asking fewer questions.
 - **Memory never decides.** A prefilled fact is shown unconfirmed, and every return visit had exactly one confirm step.
 
-## 7. Limits
+## 8. Limits
 
 - **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
 - **Role separation.** The person who labelled the held-out personas also fixed agent behaviour, and verified the held-out gold rules used in E3 while reviewing its lessons. Nothing was tuned after held-out results were seen.
@@ -168,7 +187,7 @@ Each of the 50 synthetic households makes a first visit on each of three schemes
 - **Memory evaluation on development cases only.** The 50 households come from the repository and are not held-out cases; held-out memory cases written by someone who did not build memory are still to do. It covers three schemes and one stored field.
 - **Order of work.** The 34 development rule sets were drafted by an AI before the extractor existed and then reviewed by a person; the extractor was measured against the reviewed versions.
 
-## 8. Reproduce
+## 9. Reproduce
 
 ```bash
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_workflow.json --model openai/gpt-4o-mini --split held_out --final
@@ -179,6 +198,7 @@ python tests/redteam/run_redteam.py
 python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_extraction_configs/rx1_playbook_gpt41mini.json --split held_out --final
 python tests/evaluation/run_e4.py --config tests/evaluation/e4_configs/e4_llm_direct_gpt41mini.json --split held_out --final --repeat 3
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_questionnaire.json --split held_out --final
+python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --rewrite --split held_out
 python -m evaluation.memory_eval
 ```
 
