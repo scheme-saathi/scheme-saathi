@@ -1,7 +1,7 @@
 {
   "dataset_id": "scheme-saathi-retrieval-v1",
   "created_on": "2026-10-25",
-  "status": "candidate_gold_pending_human_review",
+  "status": "gold_reviewed",
   "scope": "Retrieval evidence and filtering against the frozen local corpus; not current legal guidance, eligibility persona labels or extracted-rule gold standards.",
   "languages": [
     "en",
@@ -84,9 +84,9 @@
         "age_boundary",
         "category_specific"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -124,9 +124,9 @@
         "age_boundary",
         "category_specific"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -164,9 +164,9 @@
         "team",
         "age_boundary"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -204,9 +204,9 @@
         "team",
         "age_boundary"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -244,9 +244,9 @@
         "benefit_amount",
         "units"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -284,9 +284,9 @@
         "benefit_amount",
         "units"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -324,9 +324,9 @@
         "deadline",
         "event_relative"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -364,9 +364,9 @@
         "deadline",
         "event_relative"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -412,9 +412,9 @@
         "numeric_boundary",
         "exclusive_inclusive"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -460,9 +460,9 @@
         "numeric_boundary",
         "exclusive_inclusive"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -500,9 +500,9 @@
         "exclusion",
         "exception"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -540,9 +540,9 @@
         "exclusion",
         "exception"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -580,9 +580,9 @@
         "component",
         "interest"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -620,9 +620,9 @@
         "component",
         "interest"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -661,9 +661,9 @@
         "regional_condition",
         "benefit_cap"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -702,9 +702,9 @@
         "regional_condition",
         "benefit_cap"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -743,9 +743,9 @@
         "closed_scheme",
         "loan_amount"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -784,9 +784,9 @@
         "closed_scheme",
         "loan_amount"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -838,9 +838,9 @@
         "multi_passage",
         "closed_scheme"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -892,9 +892,9 @@
         "multi_passage",
         "closed_scheme"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -932,9 +932,9 @@
         "rate",
         "reference_period"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -972,9 +972,9 @@
         "rate",
         "reference_period"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -1011,9 +1011,9 @@
       "tags": [
         "transaction_exclusion"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -1050,9 +1050,9 @@
       "tags": [
         "transaction_exclusion"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -1100,9 +1100,9 @@
         "table",
         "percentage"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -1150,9 +1150,9 @@
         "table",
         "percentage"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -1200,9 +1200,9 @@
         "table",
         "percentage"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -1250,9 +1250,9 @@
         "table",
         "percentage"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -1274,9 +1274,9 @@
         "unanswerable",
         "personal_status"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -1298,9 +1298,9 @@
         "unanswerable",
         "personal_status"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -1322,9 +1322,9 @@
         "availability_filter",
         "negative"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     },
     {
@@ -1346,9 +1346,9 @@
         "availability_filter",
         "negative"
       ],
-      "label_status": "pending_human_review",
-      "reviewer": null,
-      "reviewed_on": null,
+      "label_status": "approved",
+      "reviewer": "Snehal",
+      "reviewed_on": "2026-10-30",
       "review_notes": ""
     }
   ]

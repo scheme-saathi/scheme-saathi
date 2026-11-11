@@ -12,7 +12,7 @@
   - Each query names the exact passage that answers it, by scheme, source path and evidence sentence.
 - **Recall@5:** for each query, the share of its required evidence passages found in the top 5 results, averaged over queries. A passage counts as found only when both the citation and the normalised evidence text match. The report field is `mean_exact_evidence_coverage_at_k`. Every query has one required passage, so this is the share of queries whose answer passage was in the top 5.
 - **Scheme Hit@5:** the share of queries where the right scheme appears in the top 5. It is 1.000 in every run below, so it is not repeated in the tables.
-- **Runner:** `python -m servers.schemes_kb.evaluate_retrieval --method {vector,bm25,hybrid} [--rerank] [--rewrite] --split {development,held_out} --allow-pending`.
+- **Runner:** `python -m servers.schemes_kb.evaluate_retrieval --method {vector,bm25,hybrid} [--rerank] [--rewrite] --split {development,held_out}`. Runs before 11 Nov needed `--allow-pending`, because the review was not yet marked in the file.
 
 ## The record
 
@@ -58,7 +58,7 @@ Run files: `hybrid-held_out-20261111T{050927937314,051159185061,051414448085}Z`,
 ## Limits
 
 - **Small and correlated.** There are 16 intents. Each Hindi query translates an English one, so the 32 queries are not 32 independent tests. One held-out query moves Recall@5 by 0.083, so the rewrite's held-out gain is one query.
-- **Labels pending review.** Every label is still `pending_human_review`, so all runs use `--allow-pending`. One author wrote both splits; the file's own split policy says so.
+- **Label review.** The labels were AI-drafted on 25 Oct (the file's `label_policy` says so) and reviewed by Snehal on 30 Oct, but the review was only marked in the file on 11 Nov. Every run in the record above ran before it was marked, so those reports say `provisional: true`; the 25 Oct runs also came before the review itself. A dev rerun after marking gave the same 0.938. The reviewer also tuned retrieval, and one author wrote both splits, so the tuning/testing separation the brief asks for is not met here.
 - **Queries use formal scheme names.** Every gold question names the scheme in the document's own terms. The brief's main case for rewriting, colloquial questions such as "widow pension", is not in the set. That is why development shows no gain. A set of colloquial questions, written by someone other than the person tuning retrieval, would measure the rewrite's intended use.
 - **Gold-file versions.**
   - 25 Oct runs used the committed file (sha `8082a799`).
@@ -70,9 +70,9 @@ Run files: `hybrid-held_out-20261111T{050927937314,051159185061,051414448085}Z`,
 ## Reproduce
 
 ```bash
-python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --split development --allow-pending
-python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --rewrite --split development --allow-pending
-python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --rewrite --split held_out --allow-pending
+python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --split development
+python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --rewrite --split development
+python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --rewrite --split held_out
 ```
 
 Runs with `--rerank` or `--rewrite` need `SPECIALIST_MODEL` and `OPENROUTER_API_KEY` in `.env`. The 11 Nov rewrite and rerank calls used `openai/gpt-4o-mini`. Embeddings are local `BAAI/bge-m3` on CPU.

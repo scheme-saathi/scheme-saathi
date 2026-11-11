@@ -41,11 +41,11 @@ Two of the nine items are done, and two more are in PR #83 waiting to merge. The
 
 ## Minimum bar, L4–L16
 
-Four lectures are fully met (L7, L8, L12 and L14). The others each miss one or two named pieces of evidence.
+Five lectures are fully met (L4–L6, L7, L8, L12 and L14). The others each miss one or two named pieces of evidence.
 
 | Lecture | Status | Done | Pending |
 | --- | --- | --- | --- |
-| L4–L6 Retrieval | Partial | 59 scheme records with URL and date; bge-m3 vectors + BM25 fused with RRF; LLM reranker; **query rewrite (multi-query) added and on in the live search tool, 11 Nov**; **Recall@5 before/after recorded** on 32 queries in `docs/retrieval-evaluation.md` (BM25 0.625 → hybrid 1.000 on dev, 25 Oct; held-out 0.917 → 1.000 with the rewrite, 3 runs) | Review the 32 retrieval labels (all still pending review); the reranker is an LLM, not a cross-encoder (say why) |
+| L4–L6 Retrieval | Done | 59 scheme records with URL and date; bge-m3 vectors + BM25 fused with RRF; LLM reranker; **query rewrite (multi-query) added and on in the live search tool, 11 Nov**; **Recall@5 before/after recorded** on 32 queries in `docs/retrieval-evaluation.md` (BM25 0.625 → hybrid 1.000 on dev, 25 Oct; held-out 0.917 → 1.000 with the rewrite, 3 runs) | 32 retrieval labels reviewed by Snehal on 30 Oct (marked in the file on 11 Nov); still to write down why the reranker is an LLM, not a cross-encoder |
 | L7 MCP tools | Done | 4 FastMCP servers (schemes_kb, rule_engine, doc_check, mock_portal); read/write marked in `docs/tool-list.md`; only the application agent can write | Confirm every tool has its own test |
 | L8 Orchestration | Done | LangGraph, typed state, checkpointer, resume (`test_resume_cli`), graph diagram (`graph/diagram.py`) | Rehearse the live stop-and-resume demo |
 | L9 Memory | Partial | Long-term store with consent, expiry and "forget me"; memory policy; `evaluation/memory_eval.py` (memory on vs off) | Put the memory on/off result in the report; add short-term trimming or summarising |
@@ -102,7 +102,7 @@ Merge the two open PRs first, because much of the evidence above lives in them. 
 - [ ] Planning: show the plan to the user, replan when a tool result contradicts it, capture the trace (role 3)
 - [ ] Short-term memory trimming or summarising; put the memory on/off result in the report (role 2)
 - [ ] Caseworker referral for can't-tell verdicts and conflicting documents (role 3)
-- [ ] Review the 32 retrieval labels. If possible, add colloquial questions ("widow pension") written by someone other than role 2 (role 1, role 5)
+- [ ] If possible, add colloquial retrieval questions ("widow pension") written by someone other than role 2; the 32 existing labels were reviewed by Snehal on 30 Oct (role 1, role 5)
 - [ ] Architecture diagram with numbered walkthrough, contribution log in the repo, slides, backup demo recording (role 1)
 - [ ] Rehearse the live demos: resume after a stop, edit invalidating an approval, demo 1, demo 3 (role 1)
 
