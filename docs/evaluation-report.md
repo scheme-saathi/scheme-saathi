@@ -2,7 +2,7 @@
 
 *Experiments E1–E4, run 8–11 November 2026. Every run is listed in [experiment-log.md](experiment-log.md).*
 
-**Summary.** Eligibility decided by the deterministic rule engine is right on every gold verdict (39/39 development, 95/95 held-out) at no model cost. Letting a model decide directly from the scheme text is 91% right, never wrong at a numeric boundary, but wrong on conditions the text it is shown does not state (E4). The agent team is right whenever it gives an answer but, in the last measured run, answered only about a third of the scheme verdicts; a fix for the main cause followed (E1). The defences block all 77 attacks without blocking legitimate work (E2). The reviewed lessons improved rule extraction on development schemes but not on held-out schemes (E3). With memory on, a returning citizen is asked 15.9% fewer questions, and no verdict changes (L9).
+**Summary.** Eligibility decided by the deterministic rule engine is right on every gold verdict (39/39 development, 95/95 held-out) at no model cost. Letting a model decide directly from the scheme text is 91% right, never wrong at a numeric boundary, but wrong on conditions the text it is shown does not state (E4). With the same model and budget, the agent team got 54% of held-out verdicts right, against 100% for the fixed workflow and the single agent, mainly because it missed the right scheme for 39% of verdicts; it cost about 20 times as much as the single agent and took about 69 seconds a case (E1). The defences block 85 of 96 attacks without blocking legitimate work; the 11 that get through (a planted scam page, requests to misstate facts, rules from unofficial sources) are known gaps whose defences are pending (E2). The reviewed lessons improved rule extraction on development schemes but not on held-out schemes (E3). With memory on, a returning citizen is asked 15.9% fewer questions, and no verdict changes (L9).
 
 ## 1. Setup
 
@@ -22,7 +22,7 @@ Each experiment is a config file run by one runner: `tests/evaluation/run_eval.p
 | Role | Model |
 | --- | --- |
 | Agent team (C2): supervisor and specialists | `openai/gpt-4o-mini` |
-| Simulated citizen (a different family, as the brief requires) | `meta-llama/llama-3.3-70b-instruct` |
+| Simulated citizen (a different family, as the brief requires) | `anthropic/claude-haiku-5.5` for the E1 runs of 11 Nov; `meta-llama/llama-3.3-70b-instruct` for the earlier development runs (8–9 Nov) |
 | Rule extractor (E3 held-out), LLM-direct checker (E4) | `openai/gpt-4.1-mini` |
 | Reflection step (E3) | `openai/gpt-4o-mini` |
 
@@ -30,38 +30,54 @@ The simulated citizen plays a persona from its hidden profile and answers only w
 
 ## 2. E1: does the agent justify its cost?
 
-| | C0 fixed workflow | C1 single agent | C2 agent team |
+The final comparison ran on the held-out split (50 cases, 95 verdicts) on 11 Nov. C1 and C2 used `openai/gpt-4o-mini` for every agent, C2's simulated citizen was `anthropic/claude-haiku-5.5`, and every arm had a limit of 150 MCP calls per case. All runs come from commit `5439dd5`. C0 is deterministic and ran once; C1 and C2 ran three times each. Values are mean (min–max) over the runs, from `tests/evaluation/e1_report.py`, which refuses runs that differ in split, cases, model, budget or citizen.
+
+| Held-out, 50 cases | C0 fixed workflow | C1 single agent | C2 agent team |
 | --- | --- | --- | --- |
-| Split, runs | development and held-out, 1 run (deterministic) | development, 1 run (`gpt-4o-mini`) | development, 1 run (agents `gpt-4o-mini`, citizen `claude-haiku-5.5`) |
-| Verdicts right | 39/39 and 95/95 | 39/39 | 22/39 (0.56) |
-| Cases fully right | 21/21 and 50/50 | 21/21 | 8/21 |
-| Right when an answer was given | 100% | 100% | 85% (22 of 26) |
-| Verdicts answered | 100% | 100% | 67% (26 of 39) |
-| Policy violations (eligibility claimed without the rule engine) | 0 | 17 of 21 cases flagged (keyword heuristic, not reviewed) | 0 |
-| Questions per case, mean (max) | 5.5 (14) and 6.7 (16) | profile given, none asked | 7.6 (12) |
-| Tool calls per case, mean | 16.5 and 18.6 | not recorded here | 60.5 |
-| Cost per case | no model tokens | about $0.0004 (estimated, unverified price table) | about $0.0067 (estimated: 760k agent and 156k citizen tokens in total) |
-| Latency, median (p95) | 0.28 s (0.71 s) and 0.29 s (0.77 s) | 5.8 s median | 48.8 s (70.4 s) |
-| Errors (failed cases) | 0 | 0 | 0 |
+| Verdicts right | 100% (95/95) | 100% in every run | 54.0% (50.5–56.8%) |
+| Cases fully right | 50/50 | 50/50 in every run | 45% (40–50%) |
+| Verdicts answered | 100% | 100% | 58.6% (57.9–60.0%) |
+| Right when it answered | 100% | 100% | 92.2% (87.3–94.7%) |
+| Right scheme on its shortlist | given | given | 61% (60–62%) |
+| Policy violations: eligibility claimed without the rule engine | 0 | 35 of 50 cases flagged (33–37) by the keyword check; not reviewed, see below | 0 |
+| Cases where a confirmed fact differed from the hidden profile | 0 | — (profile given) | 5.3 (5–6) |
+| Questions per case, mean | 6.7 | none (profile given) | 9.3 (9.1–9.7) |
+| Tool calls per case, mean | 18.6 | 2.0 | 74.5 (72.8–76.8) |
+| Latency, median (p95) | 0.13 s (0.39 s) | 6.3 s (10.8 s) | 68.9 s (98.2 s) |
+| Estimated cost per case | no model tokens | $0.0004 | $0.0081 ($0.0078–0.0085) |
+| Failed cases | 0 | 0 | 0 |
 
-C0 gives the person the rule engine's answers for the case's candidate schemes, asking one question at a time from the persona's facts; it is the upper bound for verdict accuracy because it never has to pick schemes or read free text. The C2 run (commit `dbc5a49`, 49 live schemes) shows two problems. **It picks its own schemes**, and the right one was missing from its shortlist for 11 of 39 verdicts. **It stopped without an answer** in 11 of 21 cases: at its 12-question limit it said the results were "in the list below" but gave none. That second cause was fixed the same day (the person now confirms the facts given and gets every verdict, open ones as "can't tell"); the agent team has not been re-measured since. Earlier C2 runs led to fixes for unbacked eligibility claims (now blocked by an output guardrail), personal questions sent to scheme Q&A, a bare "No" not being read as an answer, and one "don't know" ending the whole intake.
+On development (21 cases, 39 verdicts, one run each on 10–11 Nov, same models): C0 and C1 39/39; C2 22/39, answering 67% and right on 85% of those.
 
-C1 (`graph/baseline.py`, run with `tests/evaluation/run_eval.py --config tests/evaluation/configs/c1_single_agent.json --model <model-id>`) was given the candidate schemes and the full profile, so it answers all 39 verdicts by calling the rule engine; it is not asked questions, so it is not directly comparable with C2's conversation. All three arms use a 150 tool-call limit; `tests/evaluation/e1_report.py` rejects runs with different models, budgets, splits or cases. The C2 row is a fresh development run on 11 Nov with the same agent model as C1 and a different-family citizen (`anthropic/claude-haiku-5.5`), which fixed the earlier all-cases failure (`CITIZEN_MODEL` was unset). The first C2 attempt had the citizen on the agent's family and was rejected by the runner; a first model choice was retired, and a second was blocked by a workspace guardrail. Neither produced a measurement. C2 gave an answer for 26 of 39 verdicts and was right on 22 of them. The other 13 verdicts are nine for schemes C2 never evaluated (shortlist recall 0.77) and four with no final answer. Its cost is an estimate from the price table, which has no invoice behind it.
+**What it shows.**
 
-**Not done:** the final comparison of C0, C1 and C2 on held-out, three times each with the same model, tools and budget, has not been run. Until it is, E1 cannot say whether the agent team justifies its cost.
+- **The result holds across runs and splits.** C2 got 54% of held-out verdicts right (50.5–56.8% over three runs) and 56% on development, far below the 100% of C0 and C1.
+- **The main cause is the shortlist.** C2 chooses its own schemes, and the right scheme was missing for 39% of verdicts (61% shortlist recall, against 77% on development). C0 and C1 are given the candidate schemes, so they never face this. E4 points the same way: choosing the right few schemes matters more than the order of questions.
+- **It was not always right when it answered.** At 92% right when it answered, about four verdicts per run that C2 gave the person were wrong. In 5–6 cases per run a fact the person confirmed differed from their hidden profile, so the rule engine was given a wrong fact; these are the likely source, and the `wrong` list in each run's `summary.json` names them.
+- **No eligibility claims without the rule engine in C2.** The output guardrail blocks them. C1's 35 flagged cases come from the keyword check, which was written for C2's replies; C1's free-form summary after calling the rule engine ("You are eligible for C01…") trips it. They have not been reviewed and are probably false positives; the claim judge (section 7) is the way to check them.
+- **Cost and time.** C2 cost about 20 times as much as C1 per case and took about 11 times as long; C0 needs no model and answers in a fraction of a second.
+
+**Conclusion.** On this task, with the same model and budget, the agent team does not justify its cost. When the candidate schemes are known, the fixed workflow gives every verdict right, at once and for nothing. What the agent team adds is choosing schemes and interviewing in free text, and today that loses more than it gains: it misses 39% of the right schemes and gives some wrong verdicts. It would be worth its cost only if it found the schemes itself reliably, so the shortlist is the next thing to fix.
+
+**Limits of the comparison.** C0 and C1 get the gold candidate schemes; C1 also gets the profile, asks no questions, and is scored on its rule-engine results, not on what its final reply said. C2 does the whole task, and a verdict counts only once the person was told it. So E1 compares systems end to end; it is not a clean test of the number of agents alone. C2's cost includes the simulated citizen, which stands in for the person. Costs are estimates from `observability/model_prices.json`, not an invoice.
+
+**History.** The first C2 development run (9 Nov, citizen `llama-3.3-70b`) answered only 36% of verdicts, mostly because it stopped at its 12-question limit without giving results; that was fixed the same day. Earlier runs led to fixes for unbacked eligibility claims (now blocked by an output guardrail), personal questions sent to scheme Q&A, a bare "No" not read as an answer, and one "don't know" ending the intake. The 11 Nov development run had both the fix and a new citizen (`claude-haiku-5.5`), so its gain from 14/39 to 22/39 cannot be split between the two. All the numbers in the table use the Haiku citizen.
 
 ## 3. E2: do the defences work?
 
-From the red-team suite (`tests/redteam/`, rerun 11 Nov on current code, same result as 9 Nov; code defences, no model needed). The full write-up is [redteam-report.md](redteam-report.md):
+From the red-team suite (`tests/redteam/`, code defences, no model needed). On 11 Nov a second person added 19 attacks from the brief's Scheme Saathi list that the first 77 did not cover; see [tests/redteam/README.md](../tests/redteam/README.md). [redteam-report.md](redteam-report.md) describes the first 77.
 
 | | Defences off | Defences on |
 | --- | --- | --- |
-| Attack success (77 attacks, 10 categories) | 80.5% | **0%** |
-| Legitimate work blocked (24 cases) | 8.3%\* | **0%** |
+| Attack success, first 77 attacks (9 and 11 Nov) | 80.5% | 0% |
+| Attack success, all 96 attacks (11 Nov) | 79.2% | **11.5%** (11 attacks) |
+| Legitimate work blocked, 29 cases | 6.9%\* | **0%** |
 
 \* With defences off, two "text reaches the model as data" checks fail as a side effect of the off-switch, not a measurement.
 
-Categories cover sensitive identifiers in input, agent output, tool permissions, budget and rate limits, portal write capability, approval bound to the exact payload, the draft-rule preview gate, household isolation and outside text staying data. **Limits** (from the suite's README): it tests code defences, not whether a model obeys injected text; approval attacks run against the no-model graph; and the same person wrote the guards and the attacks, so the brief's attacker/defender separation is not met.
+The new attacks found three gaps, pinned in `tests/redteam/known_gaps.json` until their defences land: a planted scam page asking for a fee to a UPI ID reaches the person (4 attacks), requests to misstate income or age or to hide a fact are not refused (5), and rules from an unofficial source decide verdicts (2). Attempts to read another household's long-term memory (4) and to get ID numbers into traces and logs (4) were blocked.
+
+Categories cover sensitive identifiers in input, agent output, tool permissions, budget and rate limits, portal write capability, approval bound to the exact payload, the draft-rule preview gate, household isolation and outside text staying data. **Limits** (from the suite's README): it tests code defences, not whether a model obeys injected text; approval attacks run against the no-model graph; and the same person wrote the guards and the first 77 attacks; only the 19 added on 11 Nov meet the brief's attacker/defender separation.
 
 ## 4. E3: did the lessons help?
 
@@ -139,7 +155,7 @@ Each of the 50 synthetic households makes a first visit on each of three schemes
 - **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
 - **Role separation.** The person who labelled the held-out personas also fixed agent behaviour, and verified the held-out gold rules used in E3 while reviewing its lessons. Nothing was tuned after held-out results were seen.
 - **Judge calibrated on development messages.** An offline claim-classification judge was calibrated against human-reviewed labels on 20 development messages, reaching 20/20 agreement (Cohen's kappa 1.0). The labels were revised after seeing judge results and AI suggestions, so this small trial is not an independent validation; a fresh independently labelled evaluation is still needed. The judge detects whether a claim is made, not whether it is backed by rule-engine evidence. The existing unbacked-claim check remains keyword-based.
-- **E1 incomplete.** C0, C1 and C2 each have one development run (same model and budget); the held-out three-run comparison is missing, so E1 cannot yet say whether the agent team justifies its cost. On development it did not: 8/21 cases right against 21/21, at about 16 times C1's estimated cost and 8 times its latency.
+- **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2). C1's 35 flagged replies are unreviewed keyword hits.
 - **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts (E3 development F1 moved by 0.015–0.02), so small differences are not reliable.
 - **Memory evaluation on development cases only.** The 50 households come from the repository and are not held-out cases; held-out memory cases written by someone who did not build memory are still to do. It covers three schemes and one stored field.
 - **Order of work.** The 34 development rule sets were drafted by an AI before the extractor existed and then reviewed by a person; the extractor was measured against the reviewed versions.
@@ -147,8 +163,10 @@ Each of the 50 synthetic households makes a first visit on each of three schemes
 ## 8. Reproduce
 
 ```bash
-python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_workflow.json --split held_out --final
-python tests/evaluation/run_eval.py --config tests/evaluation/configs/c2_agent_team.json
+python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_workflow.json --model openai/gpt-4o-mini --split held_out --final
+python tests/evaluation/run_eval.py --config tests/evaluation/configs/c1_single_agent.json --model openai/gpt-4o-mini --split held_out --final   # 3 times
+python tests/evaluation/run_eval.py --config tests/evaluation/configs/c2_agent_team.json --model openai/gpt-4o-mini --split held_out --final     # 3 times
+python tests/evaluation/e1_report.py --c0 <run> --c1 <run> <run> <run> --c2 <run> <run> <run>
 python tests/redteam/run_redteam.py
 python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_extraction_configs/rx1_playbook_gpt41mini.json --split held_out --final
 python tests/evaluation/run_e4.py --config tests/evaluation/e4_configs/e4_llm_direct_gpt41mini.json --split held_out --final --repeat 3
