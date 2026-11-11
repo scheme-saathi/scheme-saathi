@@ -25,7 +25,8 @@ def ignore_local_dotenv(monkeypatch):
 
     real = dotenv.load_dotenv
     for module in list(sys.modules.values()):
-        if getattr(module, "load_dotenv", None) is real:
+        # __dict__, not getattr: getattr on lazy modules (transformers) imports optional packages.
+        if getattr(module, "__dict__", {}).get("load_dotenv") is real:
             monkeypatch.setattr(module, "load_dotenv", lambda *args, **kwargs: False)
     for name in DOTENV_SETTINGS:
         monkeypatch.delenv(name, raising=False)

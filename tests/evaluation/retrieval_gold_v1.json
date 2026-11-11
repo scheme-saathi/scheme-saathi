@@ -14,30 +14,31 @@
   "evidence_policy": "Each required_evidence_group must be covered. Any one ref in any_of satisfies that group. Match source type, scheme ID and source_path for pages, or PDF hash/document/page/table. Require the quoted evidence, not just citation presence: overlapping chunk citations can refer to a passage only partially included. Strip HTML tags/entities for table text checks. Source text is truth for this corpus snapshot; all conditions in reference_answer_en must be preserved.",
   "metrics_policy": "Report scheme Hit@5 and required-evidence-group coverage@5 separately, split and language breakdowns, and latency. Do not count translated cases as independent intents. Negative no_results checks filters; abstain checks belong to answer generation/abstention, which current retrieval alone does not implement. This dataset does not define all relevant chunks, so exhaustive chunk Precision@5/MAP is not justified.",
   "reference_answer_language": "en; Hindi questions share the same fact-based reference, not an exact-string answer requirement.",
+  "corpus_manifest_note": "Hashes refreshed on 11 Nov 2026: the 28 Oct re-collection changed only collected_on and link metadata in these six files; every labelled evidence_text is still present verbatim. Labels were not changed.",
   "corpus_manifest": [
     {
       "path": "data/schemes/kvyoj.json",
-      "sha256": "62f70d15c41764470cb604ae4620e37f8206ae9854c1505d731c1fdefd449f7a"
+      "sha256": "89c45ecb7d6e4964b9bc26a61ebb3a5460ec00070611436b810e4d7993688edb"
     },
     {
       "path": "data/schemes/mda-fert.json",
-      "sha256": "61449ff550ad0f82943ae4cd6a428dc9fdc9c8e39badf3eb890fd2409cf6d0df"
+      "sha256": "a56c05267c6222b7bf0f0971152e9d59dd1f9f390e209090f0a80ee039945fa9"
     },
     {
       "path": "data/schemes/mi-hma-nhdp.json",
-      "sha256": "25d6322db5efad3ae23636a2a6aa1d523b3be68d38ca485b880a454b6437e832"
+      "sha256": "ef6c72150e02d53d8bcffc194f77bb05458deb2a809dc77dff62426b855cf72d"
     },
     {
       "path": "data/schemes/prism-c2-fwmpkhttptt.json",
-      "sha256": "54348ec2055cf0797b8424b73bb787c2c03251ef4c8e75e4b70571a1d37de9ad"
+      "sha256": "af255b70672dd2c4f07e19291b07c8175fd01306cf511b3a903df7bb75452670"
     },
     {
       "path": "data/schemes/rkvp.json",
-      "sha256": "0ed07412fa8b01fabe06b5aefdf5fe025b5c5f152a53bd7dab305bbe5be79ad8"
+      "sha256": "e990b1f2b36c718c8fb764b4f0cc7c3db002734fc6e85a6d4ce4985fc5342973"
     },
     {
       "path": "data/schemes/sui.json",
-      "sha256": "37475137ddb98c344fe72385bc231a40c135059c1d49417517449c104c867c99"
+      "sha256": "43f0488aa36bde9496c82e7bb56f34b72c77d8b8eebb2568d19d6637f8d8907a"
     },
     {
       "document_id": "C09-b1225d5f721b38b7042d5ce73bfddc5b379cbf33ab5adb94012e24f5dbc0a5d2",

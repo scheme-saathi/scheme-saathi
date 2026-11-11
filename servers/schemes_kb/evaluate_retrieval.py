@@ -87,6 +87,7 @@ def main():
     parser.add_argument("--allow-pending", action="store_true", help="Run provisional comparisons with unreviewed labels.")
     parser.add_argument("--top-k", type=int, choices=range(1, 21), default=5)
     parser.add_argument("--rerank", action="store_true", help="Reorder candidates with the specialist LLM.")
+    parser.add_argument("--rewrite", action="store_true", help="Add an English scheme-wording rewrite of each question (multi-query).")
     args = parser.parse_args()
     if not args.dataset.is_file():
         parser.error("Evaluation dataset is not bundled. Provide a local file with --dataset PATH.")
@@ -105,7 +106,7 @@ def main():
 
     from servers.schemes_kb.search import get_client, get_model, search_schemes
     from functools import partial
-    search = partial(search_schemes, method=args.method, rerank=args.rerank)
+    search = partial(search_schemes, method=args.method, rerank=args.rerank, rewrite=args.rewrite)
     client = get_client()
     snapshots = []
     for collection in client.list_collections():
@@ -145,6 +146,7 @@ def main():
                 row.update(score_case(case, response["results"]))
                 row["results"] = response["results"]
                 row["warnings"] = response["warnings"]
+                row["queries"] = response["queries"]
             except Exception as error:
                 row.update(status="error", error=str(error), latency_ms=(perf_counter() - started) * 1000)
         rows.append(row)
@@ -152,7 +154,7 @@ def main():
     languages = sorted({r["language"] for r in rows})
     report = {
         "dataset_id": dataset["dataset_id"], "dataset_sha256": hashlib.sha256(args.dataset.read_bytes()).hexdigest(),
-        "method": args.method, "rerank": args.rerank, "split": args.split, "top_k": args.top_k,
+        "method": args.method, "rerank": args.rerank, "rewrite": args.rewrite, "split": args.split, "top_k": args.top_k,
         "provisional": bool(pending), "label_statuses": sorted({c["label_status"] for c in cases}),
         "model_load_ms": model_load_ms, "index_snapshots": snapshots,
         "retrieval_settings": {"candidate_k": args.top_k if args.method == "vector" and not args.rerank else 20, "bm25_k1": 1.2, "bm25_b": 0.75, "rrf_constant": 60, "tokenizer": "NFC-casefold-Unicode-LNM", "lexical_statistics": "filtered eligible corpus"},
@@ -160,7 +162,7 @@ def main():
         "metric_notes": "Exact normalized evidence text plus matching citation; conservative proxy, not semantic grading. Errors count as failed cases. Translation pairs are correlated. Latency excludes initial model load; first-query warmup may remain. Abstention is unsupported, not counted as passed.",
         "cases": rows,
     }
-    output = PROJECT_ROOT / "data/evaluation-runs" / f"{args.method}{'-rerank' if args.rerank else ''}-{args.split}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}.json"
+    output = PROJECT_ROOT / "data/evaluation-runs" / f"{args.method}{'-rewrite' if args.rewrite else ''}{'-rerank' if args.rerank else ''}-{args.split}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report["summary"], indent=2))
