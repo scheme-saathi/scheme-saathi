@@ -21,6 +21,9 @@ class GraphState(TypedDict, total=False):
     actor_id: str
     scheme_ids: list[str]
     include_draft: bool
+    # "planned" (default): ask the field that settles the most open verdicts. "fixed": ask the
+    # candidate schemes' fields in their fixed form order (experiment E4's questionnaire baseline).
+    question_order: str
     profile: dict[str, Any]
     questions_asked: int
     last_asked: str  # the field intake just filled; only verdicts waiting on it can change
@@ -54,8 +57,14 @@ def plan_node(state: GraphState) -> dict[str, Any]:
 
 
 def _next_field(state: GraphState) -> str | None:
-    """The field that settles the most open verdicts; fields already asked are skipped."""
-    return tools.next_question(state["verdicts"], declined=list(state["profile"]))
+    """The field that settles the most open verdicts; fields already asked are skipped.
+
+    With a fixed questionnaire the next field is simply the next unasked one in form order;
+    both orders stop once no answer can settle an open verdict, so only the order differs."""
+    planned = tools.next_question(state["verdicts"], declined=list(state["profile"]))
+    if planned is None or state.get("question_order", "planned") != "fixed":
+        return planned
+    return next(iter(unanswered(state)), None)
 
 
 def intake_node(state: GraphState) -> dict[str, Any]:
