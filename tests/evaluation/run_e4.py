@@ -161,18 +161,20 @@ def run(config: dict[str, Any], split: str, repeat: int = 1, limit: int | None =
 
 def markdown(meta: dict[str, Any], summary: dict[str, Any]) -> str:
     eng, llm = summary["rule_engine"], summary["llm"]
-    fmt = lambda s: f"{s['mean']:.3f} ({s['min']:.3f}–{s['max']:.3f})"
-    cnt = lambda s: f"{s['mean']:.1f} ({s['min']}–{s['max']})"
+    # A group can be empty (a short --limit run may have no boundary or no other verdicts).
+    fmt = lambda s: "—" if s is None else f"{s['mean']:.3f} ({s['min']:.3f}–{s['max']:.3f})"
+    cnt = lambda s: "—" if s is None else f"{s['mean']:.1f} ({s['min']}–{s['max']})"
+    one = lambda v: "—" if v is None else f"{v:.3f}"
     lines = [
         "# E4: the LLM deciding directly, against the rule engine", "",
         f"Split: {meta['split']}, {summary['verdicts']} verdicts ({summary['boundary_verdicts']} at a boundary). "
         f"Model: `{meta['config'].get('model')}`. LLM runs: {summary['repeat']}, mean (min–max).", "",
         "| | Rule engine | LLM directly from the text |", "| --- | --- | --- |",
-        f"| Accuracy, all verdicts | {eng['accuracy']:.3f} | {fmt(llm['accuracy'])} |",
-        f"| Accuracy, boundary verdicts | {eng['boundary_accuracy']:.3f} | {fmt(llm['boundary_accuracy'])} |",
-        f"| Accuracy, other verdicts | {eng['other_accuracy']:.3f} | {fmt(llm['other_accuracy'])} |",
-        f"| Wrong verdicts | {eng['errors']} | {cnt(llm['errors'])} |",
-        f"| Boundary errors | {eng['boundary_errors']} | {cnt(llm['boundary_errors'])} |", "",
+        f"| Accuracy, all verdicts | {one(eng['accuracy'])} | {fmt(llm.get('accuracy'))} |",
+        f"| Accuracy, boundary verdicts | {one(eng['boundary_accuracy'])} | {fmt(llm.get('boundary_accuracy'))} |",
+        f"| Accuracy, other verdicts | {one(eng['other_accuracy'])} | {fmt(llm.get('other_accuracy'))} |",
+        f"| Wrong verdicts | {eng['errors']} | {cnt(llm.get('errors'))} |",
+        f"| Boundary errors | {eng['boundary_errors']} | {cnt(llm.get('boundary_errors'))} |", "",
         "LLM errors in the first run:", "",
     ]
     lines += [f"- {w}" for w in summary["llm_runs"][0]["wrong"]] or ["- none"]

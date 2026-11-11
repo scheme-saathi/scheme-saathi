@@ -83,3 +83,13 @@ def test_a_fixed_questionnaire_reaches_the_same_verdicts():
     _, a = run_eval.run(planned, "development", limit=6, quiet=True)
     _, b = run_eval.run(fixed, "development", limit=6, quiet=True)
     assert a["verdict_accuracy"] == b["verdict_accuracy"] == 1.0
+
+
+def test_the_report_handles_a_run_with_only_boundary_verdicts(tmp_path):
+    def right(value):
+        return {"verdict": "eligible", "reason": "", "clauses": []}
+    config = e4.load_config(CONFIG)
+    rows, summary = runner.run(config, "development", limit=3, decide=right, workers=1, quiet=True)
+    assert summary["rule_engine"]["other_accuracy"] is None  # the first 3 cases are all boundary verdicts
+    out = runner.write_run(config, "development", rows, summary, runs_dir=tmp_path)
+    assert "| Accuracy, other verdicts | — | — |" in (out / "e4_report.md").read_text()
