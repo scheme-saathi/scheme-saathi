@@ -8,7 +8,9 @@ from observability.config import Settings, settings
 from observability.hooks import (
     note_run_error,
     record_approval,
+    record_conversation_started,
     record_memory_operation,
+    record_sensitive_id,
     record_thread_expired,
     record_tool_call,
 )
@@ -31,8 +33,10 @@ __all__ = [
     "install_observability",
     "note_run_error",
     "record_approval",
+    "record_conversation_started",
     "record_llm_call",
     "record_memory_operation",
+    "record_sensitive_id",
     "record_thread_expired",
     "record_tool_call",
     "set_metrics",

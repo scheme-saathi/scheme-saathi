@@ -1,0 +1,8 @@
+{
+  "name": "c0_fixed_questionnaire",
+  "description": "E4 (questions): C0 with a fixed questionnaire. The candidate schemes' fields are asked in their fixed form order instead of the field that settles the most open verdicts; it stops at the same point (no answer can settle an open verdict). Compare with c0_fixed_workflow (planned order) on questions per case; verdicts must match.",
+  "system": "fixed_workflow",
+  "scheme_selection": "candidates",
+  "tool_call_limit": 1200,
+  "question_order": "fixed"
+}

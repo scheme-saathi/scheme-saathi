@@ -92,7 +92,65 @@ FINAL_CHECK_OUTCOMES = frozenset(
     }
 )
 VERDICT_KINDS = frozenset({"chat_turn", "legacy_chat", "application_start"})
+# In the chat graph the verdicts arrive when the person confirms their facts, which is a decision run. That run
+# can stop at the verdicts or go straight on to a draft, so any settled outcome counts, but only for the decision
+# that answered the fact confirmation: approving or editing the draft later does not count the same verdicts again.
+CONFIRMATION_VERDICT_OUTCOMES = FINAL_CHECK_OUTCOMES | {"draft_needs_information"}
 VERDICTS = frozenset({"eligible", "not_eligible", "cant_tell"})
+TRACE_RESULTS = ("exported", "sampled_out", "dropped", "failed")
+
+# Outcomes that leave a waiting draft where it was: the caller was refused, or the server failed before deciding.
+KEEPS_APPROVAL_WAITING = SERVER_SIDE_ERRORS | {"refused", "conflict", "invalid_request", "validation_error", "cancelled"}
+_waiting_approvals: set[str] = set()  # threads with a draft waiting; in memory only, never exported
+_waiting_lock = threading.Lock()
+
+
+def note_approval_state(thread: str | None, outcome: str) -> None:
+    """Track which threads have a draft waiting for approval, from how each run on the thread ended."""
+    if not thread:
+        return
+    with _waiting_lock:
+        if outcome == "awaiting_approval":
+            _waiting_approvals.add(thread)
+        elif outcome not in KEEPS_APPROVAL_WAITING:
+            _waiting_approvals.discard(thread)
+
+
+def forget_waiting_approvals(threads: Iterable[str]) -> None:
+    """Threads that were deleted, forgotten or expired (app/thread_registry.py): their drafts wait no longer."""
+    with _waiting_lock:
+        _waiting_approvals.difference_update(threads)
+
+
+def approvals_waiting() -> int:
+    """Drafts waiting now. shortcut: the count restarts at 0 with the app; read it from the store if that matters."""
+    with _waiting_lock:
+        return len(_waiting_approvals)
+
+
+def start_series_at_zero(metrics: Metrics) -> None:
+    """Create the series that alerts and ratios read, at 0.
+
+    Prometheus's rate() and increase() miss the first increment of a series it never saw at 0, so the first
+    error, can't-tell verdict or lost trace would otherwise not count, and an error ratio would be empty, not 0.
+    """
+    for kind in RUN_KINDS:
+        for outcome in SERVER_SIDE_ERRORS:
+            metrics.runs.labels(kind=kind, outcome=outcome)
+    for verdict in VERDICTS:
+        metrics.verdicts.labels(verdict=verdict)
+    for result in TRACE_RESULTS:
+        metrics.traces.labels(result=result)
+    for stage in ("input", "output"):
+        metrics.guardrail_blocks.labels(stage=stage)
+    for kind in ("chat_turn", "chat_decision"):  # the questions-per-conversation panel
+        metrics.runs.labels(kind=kind, outcome="needs_information")
+    from observability.hooks import ID_TYPES, SENSITIVE_STAGES  # hooks imports this module
+
+    for stage in SENSITIVE_STAGES:
+        for id_type in ID_TYPES | {"other"}:
+            metrics.sensitive_ids.labels(stage=stage, id_type=id_type)
+    metrics.approvals_waiting.set_function(approvals_waiting)
 
 _OUTCOME_ALIASES = {"needs_details": "needs_information"}
 
@@ -176,6 +234,7 @@ class RunRecord:
     output_tokens: int = 0
     cost: float = 0.0
     thread: str | None = None
+    answered_confirmation: bool = False  # a chat decision on the fact-confirmation form, not on a draft
     keep_spans: bool = False
     spans: list[Span] = field(default_factory=list)
     spans_dropped: int = 0
@@ -285,6 +344,12 @@ class RunRecorder:
             self._record.verdicts = verdicts
 
     @guarded
+    def set_answered_confirmation(self) -> None:
+        """This chat decision answered the fact confirmation, so the verdicts it reaches are the settled ones."""
+        if self.active:
+            self._record.answered_confirmation = True
+
+    @guarded
     def set_thread(self, thread_id: Any) -> None:
         """The conversation this run belongs to. It is hashed before it goes to a tracing backend."""
         if self.active and isinstance(thread_id, str) and thread_id:
@@ -329,13 +394,17 @@ class RunRecorder:
         metrics.run_duration.labels(kind=kind).observe(duration)
         metrics.run_tool_calls.labels(kind=kind).observe(self._record.tool_calls)
         self._observe_models(metrics)
+        note_approval_state(self._record.thread, final)
         if final in SERVER_SIDE_ERRORS:
             metrics.run_errors.labels(kind=kind, error_type=self._record.error_type or "unknown").inc()
         if final == "output_blocked":
             metrics.guardrail_blocks.labels(stage="output").inc()
         elif final == "validation_error":
             metrics.guardrail_blocks.labels(stage="input").inc()
-        if kind in VERDICT_KINDS and final in FINAL_CHECK_OUTCOMES and isinstance(self._record.verdicts, dict):
+        settled = (kind in VERDICT_KINDS and final in FINAL_CHECK_OUTCOMES) or (
+            kind == "chat_decision" and self._record.answered_confirmation and final in CONFIRMATION_VERDICT_OUTCOMES
+        )
+        if settled and isinstance(self._record.verdicts, dict):
             for verdict in self._record.verdicts.values():
                 name = verdict.get("verdict") if isinstance(verdict, dict) else None
                 if name in VERDICTS:

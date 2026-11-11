@@ -61,8 +61,23 @@ groups:
         annotations:
           summary: More than 10% of run traces are not reaching the tracing backend.
 
+      # The brief's operations alert: a jump in can't-tell verdicts points at the corpus or the rule extractor.
+      # Fires when the last hour's can't-tell share is over 20% and at least double the last day's, with 20+ verdicts.
+      - alert: SchemeSaathiCantTellRateJump
+        expr: |
+          scheme_saathi:eligibility_verdicts:cant_tell_ratio_rate1h > 0.2
+          and scheme_saathi:eligibility_verdicts:cant_tell_ratio_rate1h > 2 * scheme_saathi:eligibility_verdicts:cant_tell_ratio_rate1d
+          and sum(increase(scheme_saathi_eligibility_verdicts_total[1h])) >= 20
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: The share of can't-tell verdicts has jumped. Check recent scheme data and extracted rules.
+
+      # Not increase(): a series born on its first unpriced call starts at 1, so increase() would read 0 and never fire.
+      # The count resets when the app restarts, which it must do anyway to load a new price file.
       - alert: SchemeSaathiUnpricedModelCalls
-        expr: increase(scheme_saathi_llm_unpriced_calls_total[1h]) > 0
+        expr: scheme_saathi_llm_unpriced_calls_total > 0
         for: 5m
         labels:
           severity: info

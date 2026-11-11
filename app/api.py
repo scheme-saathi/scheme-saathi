@@ -34,7 +34,13 @@ from app.memory_api import FORGET_NOTE, optional_memory, remember_submission, ro
 from app.memory_runtime import forget_memory, memory_scope
 from app.periodic import PeriodicTask
 from app.thread_registry import ThreadRegistry, TouchResult
-from observability import RunRecorder, install_observability, record_memory_operation, record_thread_expired
+from observability import (
+    RunRecorder,
+    install_observability,
+    record_conversation_started,
+    record_memory_operation,
+    record_thread_expired,
+)
 from graph.memory_nodes import memory_config
 
 if __package__:
@@ -341,7 +347,8 @@ class AgentWorkflowService:
             self._use_thread(thread_id, actor_id)
         self._check_owner(thread_id, actor_id)
         config = self._config(thread_id, memory_scope)
-        if self._pending_approval(config) is None:
+        pending = self._pending_approval(config)
+        if pending is None:
             raise NoPendingApprovalError("There is no draft waiting for approval in this conversation.")
 
         decision = {
@@ -351,7 +358,8 @@ class AgentWorkflowService:
             "citizen_agreed": citizen_agreed,
         }
         result = self.agent_graph.invoke(Command(resume=decision), config)
-        return self._finish_run(thread_id, f"[decision: {action}]", result)
+        finished = self._finish_run(thread_id, f"[decision: {action}]", result)
+        return {**finished, "answered": pending.get("kind")}
 
     def _config(self, thread_id: str, memory_scope: MemoryScope | None = None) -> dict[str, Any]:
         """The run config; the scope, when memory is on, comes from the verified token."""
@@ -406,6 +414,9 @@ class AgentWorkflowService:
             "result": result,
         }
         self.conversations[thread_id]["turns"].append(turn)
+        if turn["turn_number"] == 1:
+            # shortcut: a conversation resumed after an app restart counts again; fine while restarts are rare.
+            record_conversation_started()
     
     def get_conversation(self, thread_id: str) -> dict[str, Any] | None:
         """Get conversation by thread ID."""
@@ -698,6 +709,8 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                     memory_scope=memory_scope(principal),
                     citizen_agreed=decision.citizen_agreed,
                 )
+                if result.get("answered") == "confirm_facts":
+                    run.set_answered_confirmation()
                 _record_result(run, result)
         except ThreadNotFoundError:
             raise HTTPException(status_code=404, detail="Thread not found")

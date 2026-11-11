@@ -142,6 +142,7 @@ def test_the_client_drops_inputs_and_every_output_but_token_usage(monkeypatch):
 
     assert make_client() == "client"
     assert made["hide_inputs"] is hide_inputs and made["hide_outputs"] is hide_outputs
+    assert made["auto_batch_tracing"] is False  # so a rejected trace raises and counts as failed
     assert hide_inputs({"messages": [PRIVATE]}) == {}
     assert hide_outputs({"text": PRIVATE, "usage_metadata": {"input_tokens": 1}}) == {"usage_metadata": {"input_tokens": 1}}
     assert hide_outputs(None) == {}

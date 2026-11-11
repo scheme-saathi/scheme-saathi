@@ -72,6 +72,8 @@ def run_fixed_workflow(case: dict, config: dict) -> dict:
     request: dict[str, Any] = {"simulated_citizen": citizen}
     if config["scheme_selection"] == "candidates":
         request["scheme_ids"] = list(case["candidate_scheme_ids"])
+    if config.get("question_order"):
+        request["question_order"] = config["question_order"]  # E4: planned vs fixed questionnaire
     graph = build_graph()
     thread = {"configurable": {"thread_id": f"eval-{case['case_id']}-{uuid.uuid4().hex[:8]}"}}
     with tools.tool_call_budget(config.get("tool_call_limit", 1200)) as budget:

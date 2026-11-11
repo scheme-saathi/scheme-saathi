@@ -82,7 +82,9 @@ def hide_outputs(outputs: dict) -> dict:
 def make_client() -> Any:
     from langsmith import Client
 
-    return Client(hide_inputs=hide_inputs, hide_outputs=hide_outputs)
+    # Send on our own exporter thread, not LangSmith's batch thread: a rejected trace (bad key, outage) then
+    # raises in `_send` and is counted as failed instead of exported, and nothing is left unsent at exit.
+    return Client(hide_inputs=hide_inputs, hide_outputs=hide_outputs, auto_batch_tracing=False)
 
 
 class Tracer:

@@ -1,5 +1,6 @@
 """Stage 5: the Prometheus and Grafana setup files agree with the metrics the app really exposes."""
 
+import json
 import re
 from pathlib import Path
 
@@ -49,6 +50,7 @@ def test_every_setup_file_is_valid_yaml():
         "prometheus/rules.yml",
         "prometheus/alerts.yml",
         "grafana/provisioning/datasources/prometheus.yml",
+        "grafana/provisioning/dashboards/dashboards.yml",
     ):
         assert isinstance(load(path), dict), path
 
@@ -130,13 +132,38 @@ def test_the_compose_files_mount_what_the_config_points_at():
     assert {"/etc/prometheus/rules.yml", "/etc/prometheus/alerts.yml", "/etc/prometheus/secrets/metrics_token"} <= targets
 
 
-def test_only_the_data_source_is_provisioned_and_no_dashboard_is_shipped():
+def test_the_data_source_has_no_secret_and_the_dashboard_uses_it():
     datasources = load("grafana/provisioning/datasources/prometheus.yml")["datasources"]
-
     assert [(d["type"], d["url"], d["isDefault"]) for d in datasources] == [("prometheus", "http://prometheus:9090", True)]
     assert not any(key in datasources[0] for key in ("basicAuth", "password", "secureJsonData"))
-    assert not (DEPLOY / "grafana" / "provisioning" / "dashboards").exists()
-    assert not list(DEPLOY.rglob("*.json"))
+
+    provider = load("grafana/provisioning/dashboards/dashboards.yml")["providers"][0]
+    assert provider["options"]["path"] == "/etc/grafana/provisioning/dashboards/json"  # inside the provisioning mount
+    used = {json.dumps(p.get("datasource")) for p in dashboard_panels()}
+    assert used == {json.dumps({"type": "prometheus", "uid": datasources[0]["uid"]})}
+
+
+def dashboard_panels():
+    path = DEPLOY / "grafana" / "provisioning" / "dashboards" / "json" / "scheme-saathi.json"
+    return [p for p in json.loads(path.read_text(encoding="utf-8"))["panels"] if p["type"] != "row"]
+
+
+def test_dashboard_queries_only_use_metrics_rules_and_labels_that_exist():
+    known = exposed_names()
+    recorded = {rule["record"] for rule in rules_in("prometheus/rules.yml")}
+    allowed = ALLOWED_LABELS | PROMETHEUS_LABELS
+    for panel in dashboard_panels():
+        for target in panel["targets"]:
+            expr = target["expr"]
+            assert not set(re.findall(rf"{PREFIX}[a-z0-9_]+", expr)) - known, (panel["title"], expr)
+            assert not set(re.findall(r"scheme_saathi:[a-z0-9_:]+", expr)) - recorded, (panel["title"], expr)
+            grouped = {label.strip() for clause in re.findall(r"\b(?:by|on)\s*\(([^)]*)\)", expr) for label in clause.split(",") if label.strip()}
+            assert grouped <= allowed, (panel["title"], expr)
+
+
+def test_the_brief_operations_panels_are_on_the_dashboard():
+    titles = {p["title"] for p in dashboard_panels()}
+    assert {"Questions per conversation", "Can't-tell rate", "Waiting approvals", "Masked-ID hits", "Cost per conversation"} <= titles
 
 
 def test_the_secrets_folder_holds_no_token_and_the_example_env_has_no_password():

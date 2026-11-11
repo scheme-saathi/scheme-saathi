@@ -1,0 +1,8 @@
+{
+  "name": "c0_fixed_questionnaire_all_schemes",
+  "description": "E4 (questions): C0 on every live scheme with a fixed questionnaire (form order) instead of the planned order. Compare with c0_fixed_workflow_all_schemes.",
+  "system": "fixed_workflow",
+  "scheme_selection": "system",
+  "tool_call_limit": 1200,
+  "question_order": "fixed"
+}
