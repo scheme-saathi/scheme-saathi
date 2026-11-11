@@ -3,5 +3,6 @@
   "description": "E1 baseline C0: the fixed LangGraph workflow (graph/workflow.py), no model. Code picks each question; answers come from the case's hidden profile. Evaluated on the case's candidate schemes.",
   "system": "fixed_workflow",
   "scheme_selection": "candidates",
-  "tool_call_limit": 1200
+  "tool_call_limit": 150,
+  "model": null
 }
