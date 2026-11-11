@@ -92,17 +92,16 @@ FINAL_CHECK_OUTCOMES = frozenset(
     }
 )
 VERDICT_KINDS = frozenset({"chat_turn", "legacy_chat", "application_start"})
-# In the chat graph the verdicts arrive when the person confirms their facts, which is a decision run. Only that
-# outcome counts, so approving or editing a draft does not count the same verdicts again.
-DECISION_VERDICT_OUTCOME = "eligibility_checked"
+# In the chat graph the verdicts arrive when the person confirms their facts, which is a decision run. That run
+# can stop at the verdicts or go straight on to a draft, so any settled outcome counts, but only for the decision
+# that answered the fact confirmation: approving or editing the draft later does not count the same verdicts again.
+CONFIRMATION_VERDICT_OUTCOMES = FINAL_CHECK_OUTCOMES | {"draft_needs_information"}
 VERDICTS = frozenset({"eligible", "not_eligible", "cant_tell"})
 TRACE_RESULTS = ("exported", "sampled_out", "dropped", "failed")
 
 # Outcomes that leave a waiting draft where it was: the caller was refused, or the server failed before deciding.
 KEEPS_APPROVAL_WAITING = SERVER_SIDE_ERRORS | {"refused", "conflict", "invalid_request", "validation_error", "cancelled"}
-# A thread idle this long is deleted by the expiry timer (app/api.py), and its waiting draft with it.
-APPROVAL_EXPIRY_SECONDS = 24 * 60 * 60
-_waiting_approvals: dict[str, float] = {}  # thread -> when its draft was shown; in memory only, never exported
+_waiting_approvals: set[str] = set()  # threads with a draft waiting; in memory only, never exported
 _waiting_lock = threading.Lock()
 
 
@@ -112,18 +111,20 @@ def note_approval_state(thread: str | None, outcome: str) -> None:
         return
     with _waiting_lock:
         if outcome == "awaiting_approval":
-            _waiting_approvals[thread] = time.monotonic()
+            _waiting_approvals.add(thread)
         elif outcome not in KEEPS_APPROVAL_WAITING:
-            _waiting_approvals.pop(thread, None)
+            _waiting_approvals.discard(thread)
+
+
+def forget_waiting_approvals(threads: Iterable[str]) -> None:
+    """Threads that were deleted, forgotten or expired (app/thread_registry.py): their drafts wait no longer."""
+    with _waiting_lock:
+        _waiting_approvals.difference_update(threads)
 
 
 def approvals_waiting() -> int:
-    """Drafts waiting now. shortcut: an expired thread is dropped by age, not by the expiry timer itself,
-    and the count restarts at 0 with the app; read it from the store if that matters."""
-    cutoff = time.monotonic() - APPROVAL_EXPIRY_SECONDS
+    """Drafts waiting now. shortcut: the count restarts at 0 with the app; read it from the store if that matters."""
     with _waiting_lock:
-        for thread in [t for t, shown in _waiting_approvals.items() if shown < cutoff]:
-            del _waiting_approvals[thread]
         return len(_waiting_approvals)
 
 
@@ -142,6 +143,13 @@ def start_series_at_zero(metrics: Metrics) -> None:
         metrics.traces.labels(result=result)
     for stage in ("input", "output"):
         metrics.guardrail_blocks.labels(stage=stage)
+    for kind in ("chat_turn", "chat_decision"):  # the questions-per-conversation panel
+        metrics.runs.labels(kind=kind, outcome="needs_information")
+    from observability.hooks import ID_TYPES, SENSITIVE_STAGES  # hooks imports this module
+
+    for stage in SENSITIVE_STAGES:
+        for id_type in ID_TYPES | {"other"}:
+            metrics.sensitive_ids.labels(stage=stage, id_type=id_type)
     metrics.approvals_waiting.set_function(approvals_waiting)
 
 _OUTCOME_ALIASES = {"needs_details": "needs_information"}
@@ -226,6 +234,7 @@ class RunRecord:
     output_tokens: int = 0
     cost: float = 0.0
     thread: str | None = None
+    answered_confirmation: bool = False  # a chat decision on the fact-confirmation form, not on a draft
     keep_spans: bool = False
     spans: list[Span] = field(default_factory=list)
     spans_dropped: int = 0
@@ -335,6 +344,12 @@ class RunRecorder:
             self._record.verdicts = verdicts
 
     @guarded
+    def set_answered_confirmation(self) -> None:
+        """This chat decision answered the fact confirmation, so the verdicts it reaches are the settled ones."""
+        if self.active:
+            self._record.answered_confirmation = True
+
+    @guarded
     def set_thread(self, thread_id: Any) -> None:
         """The conversation this run belongs to. It is hashed before it goes to a tracing backend."""
         if self.active and isinstance(thread_id, str) and thread_id:
@@ -387,7 +402,7 @@ class RunRecorder:
         elif final == "validation_error":
             metrics.guardrail_blocks.labels(stage="input").inc()
         settled = (kind in VERDICT_KINDS and final in FINAL_CHECK_OUTCOMES) or (
-            kind == "chat_decision" and final == DECISION_VERDICT_OUTCOME
+            kind == "chat_decision" and self._record.answered_confirmation and final in CONFIRMATION_VERDICT_OUTCOMES
         )
         if settled and isinstance(self._record.verdicts, dict):
             for verdict in self._record.verdicts.values():

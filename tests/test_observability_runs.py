@@ -457,6 +457,20 @@ def test_a_chat_decision_is_recorded(served, metrics):
     assert runs(metrics, "chat_decision", "conflict") == 1
 
 
+@pytest.mark.parametrize("status", ["eligibility_checked", "awaiting_approval", "draft_needs_information"])
+def test_verdicts_count_once_when_facts_are_confirmed_however_the_run_ends(served, metrics, status):
+    client, workflow, _ = served
+    workflow.result = {**workflow.result, "status": status, "answered": "confirm_facts"}
+    assert client.post("/api/chat/conv_abc/decision", json={"action": "approve"}).status_code == 200
+    assert value(metrics, "eligibility_verdicts_total", verdict="eligible") == 1
+
+    # Editing or approving the draft afterwards carries the same verdicts in its state; they are not counted again.
+    for later in ("awaiting_approval", "draft_needs_information", "submitted"):
+        workflow.result = {**workflow.result, "status": later, "answered": "approve_application"}
+        assert client.post("/api/chat/conv_abc/decision", json={"action": "edit"}).status_code == 200
+    assert value(metrics, "eligibility_verdicts_total", verdict="eligible") == 1
+
+
 def test_an_application_stream_is_recorded_when_it_ends(served, metrics):
     client, _, demo = served
     demo.events = [
@@ -529,12 +543,32 @@ def test_the_series_alerts_read_exist_at_zero_before_anything_happens(metrics):
     assert sample(PREFIX + "eligibility_verdicts_total", {"verdict": "cant_tell"}) == 0
     assert sample(PREFIX + "traces_total", {"result": "failed"}) == 0
     assert sample(PREFIX + "guardrail_blocks_total", {"stage": "input"}) == 0
+    assert sample(PREFIX + "runs_total", {"kind": "chat_turn", "outcome": "needs_information"}) == 0
+    assert sample(PREFIX + "runs_total", {"kind": "chat_decision", "outcome": "needs_information"}) == 0
+    assert sample(PREFIX + "sensitive_ids_detected_total", {"stage": "input", "id_type": "aadhar"}) == 0
+    assert sample(PREFIX + "sensitive_ids_detected_total", {"stage": "output", "id_type": "other"}) == 0
+
+
+def test_the_first_question_and_first_sensitive_id_are_seen_as_an_increase_from_zero(metrics):
+    """increase() needs the series scraped at 0 before its first event, or that event is lost."""
+    from observability import record_sensitive_id
+
+    start_series_at_zero(metrics)
+    before = generate_latest(metrics.registry).decode()
+    assert 'kind="chat_decision",outcome="needs_information"} 0.0' in before
+    assert 'id_type="pan",stage="input"} 0.0' in before
+
+    with RunRecorder("chat_decision") as run:  # a confirmation edit that reopens intake asks a question
+        run.set_outcome("needs_information")
+    record_sensitive_id("input", "pan")
+    assert runs(metrics, "chat_decision", "needs_information") == 1
+    assert value(metrics, "sensitive_ids_detected_total", stage="input", id_type="pan") == 1
 
 
 def test_waiting_approvals_follow_how_runs_on_the_thread_end(metrics, monkeypatch):
     from observability import runs as run_module
 
-    monkeypatch.setattr(run_module, "_waiting_approvals", {})
+    monkeypatch.setattr(run_module, "_waiting_approvals", set())
     run_module.start_series_at_zero(metrics)
     waiting = lambda: metrics.registry.get_sample_value(PREFIX + "approvals_waiting")
 
@@ -547,9 +581,31 @@ def test_waiting_approvals_follow_how_runs_on_the_thread_end(metrics, monkeypatc
     run_module.note_approval_state("t2", "approval_rejected")
     assert waiting() == 0
 
-    run_module.note_approval_state("t3", "awaiting_approval")
-    run_module._waiting_approvals["t3"] -= run_module.APPROVAL_EXPIRY_SECONDS + 1  # the thread has expired
-    assert waiting() == 0
+
+
+def test_a_waiting_draft_stops_counting_when_its_thread_is_deleted_or_expires(metrics, monkeypatch):
+    from datetime import timedelta
+
+    from app.thread_registry import ThreadRegistry
+    from observability import runs as run_module
+
+    monkeypatch.setattr(run_module, "_waiting_approvals", set())
+    run_module.start_series_at_zero(metrics)
+    waiting = lambda: metrics.registry.get_sample_value(PREFIX + "approvals_waiting")
+    now = [0.0]
+    registry = ThreadRegistry("agent", clock=lambda: now[0])
+    for thread in ("deleted", "idle", "active"):
+        registry.touch(thread, "hh1")
+        run_module.note_approval_state(thread, "awaiting_approval")
+
+    registry.forget({"deleted"})  # deleting a conversation or forgetting a household
+    assert waiting() == 2
+
+    now[0] = timedelta(hours=23).total_seconds()
+    registry.touch("active", "hh1")  # still in use, so not idle however long ago its draft was shown
+    now[0] = timedelta(hours=25).total_seconds()
+    registry.forget(registry.expired())  # the expiry timer
+    assert waiting() == 1
 
 
 def test_sensitive_ids_and_conversations_are_counted_by_type_only(metrics):
@@ -570,9 +626,11 @@ def test_sensitive_ids_and_conversations_are_counted_by_type_only(metrics):
 def test_verdicts_count_when_confirming_facts_settles_the_check_but_not_again_on_a_draft_decision(served, metrics):
     client, workflow, _ = served
     verdicts = {"C06": {"verdict": "cant_tell"}, "M01": {"verdict": "eligible"}}
-    workflow.result = {**workflow.result, "status": "eligibility_checked", "data": {"verdicts": verdicts}}
+    workflow.result = {
+        **workflow.result, "status": "eligibility_checked", "data": {"verdicts": verdicts}, "answered": "confirm_facts"
+    }
     assert client.post("/api/chat/conv_abc/decision", json={"action": "approve"}).status_code == 200
-    workflow.result = {**workflow.result, "status": "submitted"}  # same verdicts echoed on the draft approval
+    workflow.result = {**workflow.result, "status": "submitted", "answered": "approve_application"}  # same verdicts echoed
     assert client.post("/api/chat/conv_abc/decision", json={"action": "approve"}).status_code == 200
 
     assert value(metrics, "eligibility_verdicts_total", verdict="cant_tell") == 1

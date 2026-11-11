@@ -347,7 +347,8 @@ class AgentWorkflowService:
             self._use_thread(thread_id, actor_id)
         self._check_owner(thread_id, actor_id)
         config = self._config(thread_id, memory_scope)
-        if self._pending_approval(config) is None:
+        pending = self._pending_approval(config)
+        if pending is None:
             raise NoPendingApprovalError("There is no draft waiting for approval in this conversation.")
 
         decision = {
@@ -357,7 +358,8 @@ class AgentWorkflowService:
             "citizen_agreed": citizen_agreed,
         }
         result = self.agent_graph.invoke(Command(resume=decision), config)
-        return self._finish_run(thread_id, f"[decision: {action}]", result)
+        finished = self._finish_run(thread_id, f"[decision: {action}]", result)
+        return {**finished, "answered": pending.get("kind")}
 
     def _config(self, thread_id: str, memory_scope: MemoryScope | None = None) -> dict[str, Any]:
         """The run config; the scope, when memory is on, comes from the verified token."""
@@ -707,6 +709,8 @@ def create_api(service: DemoService | None = None) -> FastAPI:
                     memory_scope=memory_scope(principal),
                     citizen_agreed=decision.citizen_agreed,
                 )
+                if result.get("answered") == "confirm_facts":
+                    run.set_answered_confirmation()
                 _record_result(run, result)
         except ThreadNotFoundError:
             raise HTTPException(status_code=404, detail="Thread not found")
