@@ -121,6 +121,44 @@ def document_upload_screen():
     st.write(f"Current step: {app_new._journey_step()[0]}")
 
 
+def m20_application_screen():
+    import streamlit as st
+    from app import app_new
+
+    st.session_state.setdefault("application_result", None)
+    st.session_state.setdefault("application_uploads", {})
+    st.session_state.setdefault("application_outcome", None)
+    result = {
+        "status": "eligibility_checked",
+        "profile": {"ration_card_type": "white", "age": 18},
+        "verdicts": {"M20": {"verdict": "eligible"}},
+    }
+    st.session_state.setdefault("chat_eligibility_result", result)
+    app_new._render_application_start("http://testserver", result)
+    st.write(f"Current step: {app_new._journey_step()[0]}")
+
+
+def test_selected_alternative_rule_scheme_advances_to_documents_through_api(monkeypatch):
+    client = authenticated_client(create_api(DemoService()))
+
+    def send(api, path, payload, progress):
+        response = client.post(path, json=payload)
+        assert response.status_code == 200
+        return next(body for name, body in parse_events(response.content) if name == "result")
+
+    monkeypatch.setattr(app_new, "_send_workflow", send)
+    ui = AppTest.from_function(m20_application_screen, default_timeout=60).run()
+    ui.selectbox[0].select("M20").run()
+    ui.button(key="prepare-selected-application").click().run()
+    assert not ui.exception
+    assert not ui.error
+    result = ui.session_state["application_result"]
+    assert result["application"]["applicant"] == {"ration_card_type": "white", "age": 18}
+    assert result["approval"]["payload_hash"]
+    assert not result["submission"]
+    assert any("Current step: 3" in text.value for text in ui.markdown)
+
+
 def test_document_screen_uploads_to_real_api_and_advances_to_review(tmp_path, monkeypatch):
     class Upload:
         name = "redacted.pdf"

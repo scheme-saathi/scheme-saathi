@@ -319,6 +319,120 @@ def test_real_rule_engine_evaluation_is_used_for_eligibility_workflow():
     assert result["eligibility"]["citations"]
 
 
+def test_rule_result_revises_application_plan_and_skips_drafting():
+    from langgraph.checkpoint.memory import MemorySaver
+
+    agents = build_agents(
+        plan=StubSupervisor(SupervisorPlan(next_agent="application", reason="Prepare draft."))
+    )
+    graph = build_agent_graph(agents, checkpointer=MemorySaver())
+    config = {"configurable": {"thread_id": "l10-replan"}}
+    facts = {"age": 40, "is_widow": True, "income": 1000}
+    result = graph.invoke(
+        {
+            "request": "Please prepare my pension application.",
+            "selected_scheme_id": "SYNTH-PENSION-001",
+            "confirmed_facts": facts,
+            "known_facts": facts,
+        },
+        config,
+    )
+
+    assert result["verdicts"]["SYNTH-PENSION-001"]["verdict"] == "not_eligible"
+    plan = result["journey_plan"]
+    assert plan["steps"] == ["profile", "schemes", "rules", "documents", "draft"]
+    assert plan["disposition"] == "not_eligible"
+    assert plan["revisions"] == [{
+        "previous": "conditional",
+        "current": "not_eligible",
+        "reason": "rule_engine_not_eligible",
+    }]
+    assert graph.get_state(config).values["journey_plan"] == plan
+    assert agents.document_checker.calls == []
+    assert agents.application.calls == []
+
+
+def test_revised_plan_is_returned_by_chat_service():
+    from langgraph.checkpoint.memory import MemorySaver
+    from app.api import AgentWorkflowService
+
+    agents = build_agents(
+        plan=StubSupervisor(SupervisorPlan(next_agent="application", reason="Prepare draft."))
+    )
+    service = AgentWorkflowService()
+    service._agent_graph = build_agent_graph(agents, checkpointer=MemorySaver())
+    facts = {"age": 40, "is_widow": True, "income": 1000}
+    result = service.execute_workflow(
+        "Please prepare my pension application.",
+        "actor-l10",
+        selected_scheme_id="SYNTH-PENSION-001",
+        known_facts=facts,
+        confirmed_facts=facts,
+    )
+
+    plan = result["data"]["journey_plan"]
+    assert plan["disposition"] == "not_eligible"
+    assert plan["revisions"][-1]["reason"] == "rule_engine_not_eligible"
+
+
+@pytest.mark.parametrize(
+    ("disposition", "verdict", "expected"),
+    [
+        ("ready", "eligible", "document_checker"),
+        ("conditional", "eligible", "finish"),
+        ("not_eligible", "eligible", "finish"),
+        ("cant_tell", "eligible", "finish"),
+        ("ready", "not_eligible", "finish"),
+        (None, "eligible", "document_checker"),
+    ],
+)
+def test_application_route_respects_revised_plan_and_rule_verdict(disposition, verdict, expected):
+    from graph.agent_workflow import _route_after_eligibility
+    from graph.journey_plan import new_journey_plan
+
+    journey_plan = new_journey_plan() if disposition is not None else None
+    if journey_plan is not None:
+        journey_plan["disposition"] = disposition
+    state = {
+        "plan": {"next_agent": "application"},
+        "journey_plan": journey_plan,
+        "verdicts": {},
+        "eligibility": {"verdict": verdict},
+    }
+    assert _route_after_eligibility(state) == expected
+
+
+def test_journey_plan_returns_to_conditional_when_facts_change():
+    from graph.journey_plan import defer_journey_plan, new_journey_plan, revise_journey_plan
+
+    ready = revise_journey_plan(new_journey_plan(), "eligible")
+    pending = defer_journey_plan(ready)
+    assert pending["disposition"] == "conditional"
+    assert pending["revisions"][-1] == {
+        "previous": "ready", "current": "conditional", "reason": "facts_pending",
+    }
+    assert defer_journey_plan(pending) == pending
+    changed = revise_journey_plan(pending, "not_eligible")
+    assert changed["disposition"] == "not_eligible"
+    assert len(changed["revisions"]) == 3
+    with pytest.raises(ValueError):
+        revise_journey_plan(changed, "invalid")
+
+
+def test_plan_for_unconfirmed_facts_does_not_claim_a_final_outcome():
+    agents = build_agents(
+        plan=StubSupervisor(SupervisorPlan(next_agent="application", reason="Prepare draft."))
+    )
+    result = build_agent_graph(agents).invoke({
+        "request": "Please prepare my pension application.",
+        "selected_scheme_id": "SYNTH-PENSION-001",
+        "known_facts": {"age": 40},
+    })
+    assert result["journey_plan"]["disposition"] == "conditional"
+    assert result["journey_plan"]["revisions"] == []
+    assert agents.application.calls == []
+
+
 def test_eligibility_agent_explains_deterministic_result_without_model_call():
     class NoModel:
         def with_structured_output(self, output_type):
