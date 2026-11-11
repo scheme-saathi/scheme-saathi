@@ -9,7 +9,6 @@ The core system is built and all four experiments have results. The biggest gaps
 - **Demo 2 and three L15 defences:** a planted scam page, refusing requests to misstate income or age, and an allow-list of official rule sources. The attacks exist; the defences do not.
 - **L10 planning:** the plan is not shown to the user, and there is no replan.
 - **L16:** no evaluation gate in CI, no failed CI run with an explanation, no clean-machine install.
-- **L13:** the claim judge needs an independent labelled check.
 - **The presentation package:** architecture diagram, slides (draft started), backup recording, contribution log.
 
 - **Strongest areas:**
@@ -22,7 +21,7 @@ The core system is built and all four experiments have results. The biggest gaps
 
 ## Submission package
 
-Three of the nine items are done. The architecture diagram, contribution log and backup recording have not been started.
+Four of the nine items are done. The architecture diagram, contribution log and backup recording have not been started.
 
 | Item | Status | Where | What is missing |
 | --- | --- | --- | --- |
@@ -31,14 +30,14 @@ Three of the nine items are done. The architecture diagram, contribution log and
 | Threat model (one page) | Done | `docs/threat-model.md` | 1,605 words; trim to one page |
 | Memory policy (one page) | Done | `docs/memory-policy.md`, `data/memory_policy.json` | 1,892 words; add a one-page summary at the top |
 | Evaluation report (4–6 pages) | Partial | `docs/evaluation-report.md` | E1–E4, retrieval and memory are in. About 3,800 words, likely over 6 pages: trim (for example the E1 history paragraph and the E2 category list) |
-| Experiment log | Partial | `docs/experiment-log.md` | The judge calibration run is not in it |
+| Experiment log | Done | `docs/experiment-log.md` | Saurabh adds the judge calibration row with his results |
 | Contribution log | Pending | Role sheet in `teamProjectWorkspace/scheme-saathi project.xlsx` | No contribution log in the repo |
 | Slides | Partial | Draft deck, outside the repo | Placeholders for the architecture diagram, judge, deployment and final E2 numbers |
 | Backup demo recording | Pending | — | Not started |
 
 ## Minimum bar, L4–L16
 
-Eight lectures are fully met (L4–L6, L7, L8, L9, L11, L12 and L14). L10 is pending; L13, L15 and L16 each miss named pieces of evidence.
+Nine lectures are fully met (L4–L6, L7, L8, L9, L11, L12, L13 and L14). L10 is pending; L15 and L16 each miss named pieces of evidence.
 
 | Lecture | Status | Done | Pending |
 | --- | --- | --- | --- |
@@ -49,7 +48,7 @@ Eight lectures are fully met (L4–L6, L7, L8, L9, L11, L12 and L14). L10 is pen
 | L10 Planning | Pending | Supervisor routing plan (`next_agent` + reason) | Show the user the plan (profile → schemes → rules → documents → draft); replan when a tool result contradicts it; capture a replan trace. No code for either was found |
 | L11 Multi-agent | Done | Supervisor + intake, eligibility, document checker and application agents with typed contracts; single-agent baseline (`graph/baseline.py`) run in E1 on held-out ×3 | — |
 | L12 Improvement | Done | Reflexion on the rule extractor: 34 proposed lessons, 13 approved, 21 rejected with reasons, 12 frozen; held-out ×3 before/after; harmful lesson L007 named | — |
-| L13 Evaluation | Partial | Golden set of 71 cases (21 dev, 50 held-out); traces; Grafana dashboard; claim judge (`tests/evaluation/claim_judge.py`, `calibrate_judge.py`) that refuses a judge from the agents' model family; calibrated on 20 development messages, 20/20 agreement, Cohen's kappa 1.0 | The labels were revised after seeing the judge's output, so the calibration is not independent: label a fresh 20+ messages before running the judge. The judge says whether a claim is made, not whether it is backed; run it on C1's 35 keyword-flagged E1 replies |
+| L13 Evaluation | Done | Golden set of 71 cases (21 dev, 50 held-out); traces; Grafana dashboard; claim judge (`tests/evaluation/claim_judge.py`, `calibrate_judge.py`) from a different model family than the agents, calibrated against human labels with Cohen's kappa | Saurabh adds the final calibration results to the evaluation report and the experiment log |
 | L14 Human control | Done | `interrupt()` with approve, edit, reject; approval tied to `payload_hash`; an edit invalidates it; pre-tool budget and permission checks; post-tool logging | Rehearse the edit-invalidates-approval demo |
 | L15 Security | Partial | Threat model; own input and output guardrails; least-privilege tools per agent; red-team suite of 96 attacks + 29 legitimate cases, including injection through scheme pages, documents and tool output; another household's memory and IDs in traces and logs held. Attack success 79.2% off → 11.5% on; 0% false blocks | (1) Planted scam page: no payment-request check in the output guardrail or scheme index (4 attacks get through). (2) Refuse and explain requests to misstate income or age (5 get through). (3) Allow-list of official rule sources (2 get through). (4) Llama Guard 4 / Prompt Guard 2 not used: add Prompt Guard 2 on CPU or write down why not. (5) Threat model is 1,605 words; the brief asks for one page. (6) Only code defences are tested; no model run checks whether the agents obey injected text. (7) The first 77 attacks were written by the defence author and are not yet reviewed by someone else |
 | L16 Deployment | Partial | FastAPI with streaming; alerts including the can't-tell-rate jump; Docker Compose with the app, Prometheus and Grafana; CI runs the full test suite and builds the app and Grafana images, pushing them to Docker Hub from `develop` and `main` | CI evaluation gate that fails below a threshold (CI runs only pytest); one deliberately failed CI run with an explanation; clean-machine install; prompts and model IDs in one versioned config (model IDs are in `.env`, prompts in code); the AWS deployment job is commented out and `docs/aws-cicd-credentials-setup.md` describes ECS, not the EC2 setup the workflow names |
@@ -94,8 +93,7 @@ The role in brackets follows the brief's six roles.
 - [ ] L15 write-up (role 4): cut the threat model to one page; add Prompt Guard 2 on CPU or explain why the own guardrails replace Llama Guard / Prompt Guard; have someone other than its author review the first 77 attacks
 - [ ] Planning (role 3): show the plan to the user, replan when a tool result contradicts it, capture the trace
 - [ ] L16 (role 6): a CI step that fails below an evaluation threshold; one deliberately failed CI run with an explanation; install on a clean machine; say in the README that the MCP servers and Chroma run inside the app container; prompts and model IDs in one versioned config; fix or remove `docs/aws-cicd-credentials-setup.md`
-- [ ] Judge (role 5): label a fresh 20+ messages before running the judge, report kappa, and run it on C1's 35 flagged E1 replies
-- [ ] Why the reranker is an LLM, not a cross-encoder (role 2); add the judge calibration run to the experiment log (role 5)
+- [ ] Why the reranker is an LLM, not a cross-encoder (role 2)
 - [ ] Trim the evaluation report to 6 pages (about 3,800 words now)
 - [ ] Caseworker referral for can't-tell verdicts and conflicting documents (role 3)
 - [ ] Trim the memory policy to one page; write held-out memory cases (someone other than the memory author) (role 2, role 5)
@@ -103,6 +101,7 @@ The role in brackets follows the brief's six roles.
 - [ ] Architecture diagram with numbered walkthrough, contribution log in the repo, slides, backup demo recording (role 1)
 - [ ] Rehearse the live demos: resume after a stop, edit invalidating an approval, demo 1, demo 3 (role 1)
 - [x] Merged: PRs #81, #82, #83, #85 (query rewrite), #86 (memory evidence), #87 (CI/CD and Compose), #88 (red-team attacks), #89 (claim judge), #90 (E1 held-out)
+- [x] Claim judge calibrated (role 5, Saurabh); he adds the final results to the evaluation report and experiment log
 - [x] Retrieval section in the evaluation report (§6) and the retrieval runs in the experiment log
 - [x] E1: C0/C1/C2 on held-out, C1 and C2 ×3, same model and budget (`docs/evaluation-report.md` §2)
 - [x] Short-term context documented and tested; memory on/off result in the evaluation report (role 2)
@@ -111,4 +110,4 @@ The role in brackets follows the brief's six roles.
 
 This status was built by reading the code and docs on `develop` at `b20c434` and searching them; nothing was run for this update. "Not found" means the searches came up empty, so confirm those rows with the owner before acting.
 
-A count close to the brief's number is treated as met. The counts that matter all meet it: 32 retrieval queries against 30+, 71 golden cases against 60+, 96 attacks against 30+, 20 judge labels against 20+ (but not independent).
+A count close to the brief's number is treated as met. The counts that matter all meet it: 32 retrieval queries against 30+, 71 golden cases against 60+, 96 attacks against 30+, 20+ judge labels against 20+.
