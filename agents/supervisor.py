@@ -30,6 +30,7 @@ from agents.persona_validator import (
     PersonaValidationError,
     SensitivePatternDetector,
 )
+from observability.hooks import record_sensitive_id
 from observability.llm import record_llm_call
 from observability.metrics import active_metrics
 
@@ -486,6 +487,7 @@ class InputValidator:
         # 3. Detect sensitive patterns
         sensitive_type = SensitivePatternDetector.detect_sensitive_type(request)
         if sensitive_type:
+            record_sensitive_id("input", sensitive_type)
             errors.append(
                 f"Request contains sensitive information ({sensitive_type}). "
                 "Please avoid sharing Aadhar, account numbers, or other sensitive data."
@@ -719,6 +721,7 @@ class OutputValidator:
         # 3. Check for sensitive data in output
         sensitive_type = SensitivePatternDetector.detect_sensitive_type(response_text)
         if sensitive_type:
+            record_sensitive_id("output", sensitive_type)
             errors.append(f"Response contains sensitive information ({sensitive_type})")
             masked_content = "[Sensitive content removed]"
             logger.error("Agent %s exposed sensitive data (%s).", agent_name, sensitive_type)

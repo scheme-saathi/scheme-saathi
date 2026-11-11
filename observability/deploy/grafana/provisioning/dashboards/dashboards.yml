@@ -1,0 +1,13 @@
+apiVersion: 1
+
+# Loads every dashboard in ./json. To change one, edit it in Grafana, export it (Share > Export > Save to file,
+# without "Export for sharing externally") and replace the file here; edits saved only in Grafana are lost on restart.
+providers:
+  - name: scheme-saathi
+    folder: Scheme Saathi
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    options:
+      path: /etc/grafana/provisioning/dashboards/json
+      foldersFromFilesStructure: false

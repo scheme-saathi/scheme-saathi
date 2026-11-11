@@ -11,6 +11,7 @@ from fastapi import FastAPI, Request, Response
 
 from observability.config import settings
 from observability.metrics import PROMETHEUS_AVAILABLE, HTTP_METHODS, Metrics, activate, get_metrics, set_metrics
+from observability.runs import start_series_at_zero
 from observability.safety import guarded
 from observability.tracing import configure_tracing, set_tracer
 
@@ -115,6 +116,7 @@ def _install(application: FastAPI, metrics: Metrics | None, config: Any) -> bool
     if metrics is not None:
         set_metrics(metrics)
     metrics = get_metrics()
+    start_series_at_zero(metrics)
     activate()  # from here the run, tool-call and other hooks record into these metrics
     metrics.set_tracing_backend(configure_tracing(config))
     application.add_middleware(MetricsMiddleware, metrics=metrics)

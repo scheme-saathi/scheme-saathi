@@ -1,6 +1,6 @@
 apiVersion: 1
 
-# Only the data source is provisioned. Dashboards are built in Grafana (see docs/observability.md).
+# The dashboards in ../dashboards use this uid. See docs/observability.md.
 datasources:
   - name: Prometheus
     uid: scheme-saathi-prometheus

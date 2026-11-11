@@ -15,6 +15,8 @@ from datetime import timedelta
 from enum import Enum
 from pathlib import Path
 
+from observability.runs import forget_waiting_approvals
+
 IDLE_LIMIT = timedelta(hours=24)
 ABSOLUTE_LIMIT = timedelta(days=7)
 
@@ -165,11 +167,14 @@ class ThreadRegistry:
         return [row[0] for row in rows]
 
     def forget(self, thread_ids: Iterable[str]) -> None:
+        """Delete threads. Every delete, forget and expiry comes through here, so their drafts stop counting as waiting."""
+        thread_ids = list(thread_ids)
         with self._lock, self._connection:
             self._connection.executemany(
                 "DELETE FROM workflow_threads WHERE kind = ? AND thread_id = ?",
                 [(self.kind, thread_id) for thread_id in thread_ids],
             )
+        forget_waiting_approvals(thread_ids)
 
     def close(self) -> None:
         with self._lock:

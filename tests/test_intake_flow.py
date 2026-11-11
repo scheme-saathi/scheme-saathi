@@ -576,6 +576,7 @@ def test_api_reports_the_confirm_step_and_accepts_the_decision():
 
     done = service.submit_decision("t", "a1", "approve", confirmation["payload_hash"], {})
     assert done["status"] == "eligibility_checked"
+    assert done["answered"] == "confirm_facts"  # tells the metrics these verdicts are the settled ones
 
 
 def ui_confirmation_journey():

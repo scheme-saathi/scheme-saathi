@@ -4,6 +4,8 @@ import re
 import unicodedata
 from typing import Any
 
+from observability.hooks import record_sensitive_id
+
 from agents.contracts import (
     SupervisorPlan,
     EligibilityNarrative,
@@ -389,10 +391,12 @@ def reject_sensitive_input(value: Any, field: str = "") -> None:
         financial_field = any(
             name in normalized for name in ("income", "amount", "salary", "price", "cost")
         )
-        if sensitive_field or (
+        id_type = "field" if sensitive_field else (
             (isinstance(value, str) or (isinstance(value, int) and not financial_field))
             and SensitivePatternDetector.detect_sensitive_type(str(value))
-        ):
+        )
+        if id_type:
+            record_sensitive_id("input", id_type)
             raise SensitiveInputError(SENSITIVE_INPUT_MESSAGE)
 
 

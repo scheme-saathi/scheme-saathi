@@ -76,6 +76,21 @@ groups:
       - record: scheme_saathi:http_request_duration_seconds:p95_5m
         expr: histogram_quantile(0.95, sum by (route, le) (rate(scheme_saathi_http_request_duration_seconds_bucket[5m])))
 
+  - name: scheme_saathi_verdicts
+    rules:
+      # Share of eligibility verdicts that were can't tell, over the last hour and the last day.
+      - record: scheme_saathi:eligibility_verdicts:cant_tell_ratio_rate1h
+        expr: |
+          sum(rate(scheme_saathi_eligibility_verdicts_total{verdict="cant_tell"}[1h]))
+          /
+          sum(rate(scheme_saathi_eligibility_verdicts_total[1h]))
+
+      - record: scheme_saathi:eligibility_verdicts:cant_tell_ratio_rate1d
+        expr: |
+          sum(rate(scheme_saathi_eligibility_verdicts_total{verdict="cant_tell"}[1d]))
+          /
+          sum(rate(scheme_saathi_eligibility_verdicts_total[1d]))
+
   - name: scheme_saathi_tracing
     rules:
       # Traces that were not sent because the export queue was full or sending failed.

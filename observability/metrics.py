@@ -44,6 +44,7 @@ ALLOWED_LABELS = frozenset(
         "action",
         "result",
         "stage",
+        "id_type",
         "operation",
         "reason",
         "role",
@@ -152,6 +153,17 @@ class Metrics:
         )
         self.guardrail_blocks = self._counter(
             "guardrail_blocks_total", "Requests or answers the guardrails stopped, by stage (input or output).", ["stage"]
+        )
+        self.sensitive_ids = self._counter(
+            "sensitive_ids_detected_total",
+            "ID numbers refused in input or removed from output, by ID type only.",
+            ["stage", "id_type"],
+        )
+        self.conversations_started = self._counter(
+            "conversations_started_total", "Chat conversations that got their first turn.", []
+        )
+        self.approvals_waiting = self._gauge(
+            "approvals_waiting", "Drafts shown for approval that are not yet approved, rejected or expired.", []
         )
         self.memory_operations = self._counter(
             "memory_operations_total", "Long-term memory operations by operation and result.", ["operation", "result"]
