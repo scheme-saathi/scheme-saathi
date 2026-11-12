@@ -268,9 +268,8 @@ repository's current workflow. The current workflow deploys directly to an EC2
 host using a self-hosted runner. Do not configure ECS-specific variables for
 the current workflow; follow the linked EC2 setup guide instead.
 
-For step-by-step instructions to configure GitHub credentials, the EC2 runner,
-and application settings, see
-[AWS EC2 CI/CD setup](aws-cicd-credentials-setup.md).
+The step-by-step EC2 setup guide was removed with the outdated ECS credentials guide;
+the EC2 deployment job in `.github/workflows/cicd.yaml` is currently commented out.
 
 ### 6.1 Prepare AWS resources
 
@@ -409,9 +408,8 @@ specific to that alternative.
 ### 6.4 Deploy and verify
 
 For the optional ECS/Fargate alternative, deploy using the separate ECS
-workflow and verify the resulting ECS service. For the active EC2 deployment,
-follow the run and troubleshooting steps in
-[AWS EC2 CI/CD setup](aws-cicd-credentials-setup.md).
+workflow and verify the resulting ECS service. The EC2 deployment job is currently
+commented out in `.github/workflows/cicd.yaml`.
 
 Deployments must use synthetic test profiles until privacy, authentication,
 retention, access controls, and operational monitoring have been reviewed.

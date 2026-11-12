@@ -288,6 +288,20 @@ class TestOutputValidator:
     def validator(self):
         return OutputValidator()
 
+    @pytest.mark.parametrize("agent", ["scheme_info", "eligibility", "intake"])
+    def test_payment_destination_with_payment_context_is_blocked(self, validator, agent):
+        result = validator.validate_specialist_output(
+            "Send the processing payment to example@bank.", agent, "en"
+        )
+        assert not result.passed
+        assert any("Payment destination" in error for error in result.errors)
+
+    def test_general_payment_warning_is_allowed(self, validator):
+        result = validator.validate_specialist_output(
+            "Do not pay anyone without checking the official scheme information.", "scheme_info", "en"
+        )
+        assert result.passed
+
     # ==== CONTRACT VALIDATION - INTAKE ====
 
     def test_validate_intake_result_valid(self, validator):
@@ -350,6 +364,26 @@ class TestOutputValidator:
         if "override" in response.get("explanation", "").lower():
             assert not result.passed
             assert any("override" in e.lower() for e in result.errors)
+
+    @pytest.mark.parametrize("text", [
+        "Rule: The applicant must study at an AICTE-approved Engineering Institution.",
+        "Rule: The student should have secured admission in the approved course.",
+        "Rule: Students must pursue approved courses of studies abroad.",
+        "Missing or unresolved fields: institution_is_aicte_approved",
+    ])
+    def test_eligibility_allows_approved_in_rule_criteria(self, validator, text):
+        assert validator.validate_specialist_output(text, "eligibility", "en").passed
+
+    @pytest.mark.parametrize("text", [
+        "I approve your application.",
+        "I approved the course application.",
+        "Your application is approved.",
+        "I granted you an exception.",
+        "I override the rule.",
+        "AICTE-approved institution. I approve your application.",
+    ])
+    def test_eligibility_still_blocks_unauthorized_approvals(self, validator, text):
+        assert not validator.validate_specialist_output(text, "eligibility", "en").passed
 
     # ==== CONTRACT VALIDATION - DOCUMENT CHECKER ====
 

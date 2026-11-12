@@ -75,7 +75,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 | Question | Result | Details |
 | --- | --- | --- |
 | E1: does the agent team justify its cost? | Given the candidate schemes, no: the fixed workflow and a single agent got 100% of held-out verdicts right, the agent team 54% (3 runs, 50.5–56.8%). Without them, the fixed workflow needs 138 questions a case against the team's 9; the team's scheme shortlist is the gap | [Report §2](docs/evaluation-report.md) |
-| E2: do the defences work? | 96 attacks: 79.2% succeed with defences off, 11.5% on (11 known gaps: a planted scam page, misstatement requests, unofficial rule sources); 0% of legitimate cases blocked | [Report §3](docs/evaluation-report.md), [red-team report](docs/redteam-report.md) |
+| E2: do the defences work? | 96 attacks: 79.2% succeed with defences off, 5.2% on (5 known gaps: requests to misstate or hide facts); 0% of legitimate cases blocked | [Report §3](docs/evaluation-report.md), [red-team report](docs/redteam-report.md) |
 | E3: did the Reflexion lessons help? | On development schemes, yes; on held-out schemes, no (F1 0.880 → 0.868); the harmful lesson is named | [Report §4](docs/evaluation-report.md) |
 | E4: LLM directly vs the rule engine | 91% vs 100% on 95 held-out verdicts; no boundary errors either way; planned question order 138 vs 163 questions with every scheme open | [Report §5](docs/evaluation-report.md) |
 | Retrieval (Recall@5) | BM25 0.625 → hybrid 1.000 on development; held-out 0.917 → 1.000 with the query rewrite (3 runs) | [Retrieval evaluation](docs/retrieval-evaluation.md) |
@@ -90,7 +90,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 | Memory policy | [docs/memory-policy.md](docs/memory-policy.md), with [document retention](docs/document-retention.md) |
 | Evaluation report | [docs/evaluation-report.md](docs/evaluation-report.md) |
 | Experiment log | [docs/experiment-log.md](docs/experiment-log.md) |
-| Contribution log | *[Placeholder: to be added]* |
+| Contribution log | *[Placeholder: a draft is in [docs/contribution-log.md](docs/contribution-log.md), pending team verification]* |
 | Slides | *[Placeholder: to be added]* |
 | Backup demo recording | *[Placeholder: to be added]* |
 
@@ -127,7 +127,7 @@ The exact commands behind every reported number are in section 9 of the [evaluat
 ## Demos
 
 1. **Widow pension in Hindi.** Sign in, start a new chat and type the request above in Hindi. Answer the questions, confirm the details, choose an eligible scheme, upload the requested documents and approve the draft.
-2. **Refusing to misstate facts and flagging a scam page.** *[Pending: the defences are being built; the attacks are in the red-team suite.]*
+2. **Refusing to misstate facts and flagging a scam page.** *[Pending: the payment-destination check blocks the scam-page cases in the red-team suite; the misstatement refusal is still being built.]*
 3. **"Forget my data".** Open **Saved details**, choose **Forget my data**, and check that the remembered facts are gone.
 
 Also shown: stopping and resuming a conversation, and an edit that invalidates an earlier approval. The screen-by-screen guide is in [Setup, scheme data and running the app](docs/setup-and-data.md).
@@ -154,4 +154,4 @@ All settings are environment variables in `.env`; [.env.example](.env.example) l
 
 ## Known limits
 
-Personas were labelled by one person, so there is no inter-annotator agreement; the held-out sets are small; the red-team suite tests code defences, not whether a model obeys injected text; and three security defences are still to be built. The full list is in section 8 of the [evaluation report](docs/evaluation-report.md). Results are not official benefit decisions, and nothing is sent to a real government portal.
+Personas were labelled by one person, so there is no inter-annotator agreement; the held-out sets are small; the red-team suite tests code defences, not whether a model obeys injected text; and the refusal of requests to misstate facts is still to be built. The full list is in section 8 of the [evaluation report](docs/evaluation-report.md). Results are not official benefit decisions, and nothing is sent to a real government portal.

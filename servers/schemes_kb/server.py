@@ -65,6 +65,29 @@ def get_scheme_details(scheme_id: str) -> dict[str, Any]:
 
 
 @mcp.tool()
+def get_scheme_availability(scheme_id: str) -> dict[str, Any]:
+    """Return only the recorded application availability of a scheme."""
+    record = _load_scheme_records().get(scheme_id)
+    if record is None:
+        return {
+            "ok": False,
+            "access": "read",
+            "error": {
+                "code": "scheme_not_found",
+                "message": f"No scheme metadata found for '{scheme_id}'.",
+            },
+        }
+    status = record.get("availability_status", "unverified")
+    if status not in ("open", "closed", "unverified"):
+        return {
+            "ok": False,
+            "access": "read",
+            "error": {"code": "invalid_availability", "message": "Invalid scheme availability status."},
+        }
+    return {"ok": True, "access": "read", "data": {"availability_status": status}}
+
+
+@mcp.tool()
 def get_required_documents(scheme_id: str) -> dict[str, Any]:
     """Read-only retrieval of the required document checklist for a scheme.
 

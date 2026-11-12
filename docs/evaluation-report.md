@@ -1,8 +1,28 @@
 # Scheme Saathi: evaluation report
 
-*Experiments E1–E4, run 8–11 November 2026. Every run is listed in [experiment-log.md](experiment-log.md).*
+*Experiments E1–E4, run 8–12 November 2026. Runs and their limitations are listed in [experiment-log.md](experiment-log.md).*
 
-**Summary.** Eligibility decided by the deterministic rule engine is right on every gold verdict (39/39 development, 95/95 held-out) at no model cost. Letting a model decide directly from the scheme text is 91% right, never wrong at a numeric boundary, but wrong on conditions the text it is shown does not state (E4). With the same model and budget, the agent team got 54% of held-out verdicts right, against 100% for the fixed workflow and the single agent when those are given the candidate schemes; it missed the right scheme for 39% of verdicts and cost about 20 times as much as the single agent. Without the candidate schemes the fixed workflow needs 138 questions a case, against the agent team's 9, so the agent team makes a short conversation possible, but its scheme choice is not reliable yet (E1). The defences block 85 of 96 attacks without blocking legitimate work; the 11 that get through (a planted scam page, requests to misstate facts, rules from unofficial sources) are known gaps whose defences are pending (E2). The reviewed lessons improved rule extraction on development schemes but not on held-out schemes (E3). Retrieval finds the answer passage for every held-out query (Recall@5 1.000 over three runs) once the query rewrite is added; vectors alone lifted Hindi queries from 0.25 to 1.00 on development. With memory on, a returning citizen is asked 15.9% fewer questions, and no verdict changes (L9).
+**Purpose.** This report evaluates whether Scheme Saathi can help citizens and CSC operators find schemes and obtain reliable explanations without making unsupported eligibility claims. It reports the original final comparisons and subsequent development work separately; results are not a claim that the current uncommitted system has passed a new independent final evaluation.
+
+## Overall evaluation and conclusion
+
+These are separate experiments, not components of a single overall score. The earlier held-out results describe the configurations used at the time, not the current uncommitted changes.
+
+| Area | Measured result | Interpretation and limitation |
+| --- | --- | --- |
+| E1: original system comparison | Held-out, 95 verdicts: C0 **100%**, C1 **100%**, C2 **54.0%** mean over three runs. | C0 and C1 received candidate schemes; C2 chose schemes and interviewed a simulated citizen. This is not a controlled comparison of agent count alone. |
+| E1: subsequent C2 change | Development, one run: **29/39 correct (74.4%)**, versus 22/39 (56.4%) in an earlier run; checked-candidate recall 84.6% versus 76.9%. | The runs used different commits and were not repeated; the change's effect is not isolated. Median latency rose from 48.8 to 61.8 seconds. No held-out result is claimed for this change. |
+| E2: red team | **91/96 attacks blocked** and **0/29 legitimate cases blocked** with defences on. | Five requests to misstate or hide facts still succeed. The attack cases were visible during defence work; the code-only suite is not an independent model-backed security assessment. |
+| E3: rule extraction lessons | Held-out mean F1 **0.880 without lessons → 0.868 with lessons**, three runs each. | The lessons did not improve held-out F1; the 15-scheme set is small and one lesson worsened a scheme. |
+| E4: rule engine versus direct LLM | Held-out, 95 verdicts: rule engine **100%**, direct LLM **90.9%** mean over three runs. | The LLM was not shown all information used by the reviewed rules. Both methods got the 21 numeric-boundary verdicts right. |
+| E4: question order | Held-out candidate schemes: **6.7 planned vs 6.9 fixed** questions per conversation; both produced 100% correct verdicts. | Question ordering helped little with known candidates; checking all schemes required far more questions. |
+| Retrieval | Held-out exact-evidence Recall@5 **0.917 → 1.000** with query rewrite and reranking, three runs each. | This is one additional query in a 12-query set. Retrieval labels and tuning were not independently separated; see [retrieval evaluation](retrieval-evaluation.md). |
+| Memory | Development: **742 → 624 questions** across 150 return visits (15.9% fewer); no verdicts changed. | Scripted evaluation covered three schemes and one stored field, not independent held-out memory cases. |
+| LLM judge | Preliminary claim classification: **20/20 agreement**, reported Cohen's kappa **1.0**, on 20 development messages. | Labels were revised after seeing judge results and AI suggestions; this is **not independent calibration**. The judge does not verify whether a claim is supported. |
+
+**Overall conclusion:** on the measured cases, the reviewed rule engine was reliable when candidate schemes and facts were available. The agent team's original held-out result does not justify its additional cost on this task; the later development result is promising but needs repeated testing. Security and retrieval also require independent evaluation before these results can be treated as evidence of generalization.
+
+**Next priorities:** repeat C2 development runs and improve shortlist recall and fact confirmation; address the five misstatement attacks and commission fresh independent red-team cases; then freeze the system and evaluate on a fresh independently prepared test set. Do not tune against that final set.
 
 ## 1. Setup
 
@@ -13,7 +33,7 @@
 | Gold rules | 49 schemes as JSON rules (field, operator, value, cited clause), every rule checked against the myScheme text | 15 hand-coded (Saurabh), all 49 verified or reviewed by Sharika (Steps 1, 4–6) | `data/rules/`, decisions in `data/rules/REVIEW_STATUS.md` |
 | Gold personas | 71 synthetic households in 22 families, built around rule boundaries; 58 English, 9 Marathi, 4 Hindi; a verdict per candidate scheme | Labelled by Sharika from the scheme text, without running the engine | `tests/evaluation/eligibility_gold_v1/` |
 
-Personas are split into development (21 cases, 39 verdicts) and held-out (50 cases, 95 verdicts, of which 21 sit at a numeric boundary). Rule-extraction schemes are split into development (34 AI-drafted, reviewed) and held-out (the 15 hand-coded). Held-out runs need `--final`, and nothing was changed after held-out results were seen.
+Personas were split into development (21 cases, 39 verdicts) and held-out (50 cases, 95 verdicts, of which 21 sit at a numeric boundary). Rule-extraction schemes were split into development (34 AI-drafted, reviewed) and held-out (the 15 hand-coded). Held-out runs need `--final`. The original E1 comparison was frozen before those runs. Later changes followed the reported held-out results, and an exploratory BM25 recall calculation also used the held-out personas. **For subsequent eligibility work, those personas must therefore be treated as development data**, not as an independent final test. A fresh independently prepared set is needed for a new final evaluation.
 
 ### Harness and models
 
@@ -28,6 +48,10 @@ Each experiment is a config file run by one runner: `tests/evaluation/run_eval.p
 
 The simulated citizen plays a persona from its hidden profile and answers only what it is asked, in the case's language. For a conversation, a verdict counts only once the person was given the rule engine's answer on facts they confirmed.
 
+### What the E1 measures mean
+
+The denominator for verdict accuracy is the scored gold candidate verdicts, including candidates that were never checked or never answered; failed cases are reported separately and excluded from that denominator. A case is fully right only when all its candidate verdicts match. Answered includes `cant_tell`; accuracy when answered is correct verdicts divided by answered verdicts. The field called shortlist recall measures gold candidates **checked at all**, not simply listed in the final shortlist. Extra schemes checked are not scored. Keyword flags for unbacked claims are screening results, not independently verified violations.
+
 ## 2. E1: does the agent justify its cost?
 
 The final comparison ran on the held-out split (50 cases, 95 verdicts) on 11 Nov. C1 and C2 used `openai/gpt-4o-mini` for every agent, C2's simulated citizen was `anthropic/claude-haiku-5.5`, and every arm had a limit of 150 MCP calls per case. All runs come from commit `5439dd5`. C0 is deterministic and ran once; C1 and C2 ran three times each. Values are mean (min–max) over the runs, from `tests/evaluation/e1_report.py`, which refuses runs that differ in split, cases, model, budget or citizen.
@@ -39,7 +63,7 @@ The final comparison ran on the held-out split (50 cases, 95 verdicts) on 11 Nov
 | Verdicts answered | 100% | 100% | 58.6% (57.9–60.0%) |
 | Right when it answered | 100% | 100% | 92.2% (87.3–94.7%) |
 | Right scheme on its shortlist | given | given | 61% (60–62%) |
-| Policy violations: eligibility claimed without the rule engine | 0 | 35 of 50 cases flagged (33–37) by the keyword check; not reviewed, see below | 0 |
+| Cases flagged for unbacked eligibility claims (keyword check) | 0 | 35 of 50 (33–37); not reviewed, see below | 0 |
 | Cases where a confirmed fact differed from the hidden profile | 0 | — (profile given) | 5.3 (5–6) |
 | Questions per case, mean | 6.7 | none (profile given) | 9.3 (9.1–9.7) |
 | Tool calls per case, mean | 18.6 | 2.0 | 74.5 (72.8–76.8) |
@@ -49,15 +73,35 @@ The final comparison ran on the held-out split (50 cases, 95 verdicts) on 11 Nov
 
 On development (21 cases, 39 verdicts, one run each on 10–11 Nov, same models): C0 and C1 39/39; C2 22/39, answering 67% and right on 85% of those.
 
-**What it shows.**
+### Subsequent C2 development experiment
+
+After the held-out comparison, the shortlist chooser was given eligibility text as well as a short overview for each reviewed scheme; the five-scheme cap was retained. The change only informs scheme selection: the rule engine still decides eligibility. The run below used the same agent and citizen models and the same 21 development cases as the earlier C2 run.
+
+| Development, 21 cases and 39 verdicts | Earlier C2 run | With shortlist eligibility text |
+| --- | --- | --- |
+| Verdicts right | 22/39 (56.4%) | 29/39 (74.4%) |
+| Cases fully right | 8/21 (38.1%) | 11/21 (52.4%) |
+| Verdicts answered | 26/39 (66.7%) | 33/39 (84.6%) |
+| Right when answered | 22/26 (84.6%) | 29/33 (87.9%) |
+| Candidate schemes checked (shortlist recall) | 30/39 (76.9%) | 33/39 (84.6%) |
+| Questions per case, mean | 7.62 | 9.76 |
+| Tool calls per case, mean | 60.48 | 76.19 |
+| Latency, median (p95) | 48.8 s (70.4 s) | 61.8 s (71.8 s) |
+| Estimated cost per case | unavailable in saved summary | $0.0098 |
+| Cases with fact errors / failed cases | 1 / 0 | 1 / 0 |
+| Same verdicts for language-variant pairs | not reported here | 2/3 |
+
+These are single runs on different commits; the later run used uncommitted changes on HEAD `9c2fb45` and predates the E2 changes. Six of its 39 candidate verdicts were not evaluated and four answered verdicts differed from gold. The three language-variant pairs are too few to establish multilingual consistency. The apparent gains cannot be attributed to the shortlist change alone or assumed to generalize. The extra questions, calls and latency are an important tradeoff. Repeat development runs before deciding whether to retain or extend the change; use a fresh independent test set for a final estimate.
+
+**What the original held-out comparison shows.**
 
 - **The result holds across runs and splits.** C2 got 54% of held-out verdicts right (50.5–56.8% over three runs) and 56% on development, far below the 100% of C0 and C1.
-- **The main cause is the shortlist.** C2 chooses its own schemes, and the right scheme was missing for 39% of verdicts (61% shortlist recall, against 77% on development). C0 and C1 are given the candidate schemes, so they never face this. E4 points the same way: choosing the right few schemes matters more than the order of questions.
+- **Missed candidate checks are a major contributor.** C2 did not check the gold candidate for 39% of verdicts (61% checked-candidate recall, against 77% on development). This measure alone does not distinguish shortlist selection from later workflow effects. C0 and C1 are given the candidate schemes. E4 shows that checking every scheme substantially increases questions.
 - **It was not always right when it answered.** At 92% right when it answered, about four verdicts per run that C2 gave the person were wrong. In 5–6 cases per run a fact the person confirmed differed from their hidden profile, so the rule engine was given a wrong fact; these are the likely source, and the `wrong` list in each run's `summary.json` names them.
-- **No eligibility claims without the rule engine in C2.** The output guardrail blocks them. C1's 35 flagged cases come from the keyword check, which was written for C2's replies; C1's free-form summary after calling the rule engine ("You are eligible for C01…") trips it. They have not been reviewed and are probably false positives; the claim judge (section 8) is the way to check them.
+- **Claim screening is inconclusive.** The keyword check flagged zero C2 cases and 35 C1 cases; the latter are unreviewed and may include false positives. Neither zero flags nor an unreviewed hit establishes whether claims were supported. The experimental judge classifies claims but cannot determine whether rule-engine evidence supports them.
 - **Cost and time.** C2 cost about 20 times as much as C1 per case and took about 11 times as long; C0 needs no model and answers in a fraction of a second.
 
-**Conclusion.** Given the candidate schemes, the agent team does not justify its cost: the fixed workflow gets every verdict right, at once and for nothing. But a real citizen does not arrive with that list. Without it, the fixed workflow has to keep all 49 schemes open, and E4 measured what that costs on the same held-out cases:
+**Conclusion.** In this original comparison, the agent team did not justify its extra cost on the measured cases. The fixed workflow, given candidate schemes, matched all gold verdicts without model tokens. But a real citizen does not arrive with that list. Without it, the fixed workflow has to keep all 49 schemes open, and E4 measured what that costs on the same held-out cases:
 
 | Held-out | Knows the right schemes in advance? | Questions per case | Verdicts right |
 | --- | --- | --- | --- |
@@ -66,6 +110,8 @@ On development (21 cases, 39 verdicts, one run each on 10–11 Nov, same models)
 | C2 agent team (this section) | no, it chooses its own | 9.3 | 54% |
 
 So the agent team is what makes a short conversation possible, 9 questions instead of 138, but its choice of schemes is not reliable yet: it misses 39% of the right ones. It would justify its cost once its shortlist finds the schemes reliably, which makes the shortlist the next thing to fix. (The all-schemes C0 run had a 1,200-call budget, because 138 questions need more than 150 calls; it calls no model.)
+
+The team additionally had to choose schemes and interview in free text; its candidate coverage and fact handling need improvement.
 
 **Limits of the comparison.** C0 and C1 get the gold candidate schemes; C1 also gets the profile, asks no questions, and is scored on its rule-engine results, not on what its final reply said. C2 does the whole task, and a verdict counts only once the person was told it. So E1 compares systems end to end; it is not a clean test of the number of agents alone. C2's cost includes the simulated citizen, which stands in for the person. Costs are estimates from `observability/model_prices.json`, not an invoice.
 
@@ -79,17 +125,22 @@ From the red-team suite (`tests/redteam/`, code defences, no model needed). On 1
 | --- | --- | --- |
 | Attack success, first 77 attacks (9 and 11 Nov) | 80.5% | 0% |
 | Attack success, all 96 attacks (11 Nov) | 79.2% | **11.5%** (11 attacks) |
+| Attack success, all 96 attacks (12 Nov) | 79.2% | **5.2%** (5 attacks) |
 | Legitimate work blocked, 29 cases | 6.9%\* | **0%** |
 
 \* With defences off, two "text reaches the model as data" checks fail as a side effect of the off-switch, not a measurement.
 
-The new attacks found three gaps, pinned in `tests/redteam/known_gaps.json` until their defences land: a planted scam page asking for a fee to a UPI ID reaches the person (4 attacks), requests to misstate income or age or to hide a fact are not refused (5), and rules from an unofficial source decide verdicts (2). Attempts to read another household's long-term memory (4) and to get ID numbers into traces and logs (4) were blocked.
+The 11 Nov run found three gaps: payment requests to a UPI ID (4 attacks), requests to misstate or hide facts (5), and unofficial rule sources (2). In the 12 Nov run (`.venv/bin/python tests/redteam/run_redteam.py --json`), the first and third groups were blocked; the five misstatement requests remain in `tests/redteam/known_gaps.json`. Attempts to read another household's long-term memory (4) and to get ID numbers into traces and logs (4) were blocked. No runner errors occurred. The off switch disables the named defence for each case, not every defence across the entire system.
+
+The payment guard screens for payment-related text alongside an address-like destination. It can miss other scam formats and can block a legitimate warning that includes such a destination; it does not authenticate a payment recipient. The rule engine requires HTTPS and a `gov.in` or `nic.in` domain boundary in addition to human review. Domain checking does not verify the contents or provenance of a page and is not a substitute for review.
+
+The existing attack cases were visible during this defence work, so the new E2 result is a regression measure, not an independent estimate against unseen attacks.
 
 Categories cover sensitive identifiers in input, agent output, tool permissions, budget and rate limits, portal write capability, approval bound to the exact payload, the draft-rule preview gate, household isolation and outside text staying data. **Limits** (from the suite's README): it tests code defences, not whether a model obeys injected text; approval attacks run against the no-model graph; and the same person wrote the guards and the first 77 attacks; only the 19 added on 11 Nov meet the brief's attacker/defender separation.
 
 ## 4. E3: did the lessons help?
 
-The Reflexion loop improves the rule extractor (signature challenge A). The reflection step turned extraction errors on development schemes into proposed lessons; a person approved 13 of 34 proposals (one withdrawn later); 12 were frozen as version `8bb30ce7dd22` before the held-out runs.
+The Reflexion loop was tested on the rule extractor (signature challenge A). The reflection step turned extraction errors on development schemes into proposed lessons; a person approved 13 of 34 proposals (one withdrawn later); 12 were frozen as version `8bb30ce7dd22` before the held-out runs.
 
 | | Without lessons | With frozen lessons | Change |
 | --- | --- | --- | --- |
@@ -105,7 +156,7 @@ On held-out, one scheme improved (C10), one got worse (M13) and 13 did not chang
 
 ### LLM deciding directly against the rule engine
 
-For every held-out persona and candidate scheme, `gpt-4.1-mini` was given the scheme's eligibility and exclusion sentences (perfect retrieval, its best case) and the same facts the rule engine gets, and decided with no rule engine. A boundary verdict is one where a numeric fact sits at or next to one of the scheme's limits (age 39 against a minimum of 40, income Rs 15,001 against Rs 15,000).
+For every held-out persona and candidate scheme, `gpt-4.1-mini` was given the scheme's eligibility and exclusion sentences and the same facts the rule engine gets, and decided with no rule engine. This supplied the selected sections directly but omitted some relevant information elsewhere in the source; it is not equivalent to giving both systems the same complete evidence. A boundary verdict is one where a numeric fact sits at or next to one of the scheme's limits (age 39 against a minimum of 40, income Rs 15,001 against Rs 15,000).
 
 | Held-out, 95 verdicts | Rule engine | LLM directly from the text (3 runs) |
 | --- | --- | --- |
@@ -177,11 +228,19 @@ Each of the 50 synthetic households makes a first visit on each of three schemes
 - **The 32 visits with no saving** are all C03. With memory off and with memory on, intake reached its 12-question cap. With memory on, age was prefilled and the freed question went to the next field, so the visit got further without asking fewer questions.
 - **Memory never decides.** A prefilled fact is shown unconfirmed, and every return visit had exactly one confirm step.
 
+### LLM-as-judge: preliminary calibration
+
+The offline judge classifies whether an assistant message makes a definite eligibility or ineligibility claim. It does **not** decide eligibility or establish whether a claim is backed by rule-engine evidence, and it has not been used to revise E1 scores or resolve the C1 keyword flags.
+
+The recorded development trial reported agreement of **20/20 (100%)** and **Cohen's kappa 1.0** against human-reviewed labels. Those labels were revised after the reviewer saw judge outputs and AI suggestions, so agreement is potentially biased and is not evidence of independent validation. The calibration output and model provenance were not available in the local run directory for independent verification; the result is reported from the existing [evaluation harness documentation](../tests/evaluation/README.md).
+
+**Status against the brief:** an independently calibrated judge is still pending. A separate evaluator should hand-label at least 20 fresh, safe synthetic messages without seeing judge predictions, covering claims and non-claims in supported languages. Then run the judge from a verified different model family, record the model, dataset selection, failures, agreement and kappa, and review disagreements. A claim-support judge would additionally need reliable tool-evidence traces. See the [calibration procedure](../tests/evaluation/README.md#offline-claim-judge-calibration); model calls incur cost.
+
 ## 8. Limits
 
 - **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
-- **Role separation.** The person who labelled the held-out personas also fixed agent behaviour, and verified the held-out gold rules used in E3 while reviewing its lessons. Nothing was tuned after held-out results were seen.
-- **Judge calibrated on development messages.** An offline claim-classification judge was calibrated against human-reviewed labels on 20 development messages, reaching 20/20 agreement (Cohen's kappa 1.0). The labels were revised after seeing judge results and AI suggestions, so this small trial is not an independent validation; a fresh independently labelled evaluation is still needed. The judge detects whether a claim is made, not whether it is backed by rule-engine evidence. The existing unbacked-claim check remains keyword-based.
+- **Role separation.** The person who labelled the held-out personas also fixed agent behaviour, and verified the held-out gold rules used in E3 while reviewing its lessons. The original comparison was frozen before its held-out runs; later changes and held-out data exposure require a fresh independent test set.
+- **Judge calibration is preliminary.** The 20-message trial was not independent and its underlying output was unavailable locally. Fresh independent labels and verified model provenance are needed; the existing unbacked-claim check remains keyword-based.
 - **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2). C1's 35 flagged replies are unreviewed keyword hits.
 - **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts (E3 development F1 moved by 0.015–0.02), so small differences are not reliable.
 - **Memory evaluation on development cases only.** The 50 households come from the repository and are not held-out cases; held-out memory cases written by someone who did not build memory are still to do. It covers three schemes and one stored field.
@@ -202,4 +261,6 @@ python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --rewri
 python -m evaluation.memory_eval
 ```
 
-Model runs need `OPENROUTER_API_KEY`, `SUPERVISOR_MODEL`, `SPECIALIST_MODEL` and `CITIZEN_MODEL` in `.env`; C0, the red-team suite, the question-order runs and the memory evaluation need no model.
+These commands reproduce the procedures, not the historical results: model outputs can vary, and current code and data may differ from the historical commits. Model runs incur provider charges and need `OPENROUTER_API_KEY`, `SUPERVISOR_MODEL`, `SPECIALIST_MODEL` and a different-family `CITIZEN_MODEL` in `.env`. C0, the red-team suite, the question-order runs and the memory evaluation need no model. Costs are estimates using unverified local prices, not invoices; the harness does not enforce a provider spend cap.
+
+The held-out commands above document the historical procedure, not an instruction to tune on those cases. Use development data for iteration and a fresh independently prepared set for a new final measurement. Saved run directories are git-ignored and may be absent on another machine; the experiment log identifies available run names, uncommitted changes, and failures.

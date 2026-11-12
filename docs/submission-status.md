@@ -15,9 +15,9 @@ The core system is built and all four experiments have results. The biggest gaps
   - the rule engine, which decides every verdict (100% on development and held-out)
   - Reflexion on the rule extractor (L12, signature A)
   - human approval tied to the exact payload (L14)
-  - the red-team suite: 96 attacks and 29 legitimate cases, 0% false blocks, with the 11 attacks that still get through pinned as known gaps
+  - the red-team suite: 96 attacks and 29 legitimate cases; 0% false blocks on this set; the five misstatement attacks that still get through are pinned as known gaps
   - E1 and E4, both run on held-out with repeats and the spread reported
-- **Merged since the last review:** PRs #81 (Grafana dashboard, alerts), #82 and #87 (CI/CD, Docker Compose with the app), #83 (E4, evaluation report, experiment log), #85 (query rewrite), #86 (memory evidence), #88 (red-team attacks), #89 (claim judge), #90 (E1 held-out).
+- **Merged since the last review:** PRs #81 (Grafana dashboard, alerts), #82 and #87 (CI/CD, Docker Compose with the app), #83 (E4, evaluation report, experiment log), #85 (query rewrite), #86 (memory evidence), #88 (red-team attacks), #89 (claim judge), #90 (E1 held-out), #92 (journey plan and replan), #93 (scheme selection, payment and source checks).
 
 ## Submission package
 
@@ -50,8 +50,8 @@ Nine lectures are fully met (L4–L6, L7, L8, L9, L11, L12, L13 and L14). L10 is
 | L12 Improvement | Done | Reflexion on the rule extractor: 34 proposed lessons, 13 approved, 21 rejected with reasons, 12 frozen; held-out ×3 before/after; harmful lesson L007 named | — |
 | L13 Evaluation | Done | Golden set of 71 cases (21 dev, 50 held-out); traces; Grafana dashboard; claim judge (`tests/evaluation/claim_judge.py`, `calibrate_judge.py`) from a different model family than the agents, calibrated against human labels with Cohen's kappa | Saurabh adds the final calibration results to the evaluation report and the experiment log |
 | L14 Human control | Done | `interrupt()` with approve, edit, reject; approval tied to `payload_hash`; an edit invalidates it; pre-tool budget and permission checks; post-tool logging | Rehearse the edit-invalidates-approval demo |
-| L15 Security | Partial | Threat model; own input and output guardrails; least-privilege tools per agent; red-team suite of 96 attacks + 29 legitimate cases, including injection through scheme pages, documents and tool output; another household's memory and IDs in traces and logs held. Attack success 79.2% off → 11.5% on; 0% false blocks | (1) Planted scam page: no payment-request check in the output guardrail or scheme index (4 attacks get through). (2) Refuse and explain requests to misstate income or age (5 get through). (3) Allow-list of official rule sources (2 get through). (4) Llama Guard 4 / Prompt Guard 2 not used: add Prompt Guard 2 on CPU or write down why not. (5) Threat model is 1,605 words; the brief asks for one page. (6) Only code defences are tested; no model run checks whether the agents obey injected text. (7) The first 77 attacks were written by the defence author and are not yet reviewed by someone else |
-| L16 Deployment | Partial | FastAPI with streaming; alerts including the can't-tell-rate jump; Docker Compose with the app, Prometheus and Grafana; CI runs the full test suite and builds the app and Grafana images, pushing them to Docker Hub from `develop` and `main` | CI evaluation gate that fails below a threshold (CI runs only pytest); one deliberately failed CI run with an explanation; clean-machine install; prompts and model IDs in one versioned config (model IDs are in `.env`, prompts in code); the AWS deployment job is commented out and `docs/aws-cicd-credentials-setup.md` describes ECS, not the EC2 setup the workflow names |
+| L15 Security | Partial | Threat model; input and output guardrails; least-privilege tools; 96 attacks and 29 legitimate cases. On 12 Nov, payment-destination and official-source checks reduced attack success from 79.2% off to 5.2% on, with 0% legitimate cases blocked | Refuse and explain requests to misstate or hide facts (5 attacks get through); independently test payment-detection limitations and source provenance; Llama Guard 4 / Prompt Guard 2 not used; threat model exceeds one page; only code defences are tested; the first 77 attacks need independent review |
+| L16 Deployment | Partial | FastAPI with streaming; alerts including the can't-tell-rate jump; Docker Compose with the app, Prometheus and Grafana; CI runs the full test suite and builds the app and Grafana images, pushing them to Docker Hub from `develop` and `main` | CI evaluation gate that fails below a threshold (CI runs only pytest); one deliberately failed CI run with an explanation; clean-machine install; prompts and model IDs in one versioned config (model IDs are in `.env`, prompts in code); the AWS deployment job is commented out |
 
 ### L10 replan trace
 
@@ -107,14 +107,14 @@ E1, E3 and E4 are done. E2 has results, with three known gaps waiting for defenc
 
 | Experiment | Status | Result | Pending |
 | --- | --- | --- | --- |
-| E1: does the agent justify its cost? | Done | Held-out, same model (`gpt-4o-mini`) and budget, C1 and C2 ×3: verdicts right C0 100%, C1 100%, C2 54.0% (50.5–56.8%); C2 misses the right scheme for 39% of verdicts; cost per case $0 / $0.0004 / $0.0081; median latency 0.13 s / 6.3 s / 68.9 s. Conclusion: given the candidate schemes, it does not justify its cost; without them the fixed workflow needs 138 questions against its 9, so its value depends on fixing the shortlist | Review C1's 35 keyword-flagged replies with the claim judge |
-| E2: do the defences work? | Partial | 96 attacks: success 79.2% off, 11.5% on (11 known gaps: scam page, misstatement, unofficial rule source); the first 77 alone: 80.5% off, 0% on; 29 legitimate cases, 0% blocked with defences on | Role 4 builds the three defences; rerun E2; update section 3 of `docs/evaluation-report.md` and `docs/redteam-report.md` (which still describes only the first 77) |
+| E1: does the agent justify its cost? | Done | Held-out, same model (`gpt-4o-mini`) and budget, C1 and C2 ×3: verdicts right C0 100%, C1 100%, C2 54.0% (50.5–56.8%); C2 misses the right scheme for 39% of verdicts; cost per case $0 / $0.0004 / $0.0081; median latency 0.13 s / 6.3 s / 68.9 s. Conclusion: given the candidate schemes, it does not justify its cost; without them the fixed workflow needs 138 questions against its 9, so its value depends on fixing the shortlist A later development run with eligibility text in the shortlist options got 29/39 (one run, different commit; not a held-out result) | Review C1's 35 keyword-flagged replies with the claim judge |
+| E2: do the defences work? | Partial | 12 Nov: 96 attacks, 79.2% off and 5.2% on; 29 legitimate cases, 0% blocked with defences on | Address the five remaining misstatement cases, independently expand the attacks, and test the agent team against injected material |
 | E3: did the lessons help? | Done | Held-out rule-extraction F1 0.880 → 0.868 (3 runs each); dev +0.01 to +0.08; harmful lesson L007 named; cost about 37,500 tokens | — |
 | E4: signature ablation | Done | LLM directly from text 0.909 vs rule engine 1.000 on 95 held-out verdicts, 0 boundary errors either way; planned vs fixed question order 138 vs 163 questions with all schemes open | — |
 
 ## Scheme Saathi specifics and demos
 
-Signature challenge A is done and B is nearly done. Demo 2 waits for the L15 defences.
+Signature challenge A is done and B is nearly done. Demo 2 still needs an income-misstatement refusal and a live scam-page demonstration; the output guard now blocks payment destinations in the existing code-only cases.
 
 | Requirement | Status | Notes |
 | --- | --- | --- |
@@ -126,8 +126,8 @@ Signature challenge A is done and B is nearly done. Demo 2 waits for the L15 def
 | Simulated citizen on a different model family | Done | `anthropic/claude-haiku-5.5` for the E1 runs (agents on `openai/gpt-4o-mini`); `meta-llama/llama-3.3-70b-instruct` for the earlier development runs |
 | Can't-tell verdicts and conflicting documents referred to a caseworker | Pending | No such flow found |
 | Refuse requests to misstate income or age | Pending | 5 red-team cases (RT-082–RT-086, English, Hindi, Marathi) get through; no defence yet |
-| Planted scam page ("pay ₹500 to this UPI ID") | Partial | 4 red-team cases (RT-078–RT-081) get through. Still to do: put the page in the corpus for demo 2 and build the flag |
-| Only official sources supply rules | Partial | All 49 rule files come from myscheme.gov.in and are reviewed, but there is no allow-list. 2 red-team cases (RT-095, RT-096) get through |
+| Planted scam page ("pay ₹500 to this UPI ID") | Partial | The output guard blocks the four existing cases. Still to do: test other scam formats independently and demonstrate the page in the corpus |
+| Only official sources supply rules | Done | Reviewed live rules must cite an HTTPS government-domain source (PR #93); RT-095 and RT-096 are now blocked. A government domain is not proof that a page is authentic |
 | Dashboard: questions per chat, can't-tell rate, waiting approvals, masked-ID hits, cost | Done | Merged in #81; panels not checked one by one |
 | Demo 1: Hindi widow pension through to an approved draft | Partial | Pieces exist; rehearse end to end |
 | Demo 2: income-misstatement refusal; scam page flagged and ignored | Pending | Waits for the L15 defences |
