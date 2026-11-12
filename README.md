@@ -38,7 +38,7 @@ The app opens on <http://localhost:8501> and starts its API on `127.0.0.1:8766`.
 
 A son writes in Hindi: "My mother is 62, a widow, lives in Pune district, and has a BPL card. What can she get? Help me apply."
 
-1. **Input guardrails** mask anything that looks like an Aadhaar, bank account or phone number before it reaches a model or a trace, and check the message for injection.
+1. **Input guardrails** block a message containing anything that looks like an Aadhaar, bank account or phone number, so it never reaches a model or a trace, and check the message for injection.
 2. **The supervisor** routes the request and shows the citizen a plan: build the profile, find schemes, check the rules, list documents, draft the application.
 3. **The intake agent** reads the facts into a typed profile and asks only the question that settles the most open verdicts. The citizen confirms the facts before any final verdict.
 4. **The eligibility analyst** shortlists schemes, and the **rule engine** (an MCP server) returns eligible, not eligible or can't tell for each, with the deciding clause and any missing facts. The plan is revised from these results.
@@ -67,7 +67,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 - **Code decides eligibility.** The rule engine is three-valued and fails closed: one unreviewed rule makes a scheme "can't tell". Every verdict cites its clause.
 - **Human approval of the exact form.** Nothing is written to the portal without a signed, one-use token bound to the approved form.
 - **Least privilege.** Each agent can call only the tools it needs; only the application agent can write.
-- **Layered guardrails.** Input masking and injection checks, outside text kept as data, an output guard on eligibility claims and on payment requests (a fee to a UPI ID or wallet), tool-call budgets and rate limits.
+- **Layered guardrails.** Blocking ID numbers in input, injection checks, outside text kept as data, an output guard on eligibility claims and on payment requests (a fee to a UPI ID or wallet), tool-call budgets and rate limits.
 - **Official sources only.** A live rule set must cite an HTTPS government (`gov.in` or `nic.in`) source and be fully reviewed.
 - **A plan the citizen can see.** The journey plan is shown in the person's language and revised from the rule engine's results; documents and drafting wait until a scheme is eligible and the person chooses it.
 - **Memory only with consent.** Long-term facts expire, must be reconfirmed, and are deleted by "Forget my data".
