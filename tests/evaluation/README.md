@@ -97,9 +97,9 @@ It refuses to overwrite an existing report. Failed calls are counted and cause a
 nonzero exit; agreement is then only for successful calls, not a valid complete
 calibration. Kappa is null when it is mathematically undefined. Check the per-item
 disagreements and have the evaluation team document the dataset, label provenance,
-model version, and any calibration limitations. A 20-message development trial reached
-20/20 agreement (kappa 1.0), but labels were revised after seeing judge results and AI
-suggestions; this is not independent calibration. The provider-prefix check is only a proxy for model family; verify
+model version, and any calibration limitations. The 11 Nov calibration used 20 AI-generated synthetic messages,
+each labelled by hand before the judge (`anthropic/claude-haiku-5.5`) was run: 20/20
+agreement, kappa 1.0. The provider-prefix check is only a proxy for model family; verify
 the model's actual family independently. The harness does not enforce a spend cap.
 
 The [preliminary E1 development report](e1-development-report.md) is a submission

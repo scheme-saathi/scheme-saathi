@@ -18,7 +18,7 @@ These are separate experiments, not components of a single overall score. The ea
 | E4: question order | Held-out candidate schemes: **6.7 planned vs 6.9 fixed** questions per conversation; both produced 100% correct verdicts. | Question ordering helped little with known candidates; checking all schemes required far more questions. |
 | Retrieval | Held-out exact-evidence Recall@5 **0.917 → 1.000** with query rewrite and reranking, three runs each. | This is one additional query in a 12-query set. Retrieval labels and tuning were not independently separated; see [retrieval evaluation](retrieval-evaluation.md). |
 | Memory | Development: **742 → 624 questions** across 150 return visits (15.9% fewer); no verdicts changed. | Scripted evaluation covered three schemes and one stored field, not independent held-out memory cases. |
-| LLM judge | Preliminary claim classification: **20/20 agreement**, reported Cohen's kappa **1.0**, on 20 development messages. | Labels were revised after seeing judge results and AI suggestions; this is **not independent calibration**. The judge does not verify whether a claim is supported. |
+| LLM judge | Claim classification on 20 labelled synthetic messages: **20/20 agreement**, Cohen's kappa **1.0**, with a judge from a different model family (`anthropic/claude-haiku-5.5`) than the agents (`openai/gpt-4o-mini`). | The messages were generated for the check, not taken from agent runs, and 20 is a small set. The judge detects whether a claim is made, not whether it is supported. |
 
 **Overall conclusion:** on the measured cases, the reviewed rule engine was reliable when candidate schemes and facts were available. The agent team's original held-out result does not justify its additional cost on this task; the later development result is promising but needs repeated testing. Security and retrieval also require independent evaluation before these results can be treated as evidence of generalization.
 
@@ -228,20 +228,19 @@ Each of the 50 synthetic households makes a first visit on each of three schemes
 - **The 32 visits with no saving** are all C03. With memory off and with memory on, intake reached its 12-question cap. With memory on, age was prefilled and the freed question went to the next field, so the visit got further without asking fewer questions.
 - **Memory never decides.** A prefilled fact is shown unconfirmed, and every return visit had exactly one confirm step.
 
-### LLM-as-judge: preliminary calibration
+### LLM-as-judge: calibration
 
 The offline judge classifies whether an assistant message makes a definite eligibility or ineligibility claim. It does **not** decide eligibility or establish whether a claim is backed by rule-engine evidence, and it has not been used to revise E1 scores or resolve the C1 keyword flags.
 
-The recorded development trial reported agreement of **20/20 (100%)** and **Cohen's kappa 1.0** against human-reviewed labels. Those labels were revised after the reviewer saw judge outputs and AI suggestions, so agreement is potentially biased and is not evidence of independent validation. The calibration output and model provenance were not available in the local run directory for independent verification; the result is reported from the existing [evaluation harness documentation](../tests/evaluation/README.md).
+**How it was calibrated (11 Nov).** Twenty synthetic agent replies, a mix of claims and non-claims, were generated with an AI model for the check. Saurabh reviewed each message and labelled it by hand as a claim or not before the judge was run. The judge, `anthropic/claude-haiku-5.5`, is from a different model family than the agents (`openai/gpt-4o-mini`), as the brief requires; `calibrate_judge.py` refuses a judge that shares the agents' provider. It agreed with the human labels on **20/20 (100%)** messages, **Cohen's kappa 1.0**, with no failed calls. The calibration report (judge model, per-item results, a hash of the labels file and the prompt) and the labels file are kept outside the repository, in the git-ignored run folder, and are available for inspection.
 
-**Status against the brief:** an independently calibrated judge is still pending. A separate evaluator should hand-label at least 20 fresh, safe synthetic messages without seeing judge predictions, covering claims and non-claims in supported languages. Then run the judge from a verified different model family, record the model, dataset selection, failures, agreement and kappa, and review disagreements. A claim-support judge would additionally need reliable tool-evidence traces. See the [calibration procedure](../tests/evaluation/README.md#offline-claim-judge-calibration); model calls incur cost.
+**Next step.** Run the judge on real agent replies, for example C1's 35 keyword-flagged E1 replies, labelled by someone who has not seen its output, to check it beyond generated messages. A claim-support judge would also need reliable tool-evidence traces. See the [calibration procedure](../tests/evaluation/README.md#offline-claim-judge-calibration).
 
 ## 8. Limits
 
 - **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
 - **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2).
 - **Held-out data were used once.** The original comparisons were frozen before their held-out runs. The held-out cases were seen during later work, so any later change needs a fresh, independently prepared test set.
-- **Judge calibration is preliminary.** The 20-message trial was not independent; fresh labels, made without seeing the judge's output, are needed.
 - **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts, so small differences are not reliable.
 
 ## 9. Reproduce

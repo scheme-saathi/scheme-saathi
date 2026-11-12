@@ -82,7 +82,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 | E4: LLM directly vs the rule engine | 91% vs 100% on 95 held-out verdicts; no boundary errors either way; planned question order 138 vs 163 questions with every scheme open | [Report §5](docs/evaluation-report.md) |
 | Retrieval (Recall@5) | BM25 0.625 → hybrid 1.000 on development; held-out 0.917 → 1.000 with the query rewrite (3 runs) | [Retrieval evaluation](docs/retrieval-evaluation.md) |
 | Memory on vs off | 15.9% fewer questions on a return visit; no verdict changed | [Report §7](docs/evaluation-report.md) |
-| LLM judge | Preliminary calibration on 20 development messages: 20/20 agreement, Cohen's kappa 1.0; the labels were revised after seeing the judge's output, so it is not yet an independent calibration | [Report §7](docs/evaluation-report.md), [harness](tests/evaluation/README.md) |
+| LLM judge | A Claude judge, from a different family than the GPT agents, agreed with hand labels on 20/20 synthetic messages (Cohen's kappa 1.0) | [Report §7](docs/evaluation-report.md), [harness](tests/evaluation/README.md) |
 
 ## Submission documents
 
@@ -165,4 +165,4 @@ The [contribution log](docs/contribution-log.md) links each area to the pull req
 
 ## Known limits
 
-Personas were labelled by one person, so there is no inter-annotator agreement; the held-out sets are small; the red-team suite tests code defences, not whether a model obeys injected text; the refusal of requests to misstate facts is still to be built; the claim judge has no independent calibration yet; and the held-out personas were seen during later development, so a new final evaluation needs a fresh test set. The full list is in section 8 of the [evaluation report](docs/evaluation-report.md). Results are not official benefit decisions, and nothing is sent to a real government portal.
+Personas were labelled by one person, so there is no inter-annotator agreement; the held-out sets are small; the red-team suite tests code defences, not whether a model obeys injected text; the refusal of requests to misstate facts is still to be built; and the held-out personas were seen during later development, so a new final evaluation needs a fresh test set. The full list is in section 8 of the [evaluation report](docs/evaluation-report.md). Results are not official benefit decisions, and nothing is sent to a real government portal.
