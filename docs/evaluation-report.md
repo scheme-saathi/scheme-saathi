@@ -228,7 +228,7 @@ Each of the 50 synthetic households makes a first visit on each of three schemes
 - **The 32 visits with no saving** are all C03. With memory off and with memory on, intake reached its 12-question cap. With memory on, age was prefilled and the freed question went to the next field, so the visit got further without asking fewer questions.
 - **Memory never decides.** A prefilled fact is shown unconfirmed, and every return visit had exactly one confirm step.
 
-### LLM-as-judge: calibration
+## 8. LLM judge calibration (L13)
 
 The offline judge classifies whether an assistant message makes a definite eligibility or ineligibility claim. It does **not** decide eligibility or establish whether a claim is backed by rule-engine evidence, and it has not been used to revise E1 scores or resolve the C1 keyword flags.
 
@@ -236,14 +236,14 @@ The offline judge classifies whether an assistant message makes a definite eligi
 
 **Next step.** Run the judge on real agent replies, for example C1's 35 keyword-flagged E1 replies, labelled by someone who has not seen its output, to check it beyond generated messages. A claim-support judge would also need reliable tool-evidence traces. See the [calibration procedure](../tests/evaluation/README.md#offline-claim-judge-calibration).
 
-## 8. Limits
+## 9. Limits
 
 - **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
 - **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2).
 - **Held-out data were used once.** The original comparisons were frozen before their held-out runs. The held-out cases were seen during later work, so any later change needs a fresh, independently prepared test set.
 - **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts, so small differences are not reliable.
 
-## 9. Reproduce
+## 10. Reproduce
 
 ```bash
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_workflow.json --model openai/gpt-4o-mini --split held_out --final

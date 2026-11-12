@@ -82,7 +82,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 | E4: LLM directly vs the rule engine | 91% vs 100% on 95 held-out verdicts; no boundary errors either way; planned question order 138 vs 163 questions with every scheme open | [Report §5](docs/evaluation-report.md) |
 | Retrieval (Recall@5) | BM25 0.625 → hybrid 1.000 on development; held-out 0.917 → 1.000 with the query rewrite (3 runs) | [Retrieval evaluation](docs/retrieval-evaluation.md) |
 | Memory on vs off | 15.9% fewer questions on a return visit; no verdict changed | [Report §7](docs/evaluation-report.md) |
-| LLM judge | A Claude judge, from a different family than the GPT agents, agreed with hand labels on 20/20 synthetic messages (Cohen's kappa 1.0) | [Report §7](docs/evaluation-report.md), [harness](tests/evaluation/README.md) |
+| LLM judge | A Claude judge, from a different family than the GPT agents, agreed with hand labels on 20/20 synthetic messages (Cohen's kappa 1.0) | [Report §8](docs/evaluation-report.md), [harness](tests/evaluation/README.md) |
 
 ## Submission documents
 
@@ -125,7 +125,7 @@ The full suite needs no model or API key. The experiments each have one runner, 
 | Retrieval | `python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --rewrite --split development` |
 | Memory | `python -m evaluation.memory_eval` (no model needed) |
 
-The exact commands behind every reported number are in section 9 of the [evaluation report](docs/evaluation-report.md).
+The exact commands behind every reported number are in section 10 of the [evaluation report](docs/evaluation-report.md).
 
 ## Demos
 
@@ -165,4 +165,4 @@ The [contribution log](docs/contribution-log.md) links each area to the pull req
 
 ## Known limits
 
-Personas were labelled by one person, so there is no inter-annotator agreement; the held-out sets are small; the red-team suite tests code defences, not whether a model obeys injected text; the refusal of requests to misstate facts is still to be built; and the held-out personas were seen during later development, so a new final evaluation needs a fresh test set. The full list is in section 8 of the [evaluation report](docs/evaluation-report.md). Results are not official benefit decisions, and nothing is sent to a real government portal.
+Personas were labelled by one person, so there is no inter-annotator agreement; the held-out sets are small; the red-team suite tests code defences, not whether a model obeys injected text; the refusal of requests to misstate facts is still to be built; and the held-out personas were seen during later development, so a new final evaluation needs a fresh test set. The full list is in section 9 of the [evaluation report](docs/evaluation-report.md). Results are not official benefit decisions, and nothing is sent to a real government portal.
