@@ -74,7 +74,9 @@ READ_ACCESS = {
     "eligibility": {
         (RULE_ENGINE, "list_rule_schemes"),
         (RULE_ENGINE, "evaluate_profile"),
-        (SCHEMES_KB, "get_scheme_details"),  # with_closed_note: is the scheme closed?
+    },
+    "supervisor": {
+        (SCHEMES_KB, "get_scheme_details"),  # scheme_is_closed: the note on an outgoing answer
     },
     "document_checker": {
         (SCHEMES_KB, "get_required_documents"),
@@ -350,7 +352,9 @@ def scheme_is_closed(scheme_id: str) -> bool:
     if scheme_id in _closed_schemes:
         return _closed_schemes[scheme_id]
     try:
-        details = call_tool(SCHEMES_KB, "get_scheme_details", scheme_id=scheme_id)
+        # A workflow step, not the calling agent's choice: eligibility may not read the KB (RT-032).
+        with acting_as("supervisor"):
+            details = call_tool(SCHEMES_KB, "get_scheme_details", scheme_id=scheme_id)
     except ToolCallError as error:
         if error.code == "scheme_not_found":
             _closed_schemes[scheme_id] = False
