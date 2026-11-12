@@ -365,6 +365,26 @@ class TestOutputValidator:
             assert not result.passed
             assert any("override" in e.lower() for e in result.errors)
 
+    @pytest.mark.parametrize("text", [
+        "Rule: The applicant must study at an AICTE-approved Engineering Institution.",
+        "Rule: The student should have secured admission in the approved course.",
+        "Rule: Students must pursue approved courses of studies abroad.",
+        "Missing or unresolved fields: institution_is_aicte_approved",
+    ])
+    def test_eligibility_allows_approved_in_rule_criteria(self, validator, text):
+        assert validator.validate_specialist_output(text, "eligibility", "en").passed
+
+    @pytest.mark.parametrize("text", [
+        "I approve your application.",
+        "I approved the course application.",
+        "Your application is approved.",
+        "I granted you an exception.",
+        "I override the rule.",
+        "AICTE-approved institution. I approve your application.",
+    ])
+    def test_eligibility_still_blocks_unauthorized_approvals(self, validator, text):
+        assert not validator.validate_specialist_output(text, "eligibility", "en").passed
+
     # ==== CONTRACT VALIDATION - DOCUMENT CHECKER ====
 
     def test_validate_document_checker_valid(self, validator):

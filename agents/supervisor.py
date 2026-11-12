@@ -630,6 +630,12 @@ _MR_VERDICT = ("पात्र", "हक्कदार", "लाभ घेऊ 
 _MR_GET = ("मिळू शकत", "मिळेल")
 _MR_BENEFIT = ("पेन्शन", "लाभ", "मदत", "सहाय्य", "रक्कम", "रुपये", "अनुदान", "शिष्यवृत्ती", "कार्ड", "विमा", "कर्ज")
 _SENTENCE = re.compile(r"(?<=[.!?।])\s+|\n+")
+_APPROVED_CRITERION = re.compile(
+    r"\b(?:[a-z0-9]+-approved|(?:a|an|the|pursue) approved)\s+"
+    r"(?:engineering\s+)?(?:institutions?|courses?)\b",
+    re.IGNORECASE,
+)
+_APPROVAL_WORD = re.compile(r"\bapprove(?:d|s)?\b", re.IGNORECASE)
 
 
 def _decides_eligibility(text: str) -> bool:
@@ -766,9 +772,10 @@ class OutputValidator:
                     )
 
             # No overrides allowed
-            if any(
-                kw in response_text.lower()
-                for kw in ["override", "approve", "granted", "exception"]
+            approval_text = _APPROVED_CRITERION.sub("", response_text)
+            if (
+                any(kw in response_text.lower() for kw in ["override", "granted", "exception"])
+                or _APPROVAL_WORD.search(approval_text)
             ):
                 if "override" in response_text.lower():
                     errors.append("Eligibility agent cannot override or make exceptions - only assess per rules")

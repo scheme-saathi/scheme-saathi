@@ -18,7 +18,7 @@ from agents.contracts import (
     SupervisorPlan,
 )
 from agents.eligibility import EligibilityAgent
-from graph.agent_workflow import AgentSet, _guard_output, build_agent_graph
+from graph.agent_workflow import AgentSet, _eligibility_node, _finish_node, _guard_output, build_agent_graph
 from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
 from graph.persona import HOUSEHOLD_TEST_CASES, profile_facts_to_rule_fields
 from graph.workflow import application_hash
@@ -1052,3 +1052,20 @@ def test_unsafe_specialist_output_is_blocked_by_supervisor():
 
     assert result["status"] == "output_blocked"
     assert "override" not in result["response"]
+
+
+def test_confirmed_multi_scheme_results_allow_rules_and_show_closed_notice():
+    from graph import tools
+
+    agents = build_agents(eligibility=object.__new__(EligibilityAgent))
+    state = {
+        "shortlist": ["C36", "C04", "M14", "C16", "C19"],
+        "confirmed_facts": {}, "known_facts": {}, "language": "en",
+    }
+    tools.scheme_is_closed.cache_clear()
+    result = tools.run_as("eligibility", _eligibility_node, agents, state)
+    finished = _finish_node(agents, {**state, **result})
+
+    assert finished["status"] == "eligibility_checked"
+    assert "AICTE-approved" in finished["response"]
+    assert tools.CLOSED_NOTE in result["explanations"]["M14"]
