@@ -641,7 +641,7 @@ def test_ui_confirm_details_resumes_real_api_and_graph(monkeypatch, correct_firs
     monkeypatch.setattr(app_new, "_api_base_url", lambda: "http://testserver")
     monkeypatch.setattr(app_new, "urlopen", lambda *args, **kwargs: HealthResponse())
     monkeypatch.setattr(app_new, "_api_request", request)
-    monkeypatch.setattr(app_new, "_scheme_names", lambda base: {PENSION: "Synthetic pension"})
+    monkeypatch.setattr(app_new, "_schemes", lambda base: [{"scheme_id": PENSION, "name": "Synthetic pension"}])
 
     ui = AppTest.from_function(ui_confirmation_journey).run()
     ui.chat_input[0].set_value("My mother is 67, a widow, and earns 1 lakh a year").run()
