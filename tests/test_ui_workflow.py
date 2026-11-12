@@ -44,6 +44,72 @@ def chat_screen():
     app_new._render_chat_page()
 
 
+def journey_plan_screen():
+    import streamlit as st
+    from app import app_new
+
+    app_new._render_journey_plan({
+        "steps": ["profile", "schemes", "rules", "documents", "draft"],
+        "disposition": "not_eligible",
+        "revisions": [],
+    }, st.session_state.get("test_current_step", 1))
+
+
+def test_journey_plan_is_visible_and_explains_rule_based_replan():
+    app = AppTest.from_function(journey_plan_screen).run()
+    assert not app.exception
+    assert any(item.label == "Your plan" for item in app.expander)
+    assert any(item.value == (
+        "1. **Collect and confirm details — Current stage**\n"
+        "2. Find candidate schemes\n"
+        "3. Check reviewed eligibility rules\n"
+        "4. Check documents if you choose an eligible scheme\n"
+        "5. Prepare a draft for your review if you choose to apply"
+    ) for item in app.markdown)
+    assert any("Documents and drafting are paused" in item.value for item in app.caption)
+
+
+@pytest.mark.parametrize(("stage", "expected"), [
+    (1, "1. **Collect and confirm details — Current stage**"),
+    (2, "3. **Check reviewed eligibility rules — Current stage**"),
+    (3, "4. **Check documents if you choose an eligible scheme — Current stage**"),
+    (4, "5. **Prepare a draft for your review if you choose to apply — Current stage**"),
+    (5, None),
+])
+def test_journey_plan_highlights_current_screen_without_claiming_a_completed_action(stage, expected):
+    app = AppTest.from_function(journey_plan_screen)
+    app.session_state["test_current_step"] = stage
+    app.run()
+    assert not app.exception
+    plan = next(item.value for item in app.markdown if "Collect and confirm details" in item.value)
+    if expected is None:
+        assert "Current stage" not in plan
+    else:
+        assert expected in plan
+        assert plan.count("Current stage") == 1
+
+
+@pytest.mark.parametrize(("language", "label"), [
+    ("hi", "वर्तमान चरण"),
+    ("mr", "सध्याचा टप्पा"),
+])
+def test_journey_plan_current_stage_is_localized(language, label):
+    app = AppTest.from_function(journey_plan_screen)
+    app.session_state["portal_language"] = language
+    app.session_state["test_current_step"] = 1
+    app.run()
+    assert not app.exception
+    assert any(label in item.value for item in app.markdown)
+
+
+def test_chat_result_keeps_journey_plan(monkeypatch):
+    session = {}
+    monkeypatch.setattr(app_new.st, "session_state", session)
+    plan = {"steps": ["profile"], "disposition": "conditional", "revisions": []}
+    app_new._record_chat_result({"status": "needs_information", "data": {"journey_plan": plan}})
+    assert session["chat_journey_plan"] == plan
+
+
 def sensitive_attachment_screen():
     from types import SimpleNamespace
 
@@ -375,6 +441,21 @@ def test_application_cannot_start_without_confirmed_eligibility(status, verdict)
     result = {"status": status, "profile": {}, "verdicts": {"A": {"verdict": verdict}}}
     with pytest.raises(ValueError, match="confirmed eligible"):
         app_new._start_application("http://api", result, "A")
+
+
+@pytest.mark.parametrize(("response", "message"), [
+    ({"needs_human": True}, "needs human review"),
+    ({"verdicts": {"A": {"verdict": "cant_tell"}}}, "eligibility recheck"),
+    ({"verdicts": {"A": {"verdict": "eligible"}}, "application": {}}, "draft is unavailable"),
+])
+def test_application_failure_is_shown_instead_of_silent_transition(monkeypatch, response, message):
+    monkeypatch.setattr(app_new, "_send_workflow", lambda *args: response)
+    app = AppTest.from_function(selection_screen).run()
+    app.selectbox[0].select("A").run()
+    app.button(key="prepare-selected-application").click().run()
+    assert not app.exception
+    assert any(message in error.value for error in app.error)
+    assert not app.session_state.get("application_result")
 
 
 @pytest.mark.parametrize("action,button", [("approve", "Confirm details"), ("reject", "Change details in chat")])

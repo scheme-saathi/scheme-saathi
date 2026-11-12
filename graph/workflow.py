@@ -18,6 +18,7 @@ MAX_TOOL_CALLS_PER_RUN = 1200
 
 class GraphState(TypedDict, total=False):
     simulated_citizen: dict[str, Any]
+    confirmed_profile: dict[str, Any]
     actor_id: str
     scheme_ids: list[str]
     include_draft: bool
@@ -51,9 +52,13 @@ def unanswered(state: GraphState) -> list[str]:
 def plan_node(state: GraphState) -> dict[str, Any]:
     return {
         "plan": ["build profile", "find candidate schemes", "check rules", "list documents", "draft application"],
-        "profile": {},
+        "profile": dict(state["confirmed_profile"]) if "confirmed_profile" in state else {},
         "questions_asked": 0,
     }
+
+
+def route_after_plan(state: GraphState) -> str:
+    return "eligibility" if "confirmed_profile" in state else "intake"
 
 
 def _next_field(state: GraphState) -> str | None:
@@ -107,6 +112,8 @@ def eligibility_node(state: GraphState) -> dict[str, Any]:
 
 
 def route_after_eligibility(state: GraphState) -> str:
+    if "confirmed_profile" in state:
+        return "documents"
     return "intake" if _next_field(state) else "documents"
 
 
@@ -146,17 +153,13 @@ def check_application(state: GraphState) -> list[str]:
     applicant = application.get("applicant")
     if not isinstance(applicant, dict):
         return problems + ["The application has no applicant section."]
-    with tools.acting_as("application"):
-        required_fields = (
-            tools.required_fields([scheme_id])
-            if scheme_id in state["verdicts"]
-            else []
-        )
-    for field in required_fields:
+    for field in state["profile"]:
         if field not in applicant:
             problems.append(f"Applicant is missing required field '{field}'.")
     for field, value in applicant.items():
-        if field in state["profile"] and state["profile"][field] != value:
+        if field not in state["profile"]:
+            problems.append(f"Applicant field '{field}' was not in the collected profile.")
+        elif state["profile"][field] != value:
             problems.append(f"Applicant field '{field}' differs from the collected profile.")
     return problems
 
@@ -285,7 +288,7 @@ def build_graph(checkpointer=None):
     builder.add_node("approval", approval_node)
     builder.add_node("submit", submit_node)
     builder.add_edge(START, "plan")
-    builder.add_edge("plan", "intake")
+    builder.add_conditional_edges("plan", route_after_plan, ["intake", "eligibility"])
     builder.add_edge("intake", "eligibility")
     builder.add_conditional_edges("eligibility", route_after_eligibility, ["intake", "documents"])
     builder.add_conditional_edges("documents", route_after_documents, ["draft", END])
