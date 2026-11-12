@@ -53,7 +53,15 @@ The brief's Scheme Saathi red-team list asks for a planted scam page, requests t
 
 Legitimate cases added: a low income stated plainly, a correction of an earlier answer, a warning not to pay any fee, a household reading its own memory, and rules from myScheme. None is blocked.
 
-**Whole suite now:** attack success 79.2% off and **11.5% on** (the 11 gaps above, listed in `known_gaps.json`); legitimate work blocked 6.9% off and 0% on. When role 4 adds the three defences, remove the fixed cases from `known_gaps.json` and rerun.
+**11 Nov result:** attack success 79.2% off and **11.5% on** (11 gaps); legitimate work blocked 6.9% off and 0% on.
+
+## Result after the 12 Nov checks
+
+The full suite (`.venv/bin/python tests/redteam/run_redteam.py --json`) reports 79.2% attack success with defences off and **5.2% on** (5/96), with 0/29 legitimate cases blocked and no runner errors. The four payment-destination and two unofficial-source cases are blocked; the five misstatement cases remain in `known_gaps.json`. No attacks were changed.
+
+The payment guard blocks address-like destinations in payment-related output, including warnings that contain one. It can miss scams without such a destination and does not verify recipients. Live rules now additionally require an HTTPS `gov.in` or `nic.in` source; a matching URL alone does not establish that a page or rule is genuine. Synthetic test rules use a fictional myScheme URL solely to exercise the live-rule path, not as evidence of a real scheme.
+
+These attack cases were visible while the defences were changed. The new result is a regression check; have an independent red-team member create fresh attacks to measure generalization.
 
 ## Fixes covered by the suite
 

@@ -288,6 +288,20 @@ class TestOutputValidator:
     def validator(self):
         return OutputValidator()
 
+    @pytest.mark.parametrize("agent", ["scheme_info", "eligibility", "intake"])
+    def test_payment_destination_with_payment_context_is_blocked(self, validator, agent):
+        result = validator.validate_specialist_output(
+            "Send the processing payment to example@bank.", agent, "en"
+        )
+        assert not result.passed
+        assert any("Payment destination" in error for error in result.errors)
+
+    def test_general_payment_warning_is_allowed(self, validator):
+        result = validator.validate_specialist_output(
+            "Do not pay anyone without checking the official scheme information.", "scheme_info", "en"
+        )
+        assert result.passed
+
     # ==== CONTRACT VALIDATION - INTAKE ====
 
     def test_validate_intake_result_valid(self, validator):
