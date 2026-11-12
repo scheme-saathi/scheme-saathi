@@ -252,11 +252,37 @@ def results_screen():
         "verdicts": {
             "B": {"verdict": "not_eligible"},
             "C": {"verdict": "cant_tell", "missing_fields": ["household_below_bpl"]},
-            "A": {"verdict": "eligible", "citations": [{"clause_id": "1", "text": "Reviewed rule"}]},
+            "A": {"verdict": "eligible", "citations": [{"clause_id": "1", "text": "Reviewed rule"}],
+                  "conditions": [{"field": "is_widow", "outcome": "true"}]},
         },
         "scheme_names": {"A": "Scheme A", "B": "Scheme B", "C": "Scheme C"},
+        "scheme_benefits": {"A": ["Rs. 300 per month"]},
     }
     app_new._render_eligibility_screen(result, "http://api")
+
+
+def any_of_verdict_card():
+    from app import app_new
+
+    app_new._render_conditions({
+        "verdict": "eligible",
+        "missing_fields": ["ration_card_type", "ration_card_type", "is_journalist"],
+        "conditions": [
+            {"field": "ration_card_type", "outcome": "unknown"},
+            {"field": "ration_card_type", "outcome": "unknown"},
+            {"field": "has_maharashtra_domicile_certificate", "outcome": "true"},
+            {"field": "is_journalist", "outcome": "unknown"},
+        ],
+    })
+
+
+def test_eligible_any_of_scheme_shows_only_the_qualifying_condition():
+    app = AppTest.from_function(any_of_verdict_card).run()
+    assert not app.exception
+    assert not any("Still needed" in item.value for item in app.caption)
+    chips = [item.value for item in app.markdown]
+    assert chips == [":green-background[✅ Has maharashtra domicile certificate]"]
+    assert any("Any one of this scheme's conditions qualifies" in item.value for item in app.caption)
 
 
 def test_edit_form_submits_changed_fields(monkeypatch):
@@ -295,6 +321,9 @@ def test_results_show_readable_facts_and_prioritize_eligible_schemes():
     assert headings == ["**Scheme A**", "**Scheme C**", "**Scheme B**"]
     assert any("Still needed: Household below poverty line (BPL)" in item.value for item in app.caption)
     assert any(item.label == "View reviewed source clauses" for item in app.expander)
+    assert any(item.label == "Benefits" for item in app.expander)
+    assert any(item.value == "- Rs. 300 per month" for item in app.markdown)
+    assert any(item.value == ":green-background[✅ Widow]" for item in app.markdown)
     assert app.selectbox[0].options == ["Scheme A (A)"]
 
 
