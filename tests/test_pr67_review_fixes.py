@@ -101,10 +101,7 @@ def test_a_failed_closed_lookup_is_not_cached():
     assert tools.scheme_is_closed("NO-SUCH-SCHEME") is False
 
 
-def test_closed_check_works_inside_eligibility_without_giving_it_the_kb():
-    # The app runs this inside the eligibility step; the lookup was forbidden, so no note was added.
+def test_eligibility_actor_can_check_closed_scheme():
     tools.scheme_is_closed.cache_clear()
     with tools.acting_as("eligibility"):
-        assert tools.scheme_is_closed("C11") is True
-        with pytest.raises(tools.ToolCallError, match="may not use this read tool"):
-            tools.call_tool(tools.SCHEMES_KB, "get_scheme_details", scheme_id="C11")  # RT-032
+        assert tools.with_closed_note("C11", "Rule result.") == f"Rule result. {tools.CLOSED_NOTE}"

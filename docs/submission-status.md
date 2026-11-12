@@ -14,7 +14,7 @@ The core system and three of the four experiments are done. The biggest gaps:
 - **Strongest areas:**
   - Reflexion on the rule extractor (L12, signature A)
   - human approval tied to the exact payload (L14)
-  - the red-team suite: 96 attacks and 29 legitimate cases; 0% false blocks; the 11 attacks that still get through (scam page, misstatement, unofficial rule source) are pinned as known gaps
+  - the red-team suite: 96 attacks and 29 legitimate cases; 0% false blocks on this set; the five misstatement attacks that still get through are pinned as known gaps
   - E4
 - **Changed since the last review (11 Nov):**
   - Retrieval now has a query-side technique: an LLM rewrite searched together with the original query, fused with RRF.
@@ -53,7 +53,7 @@ Six lectures are fully met (L4–L6, L7, L8, L9, L12 and L14). The others each m
 | L12 Improvement | Done | Reflexion on the rule extractor: 34 proposed lessons, 13 approved, 21 rejected with reasons, 12 frozen; held-out ×3 before/after; harmful lesson L007 named | — |
 | L13 Evaluation | Partial | Golden set of 71 cases (21 dev, 50 held-out); traces; Grafana dashboard (PR #81) | LLM judge from a different model family, checked against 20+ human labels with Cohen's kappa |
 | L14 Human control | Done | `interrupt()` with approve, edit, reject; approval tied to `payload_hash`; an edit invalidates it; pre-tool budget and permission checks; post-tool logging | Rehearse the edit-invalidates-approval demo |
-| L15 Security | Partial | Threat model; own input and output guardrails; least-privilege tools per agent; red-team suite of 96 attacks + 29 legitimate cases, including injection through scheme pages, documents and tool output. **11 Nov:** role 5 added 19 attacks from the brief's list: another household's memory (held), IDs in traces and logs (held), and three gaps now pinned in `tests/redteam/known_gaps.json`. Attack success 79.2% off → 11.5% on; 0% false blocks | (1) Planted scam page: no payment-request check in the output guardrail or scheme index (4 attacks get through). (2) Refuse and explain requests to misstate income or age (5 attacks get through). (3) Allow-list of official rule sources (2 attacks get through). (4) Llama Guard 4 / Prompt Guard 2 not used: add Prompt Guard 2 on CPU or write down why not. (5) Threat model is ~1,600 words; the brief asks for one page. (6) Only code defences are tested; no model run checks whether the agents obey injected text. (7) The first 77 attacks were written by the defence author and are not yet reviewed by someone else |
+| L15 Security | Partial | Threat model; input and output guardrails; least-privilege tools; 96 attacks and 29 legitimate cases. On 12 Nov, payment-destination and official-source checks reduced attack success from 79.2% off to 5.2% on, with 0% legitimate cases blocked | Refuse and explain requests to misstate or hide facts (5 attacks get through); independently test payment-detection limitations and source provenance; Llama Guard 4 / Prompt Guard 2 not used; threat model exceeds one page; only code defences are tested; the first 77 attacks need independent review |
 | L16 Deployment | Partial | FastAPI with streaming; alerts including the can't-tell-rate jump (PR #81) | One `docker compose up` for app, MCP servers, Chroma, Prometheus, Grafana; CI eval gate that fails below a threshold; one failed CI run with an explanation; clean-machine install; prompts and model IDs in one versioned config |
 
 ### L10 replan trace
@@ -111,13 +111,13 @@ E1, E3 and E4 are done; E2 has three known gaps waiting for defences.
 | Experiment | Status | Result so far | Pending |
 | --- | --- | --- | --- |
 | E1: does the agent justify its cost? | Done | Held-out, same model (`gpt-4o-mini`) and budget, C1 and C2 ×3: verdicts right C0 100%, C1 100%, C2 54.0% (50.5–56.8%); C2 misses the right scheme for 39% of verdicts; cost per case $0 / $0.0004 / $0.0081; median latency 0.13 s / 6.3 s / 68.9 s. Conclusion: the agent team does not justify its cost yet; its shortlist is the next fix | Review C1's 35 keyword-flagged replies with the claim judge |
-| E2: do the defences work? | Partial | 9 Nov: 77 attacks, success 80.5% off, 0% on. 11 Nov, with role 5's 19 new attacks: 96 attacks, 79.2% off, 11.5% on (11 known gaps: scam page, misstatement, unofficial rule source); 29 legitimate cases, 0% blocked with defences on | Role 4 builds the three defences, then rerun and update `docs/redteam-report.md` and section 3 of `docs/evaluation-report.md`, which still give the 77-attack result |
+| E2: do the defences work? | Partial | 12 Nov: 96 attacks, 79.2% off and 5.2% on; 29 legitimate cases, 0% blocked with defences on | Address the five remaining misstatement cases, independently expand the attacks, and test the agent team against injected material |
 | E3: did the lessons help? | Done | Held-out rule-extraction F1 0.880 → 0.868 (3 runs each); dev +0.01 to +0.08; harmful lesson L007 named; cost about 37,500 tokens | — |
 | E4: signature ablation | Done | LLM directly from text 0.909 vs rule engine 1.000 on 95 held-out verdicts, 0 boundary errors either way; planned vs fixed question order 138 vs 163 questions with all schemes open | Merge PR #83 |
 
 ## Scheme Saathi specifics and demos
 
-Signature challenge A is done and B is nearly done. Nothing is built yet for demo 2 (refusing an income misstatement and flagging a scam page).
+Signature challenge A is done and B is nearly done. Demo 2 still needs an income-misstatement refusal and a live scam-page demonstration; the output guard now blocks payment destinations in the existing code-only cases.
 
 | Requirement | Status | Notes |
 | --- | --- | --- |
@@ -129,7 +129,7 @@ Signature challenge A is done and B is nearly done. Nothing is built yet for dem
 | Simulated citizen on a different model family | Done | `meta-llama/llama-3.3-70b-instruct` |
 | Can't-tell verdicts and conflicting documents referred to a caseworker | Pending | No such flow found |
 | Refuse requests to misstate income or age | Pending | 5 red-team cases added 11 Nov (RT-082–RT-086, English, Hindi, Marathi); all get through; no defence yet |
-| Planted scam page ("pay ₹500 to this UPI ID") | Partial | 4 red-team cases added 11 Nov (RT-078–RT-081); all get through. Still to do: put the page in the corpus for demo 2 and build the flag |
+| Planted scam page ("pay ₹500 to this UPI ID") | Partial | The output guard blocks the four existing cases. Still to do: test other scam formats independently and demonstrate the page in the corpus |
 | Only official sources supply rules | Partial | Rules are reviewed; no explicit source allow-list. 2 red-team cases added 11 Nov (RT-095, RT-096) get through |
 | Dashboard: questions per chat, can't-tell rate, waiting approvals, masked-ID hits, cost | Done | In PR #81; panels not checked one by one |
 | Demo 1: Hindi widow pension through to an approved draft | Partial | Pieces exist; rehearse end to end |

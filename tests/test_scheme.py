@@ -5,7 +5,7 @@ import pytest
 from pydantic import ValidationError
 
 from servers.rule_engine.rules import Verdict, evaluate
-from servers.rule_engine.scheme import SchemeRecord, live_conditions
+from servers.rule_engine.scheme import SchemeRecord, live_conditions, official_source
 
 EXAMPLE = Path(__file__).resolve().parent / "fixtures" / "SYNTH-PENSION-001.json"
 PROFILE = {"age": 62, "is_widow": True, "income": 250000}
@@ -17,6 +17,30 @@ def load():
 
 def test_example_validates():
     SchemeRecord.model_validate(load())
+
+
+@pytest.mark.parametrize(("url", "trusted"), [
+    ("https://www.myscheme.gov.in/schemes/test", True),
+    ("https://district.nic.in/scheme", True),
+    ("http://www.myscheme.gov.in/scheme", False),
+    ("https://myscheme.gov.in.example.com/scheme", False),
+    ("https://myscheme.gov.in@evil.example/scheme", False),
+    ("https://evil.example@myscheme.gov.in/scheme", False),
+    ("https://myscheme.gov.in:444/scheme", False),
+    ("https://.gov.in/scheme", False),
+    ("https://a..gov.in/scheme", False),
+    ("https://my\nscheme.gov.in/scheme", False),
+    ("whatsapp-forward://group/message", False),
+])
+def test_official_source_requires_a_secure_government_url(url, trusted):
+    assert official_source(url) is trusted
+
+
+def test_untrusted_source_cannot_produce_a_live_verdict():
+    data = load()
+    data["source"]["url"] = "https://news.example/scheme"
+    result = evaluate(PROFILE, live_conditions(SchemeRecord.model_validate(data)))
+    assert result.verdict == Verdict.CANT_TELL
 
 
 def test_rule_citing_unknown_clause_is_rejected():

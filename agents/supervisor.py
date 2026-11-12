@@ -41,6 +41,18 @@ SUPERVISOR_MODEL_ENV = "SUPERVISOR_MODEL"
 ROUTER_MODEL_ENV = "ROUTER_MODEL"
 OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
 
+_PAYMENT_DESTINATION = re.compile(r"(?<![\w.+-])[\w.+-]+@[a-zA-Z][\w.-]*", re.UNICODE)
+_PAYMENT_CONTEXT = re.compile(
+    r"\b(?:pay(?:ment)?|transfer|send|upi|gpay|phonepe|fee|charge|fees)\b"
+    r"|भुगतान|शुल्क|रकम|भेजें|भेजो|पैसे|पेमेंट|पैसा|पाठवा|भरावे|भरा",
+    re.IGNORECASE,
+)
+PAYMENT_DESTINATION_ERROR = "Payment destination cannot be verified; do not direct the person to pay it."
+
+
+def _unverified_payment_destination(text: str) -> bool:
+    return bool(_PAYMENT_DESTINATION.search(text) and _PAYMENT_CONTEXT.search(text))
+
 
 class RouterHTTPError(Exception):
     """OpenRouter answered the router call with a status other than 200."""
@@ -735,6 +747,10 @@ class OutputValidator:
             masked_content = "[Sensitive content removed]"
             logger.error("Agent %s exposed sensitive data (%s).", agent_name, sensitive_type)
 
+        if _unverified_payment_destination(response_text):
+            errors.append(PAYMENT_DESTINATION_ERROR)
+            logger.warning("Agent %s returned an unverified payment destination.", agent_name)
+
         # 4. Agent-specific validation
         if agent_name == "intake":
             # Intake must return valid language and intent
@@ -802,6 +818,12 @@ class OutputValidator:
         Returns:
             Friendly error message in user's language
         """
+        if PAYMENT_DESTINATION_ERROR in validation_result.errors:
+            if language == "hi":
+                return "मैं भुगतान के विवरण की पुष्टि नहीं कर सकता। भुगतान से पहले आधिकारिक योजना वेबसाइट से जाँच करें।"
+            if language == "mr":
+                return "मी पेमेंटच्या तपशीलांची खात्री करू शकत नाही. पैसे देण्यापूर्वी अधिकृत योजना वेबसाइटवर तपासा."
+            return "I cannot verify the payment details. Check the official scheme website before paying."
         if language == "hi":
             return "क्षमा करें, सिस्टम को प्रतिक्रिया देने में समस्या हुई। कृपया फिर से प्रयास करें।"
         elif language == "mr":
