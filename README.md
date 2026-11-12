@@ -67,19 +67,22 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 - **Code decides eligibility.** The rule engine is three-valued and fails closed: one unreviewed rule makes a scheme "can't tell". Every verdict cites its clause.
 - **Human approval of the exact form.** Nothing is written to the portal without a signed, one-use token bound to the approved form.
 - **Least privilege.** Each agent can call only the tools it needs; only the application agent can write.
-- **Layered guardrails.** Input masking and injection checks, outside text kept as data, an output guard on eligibility claims, tool-call budgets and rate limits.
+- **Layered guardrails.** Input masking and injection checks, outside text kept as data, an output guard on eligibility claims and on payment requests (a fee to a UPI ID or wallet), tool-call budgets and rate limits.
+- **Official sources only.** A live rule set must cite an HTTPS government (`gov.in` or `nic.in`) source and be fully reviewed.
+- **A plan the citizen can see.** The journey plan is shown in the person's language and revised from the rule engine's results; documents and drafting wait until a scheme is eligible and the person chooses it.
 - **Memory only with consent.** Long-term facts expire, must be reconfirmed, and are deleted by "Forget my data".
 
 ## Results at a glance
 
 | Question | Result | Details |
 | --- | --- | --- |
-| E1: does the agent team justify its cost? | Given the candidate schemes, no: the fixed workflow and a single agent got 100% of held-out verdicts right, the agent team 54% (3 runs, 50.5–56.8%). Without them, the fixed workflow needs 138 questions a case against the team's 9; the team's scheme shortlist is the gap | [Report §2](docs/evaluation-report.md) |
+| E1: does the agent team justify its cost? | Given the candidate schemes, no: the fixed workflow and a single agent got 100% of held-out verdicts right, the agent team 54% (3 runs, 50.5–56.8%). Without them, the fixed workflow needs 138 questions a case against the team's 9; the team's scheme shortlist is the gap. A later development run with eligibility text in the shortlist options got 29/39 against 22/39 (one run each, different commits) | [Report §2](docs/evaluation-report.md) |
 | E2: do the defences work? | 96 attacks: 79.2% succeed with defences off, 5.2% on (5 known gaps: requests to misstate or hide facts); 0% of legitimate cases blocked | [Report §3](docs/evaluation-report.md), [red-team report](docs/redteam-report.md) |
 | E3: did the Reflexion lessons help? | On development schemes, yes; on held-out schemes, no (F1 0.880 → 0.868); the harmful lesson is named | [Report §4](docs/evaluation-report.md) |
 | E4: LLM directly vs the rule engine | 91% vs 100% on 95 held-out verdicts; no boundary errors either way; planned question order 138 vs 163 questions with every scheme open | [Report §5](docs/evaluation-report.md) |
 | Retrieval (Recall@5) | BM25 0.625 → hybrid 1.000 on development; held-out 0.917 → 1.000 with the query rewrite (3 runs) | [Retrieval evaluation](docs/retrieval-evaluation.md) |
 | Memory on vs off | 15.9% fewer questions on a return visit; no verdict changed | [Report §7](docs/evaluation-report.md) |
+| LLM judge | Preliminary calibration on 20 development messages: 20/20 agreement, Cohen's kappa 1.0; the labels were revised after seeing the judge's output, so it is not yet an independent calibration | [Report §7](docs/evaluation-report.md), [harness](tests/evaluation/README.md) |
 
 ## Submission documents
 
@@ -90,7 +93,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 | Memory policy | [docs/memory-policy.md](docs/memory-policy.md), with [document retention](docs/document-retention.md) |
 | Evaluation report | [docs/evaluation-report.md](docs/evaluation-report.md) |
 | Experiment log | [docs/experiment-log.md](docs/experiment-log.md) |
-| Contribution log | *[Placeholder: a draft is in [docs/contribution-log.md](docs/contribution-log.md), pending team verification]* |
+| Contribution log | [docs/contribution-log.md](docs/contribution-log.md) |
 | Slides | *[Placeholder: to be added]* |
 | Backup demo recording | *[Placeholder: to be added]* |
 
@@ -150,8 +153,16 @@ All settings are environment variables in `.env`; [.env.example](.env.example) l
 
 ## Team
 
-*[Placeholder: names and roles, linked to the contribution log once it is in the repository.]*
+| Member | Main areas |
+| --- | --- |
+| Saurabh (`saurabh-sriva01`) | Orchestration and the citizen journey; application approval and security controls; the E1 baseline and the claim judge |
+| Sharika (`SharikaN`) | Eligibility analyst and reviewed rules; gold data and evaluation; Reflexion rule extraction; red-team additions and reporting |
+| Snehal (`snehal-pryxo`) | Intake, rule-engine support and retrieval; memory evaluation; the observability dashboard |
+| Digvijay (`DigvijaySingh939`) | Document checker and household personas; chat UI, Docker and CI/CD |
+| `koilBhupat` | Supervisor agent, long-term memory and observability |
+
+The [contribution log](docs/contribution-log.md) links each area to the pull requests behind it.
 
 ## Known limits
 
-Personas were labelled by one person, so there is no inter-annotator agreement; the held-out sets are small; the red-team suite tests code defences, not whether a model obeys injected text; and the refusal of requests to misstate facts is still to be built. The full list is in section 8 of the [evaluation report](docs/evaluation-report.md). Results are not official benefit decisions, and nothing is sent to a real government portal.
+Personas were labelled by one person, so there is no inter-annotator agreement; the held-out sets are small; the red-team suite tests code defences, not whether a model obeys injected text; the refusal of requests to misstate facts is still to be built; the claim judge has no independent calibration yet; and the held-out personas were seen during later development, so a new final evaluation needs a fresh test set. The full list is in section 8 of the [evaluation report](docs/evaluation-report.md). Results are not official benefit decisions, and nothing is sent to a real government portal.
