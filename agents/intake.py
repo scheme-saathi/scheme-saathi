@@ -37,8 +37,10 @@ eligibility or claim that a fact has been saved."""
 EXTRACT_INSTRUCTIONS = """You are Scheme Saathi's intake specialist. Fill the household
 profile only with facts the user states directly in the request; leave every other field
 null and never guess. When pending_field is set, read a short reply such as "yes" or
-"1 lakh" as the answer to pending_question, which asked for that field. Values must match
-each field's type. For an income field, give the amount in rupees exactly as the user said
+"1 lakh" as the answer to pending_question, which asked for that field. When pending_question
+offers choices and the reply picks one ("Own name" to "in your own name or your spouse's
+name?"), set a yes/no field to true if the chosen option satisfies it, else false. Values
+must match each field's type. For an income field, give the amount in rupees exactly as the user said
 it (1 lakh = 100000, 15 hazaar = 15000, 10k = 10000) and its period: "month" or "year" when
 the user says so or pending_question asked for that period, otherwise "unstated". Never
 convert between periods or multiply by 12; that is done for you. Classify the reply to

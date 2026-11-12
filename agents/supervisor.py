@@ -630,12 +630,15 @@ _MR_VERDICT = ("पात्र", "हक्कदार", "लाभ घेऊ 
 _MR_GET = ("मिळू शकत", "मिळेल")
 _MR_BENEFIT = ("पेन्शन", "लाभ", "मदत", "सहाय्य", "रक्कम", "रुपये", "अनुदान", "शिष्यवृत्ती", "कार्ड", "विमा", "कर्ज")
 _SENTENCE = re.compile(r"(?<=[.!?।])\s+|\n+")
-_APPROVED_CRITERION = re.compile(
-    r"\b(?:[a-z0-9]+-approved|(?:a|an|the|pursue) approved)\s+"
-    r"(?:engineering\s+)?(?:institutions?|courses?)\b",
-    re.IGNORECASE,
+# The agent itself granting or bending a rule, not a criterion such as "AICTE approved institution".
+_AGENT_ACTS = r"\b(?:i|we)(?:'ve|'ll|'m)?(?:\s+(?:have|will|shall|can|hereby|am|now))*\s+"
+_OVERRIDES = re.compile(_AGENT_ACTS + r"(?:override|overrode|overridden|overriding|waive|waived|bypass|ignore)\b")
+_GRANTS = re.compile(
+    _AGENT_ACTS + r"(?:approve|approved|approving|grant|granted|granting|sanction|sanctioned"
+    r"|(?:make|made|making|give|given|giving|allow|allowed)\s+(?:you\s+)?an?\s+exception)\b"
+    r"|\byour\s+(?:application|benefit|claim|request|loan|pension|scholarship|grant)\s+"
+    r"(?:is|has been|was|will be)\s+(?:now\s+)?(?:approved|granted|sanctioned)\b"
 )
-_APPROVAL_WORD = re.compile(r"\bapprove(?:d|s)?\b", re.IGNORECASE)
 
 
 def _decides_eligibility(text: str) -> bool:
@@ -771,16 +774,12 @@ class OutputValidator:
                         "Eligibility claim lacks citation. Add clause/rule reference."
                     )
 
-            # No overrides allowed
-            approval_text = _APPROVED_CRITERION.sub("", response_text)
-            if (
-                any(kw in response_text.lower() for kw in ["override", "granted", "exception"])
-                or _APPROVAL_WORD.search(approval_text)
-            ):
-                if "override" in response_text.lower():
-                    errors.append("Eligibility agent cannot override or make exceptions - only assess per rules")
-                else:
-                    errors.append("Eligibility agent cannot approve/grant - only assess per rules")
+            # No overrides or grants. A bare word match blocked every scheme for an "AICTE approved" institution.
+            lower = response_text.lower().replace("’", "'")
+            if _OVERRIDES.search(lower):
+                errors.append("Eligibility agent cannot override or make exceptions - only assess per rules")
+            elif _GRANTS.search(lower):
+                errors.append("Eligibility agent cannot approve/grant - only assess per rules")
 
         elif agent_name == "document_checker":
             # authenticity_verified must be False (we can't verify authenticity)
@@ -838,7 +837,6 @@ SUPERVISOR_INSTRUCTIONS = """You are Scheme Saathi's Supervisor Agent - a gateke
 Your job is to validate and route requests intelligently:
 
 1. VALIDATE INPUT:
-   - Reject requests with sensitive data (Aadhar, account numbers, etc.)
    - Classify intent: discover/eligibility/documents/application/follow_up
    - Detect language: English, Hindi, Marathi
    - Rate limit by household/actor
@@ -855,6 +853,9 @@ Your job is to validate and route requests intelligently:
      check, not a scheme question: "Is there a widow pension for me?", "Can my mother get a pension?",
      "Which schemes can I join?", "मुझे कौन सी योजना मिल सकती है?", "मला कोणती योजना मिळू शकते?"
      → Intake, even when it names a scheme
+   - When pending_question is set and the request is a short answer to it, not a question of its
+     own ("Own name", "the first one") → Intake. Route any question or other request ("What can
+     you do?", "What documents do I need?") exactly as you would without pending_question
 
 3. VALIDATE OUTPUT:
    - Ensure specialist responses follow contracts

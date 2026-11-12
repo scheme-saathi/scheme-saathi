@@ -121,6 +121,7 @@ class SupervisorInput(Contract):
     intake: IntakeResult | None = None  # Optional: None on first call, populated after Intake runs
     selected_scheme_id: str | None = None
     document_check: DocumentCheckResult | None = None
+    pending_question: str | None = None  # intake's question the request may be answering
 
 
 class SupervisorPlan(Contract):
