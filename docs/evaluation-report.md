@@ -31,7 +31,7 @@ These are separate experiments, not components of a single overall score. The ea
 | Set | What it holds | Who made it | Where |
 | --- | --- | --- | --- |
 | Gold rules | 49 schemes as JSON rules (field, operator, value, cited clause), every rule checked against the myScheme text | 15 hand-coded (Saurabh), all 49 verified or reviewed by Sharika (Steps 1, 4–6) | `data/rules/`, decisions in `data/rules/REVIEW_STATUS.md` |
-| Gold personas | 71 synthetic households in 22 families, built around rule boundaries; 58 English, 9 Marathi, 4 Hindi; a verdict per candidate scheme | Labelled by Sharika from the scheme text, without running the engine | `tests/evaluation/eligibility_gold_v1/` |
+| Gold personas | 71 synthetic households in 22 families, built around rule boundaries; 58 English, 9 Marathi, 4 Hindi; a verdict for each of the case's 1–4 candidate schemes, drawn from the 15 hand-coded schemes | Labelled by Sharika from the scheme text, without running the engine | `tests/evaluation/eligibility_gold_v1/` |
 
 Personas were split into development (21 cases, 39 verdicts) and held-out (50 cases, 95 verdicts, of which 21 sit at a numeric boundary). Rule-extraction schemes were split into development (34 AI-drafted, reviewed) and held-out (the 15 hand-coded). Held-out runs need `--final`. The original E1 comparison was frozen before those runs. Later changes followed the reported held-out results, and an exploratory BM25 recall calculation also used the held-out personas. **For subsequent eligibility work, those personas must therefore be treated as development data**, not as an independent final test. A fresh independently prepared set is needed for a new final evaluation.
 
@@ -188,7 +188,7 @@ The fixed workflow asked either the field that settles the most open verdicts (p
 | Development, all 49 live schemes | 147 | 163 | 163 |
 | Held-out, all 49 live schemes | 138 | 163 | 163 |
 
-With the 2–4 candidate schemes of a persona, the order hardly matters; asking stops early, saving a fifth to a third of a full form. With every live scheme open, the planned order saves 10–15%, but 138–147 questions is far too many for a person. **Choosing the right few schemes matters far more than the order of questions**, which is why C2's shortlist (section 2) is the next thing to fix.
+With the 1–4 candidate schemes of a persona, the order hardly matters; asking stops early, saving a fifth to a third of a full form. With every live scheme open, the planned order saves 10–15%, but 138–147 questions is far too many for a person. **Choosing the right few schemes matters far more than the order of questions**, which is why C2's shortlist (section 2) is the next thing to fix.
 
 ## 6. Retrieval (L4–L6)
 
@@ -239,12 +239,10 @@ The recorded development trial reported agreement of **20/20 (100%)** and **Cohe
 ## 8. Limits
 
 - **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
-- **Role separation.** The person who labelled the held-out personas also fixed agent behaviour, and verified the held-out gold rules used in E3 while reviewing its lessons. The original comparison was frozen before its held-out runs; later changes and held-out data exposure require a fresh independent test set.
-- **Judge calibration is preliminary.** The 20-message trial was not independent and its underlying output was unavailable locally. Fresh independent labels and verified model provenance are needed; the existing unbacked-claim check remains keyword-based.
-- **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2). C1's 35 flagged replies are unreviewed keyword hits.
-- **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts (E3 development F1 moved by 0.015–0.02), so small differences are not reliable.
-- **Memory evaluation on development cases only.** The 50 households come from the repository and are not held-out cases; held-out memory cases written by someone who did not build memory are still to do. It covers three schemes and one stored field.
-- **Order of work.** The 34 development rule sets were drafted by an AI before the extractor existed and then reviewed by a person; the extractor was measured against the reviewed versions.
+- **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2).
+- **Held-out data were used once.** The original comparisons were frozen before their held-out runs. The held-out cases were seen during later work, so any later change needs a fresh, independently prepared test set.
+- **Judge calibration is preliminary.** The 20-message trial was not independent; fresh labels, made without seeing the judge's output, are needed.
+- **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts, so small differences are not reliable.
 
 ## 9. Reproduce
 
