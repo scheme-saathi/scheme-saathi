@@ -238,10 +238,10 @@ The offline judge classifies whether an assistant message makes a definite eligi
 
 ## 9. Limits
 
-- **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
-- **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2).
-- **Held-out data were used once.** The original comparisons were frozen before their held-out runs. The held-out cases were seen during later work, so any later change needs a fresh, independently prepared test set.
-- **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts, so small differences are not reliable.
+- **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas. *Why:* labelling 71 personas against the scheme text, and reviewing the rules they depend on, took the time available; a second labelling of the held-out split would add the agreement score.
+- **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2). *Why:* C0 and C1 were set up as upper bounds on verdict accuracy, with the same model and call budget; the case without a shortlist is measured by E4's all-schemes run.
+- **Held-out data were used once.** The original comparisons were frozen before their held-out runs. The held-out cases were seen during later work, so any later change needs a fresh, independently prepared test set. *Why:* improving the agent team after the final runs needed real failure cases to work from, and the brief asks us to state when held-out cases become development cases.
+- **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts, so small differences are not reliable. *Why:* each held-out case needs hand-checked gold rules and labels, and model-backed runs were limited by API credit; final comparisons were repeated three times to show the spread.
 
 ## 10. Reproduce
 
