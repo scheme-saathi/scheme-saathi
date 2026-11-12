@@ -74,6 +74,7 @@ READ_ACCESS = {
     "eligibility": {
         (RULE_ENGINE, "list_rule_schemes"),
         (RULE_ENGINE, "evaluate_profile"),
+        (SCHEMES_KB, "get_scheme_details"),  # with_closed_note: is the scheme closed?
     },
     "document_checker": {
         (SCHEMES_KB, "get_required_documents"),
