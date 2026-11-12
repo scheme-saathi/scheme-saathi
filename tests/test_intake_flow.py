@@ -449,6 +449,22 @@ def test_new_request_while_a_question_is_pending_reaches_the_supervisor():
     assert len(intake.ask_calls) == 1
 
 
+def test_unread_reply_reaches_the_supervisor_with_its_question_and_is_asked_again():
+    """ "Own name" to a two-option question was judged without the question and ended the chat."""
+    intake = ScriptedIntake(IntakeExtraction(facts={"age": 67}), IntakeExtraction())
+    later = SupervisorPlan(next_agent="intake", reason="A reply to the question.")
+    _, supervisor, send = intake_graph(intake, later_plan=later)
+    seen = []
+    invoke = supervisor.invoke
+    supervisor.invoke = lambda value: (seen.append(value.pending_question), invoke(value))[1]
+
+    send("My mother is 67")
+    result = send("Own name")
+    assert seen == [None, "Q:income"]
+    assert (result["status"], result["response"]) == ("needs_information", "Q:income")
+    assert result["pending_field"] == "income"
+
+
 def test_a_fresh_intake_resets_the_question_count(monkeypatch):
     monkeypatch.setattr("graph.agent_workflow.MAX_QUESTIONS", 1)
     intake = ScriptedIntake(
@@ -625,7 +641,7 @@ def test_ui_confirm_details_resumes_real_api_and_graph(monkeypatch, correct_firs
     monkeypatch.setattr(app_new, "_api_base_url", lambda: "http://testserver")
     monkeypatch.setattr(app_new, "urlopen", lambda *args, **kwargs: HealthResponse())
     monkeypatch.setattr(app_new, "_api_request", request)
-    monkeypatch.setattr(app_new, "_scheme_names", lambda base: {PENSION: "Synthetic pension"})
+    monkeypatch.setattr(app_new, "_schemes", lambda base: [{"scheme_id": PENSION, "name": "Synthetic pension"}])
 
     ui = AppTest.from_function(ui_confirmation_journey).run()
     ui.chat_input[0].set_value("My mother is 67, a widow, and earns 1 lakh a year").run()

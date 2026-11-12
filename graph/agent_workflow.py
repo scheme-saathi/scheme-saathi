@@ -171,8 +171,12 @@ def _supervisor_node(
         SupervisorInput(
             request=state["request"],
             selected_scheme_id=state.get("selected_scheme_id"),
+            # Only on the reroute pass: a reply intake could not read is judged against its question.
+            pending_question=None if validate else state.get("pending_question"),
         )
     )
+    if not validate:
+        update["pending_question"] = None
     if plan.next_agent == "respond" and asks_about_own_eligibility(state["request"]):
         # Code, not the model, keeps personal eligibility questions on the rule-engine path.
         logger.info("Rerouted a personal eligibility question from respond to intake.")
@@ -361,12 +365,14 @@ def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
         # An answer is new information, so re-pick; keep the old list if the re-pick fails or is empty.
         facts = {**_facts_so_far(state), **result.facts}
         shortlist = _shortlist_schemes(agents, state.get("intake_request", state["request"]), facts) or shortlist
+    unanswered = pending is not None and not result.facts and not result.dont_know
     update: dict[str, Any] = {
         "known_facts": result.facts,
         "shortlist": shortlist,
         "pending_field": None,
-        "pending_question": None,
-        "reply_unanswered": pending is not None and not result.facts and not result.dont_know,
+        # Kept for the reroute pass, which clears it, so the Supervisor sees what was asked.
+        "pending_question": state.get("pending_question") if unanswered else None,
+        "reply_unanswered": unanswered,
     }
     if pending is None:  # a fresh intake: earlier "don't know"s and counts no longer apply
         update |= {
