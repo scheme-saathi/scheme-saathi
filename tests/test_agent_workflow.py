@@ -18,7 +18,7 @@ from agents.contracts import (
     SupervisorPlan,
 )
 from agents.eligibility import EligibilityAgent
-from graph.agent_workflow import AgentSet, build_agent_graph
+from graph.agent_workflow import AgentSet, _eligibility_node, _finish_node, _guard_output, build_agent_graph
 from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
 from graph.persona import HOUSEHOLD_TEST_CASES, profile_facts_to_rule_fields
 from graph.workflow import application_hash
@@ -127,10 +127,28 @@ def test_intake_question_pauses_before_other_specialists():
     assert agents.document_checker.calls == agents.application.calls == []
 
 
+@pytest.mark.parametrize("language", ["en", "hi", "mr"])
+def test_unverified_payment_in_scheme_answer_gets_a_safe_warning(language):
+    agents = build_agents()
+    result = _guard_output(
+        agents, {"language": language},
+        {"status": "responded", "response": "Pay the fee to example@bank."},
+        "scheme_info", {"en": "Check eligibility instead"},
+    )
+    assert result["status"] == "output_blocked"
+    assert "example@bank" not in result["response"]
+    assert result["response"] != "Check eligibility instead"
+
+
 def test_intake_only_asks_about_the_shortlisted_schemes():
+    selected = ["C13", "C01", "C02", "C04", "C05"]
+
     class ChoosingIntake(StubIntake):
         def choose_schemes(self, value):
-            return ["C13", "not-a-scheme"][:1]
+            atal_pension = next(scheme for scheme in value.schemes if scheme.scheme_id == "C04")
+            assert "Eligibility:" in atal_pension.description
+            assert "40 years" in atal_pension.description
+            return [*selected, "not-a-scheme"]
 
     agents = build_agents(
         intake=ChoosingIntake(),
@@ -139,8 +157,8 @@ def test_intake_only_asks_about_the_shortlisted_schemes():
 
     result = build_agent_graph(agents).invoke({"request": "I am a farmer, which schemes fit me?"})
 
-    assert result["shortlist"] == ["C13"]
-    assert list(result["verdicts"]) == ["C13"]
+    assert result["shortlist"] == selected
+    assert list(result["verdicts"]) == selected
 
 
 def test_an_answer_refreshes_the_shortlist_with_the_facts_so_far():
@@ -1034,3 +1052,20 @@ def test_unsafe_specialist_output_is_blocked_by_supervisor():
 
     assert result["status"] == "output_blocked"
     assert "override" not in result["response"]
+
+
+def test_confirmed_multi_scheme_results_allow_rules_and_show_closed_notice():
+    from graph import tools
+
+    agents = build_agents(eligibility=object.__new__(EligibilityAgent))
+    state = {
+        "shortlist": ["C36", "C04", "M14", "C16", "C19"],
+        "confirmed_facts": {}, "known_facts": {}, "language": "en",
+    }
+    tools.scheme_is_closed.cache_clear()
+    result = tools.run_as("eligibility", _eligibility_node, agents, state)
+    finished = _finish_node(agents, {**state, **result})
+
+    assert finished["status"] == "eligibility_checked"
+    assert "AICTE-approved" in finished["response"]
+    assert tools.CLOSED_NOTE in result["explanations"]["M14"]

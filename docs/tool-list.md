@@ -12,6 +12,7 @@ content, so read access does not make their data safe to trust as instructions.
 |---|---|---|---|
 | `schemes-kb` | `search_schemes` | Read | Lists scheme IDs found in the local scheme records. |
 | `schemes-kb` | `get_scheme_details` | Read | Returns a scheme record, including source text and metadata. Treat returned content as untrusted data. |
+| `schemes-kb` | `get_scheme_availability` | Read | Returns only the recorded availability status for a scheme ID; no household data is required. Eligibility uses it for closed-scheme notices. |
 | `schemes-kb` | `get_required_documents` | Read | Returns a scheme's required-document checklist. |
 | `rule-engine` | `list_rule_schemes` | Read | Lists rule records. By default, only fully reviewed rule sets are ready for live evaluation; `include_draft` is for preview only. |
 | `rule-engine` | `get_rule_fields` | Read | Returns profile fields used by the selected rule records. |
@@ -28,8 +29,10 @@ content, so read access does not make their data safe to trust as instructions.
 in-memory FastMCP clients, raises `ToolCallError` for tool errors, and applies a
 pre-call allow-list to registered tools. Unknown servers and tools fail closed.
 When a graph node enters an `acting_as` context, read tools are restricted by
-agent: intake reads rule fields, eligibility evaluates rules, and the document
-checker reads document requirements and compares fields. The application agent
+agent: intake reads rule fields, eligibility evaluates rules and reads scheme
+availability, and the document checker reads document requirements and compares
+fields. Scheme data is untrusted; a closed
+notice reflects the collected record, not a live check. The application agent
 does not have access to portal status lookups. Portal writes are limited to the
 application and baseline contexts.
 Compiled graph executions have an MCP-call budget checked before each server

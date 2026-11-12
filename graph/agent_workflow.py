@@ -35,7 +35,7 @@ from agents.family import family_relation, relation_in_text
 from agents.memory import MemoryService, clean_relation
 from agents.model_factory import create_chat_model
 from agents.scheme_react import ReactEvent, SchemeReactError, scheme_react_enabled
-from agents.supervisor import SupervisorAgent, asks_about_own_eligibility
+from agents.supervisor import PAYMENT_DESTINATION_ERROR, SupervisorAgent, asks_about_own_eligibility
 from graph import tools
 from graph.journey_plan import JourneyPlan, defer_journey_plan, new_journey_plan, revise_journey_plan
 from graph.memory_nodes import (
@@ -212,7 +212,7 @@ def _guard_output(
     if result.passed:
         return update
     logger.warning("Output from %s blocked: %s", agent_name, "; ".join(result.errors))
-    if blocked_message:
+    if blocked_message and PAYMENT_DESTINATION_ERROR not in result.errors:
         return {"status": "output_blocked", "response": blocked_message.get(language, blocked_message["en"])}
     blocked = agents.supervisor.handle_validation_error(result, language)
     return {"status": "output_blocked", "response": blocked["user_message"]}
@@ -245,8 +245,15 @@ def _scheme_catalogue() -> tuple[tuple[str, str, str], ...]:
         scheme_id = record.get("scheme_id")
         if scheme_id not in reviewed:
             continue
-        items = ((record.get("sections") or {}).get("details") or {}).get("items") or []
-        found[scheme_id] = (scheme_id, record.get("name", scheme_id), str((items[:1] or [{}])[0].get("text", ""))[:200])
+        sections = record.get("sections") or {}
+        details = (sections.get("details") or {}).get("items") or []
+        eligibility = (sections.get("eligibility") or {}).get("items") or []
+        overview = str((details[:1] or [{}])[0].get("text", "")).strip()
+        criteria = " ".join(
+            str(item.get("text", "")).strip() for item in eligibility if item.get("text")
+        )
+        description = f"{overview[:160]} Eligibility: {criteria[:300]}"
+        found[scheme_id] = (scheme_id, record.get("name", scheme_id), description)
     return tuple(found.values())
 
 

@@ -99,3 +99,9 @@ def test_a_failed_closed_lookup_is_not_cached():
         assert tools.scheme_is_closed("C11") is False    # no note this time ...
     assert tools.scheme_is_closed("C11") is True         # ... but the next lookup succeeds
     assert tools.scheme_is_closed("NO-SUCH-SCHEME") is False
+
+
+def test_eligibility_actor_can_check_closed_scheme():
+    tools.scheme_is_closed.cache_clear()
+    with tools.acting_as("eligibility"):
+        assert tools.with_closed_note("C11", "Rule result.") == f"Rule result. {tools.CLOSED_NOTE}"

@@ -142,6 +142,7 @@ def _capability_without_hash_check(form, approved_hash, application_id=None, hou
 def _defence_patches() -> dict[str, list[Callable[[], Any]]]:
     from agents import base, persona_validator, supervisor
     from graph import tools, workflow
+    from servers.rule_engine import scheme as rule_scheme
     from servers.rule_engine import server as rule_server
     from servers.mock_portal import server as portal
     from observability import tracing
@@ -160,6 +161,8 @@ def _defence_patches() -> dict[str, list[Callable[[], Any]]]:
         "tool_budget": [lambda: patch.object(tools._ToolCallBudget, "consume", lambda *a, **k: None)],
         "rate_limit": [lambda: patch.object(supervisor.RateLimitTracker, "is_allowed", lambda *a, **k: True)],
         "input_limits": [lambda: patch.object(supervisor.InputValidator, "validate_request", _input_always_passes)],
+        "scam_page": [lambda: patch.object(supervisor, "_unverified_payment_destination", lambda text: False)],
+        "rule_source": [lambda: patch.object(rule_scheme, "official_source", lambda url: True)],
         "write_capability": [lambda: patch.object(portal, "consume_write_capability", lambda *a, **k: None)],
         "approval_hash": [
             lambda: patch.object(workflow, "application_hash", lambda form: "0" * 64),
