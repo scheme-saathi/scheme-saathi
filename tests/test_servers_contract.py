@@ -18,7 +18,7 @@ from servers.mock_portal.server import (
     submit_draft,
 )
 from servers.rule_engine.server import evaluate_profile
-from servers.schemes_kb.server import get_required_documents, get_scheme_details, search_schemes
+from servers.schemes_kb.server import get_required_documents, get_scheme_availability, get_scheme_details, search_schemes
 
 
 @pytest.fixture
@@ -38,6 +38,22 @@ def test_schemes_kb_read_tools_return_scheme_metadata_and_requirements():
     assert required["ok"] is True
     assert required["data"]
     assert "Aadhaar card" in required["data"]
+
+
+def test_availability_exposes_only_status_and_rejects_bad_records(monkeypatch):
+    from servers.schemes_kb import server
+
+    monkeypatch.setattr(server, "_load_scheme_records", lambda: {
+        "closed": {"availability_status": "closed", "sections": {"details": "private"}},
+        "unknown": {},
+        "invalid": {"availability_status": "unrecognized"},
+    })
+    assert get_scheme_availability("closed") == {
+        "ok": True, "access": "read", "data": {"availability_status": "closed"},
+    }
+    assert get_scheme_availability("unknown")["data"] == {"availability_status": "unverified"}
+    assert get_scheme_availability("invalid")["error"]["code"] == "invalid_availability"
+    assert get_scheme_availability("missing")["error"]["code"] == "scheme_not_found"
 
 
 def test_rule_engine_tool_evaluates_profile(sample_profile):

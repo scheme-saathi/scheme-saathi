@@ -25,6 +25,7 @@ from agents.contracts import (
     SchemeChoice,
     SchemeChoiceInput,
 )
+from agents.scheme_react import ReactEvent, answer_with_react
 
 INSTRUCTIONS = """You are Scheme Saathi's intake specialist.
 Identify the user's language and task, extract only directly stated candidate facts,
@@ -36,8 +37,10 @@ eligibility or claim that a fact has been saved."""
 EXTRACT_INSTRUCTIONS = """You are Scheme Saathi's intake specialist. Fill the household
 profile only with facts the user states directly in the request; leave every other field
 null and never guess. When pending_field is set, read a short reply such as "yes" or
-"1 lakh" as the answer to pending_question, which asked for that field. Values must match
-each field's type. For an income field, give the amount in rupees exactly as the user said
+"1 lakh" as the answer to pending_question, which asked for that field. When pending_question
+offers choices and the reply picks one ("Own name" to "in your own name or your spouse's
+name?"), set a yes/no field to true if the chosen option satisfies it, else false. Values
+must match each field's type. For an income field, give the amount in rupees exactly as the user said
 it (1 lakh = 100000, 15 hazaar = 15000, 10k = 10000) and its period: "month" or "year" when
 the user says so or pending_question asked for that period, otherwise "unstated". Never
 convert between periods or multiply by 12; that is done for you. Classify the reply to
@@ -206,8 +209,9 @@ def profile_model(specs: dict[str, dict[str, Any]]) -> type[BaseModel]:
 
 
 class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
-    def __init__(self, model: BaseChatModel) -> None:
+    def __init__(self, model: BaseChatModel, *, scheme_react: bool = False) -> None:
         super().__init__(model, IntakeInput, IntakeResult, INSTRUCTIONS)
+        self._scheme_react = scheme_react
         self._asker = StructuredGPTAgent(model, IntakeAskInput, IntakeQuestionText, ASK_INSTRUCTIONS)
         self._answerer = StructuredGPTAgent(model, IntakeAnswerInput, IntakeAnswer, ANSWER_INSTRUCTIONS)
         self._chooser = StructuredGPTAgent(model, SchemeChoiceInput, SchemeChoice, CHOOSE_INSTRUCTIONS)
@@ -296,8 +300,17 @@ class IntakeAgent(StructuredGPTAgent[IntakeInput, IntakeResult]):
     def answer(self, value: IntakeAnswerInput | dict) -> IntakeAnswer:
         """A cited answer from the given passages. A citation outside them voids the answer."""
         request = IntakeAnswerInput.model_validate(value)
+        if self._scheme_react:
+            result, _ = answer_with_react(self._model, request, ANSWER_INSTRUCTIONS)
+            return result
         result = self._answerer.invoke(request)
         cited = set(result.cited_passage_ids)
         if not (result.found and result.answer.strip() and cited) or not cited <= {p.id for p in request.passages}:
             return IntakeAnswer(found=False)
         return result
+
+    def answer_with_trace(self, value: IntakeAnswerInput | dict) -> tuple[IntakeAnswer, list[ReactEvent]]:
+        request = IntakeAnswerInput.model_validate(value)
+        if self._scheme_react:
+            return answer_with_react(self._model, request, ANSWER_INSTRUCTIONS)
+        return self.answer(request), []

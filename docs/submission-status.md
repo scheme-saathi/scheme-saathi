@@ -6,7 +6,6 @@
 
 The core system and three of the four experiments are done. The biggest gaps:
 
-- E1, the agent-team comparison
 - demo 2's safety cases
 - a one-command Docker Compose with a CI eval gate
 - the LLM judge
@@ -15,7 +14,7 @@ The core system and three of the four experiments are done. The biggest gaps:
 - **Strongest areas:**
   - Reflexion on the rule extractor (L12, signature A)
   - human approval tied to the exact payload (L14)
-  - the red-team suite: 77 attacks, 0% success with defences on, 0% false blocks
+  - the red-team suite: 96 attacks and 29 legitimate cases; 0% false blocks on this set; the five misstatement attacks that still get through are pinned as known gaps
   - E4
 - **Changed since the last review (11 Nov):**
   - Retrieval now has a query-side technique: an LLM rewrite searched together with the original query, fused with RRF.
@@ -41,36 +40,84 @@ Two of the nine items are done, and two more are in PR #83 waiting to merge. The
 
 ## Minimum bar, L4–L16
 
-Five lectures are fully met (L4–L6, L7, L8, L12 and L14). The others each miss one or two named pieces of evidence.
+Six lectures are fully met (L4–L6, L7, L8, L9, L12 and L14). The others each miss one or two named pieces of evidence.
 
 | Lecture | Status | Done | Pending |
 | --- | --- | --- | --- |
 | L4–L6 Retrieval | Done | 59 scheme records with URL and date; bge-m3 vectors + BM25 fused with RRF; LLM reranker; **query rewrite (multi-query) added and on in the live search tool, 11 Nov**; **Recall@5 before/after recorded** on 32 queries in `docs/retrieval-evaluation.md` (BM25 0.625 → hybrid 1.000 on dev, 25 Oct; held-out 0.917 → 1.000 with the rewrite, 3 runs) | 32 retrieval labels reviewed by Snehal on 30 Oct (marked in the file on 11 Nov); still to write down why the reranker is an LLM, not a cross-encoder |
 | L7 MCP tools | Done | 4 FastMCP servers (schemes_kb, rule_engine, doc_check, mock_portal); read/write marked in `docs/tool-list.md`; only the application agent can write | Confirm every tool has its own test |
 | L8 Orchestration | Done | LangGraph, typed state, checkpointer, resume (`test_resume_cli`), graph diagram (`graph/diagram.py`) | Rehearse the live stop-and-resume demo |
-| L9 Memory | Partial | Long-term store with consent, expiry and "forget me"; memory policy; `evaluation/memory_eval.py` (memory on vs off) | Put the memory on/off result in the report; add short-term trimming or summarising |
-| L10 Planning | Pending | Supervisor routing plan (`next_agent` + reason) | Show the user the plan (profile → schemes → rules → documents → draft); replan when a tool result contradicts it; capture a replan trace |
-| L11 Multi-agent | Partial | Supervisor + intake, eligibility, document checker and application agents with typed contracts; single-agent baseline built (`graph/baseline.py`) | Run the baseline (see E1) |
+| L9 Memory | Done | Long-term store with consent, expiry and "forget me"; memory policy with correcting and short-term context sections; short-term context summarised into typed state (`tests/test_short_term_context.py`); memory on vs off in the evaluation report (742 → 624 questions, −15.9%, 0 verdicts changed) | Trim the policy to one page (about 1,900 words now); held-out memory cases written by someone who did not build memory |
+| L10 Planning | Partial | Supervisor routing plan (`next_agent` + reason); citizen journey and rule-result-driven revisions; opt-in, read-only ReAct for the intake specialist's scheme questions | ReAct is limited to scheme questions; test with the configured model and assess latency, cost and answer quality before wider use |
+| L11 Multi-agent | Done | Supervisor + intake, eligibility, document checker and application agents with typed contracts; single-agent baseline built (`graph/baseline.py`) | Baseline run in E1 (held-out ×3) |
 | L12 Improvement | Done | Reflexion on the rule extractor: 34 proposed lessons, 13 approved, 21 rejected with reasons, 12 frozen; held-out ×3 before/after; harmful lesson L007 named | — |
 | L13 Evaluation | Partial | Golden set of 71 cases (21 dev, 50 held-out); traces; Grafana dashboard (PR #81) | LLM judge from a different model family, checked against 20+ human labels with Cohen's kappa |
 | L14 Human control | Done | `interrupt()` with approve, edit, reject; approval tied to `payload_hash`; an edit invalidates it; pre-tool budget and permission checks; post-tool logging | Rehearse the edit-invalidates-approval demo |
-| L15 Security | Partial | Threat model; own input and output guardrails; 77 attacks + 24 legitimate cases; attack success 80.5% off → 0% on; 0% false blocks | Llama Guard / Prompt Guard not used (say why); the same person wrote the defences and the attacks |
+| L15 Security | Partial | Threat model; input and output guardrails; least-privilege tools; 96 attacks and 29 legitimate cases. On 12 Nov, payment-destination and official-source checks reduced attack success from 79.2% off to 5.2% on, with 0% legitimate cases blocked | Refuse and explain requests to misstate or hide facts (5 attacks get through); independently test payment-detection limitations and source provenance; Llama Guard 4 / Prompt Guard 2 not used; threat model exceeds one page; only code defences are tested; the first 77 attacks need independent review |
 | L16 Deployment | Partial | FastAPI with streaming; alerts including the can't-tell-rate jump (PR #81) | One `docker compose up` for app, MCP servers, Chroma, Prometheus, Grafana; CI eval gate that fails below a threshold; one failed CI run with an explanation; clean-machine install; prompts and model IDs in one versioned config |
+
+### L10 replan trace
+
+The deterministic integration test `test_rule_result_revises_application_plan_and_skips_drafting`
+starts with a conditional application plan for a synthetic pension case. The reviewed rule
+engine returns `not_eligible` for the confirmed facts. The checkpointed `journey_plan`
+records `conditional → not_eligible` with reason `rule_engine_not_eligible`, and the graph
+finishes without calling the document checker or application agent. For an application,
+the journey plan must be ready as well as the selected scheme eligible before document
+checking can start (older checkpoints without a journey plan retain the existing route). The API returns the
+plan separately from the supervisor's routing decision; Streamlit shows the plan and the
+reason for pausing documents and drafting. This trace uses stub agents and is not a live
+LLM trace. To reproduce it:
+
+```sh
+python -m pytest -q tests/test_agent_workflow.py -k rule_result_revises_application_plan
+```
+
+Documents and drafting remain conditional on a suitable result and the citizen's choice.
+The plan does not decide eligibility or replace human approval.
+
+### Specialist ReAct
+
+Set `SPECIALIST_SCHEME_REACT=true` before starting the API to enable the intake
+specialist's scheme-question loop. It is off when unset; `false` or `0` also disables it.
+The example `.env.example` sets it to `true`, so copying that setting into `.env`
+enables it. The configured specialist model must support tool calling.
+
+The existing knowledge-base search first retrieves passages. The model can then read those
+passages one at a time and submit a cited answer, or report insufficient evidence. Code
+rejects citations to passages the model did not read, denies other actions, and limits
+the loop to six model turns and eight tool calls. The response still passes the existing
+personal-eligibility output guard. Eligibility verdicts, document checks and application
+approval do not use this loop. This is a read-only evidence lookup, not an MCP call by
+the model or an autonomous application action.
+
+The API's `data.specialist_react_trace` contains action names and outcomes, not passage
+text, user messages or model reasoning. A loop or model failure returns `answer_error`
+rather than claiming the evidence was absent. The scripted-model tests exercise the
+tool loop, denied actions, limits, citation checks and the output guard:
+
+```sh
+python -m pytest -q tests/test_scheme_answer.py tests/test_personal_question_routing.py
+```
+
+These tests do not establish that a live model will resist every injected instruction or
+that answers are factually supported by their citations. A live evaluation, including
+latency and cost, is still needed before enabling the feature more widely.
 
 ## Experiments E1–E4
 
-E2, E3 and E4 are done. E1 is the largest single gap: without it, the report cannot say whether the agent team justifies its cost.
+E1, E3 and E4 are done; E2 has three known gaps waiting for defences.
 
 | Experiment | Status | Result so far | Pending |
 | --- | --- | --- | --- |
-| E1: does the agent justify its cost? | Partial | C0 fixed workflow: 39/39 dev, 95/95 held-out verdicts. C2 agent team: one dev run (9 Nov), 14/39 verdicts, 100% right when answered but only 36% answered; the main cause was fixed afterwards | Wire C1 (single agent) into the runner; rerun C2 after the fix; run C0, C1, C2 on held-out ×3 with the same model, tools and budget; report cost and p50/p95 latency |
-| E2: do the defences work? | Done | 77 attacks: success 80.5% off, 0% on; 24 legitimate cases: 0% blocked with defences on | Attacks for demo 2 (scam page, income misstatement) not yet in the suite |
+| E1: does the agent justify its cost? | Done | Held-out, same model (`gpt-4o-mini`) and budget, C1 and C2 ×3: verdicts right C0 100%, C1 100%, C2 54.0% (50.5–56.8%); C2 misses the right scheme for 39% of verdicts; cost per case $0 / $0.0004 / $0.0081; median latency 0.13 s / 6.3 s / 68.9 s. Conclusion: the agent team does not justify its cost yet; its shortlist is the next fix | Review C1's 35 keyword-flagged replies with the claim judge |
+| E2: do the defences work? | Partial | 12 Nov: 96 attacks, 79.2% off and 5.2% on; 29 legitimate cases, 0% blocked with defences on | Address the five remaining misstatement cases, independently expand the attacks, and test the agent team against injected material |
 | E3: did the lessons help? | Done | Held-out rule-extraction F1 0.880 → 0.868 (3 runs each); dev +0.01 to +0.08; harmful lesson L007 named; cost about 37,500 tokens | — |
 | E4: signature ablation | Done | LLM directly from text 0.909 vs rule engine 1.000 on 95 held-out verdicts, 0 boundary errors either way; planned vs fixed question order 138 vs 163 questions with all schemes open | Merge PR #83 |
 
 ## Scheme Saathi specifics and demos
 
-Signature challenge A is done and B is nearly done. Nothing is built yet for demo 2 (refusing an income misstatement and flagging a scam page).
+Signature challenge A is done and B is nearly done. Demo 2 still needs an income-misstatement refusal and a live scam-page demonstration; the output guard now blocks payment destinations in the existing code-only cases.
 
 | Requirement | Status | Notes |
 | --- | --- | --- |
@@ -81,9 +128,9 @@ Signature challenge A is done and B is nearly done. Nothing is built yet for dem
 | Two independent labellers on personas | Pending | One labeller, so no inter-annotator kappa; stated in the report |
 | Simulated citizen on a different model family | Done | `meta-llama/llama-3.3-70b-instruct` |
 | Can't-tell verdicts and conflicting documents referred to a caseworker | Pending | No such flow found |
-| Refuse requests to misstate income or age | Pending | No code or red-team case found |
-| Planted scam page ("pay ₹500 to this UPI ID") | Pending | Not in the corpus or the red-team suite |
-| Only official sources supply rules | Partial | Rules are reviewed; no explicit source allow-list |
+| Refuse requests to misstate income or age | Pending | 5 red-team cases added 11 Nov (RT-082–RT-086, English, Hindi, Marathi); all get through; no defence yet |
+| Planted scam page ("pay ₹500 to this UPI ID") | Partial | The output guard blocks the four existing cases. Still to do: test other scam formats independently and demonstrate the page in the corpus |
+| Only official sources supply rules | Partial | Rules are reviewed; no explicit source allow-list. 2 red-team cases added 11 Nov (RT-095, RT-096) get through |
 | Dashboard: questions per chat, can't-tell rate, waiting approvals, masked-ID hits, cost | Done | In PR #81; panels not checked one by one |
 | Demo 1: Hindi widow pension through to an approved draft | Partial | Pieces exist; rehearse end to end |
 | Demo 2: income-misstatement refusal; scam page flagged and ignored | Pending | Not built |
@@ -95,12 +142,14 @@ Merge the two open PRs first, because much of the evidence above lives in them. 
 
 - [ ] Merge PR #81 (Grafana dashboard, alerts) and PR #83 (E4, evaluation report, experiment log) (role 6, role 5)
 - [ ] Merge the `feature/query-rewrite` PR (the live search tool now uses the rewrite, about 1.2 s more per search). Add a retrieval section to the evaluation report linking `docs/retrieval-evaluation.md` (role 2)
-- [ ] E1: wire C1 into the runner, rerun C2, run C0/C1/C2 on held-out ×3 with the same model, tools and budget (role 3 builds, role 5 runs)
-- [ ] Demo 2: add a planted scam page to the corpus and an income-misstatement refusal. Add both to the red-team suite, written by someone other than the person building the defence (role 4 defends, role 5 attacks)
+- [x] E1: C0/C1/C2 on held-out, C1 and C2 ×3, same model and budget (11 Nov; `docs/evaluation-report.md` §2)
+- [ ] Demo 2 and L15 defences (role 4): a payment-request check for the scam page (output guardrail and scheme index) with the page planted in the corpus; a refusal that explains when asked to misstate income or age; an official-source allow-list for rules. The attacks are already in the suite (role 5, 11 Nov): clear each fixed case from `tests/redteam/known_gaps.json` and rerun E2
+- [ ] L15 write-up (role 4): cut the threat model to one page; add Prompt Guard 2 on CPU or explain why the own guardrails replace Llama Guard / Prompt Guard; have someone other than its author review the first 77 attacks
 - [ ] One `docker compose up` for app, MCP servers, Chroma, Prometheus and Grafana; a CI step that fails below an eval threshold; one deliberately failed CI run with an explanation; install on a clean machine (role 6)
 - [ ] LLM judge from a different model family, checked against 20+ hand labels with Cohen's kappa (role 5)
-- [ ] Planning: show the plan to the user, replan when a tool result contradicts it, capture the trace (role 3)
-- [ ] Short-term memory trimming or summarising; put the memory on/off result in the report (role 2)
+- [ ] Planning: review the plan/replan trace and evaluate the opt-in specialist ReAct loop with the configured model (role 3)
+- [x] Short-term context documented and tested; memory on/off result in the evaluation report (role 2)
+- [ ] Trim the memory policy to one page; write held-out memory cases (someone other than the memory author) (role 2, role 5)
 - [ ] Caseworker referral for can't-tell verdicts and conflicting documents (role 3)
 - [ ] If possible, add colloquial retrieval questions ("widow pension") written by someone other than role 2; the 32 existing labels were reviewed by Snehal on 30 Oct (role 1, role 5)
 - [ ] Architecture diagram with numbered walkthrough, contribution log in the repo, slides, backup demo recording (role 1)

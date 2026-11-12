@@ -3,7 +3,7 @@
   "name": "Synthetic Widow Pension (test data)",
   "level": "central",
   "state": null,
-  "source": {"url": "synthetic://test-data", "collected_on": "2026-10-23"},
+  "source": {"url": "https://www.myscheme.gov.in/schemes/synthetic-test-data", "collected_on": "2026-10-23"},
   "clauses": [
     {"clause_id": "cl-1", "text": "Widow aged 60 or above", "page": 1},
     {"clause_id": "cl-2", "text": "Annual income not above Rs 300000", "page": 1}

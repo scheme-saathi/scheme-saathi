@@ -133,6 +133,43 @@ def test_checker_flags_wrong_scheme_and_missing_fields():
     assert any("is_widow" in p for p in workflow.check_application(state))
 
 
+def test_confirmed_alternative_rule_profile_reaches_exact_draft_approval():
+    profile = {"ration_card_type": "white", "age": 18}
+    graph = build_graph()
+    result = graph.invoke(
+        {"confirmed_profile": profile, "simulated_citizen": profile, "scheme_ids": ["M20"]},
+        {"configurable": {"thread_id": "confirmed-alternative"}},
+    )
+    assert result["verdicts"]["M20"]["verdict"] == "eligible"
+    assert result["profile"] == profile
+    assert result["application"]["applicant"] == profile
+    assert not result.get("needs_human")
+    pending = result["__interrupt__"][0].value
+    assert pending["payload_hash"] == application_hash(pending["form"])
+    assert not result.get("submission")
+
+
+@pytest.mark.parametrize("profile", [{}, {"ration_card_type": "none"}])
+def test_confirmed_profile_without_a_passing_rule_never_reaches_approval(profile):
+    graph = build_graph()
+    result = graph.invoke(
+        {"confirmed_profile": profile, "simulated_citizen": profile, "scheme_ids": ["M20"]},
+        {"configurable": {"thread_id": f"not-eligible-{len(profile)}"}},
+    )
+    assert result["verdicts"]["M20"]["verdict"] != "eligible"
+    assert not result.get("application")
+    assert not result.get("__interrupt__")
+
+
+def test_checker_rejects_applicant_facts_absent_from_confirmed_profile():
+    state = {"verdicts": {"M20": {"verdict": "eligible"}},
+             "profile": {"ration_card_type": "white"},
+             "application": {"scheme_id": "M20", "applicant": {
+                 "ration_card_type": "white", "age": 18,
+             }}}
+    assert any("age" in error for error in workflow.check_application(state))
+
+
 @pytest.mark.parametrize("typed, kept", [("05/03/1962", "1962-01-01"), (None, "1962-01-01"),
                                          ("1962-03-05", "1962-03-05")])
 def test_an_edit_keeps_the_stored_date_unless_the_new_one_is_iso(typed, kept):

@@ -126,7 +126,20 @@ An operator's tick for an application is per application, unticked by default, a
 a consent reference beginning with `in-person-`. It expires with the entry and is withdrawn when
 the entry is removed.
 
-## 7. Forgetting
+## 7. Correcting and forgetting
+
+**Correcting a stored fact.** Only the person can correct a fact; a model cannot.
+
+- Remembered facts reach the person only as **unconfirmed** prefills on the confirm step. The person
+  can edit any of them there, or on the approval step, before anything is decided.
+- An edited value that the person confirms replaces the stored one and starts a fresh retention
+  window ([save_confirmed](../graph/memory_nodes.py)). A value confirmed unchanged only moves its
+  reconfirm date.
+- Only one value per field is current, and the newest confirmed value always wins on read.
+- A fact the person believes is wrong but cannot correct now can be removed with **Forget one fact**
+  (below); they are then asked for it again next time.
+
+**Forgetting.**
 
 - **Forget one fact:** `DELETE /api/memory/facts/{field}` removes every stored value of that field.
 - **Forget one application:** removes the reference and, if it was the only application under an
@@ -175,10 +188,38 @@ A failure on one surface is reported, not hidden.
 - Open decisions and the review status of this work are tracked in
   [long-term-memory-plan.md](./long-term-memory-plan.md) (section 10).
 
-## 11. Test coverage
+## 11. Short-term context (within a conversation)
+
+The models never receive the conversation transcript. Each call gets a fixed-shape input, and
+everything earlier in the conversation is summarised into typed workflow state. So a model's input
+does not grow with the number of turns.
+
+| Model call | What it receives ([contracts.py](../agents/contracts.py)) |
+|---|---|
+| Supervisor (routing) | This turn's message only (`SupervisorInput`) |
+| Intake, reading facts | This turn's message, plus the field the last question asked for and that question's wording (`IntakeExtractInput`) |
+| Intake, asking | The field to ask about, its type and allowed values, the language, and the message that started intake (`IntakeAskInput`) |
+| Eligibility, document checker, application | The rule-engine result, document lists or confirmed facts for one scheme |
+
+- **The summary is typed state.** It holds the facts read so far (`known_facts`), the facts the
+  person confirmed (`confirmed_facts`), the pending field and question, the questions already
+  asked, and the rule engine's verdicts ([AgentWorkflowState](../graph/agent_workflow.py)). It lives
+  in the checkpointer, not in a prompt.
+- **What is trimmed.** Earlier messages are never sent to a model. Intake keeps only the message
+  that started it, so "she" in a later question still refers to the right person.
+- **Trade-off.** An agent cannot refer back to free text from earlier turns ("as I said before").
+  Anything that matters must have become a typed fact first.
+- **Evidence.** [test_short_term_context.py](../tests/test_short_term_context.py) runs 20 turns on
+  one thread and checks that the supervisor's input on turn 20 holds only turn 20's message and is
+  the same size as on turn 1.
+
+## 12. Test coverage
 
 | Behaviour | Tests |
 |---|---|
+| Correcting a stored fact (an edit replaces it, the newest value wins) | `tests/test_memory_workflow.py`, `tests/test_memory_read_newest.py`, `tests/test_chroma_memory_phase1.py` |
+| Short-term context stays bounded | `tests/test_short_term_context.py` |
+| Memory on vs off: same verdicts, never more questions | `tests/test_memory_eval.py`; results in [evaluation-report.md](./evaluation-report.md) |
 | Consent gating, expiry, withdrawal | `tests/test_memory_api.py`, `tests/test_memory_withdraw_cleanup.py` |
 | Allowlist, type, retention and ID checks | `tests/test_memory_service_phase2.py`, `tests/test_chroma_memory_phase1.py` |
 | Reconfirmation and no prefill when due | `tests/test_memory_reconfirm_on_read.py`, `tests/test_memory_workflow.py` |

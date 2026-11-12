@@ -41,6 +41,18 @@ SUPERVISOR_MODEL_ENV = "SUPERVISOR_MODEL"
 ROUTER_MODEL_ENV = "ROUTER_MODEL"
 OPENROUTER_API_KEY_ENV = "OPENROUTER_API_KEY"
 
+_PAYMENT_DESTINATION = re.compile(r"(?<![\w.+-])[\w.+-]+@[a-zA-Z][\w.-]*", re.UNICODE)
+_PAYMENT_CONTEXT = re.compile(
+    r"\b(?:pay(?:ment)?|transfer|send|upi|gpay|phonepe|fee|charge|fees)\b"
+    r"|भुगतान|शुल्क|रकम|भेजें|भेजो|पैसे|पेमेंट|पैसा|पाठवा|भरावे|भरा",
+    re.IGNORECASE,
+)
+PAYMENT_DESTINATION_ERROR = "Payment destination cannot be verified; do not direct the person to pay it."
+
+
+def _unverified_payment_destination(text: str) -> bool:
+    return bool(_PAYMENT_DESTINATION.search(text) and _PAYMENT_CONTEXT.search(text))
+
 
 class RouterHTTPError(Exception):
     """OpenRouter answered the router call with a status other than 200."""
@@ -618,6 +630,15 @@ _MR_VERDICT = ("पात्र", "हक्कदार", "लाभ घेऊ 
 _MR_GET = ("मिळू शकत", "मिळेल")
 _MR_BENEFIT = ("पेन्शन", "लाभ", "मदत", "सहाय्य", "रक्कम", "रुपये", "अनुदान", "शिष्यवृत्ती", "कार्ड", "विमा", "कर्ज")
 _SENTENCE = re.compile(r"(?<=[.!?।])\s+|\n+")
+# The agent itself granting or bending a rule, not a criterion such as "AICTE approved institution".
+_AGENT_ACTS = r"\b(?:i|we)(?:'ve|'ll|'m)?(?:\s+(?:have|will|shall|can|hereby|am|now))*\s+"
+_OVERRIDES = re.compile(_AGENT_ACTS + r"(?:override|overrode|overridden|overriding|waive|waived|bypass|ignore)\b")
+_GRANTS = re.compile(
+    _AGENT_ACTS + r"(?:approve|approved|approving|grant|granted|granting|sanction|sanctioned"
+    r"|(?:make|made|making|give|given|giving|allow|allowed)\s+(?:you\s+)?an?\s+exception)\b"
+    r"|\byour\s+(?:application|benefit|claim|request|loan|pension|scholarship|grant)\s+"
+    r"(?:is|has been|was|will be)\s+(?:now\s+)?(?:approved|granted|sanctioned)\b"
+)
 
 
 def _decides_eligibility(text: str) -> bool:
@@ -726,6 +747,10 @@ class OutputValidator:
             masked_content = "[Sensitive content removed]"
             logger.error("Agent %s exposed sensitive data (%s).", agent_name, sensitive_type)
 
+        if _unverified_payment_destination(response_text):
+            errors.append(PAYMENT_DESTINATION_ERROR)
+            logger.warning("Agent %s returned an unverified payment destination.", agent_name)
+
         # 4. Agent-specific validation
         if agent_name == "intake":
             # Intake must return valid language and intent
@@ -749,15 +774,12 @@ class OutputValidator:
                         "Eligibility claim lacks citation. Add clause/rule reference."
                     )
 
-            # No overrides allowed
-            if any(
-                kw in response_text.lower()
-                for kw in ["override", "approve", "granted", "exception"]
-            ):
-                if "override" in response_text.lower():
-                    errors.append("Eligibility agent cannot override or make exceptions - only assess per rules")
-                else:
-                    errors.append("Eligibility agent cannot approve/grant - only assess per rules")
+            # No overrides or grants. A bare word match blocked every scheme for an "AICTE approved" institution.
+            lower = response_text.lower().replace("’", "'")
+            if _OVERRIDES.search(lower):
+                errors.append("Eligibility agent cannot override or make exceptions - only assess per rules")
+            elif _GRANTS.search(lower):
+                errors.append("Eligibility agent cannot approve/grant - only assess per rules")
 
         elif agent_name == "document_checker":
             # authenticity_verified must be False (we can't verify authenticity)
@@ -796,6 +818,12 @@ class OutputValidator:
         Returns:
             Friendly error message in user's language
         """
+        if PAYMENT_DESTINATION_ERROR in validation_result.errors:
+            if language == "hi":
+                return "मैं भुगतान के विवरण की पुष्टि नहीं कर सकता। भुगतान से पहले आधिकारिक योजना वेबसाइट से जाँच करें।"
+            if language == "mr":
+                return "मी पेमेंटच्या तपशीलांची खात्री करू शकत नाही. पैसे देण्यापूर्वी अधिकृत योजना वेबसाइटवर तपासा."
+            return "I cannot verify the payment details. Check the official scheme website before paying."
         if language == "hi":
             return "क्षमा करें, सिस्टम को प्रतिक्रिया देने में समस्या हुई। कृपया फिर से प्रयास करें।"
         elif language == "mr":
@@ -809,7 +837,6 @@ SUPERVISOR_INSTRUCTIONS = """You are Scheme Saathi's Supervisor Agent - a gateke
 Your job is to validate and route requests intelligently:
 
 1. VALIDATE INPUT:
-   - Reject requests with sensitive data (Aadhar, account numbers, etc.)
    - Classify intent: discover/eligibility/documents/application/follow_up
    - Detect language: English, Hindi, Marathi
    - Rate limit by household/actor
@@ -826,6 +853,9 @@ Your job is to validate and route requests intelligently:
      check, not a scheme question: "Is there a widow pension for me?", "Can my mother get a pension?",
      "Which schemes can I join?", "मुझे कौन सी योजना मिल सकती है?", "मला कोणती योजना मिळू शकते?"
      → Intake, even when it names a scheme
+   - When pending_question is set and the request is a short answer to it, not a question of its
+     own ("Own name", "the first one") → Intake. Route any question or other request ("What can
+     you do?", "What documents do I need?") exactly as you would without pending_question
 
 3. VALIDATE OUTPUT:
    - Ensure specialist responses follow contracts
