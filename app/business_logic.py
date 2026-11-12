@@ -363,6 +363,7 @@ class DemoService:
         """Return schemes with reviewed rules and their intake/document requirements."""
         scheme_ids = tools.search_schemes({})
         names = {scheme_id: scheme_id for scheme_id in scheme_ids}
+        benefits: dict[str, list[str]] = {}
         for directory in (
             PROJECT_ROOT / "data" / "schemes",
             PROJECT_ROOT / "data" / "rules",
@@ -372,11 +373,15 @@ class DemoService:
                 scheme_id = record.get("scheme_id")
                 if scheme_id in names:
                     names[scheme_id] = record.get("name", scheme_id)
+                    items = (record.get("sections") or {}).get("benefits", {}).get("items", [])
+                    if items and scheme_id not in benefits:
+                        benefits[scheme_id] = [item["text"] for item in items if item.get("text")]
 
         return [
             {
                 "scheme_id": scheme_id,
                 "name": names[scheme_id],
+                "benefits": benefits.get(scheme_id, []),
                 "required_fields": tools.required_fields([scheme_id]),
                 "required_documents": tools.list_documents(scheme_id),
             }

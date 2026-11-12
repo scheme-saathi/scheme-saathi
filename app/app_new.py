@@ -293,14 +293,19 @@ def _upload_document(
     )
 
 
-def _scheme_names(api_base: str) -> dict[str, str]:
-    """Map scheme IDs to display names; names are optional, so failures return {}."""
+def _schemes(api_base: str) -> list[dict[str, Any]]:
+    """Scheme list from the API; it is display-only, so failures return []."""
     try:
         with urlopen(f"{api_base}/api/schemes", timeout=10) as response:
             schemes = json.loads(response.read().decode("utf-8")).get("schemes", [])
-        return {item["scheme_id"]: item["name"] for item in schemes}
-    except (HTTPError, URLError, OSError, ValueError, KeyError, TypeError, AttributeError):
-        return {}
+        return [item for item in schemes if isinstance(item, dict) and "scheme_id" in item]
+    except (HTTPError, URLError, OSError, ValueError, TypeError, AttributeError):
+        return []
+
+
+def _scheme_names(api_base: str) -> dict[str, str]:
+    """Map scheme IDs to display names; names are optional, so failures return {}."""
+    return {item["scheme_id"]: item.get("name", item["scheme_id"]) for item in _schemes(api_base)}
 
 
 def _send_chat(
@@ -343,11 +348,13 @@ def _chat_response(
     result = {"status": response.get("next_step"), "data": data}
     if data.get("verdicts"):
         progress.write("Checking reviewed scheme rules")
+        schemes = _schemes(api_base)
         result.update(
             verdicts=data["verdicts"],
             explanations=data.get("explanations", {}),
             profile=data.get("known_facts", {}),
-            scheme_names=_scheme_names(api_base),
+            scheme_names={s["scheme_id"]: s.get("name", s["scheme_id"]) for s in schemes},
+            scheme_benefits={s["scheme_id"]: s.get("benefits", []) for s in schemes},
         )
     return thread_id, assistant_reply, result
 
@@ -475,6 +482,39 @@ def _memory_policy() -> dict[str, Any]:
     return {"fields": fields, "reference_days": allowlist.application_reference_expiry_days}
 
 
+CONDITION_COLORS = {"true": "green", "false": "red", "unknown": "gray"}
+
+
+def _render_conditions(verdict: dict[str, Any]) -> None:
+    """Still-needed facts and one chip per checked fact: green met, red not met, grey unknown.
+
+    A decided verdict needs no more facts, so "Still needed" shows only for can't tell. An eligible
+    verdict with unmet conditions can only come from alternative (any-of) rules, so it shows just
+    the conditions that qualified.
+    """
+    status = verdict.get("verdict")
+    missing = list(dict.fromkeys(verdict.get("missing_fields") or []))
+    if status == "cant_tell" and missing:
+        st.caption("Still needed: " + ", ".join(_field_label(f) for f in missing))
+    rank = {"true": 0, "false": 1, "unknown": 2}
+    best: dict[str, str] = {}  # one chip per field, keeping its strongest outcome
+    for condition in verdict.get("conditions", []):
+        field, outcome = str(condition.get("field", "")), condition.get("outcome", "unknown")
+        if field not in best or rank.get(outcome, 2) < rank.get(best[field], 2):
+            best[field] = outcome
+    alternatives = status == "eligible" and any(o != "true" for o in best.values())
+    if alternatives:
+        best = {field: outcome for field, outcome in best.items() if outcome == "true"}
+    if best:
+        st.markdown(" ".join(
+            f":{CONDITION_COLORS.get(outcome, 'gray')}-background["
+            f"{CONDITION_MARKS.get(outcome, '❔')} {_field_label(field)}]"
+            for field, outcome in best.items()
+        ))
+    if alternatives:
+        st.caption("Any one of this scheme's conditions qualifies; the others do not need to be checked.")
+
+
 def _render_eligibility(result: dict[str, Any]) -> None:
     """Present each reviewed-rule verdict, what was checked, and its source clauses."""
     names = result.get("scheme_names", {})
@@ -499,18 +539,7 @@ def _render_eligibility(result: dict[str, Any]) -> None:
                 f"**{names.get(scheme_id, scheme_id)}**  {badge}  \n`{scheme_id}`"
             )
             st.write(verdict.get("reason", "No explanation was returned."))
-            if verdict.get("missing_fields"):
-                st.caption(
-                    "Still needed: " + ", ".join(_field_label(f) for f in verdict["missing_fields"])
-                )
-            conditions = verdict.get("conditions", [])
-            if conditions:
-                st.caption(
-                    "  ·  ".join(
-                        f"{CONDITION_MARKS.get(c.get('outcome'), '❔')} {_field_label(str(c.get('field', '')))}"
-                        for c in conditions
-                    )
-                )
+            _render_conditions(verdict)
             citations = verdict.get("citations", [])
             if citations:
                 with st.expander("View reviewed source clauses"):
@@ -1036,17 +1065,6 @@ def _render_eligibility_screen(
                 "These results use details that have not yet been confirmed. "
                 "Return to chat to provide missing or corrected details before preparing an application."
             )
-        assistant_explanation = next(
-            (
-                message["content"]
-                for message in reversed(st.session_state["chat_messages"])
-                if message.get("result")
-            ),
-            None,
-        )
-        if assistant_explanation:
-            with st.container(border=True):
-                st.markdown(assistant_explanation)
         profile_column, results_column = st.columns([0.85, 1.5], gap="medium")
         with profile_column:
             with st.container(border=True):
@@ -1075,11 +1093,12 @@ def _render_eligibility_screen(
                     else:
                         st.info("Could not determine", icon=":material/help:")
                     st.write(verdict.get("reason", "No explanation was returned."))
-                    if verdict.get("missing_fields"):
-                        st.caption(
-                            "Still needed: "
-                            + ", ".join(_field_label(field) for field in verdict["missing_fields"])
-                        )
+                    _render_conditions(verdict)
+                    benefits = eligibility_result.get("scheme_benefits", {}).get(scheme_id, [])
+                    if benefits:
+                        with st.expander("Benefits", expanded=status == "eligible"):
+                            for benefit in benefits:
+                                st.markdown(f"- {benefit}")
                     citations = verdict.get("citations", [])
                     if citations:
                         with st.expander("View reviewed source clauses"):
