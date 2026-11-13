@@ -6,6 +6,18 @@ The model never decides eligibility: reviewed rules in code do.
 
 ## Quick start
 
+### Run with Docker (one command)
+
+The published images need only Docker (Docker Desktop on Windows, or Docker Engine with Compose v2 on Linux). In the `scheme-saathi-deploy` folder, copy `.env-example` to `.env` and set `OPENROUTER_API_KEY`, `MOCK_PORTAL_AUTH_SECRET` (any long random string) and `GRAFANA_ADMIN_PASSWORD`. Then, from that folder, start everything:
+
+```powershell
+docker compose --env-file .\.env up -d --pull always
+```
+
+This pulls the app, Grafana and Prometheus images and starts them. The app opens on <http://localhost:8501> and Grafana on <http://localhost:3000> (user `admin`, the password from `.env`); both are reachable only from the local machine. On Linux or macOS, write the env file as `./.env`. Details are in the [deployment guide](docs/scheme-saathi-deploy-guide.md).
+
+### Run from source
+
 Run the app locally with Streamlit. You need Python 3.11 or newer (3.12 recommended), an OpenRouter API key and an Auth0 application for sign-in. Run every command from the project root.
 
 ```bash
@@ -60,6 +72,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 | `evaluation/` | Experiment code (rule extraction, E4, memory evaluation) |
 | `observability/` | Metrics, tracing, Prometheus and Grafana |
 | `tests/` | Unit and integration tests, the evaluation harness (`tests/evaluation/`) and the red-team suite (`tests/redteam/`) |
+| `scheme-saathi-deploy/` | Docker Compose file, `.env-example` and Prometheus settings for the one-command start |
 | `docs/` | The documents listed below |
 
 ## Key design choices
@@ -106,7 +119,8 @@ Supporting documents:
 - [Setup, scheme data and running the app](docs/setup-and-data.md)
 - [Evaluation harness](tests/evaluation/README.md): E1, the claim judge, rule extraction and Reflexion, the single-agent baseline
 - [Observability](docs/observability.md), its [architecture](docs/observability-architecture.md) and the [Docker Compose and Grafana quick start](docs/docker-compose-grafana-quickstart.md)
-- [Docker deployment guide](docs/docker-deployment-guide.md)
+- [Deployment guide: one-command start with Docker](docs/scheme-saathi-deploy-guide.md)
+- [Docker and AWS deployment guide](docs/docker-deployment-guide.md): building the images and CI/CD
 
 ## Tests and evaluations
 
