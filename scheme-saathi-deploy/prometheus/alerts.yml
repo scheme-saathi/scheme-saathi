@@ -1,0 +1,85 @@
+# Alert rules. The thresholds are starting points to tune against real traffic.
+# Prometheus shows these on its Alerts page. Nothing is sent anywhere: Alertmanager is not set up here.
+groups:
+  - name: scheme_saathi_alerts
+    rules:
+      - alert: SchemeSaathiMetricsDown
+        expr: up{job="scheme-saathi"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus cannot read the app's /metrics.
+          description: Check that the app is running, OBSERVABILITY_ENABLED is true, and the token file matches METRICS_BEARER_TOKEN.
+
+      - alert: SchemeSaathiRunErrorsHigh
+        expr: |
+          scheme_saathi:runs:error_ratio_rate5m > 0.05
+          and on (kind)
+          sum by (kind) (rate(scheme_saathi_runs_total[5m])) > 0.01
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: More than 5% of {{ $labels.kind }} runs ended in a server-side error.
+
+      - alert: SchemeSaathiRunLatencyHigh
+        expr: scheme_saathi:run_duration_seconds:p95_5m > 60
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: The 95th percentile of {{ $labels.kind }} run time is over 60 seconds.
+
+      - alert: SchemeSaathiModelErrorsHigh
+        expr: |
+          scheme_saathi:llm_calls:error_ratio_rate5m > 0.2
+          and on (role, model)
+          sum by (role, model) (rate(scheme_saathi_llm_calls_total[5m])) > 0.01
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: More than 20% of calls to {{ $labels.model }} ({{ $labels.role }}) are failing.
+
+      - alert: SchemeSaathiToolErrorsHigh
+        expr: |
+          scheme_saathi:tool_calls:error_ratio_rate5m > 0.2
+          and on (server, tool)
+          sum by (server, tool) (rate(scheme_saathi_tool_calls_total[5m])) > 0.01
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: More than 20% of {{ $labels.server }}.{{ $labels.tool }} calls are failing.
+
+      - alert: SchemeSaathiTracesLost
+        expr: scheme_saathi:traces:lost_ratio_rate5m > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: More than 10% of run traces are not reaching the tracing backend.
+
+      # The brief's operations alert: a jump in can't-tell verdicts points at the corpus or the rule extractor.
+      # Fires when the last hour's can't-tell share is over 20% and at least double the last day's, with 20+ verdicts.
+      - alert: SchemeSaathiCantTellRateJump
+        expr: |
+          scheme_saathi:eligibility_verdicts:cant_tell_ratio_rate1h > 0.2
+          and scheme_saathi:eligibility_verdicts:cant_tell_ratio_rate1h > 2 * scheme_saathi:eligibility_verdicts:cant_tell_ratio_rate1d
+          and sum(increase(scheme_saathi_eligibility_verdicts_total[1h])) >= 20
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: The share of can't-tell verdicts has jumped. Check recent scheme data and extracted rules.
+
+      # Not increase(): a series born on its first unpriced call starts at 1, so increase() would read 0 and never fire.
+      # The count resets when the app restarts, which it must do anyway to load a new price file.
+      - alert: SchemeSaathiUnpricedModelCalls
+        expr: scheme_saathi_llm_unpriced_calls_total > 0
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: Calls to {{ $labels.model }} have no price, so reported spend is too low. Add it to the price file.

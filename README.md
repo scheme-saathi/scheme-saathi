@@ -9,7 +9,7 @@ A welfare-scheme navigator for citizens and CSC operators. It identifies eligibl
 - `graph/` - LangGraph orchestration and checkpointing
 - `tests/` - unit and evaluation tests
 - `data/schemes/` - scheme corpus (URL and collection date recorded per scheme)
-- `docs/` - tool list, threat model, memory policy, evaluation report and experiment log
+- `docs/` - deployment guide, tool list, threat model, memory policy, evaluation report and experiment log
 
 **Evaluation:** results of experiments E1–E4 are in [docs/evaluation-report.md](docs/evaluation-report.md), and every run behind them is listed in [docs/experiment-log.md](docs/experiment-log.md).
 
@@ -1058,3 +1058,11 @@ Each run records the playbook version it used. The report refuses runs that aren
 ## Single-agent baseline (L11)
 
 `graph/baseline.py` is one ReAct agent holding every MCP tool, used later to compare against the supervisor-and-specialists team. It shares the same tools, hash-bound approval gate and model setting (`SUPERVISOR_MODEL`, `OPENROUTER_API_KEY`), and stops at a fixed step budget (`MAX_STEPS`). `summarize()` reports LLM calls, tool calls, tokens and budget use. Run it with `python -m graph.baseline --decision approve`; tests use a scripted model and need no key.
+
+## Deployment
+For the Docker-based deployment workflow, see [docs/scheme-saathi-deploy-guide.md](docs/scheme-saathi-deploy-guide.md).
+
+One command to installation on a clean machine.
+```powershell
+   docker compose --env-file .\.env up -d --pull always
+```
