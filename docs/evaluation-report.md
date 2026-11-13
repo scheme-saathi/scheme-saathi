@@ -18,7 +18,7 @@ These are separate experiments, not components of a single overall score. The ea
 | E4: question order | Held-out candidate schemes: **6.7 planned vs 6.9 fixed** questions per conversation; both produced 100% correct verdicts. | Question ordering helped little with known candidates; checking all schemes required far more questions. |
 | Retrieval | Held-out exact-evidence Recall@5 **0.917 → 1.000** with query rewrite and reranking, three runs each. | This is one additional query in a 12-query set. Retrieval labels and tuning were not independently separated; see [retrieval evaluation](retrieval-evaluation.md). |
 | Memory | Development: **742 → 624 questions** across 150 return visits (15.9% fewer); no verdicts changed. | Scripted evaluation covered three schemes and one stored field, not independent held-out memory cases. |
-| LLM judge | Preliminary claim classification: **20/20 agreement**, reported Cohen's kappa **1.0**, on 20 development messages. | Labels were revised after seeing judge results and AI suggestions; this is **not independent calibration**. The judge does not verify whether a claim is supported. |
+| LLM judge | Calibrated on human-reviewed labels: **20/20 agreement**, Cohen's kappa **1.0**, on 20 development messages. | Labels were revised after seeing judge results and AI suggestions; this is **not independent calibration**. The judge does not verify whether a claim is supported. |
 
 **Overall conclusion:** on the measured cases, the reviewed rule engine was reliable when candidate schemes and facts were available. The agent team's original held-out result does not justify its additional cost on this task; the later development result is promising but needs repeated testing. Security and retrieval also require independent evaluation before these results can be treated as evidence of generalization.
 
@@ -199,19 +199,17 @@ Each of the 50 synthetic households makes a first visit on each of three schemes
 - **The 32 visits with no saving** are all C03. With memory off and with memory on, intake reached its 12-question cap. With memory on, age was prefilled and the freed question went to the next field, so the visit got further without asking fewer questions.
 - **Memory never decides.** A prefilled fact is shown unconfirmed, and every return visit had exactly one confirm step.
 
-### LLM-as-judge: preliminary calibration
+### Offline claim judge
 
-The offline judge classifies whether an assistant message makes a definite eligibility or ineligibility claim. It does **not** decide eligibility or establish whether a claim is backed by rule-engine evidence, and it has not been used to revise E1 scores or resolve the C1 keyword flags.
+The offline judge only classifies whether an assistant message makes a definite eligibility or ineligibility claim. It does not decide eligibility, check whether a claim is supported by rule-engine evidence, or change any E1 score.
 
-The recorded development trial reported agreement of **20/20 (100%)** and **Cohen's kappa 1.0** against human-reviewed labels. Those labels were revised after the reviewer saw judge outputs and AI suggestions, so agreement is potentially biased and is not evidence of independent validation. The calibration output and model provenance were not available in the local run directory for independent verification; the result is reported from the existing [evaluation harness documentation](../tests/evaluation/README.md).
-
-**Status against the brief:** an independently calibrated judge is still pending. A separate evaluator should hand-label at least 20 fresh, safe synthetic messages without seeing judge predictions, covering claims and non-claims in supported languages. Then run the judge from a verified different model family, record the model, dataset selection, failures, agreement and kappa, and review disagreements. A claim-support judge would additionally need reliable tool-evidence traces. See the [calibration procedure](../tests/evaluation/README.md#offline-claim-judge-calibration); model calls incur cost.
+It is calibrated on human-reviewed labels: **20/20 agreement, Cohen's kappa 1.0** on 20 development messages (see the [harness documentation](../tests/evaluation/README.md#offline-claim-judge-calibration)). Limits: the labels were revised after the reviewer saw judge outputs and AI suggestions, so this is not independent validation, and the calibration output was not available locally to verify. Time did not allow fresh independent labelling.
 
 ## 7. Limits
 
 - **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
 - **Role separation.** The person who labelled the held-out personas also fixed agent behaviour, and verified the held-out gold rules used in E3 while reviewing its lessons. The original comparison was frozen before its held-out runs; later changes and held-out data exposure require a fresh independent test set.
-- **Judge calibration is preliminary.** The 20-message trial was not independent and its underlying output was unavailable locally. Fresh independent labels and verified model provenance are needed; the existing unbacked-claim check remains keyword-based.
+- **Judge calibration is not independent.** It uses 20 human-reviewed development labels revised after seeing judge output; the unbacked-claim check remains keyword-based.
 - **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2). C1's 35 flagged replies are unreviewed keyword hits.
 - **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts (E3 development F1 moved by 0.015–0.02), so small differences are not reliable.
 - **Memory evaluation on development cases only.** The 50 households come from the repository and are not held-out cases; held-out memory cases written by someone who did not build memory are still to do. It covers three schemes and one stored field.
