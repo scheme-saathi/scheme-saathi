@@ -76,3 +76,50 @@ python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --rewri
 ```
 
 Runs with `--rerank` or `--rewrite` need `SPECIALIST_MODEL` and `OPENROUTER_API_KEY` in `.env`. The 11 Nov rewrite and rerank calls used `openai/gpt-4o-mini`. Embeddings are local `BAAI/bge-m3` on CPU.
+
+## Running the evaluation (moved from the README)
+
+The comparison runner supports vector, BM25 and hybrid using the same source-labelled dataset. The gold set is `tests/evaluation/retrieval_gold_v1.json`, used by default; pass another file with `--dataset`:
+
+```bash
+python -m servers.schemes_kb.evaluate_retrieval --dataset "/path/to/retrieval_gold_v1.json" --method hybrid --split development
+```
+
+Add `--rerank` to compare the same method with LLM reranking; the report filename and `rerank` field record it. Add `--rewrite` to also search an English, scheme-wording rewrite of each question (multi-query, fused with RRF); each case's `queries` field records both queries.
+
+--allow-pending explicitly permits provisional labels; omit it for approved labels. Keep held-out cases untouched until final evaluation. Reports are saved under ignored data/evaluation-runs/ and include evidence coverage, scheme hits, language breakdowns, filter checks, latency and corpus fingerprints. Abstention cases are marked unsupported; retrieval alone does not generate an answer. Evidence scoring requires source references plus normalized source text, not a matching citation alone. Tests use small synthetic examples and do not include the gold dataset.
+
+Run the RAG checks independently:
+
+```bash
+python -m unittest discover -s tests -p test_keyword_search.py
+python -m unittest discover -s tests -p test_retrieval_evaluation.py
+python -m unittest discover -s tests -p test_scheme_loading.py
+```
+
+Install the project dependencies into .venv (Windows)
+
+```bash
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+```
+
+To test the persona-loading functionality, run the focused tests from the project root:
+
+```bash
+python -m pytest -q tests/test_persona.py tests/test_resume_cli.py
+```
+These tests check that persona facts are converted to the expected fields, unknown facts are omitted, saved personas load correctly, and the CLI rejects using --persona-id and --citizen together. See test_persona.py and test_resume_cli.py.
+
+You can also try loading a persona through the workflow:
+
+```bash
+python -m graph.run --persona-id SS006
+```
+
+It should exit successfully and show the eligibility result for the loaded profile. To test that conflicting profile options are rejected:
+
+```bash
+python -m graph.run --persona-id SS001 --citizen '{"age": 40}'
+```
+
+That command should display an argument error because you must choose one profile source.

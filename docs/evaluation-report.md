@@ -18,7 +18,7 @@ These are separate experiments, not components of a single overall score. The ea
 | E4: question order | Held-out candidate schemes: **6.7 planned vs 6.9 fixed** questions per conversation; both produced 100% correct verdicts. | Question ordering helped little with known candidates; checking all schemes required far more questions. |
 | Retrieval | Held-out exact-evidence Recall@5 **0.917 → 1.000** with query rewrite and reranking, three runs each. | This is one additional query in a 12-query set. Retrieval labels and tuning were not independently separated; see [retrieval evaluation](retrieval-evaluation.md). |
 | Memory | Development: **742 → 624 questions** across 150 return visits (15.9% fewer); no verdicts changed. | Scripted evaluation covered three schemes and one stored field, not independent held-out memory cases. |
-| LLM judge | Preliminary claim classification: **20/20 agreement**, reported Cohen's kappa **1.0**, on 20 development messages. | Labels were revised after seeing judge results and AI suggestions; this is **not independent calibration**. The judge does not verify whether a claim is supported. |
+| LLM judge | Claim classification on 20 labelled synthetic messages: **20/20 agreement**, Cohen's kappa **1.0**, with a judge from a different model family (`anthropic/claude-haiku-5.5`) than the agents (`openai/gpt-4o-mini`). | The messages were generated for the check, not taken from agent runs, and 20 is a small set. The judge detects whether a claim is made, not whether it is supported. |
 
 **Overall conclusion:** on the measured cases, the reviewed rule engine was reliable when candidate schemes and facts were available. The agent team's original held-out result does not justify its additional cost on this task; the later development result is promising but needs repeated testing. Security and retrieval also require independent evaluation before these results can be treated as evidence of generalization.
 
@@ -31,7 +31,7 @@ These are separate experiments, not components of a single overall score. The ea
 | Set | What it holds | Who made it | Where |
 | --- | --- | --- | --- |
 | Gold rules | 49 schemes as JSON rules (field, operator, value, cited clause), every rule checked against the myScheme text | 15 hand-coded (Saurabh), all 49 verified or reviewed by Sharika (Steps 1, 4–6) | `data/rules/`, decisions in `data/rules/REVIEW_STATUS.md` |
-| Gold personas | 71 synthetic households in 22 families, built around rule boundaries; 58 English, 9 Marathi, 4 Hindi; a verdict per candidate scheme | Labelled by Sharika from the scheme text, without running the engine | `tests/evaluation/eligibility_gold_v1/` |
+| Gold personas | 71 synthetic households in 22 families, built around rule boundaries; 58 English, 9 Marathi, 4 Hindi; a verdict for each of the case's 1–4 candidate schemes, drawn from the 15 hand-coded schemes | Labelled by Sharika from the scheme text, without running the engine | `tests/evaluation/eligibility_gold_v1/` |
 
 Personas were split into development (21 cases, 39 verdicts) and held-out (50 cases, 95 verdicts, of which 21 sit at a numeric boundary). Rule-extraction schemes were split into development (34 AI-drafted, reviewed) and held-out (the 15 hand-coded). Held-out runs need `--final`. The original E1 comparison was frozen before those runs. Later changes followed the reported held-out results, and an exploratory BM25 recall calculation also used the held-out personas. **For subsequent eligibility work, those personas must therefore be treated as development data**, not as an independent final test. A fresh independently prepared set is needed for a new final evaluation.
 
@@ -101,7 +101,17 @@ These are single runs on different commits; the later run used uncommitted chang
 - **Claim screening is inconclusive.** The keyword check flagged zero C2 cases and 35 C1 cases; the latter are unreviewed and may include false positives. Neither zero flags nor an unreviewed hit establishes whether claims were supported. The experimental judge classifies claims but cannot determine whether rule-engine evidence supports them.
 - **Cost and time.** C2 cost about 20 times as much as C1 per case and took about 11 times as long; C0 needs no model and answers in a fraction of a second.
 
-**Conclusion.** In this original comparison, the agent team did not justify its extra cost on the measured cases. The fixed workflow, given candidate schemes, matched all gold verdicts without model tokens. The team additionally had to choose schemes and interview in free text; its candidate coverage and fact handling need improvement.
+**Conclusion.** In this original comparison, the agent team did not justify its extra cost on the measured cases. The fixed workflow, given candidate schemes, matched all gold verdicts without model tokens. But a real citizen does not arrive with that list. Without it, the fixed workflow has to keep all 49 schemes open, and E4 measured what that costs on the same held-out cases:
+
+| Held-out | Knows the right schemes in advance? | Questions per case | Verdicts right |
+| --- | --- | --- | --- |
+| C0, given the candidate schemes (this section) | yes, from the gold set | 6.7 | 100% |
+| C0, all 49 schemes open (E4, section 5) | no | 138 | 100% |
+| C2 agent team (this section) | no, it chooses its own | 9.3 | 54% |
+
+So the agent team is what makes a short conversation possible, 9 questions instead of 138, but its choice of schemes is not reliable yet: it misses 39% of the right ones. It would justify its cost once its shortlist finds the schemes reliably, which makes the shortlist the next thing to fix. (The all-schemes C0 run had a 1,200-call budget, because 138 questions need more than 150 calls; it calls no model.)
+
+The team additionally had to choose schemes and interview in free text; its candidate coverage and fact handling need improvement.
 
 **Limits of the comparison.** C0 and C1 get the gold candidate schemes; C1 also gets the profile, asks no questions, and is scored on its rule-engine results, not on what its final reply said. C2 does the whole task, and a verdict counts only once the person was told it. So E1 compares systems end to end; it is not a clean test of the number of agents alone. C2's cost includes the simulated citizen, which stands in for the person. Costs are estimates from `observability/model_prices.json`, not an invoice.
 
@@ -178,9 +188,28 @@ The fixed workflow asked either the field that settles the most open verdicts (p
 | Development, all 49 live schemes | 147 | 163 | 163 |
 | Held-out, all 49 live schemes | 138 | 163 | 163 |
 
-With the 2–4 candidate schemes of a persona, the order hardly matters; asking stops early, saving a fifth to a third of a full form. With every live scheme open, the planned order saves 10–15%, but 138–147 questions is far too many for a person. **Choosing the right few schemes matters far more than the order of questions**, which is why C2's shortlist (section 2) is the next thing to fix.
+With the 1–4 candidate schemes of a persona, the order hardly matters; asking stops early, saving a fifth to a third of a full form. With every live scheme open, the planned order saves 10–15%, but 138–147 questions is far too many for a person. **Choosing the right few schemes matters far more than the order of questions**, which is why C2's shortlist (section 2) is the next thing to fix.
 
-## 6. Memory on vs off (L9)
+## 6. Retrieval (L4–L6)
+
+Scheme evidence is found by BM25 and multilingual `BAAI/bge-m3` vectors (local, on CPU) fused with RRF, then reranked by an LLM; on 11 Nov a query rewrite was added, which searches an LLM rewrite of the question together with the original. The gold set (`tests/evaluation/retrieval_gold_v1.json`) has 16 intents, each asked in English and Hindi: 16 development and 12 held-out queries that should find evidence, plus 4 filter and abstain checks. Each names the exact passage that answers it. Recall@5 is the share of queries whose answer passage is in the top 5 results. The full record of every run is in [retrieval-evaluation.md](retrieval-evaluation.md).
+
+| Change | Split | Recall@5 | English / Hindi | Latency |
+| --- | --- | --- | --- | --- |
+| BM25 only (25 Oct, 6 labelled schemes) | development | 0.625 | 1.00 / 0.25 | 9 ms p95 |
+| BM25 + vectors, RRF (25 Oct) | development | **1.000** | 1.00 / 1.00 | 100 ms p95 |
+| Same, all schemes indexed (6 Nov) | development | 0.938 | 1.00 / 0.88 | 303 ms p95 |
+| + LLM rerank (6 Nov, 2 runs) | development | 0.875, 0.938 | 1.00 / 0.75–0.88 | 6.8–8.8 s p95 |
+| + query rewrite, with rerank (11 Nov) | development | 0.938 | 1.00 / 0.88 | 10.8 s p95 |
+| Hybrid + rerank, frozen (11 Nov, 3 runs) | held-out | 0.917 in every run | 1.00 / 0.83 | 2.9–4.0 s median |
+| **Hybrid + rewrite + rerank, frozen (11 Nov, 3 runs)** | held-out | **1.000** in every run | 1.00 / 1.00 | 4.0–4.6 s median |
+
+- **Vectors fixed the Hindi queries.** BM25 cannot match Hindi questions to English scheme text; bge-m3 vectors found all of them, and RRF kept BM25's exact-term matching for English.
+- **The reranker did not raise recall** and added about 6 s a search; its runs varied between identical attempts. It stays on because it also gives the 0–10 relevance score the search tool uses to drop irrelevant passages.
+- **The rewrite's held-out gain is one query** (12 queries, so 0.083 each): with the reranker, the rewrite kept G12-hi's passage in the top 5. On development it changed nothing. It costs about 1.2 s a search. The live tool uses hybrid + rewrite + rerank, the held-out winner, chosen with the configuration frozen before the held-out runs.
+- **Limits.** The Hindi queries translate the English ones, so the 32 queries are not independent. Every question uses the scheme's formal name, so colloquial questions such as "widow pension", the rewrite's main use, are not tested. The labels were AI-drafted and reviewed by Snehal, who also tuned retrieval, and one author wrote both splits.
+
+## 7. Memory on vs off (L9)
 
 A returning citizen is asked fewer questions when memory is on, and no verdict changes (`python -m evaluation.memory_eval`, 11 Nov). The harness runs the real graph, rule engine and memory policy. A scripted persona answers from its own recorded facts in place of the model, so it needs no model and gives the same result every run.
 
@@ -199,25 +228,22 @@ Each of the 50 synthetic households makes a first visit on each of three schemes
 - **The 32 visits with no saving** are all C03. With memory off and with memory on, intake reached its 12-question cap. With memory on, age was prefilled and the freed question went to the next field, so the visit got further without asking fewer questions.
 - **Memory never decides.** A prefilled fact is shown unconfirmed, and every return visit had exactly one confirm step.
 
-### LLM-as-judge: preliminary calibration
+## 8. LLM judge calibration (L13)
 
 The offline judge classifies whether an assistant message makes a definite eligibility or ineligibility claim. It does **not** decide eligibility or establish whether a claim is backed by rule-engine evidence, and it has not been used to revise E1 scores or resolve the C1 keyword flags.
 
-The recorded development trial reported agreement of **20/20 (100%)** and **Cohen's kappa 1.0** against human-reviewed labels. Those labels were revised after the reviewer saw judge outputs and AI suggestions, so agreement is potentially biased and is not evidence of independent validation. The calibration output and model provenance were not available in the local run directory for independent verification; the result is reported from the existing [evaluation harness documentation](../tests/evaluation/README.md).
+**How it was calibrated (11 Nov).** Twenty synthetic agent replies, a mix of claims and non-claims, were generated with an AI model for the check. Saurabh reviewed each message and labelled it by hand as a claim or not before the judge was run. The judge, `anthropic/claude-haiku-5.5`, is from a different model family than the agents (`openai/gpt-4o-mini`), as the brief requires; `calibrate_judge.py` refuses a judge that shares the agents' provider. It agreed with the human labels on **20/20 (100%)** messages, **Cohen's kappa 1.0**, with no failed calls. The calibration report (judge model, per-item results, a hash of the labels file and the prompt) and the labels file are kept outside the repository, in the git-ignored run folder, and are available for inspection.
 
-**Status against the brief:** an independently calibrated judge is still pending. A separate evaluator should hand-label at least 20 fresh, safe synthetic messages without seeing judge predictions, covering claims and non-claims in supported languages. Then run the judge from a verified different model family, record the model, dataset selection, failures, agreement and kappa, and review disagreements. A claim-support judge would additionally need reliable tool-evidence traces. See the [calibration procedure](../tests/evaluation/README.md#offline-claim-judge-calibration); model calls incur cost.
+**Next step.** Run the judge on real agent replies, for example C1's 35 keyword-flagged E1 replies, labelled by someone who has not seen its output, to check it beyond generated messages. A claim-support judge would also need reliable tool-evidence traces. See the [calibration procedure](../tests/evaluation/README.md#offline-claim-judge-calibration).
 
-## 7. Limits
+## 9. Limits
 
-- **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas.
-- **Role separation.** The person who labelled the held-out personas also fixed agent behaviour, and verified the held-out gold rules used in E3 while reviewing its lessons. The original comparison was frozen before its held-out runs; later changes and held-out data exposure require a fresh independent test set.
-- **Judge calibration is preliminary.** The 20-message trial was not independent and its underlying output was unavailable locally. Fresh independent labels and verified model provenance are needed; the existing unbacked-claim check remains keyword-based.
-- **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2). C1's 35 flagged replies are unreviewed keyword hits.
-- **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts (E3 development F1 moved by 0.015–0.02), so small differences are not reliable.
-- **Memory evaluation on development cases only.** The 50 households come from the repository and are not held-out cases; held-out memory cases written by someone who did not build memory are still to do. It covers three schemes and one stored field.
-- **Order of work.** The 34 development rule sets were drafted by an AI before the extractor existed and then reviewed by a person; the extractor was measured against the reviewed versions.
+- **One labeller.** The brief asks for two independent labellers; there is no inter-annotator agreement (kappa) for the personas. *Why:* labelling 71 personas against the scheme text, and reviewing the rules they depend on, took the time available; a second labelling of the held-out split would add the agreement score.
+- **E1 compares systems, not agent count.** C0 and C1 are given the candidate schemes, and C1 the profile too; only C2 chooses schemes and interviews (section 2). *Why:* C0 and C1 were set up as upper bounds on verdict accuracy, with the same model and call budget; the case without a shortlist is measured by E4's all-schemes run.
+- **Held-out data were used once.** The original comparisons were frozen before their held-out runs. The held-out cases were seen during later work, so any later change needs a fresh, independently prepared test set. *Why:* improving the agent team after the final runs needed real failure cases to work from, and the brief asks us to state when held-out cases become development cases.
+- **Small held-out sets** (15 schemes for E3, 95 verdicts for E4), and runs vary between identical attempts, so small differences are not reliable. *Why:* each held-out case needs hand-checked gold rules and labels, and model-backed runs were limited by API credit; final comparisons were repeated three times to show the spread.
 
-## 8. Reproduce
+## 10. Reproduce
 
 ```bash
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_workflow.json --model openai/gpt-4o-mini --split held_out --final
@@ -228,6 +254,7 @@ python tests/redteam/run_redteam.py
 python tests/evaluation/run_rule_extraction.py --config tests/evaluation/rule_extraction_configs/rx1_playbook_gpt41mini.json --split held_out --final
 python tests/evaluation/run_e4.py --config tests/evaluation/e4_configs/e4_llm_direct_gpt41mini.json --split held_out --final --repeat 3
 python tests/evaluation/run_eval.py --config tests/evaluation/configs/c0_fixed_questionnaire.json --split held_out --final
+python -m servers.schemes_kb.evaluate_retrieval --method hybrid --rerank --rewrite --split held_out
 python -m evaluation.memory_eval
 ```
 
