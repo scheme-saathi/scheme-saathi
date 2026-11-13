@@ -54,6 +54,103 @@ def _unverified_payment_destination(text: str) -> bool:
     return bool(_PAYMENT_DESTINATION.search(text) and _PAYMENT_CONTEXT.search(text))
 
 
+# A request to put something other than the stated facts on the application, or to leave a
+# fact out. It is refused before any model sees the message (demo 2). These are patterns, not
+# understanding: they catch the usual ways of asking, not a person who simply states a false fact.
+_RECORD_EN = re.compile(
+    r"\b(?:write|put|enter|fill(?:\s+in)?|mark|show|record|list|state|change\s+it\s+to|make\s+it)\b"
+    r"[^.?!]{0,40}?(?:\d|\bas\b|\binstead\b)",
+    re.IGNORECASE,
+)
+_CONTRAST_OR_PURPOSE_EN = re.compile(
+    r"\b(?:but|instead|actually|really|real|though|although)\b"
+    r"|\bso\s+(?:that\s+)?(?:\w+\s+){0,2}(?:can\s+|will\s+|would\s+)?"
+    r"(?:qualif\w*|gets?|is\s+eligible|be\s+eligible|becomes?\s+eligible)"
+    r"|\bto\s+(?:qualify|make\s+\w+\s+eligible)|\bin\s+order\s+to\b",
+    re.IGNORECASE,
+)
+_CONCEAL_EN = re.compile(
+    r"\b(?:don'?t|do\s+not|never)\s+(?:mention|write|show|include|disclose|put|tell)\b"
+    r"[^.?!]{0,30}?(?:\b(?:that|it|this|her|his|their)\b|\b(?:on|in)\s+the\s+(?:form|application)\b)"
+    r"|\b(?:leave|keep)\s+(?:it|that|this)\s+out\b|\b(?:hide|conceal)\s+(?:that|it|this|the\s+fact|her|his)\b",
+    re.IGNORECASE,
+)
+# Hindi and Marathi put the number before the verb, so a digit anywhere is required instead.
+_RECORD_DEVANAGARI = re.compile(
+    r"लिख\s*(?:दो|दें|देना|दीजिए|ो|ें|िए|िये)|डाल\s*(?:दो|दें|देना|ो|ें|िए)|भर\s*(?:दो|दें|देना)"
+    r"|लिहा|लिहून\s*(?:द्या|टाका)|टाका|दाखवा"
+)
+_CONTRAST_OR_PURPOSE_DEVANAGARI = re.compile(
+    r"ताकि|लेकिन|मगर|असल\s*में|असली|बल्कि|जबकि|म्हणजे|जेणेकरून|ज्यामुळे|परंतु|खरं\s*तर|प्रत्यक्षात"
+)
+_CONCEAL_DEVANAGARI = re.compile(
+    r"(?:मत|न)\s*(?:बताना|बताओ|बताएँ|बताएं|लिखना|लिखो|लिखें|डालना|दिखाना)|छुपा|छिपा"
+    r"|(?:सांगू|लिहू|दाखवू|टाकू)\s*नका|लपव"
+)
+_MARATHI_MARKERS = re.compile(r"आहे|नका|लिहा|आईचे|माझ्या|मला|म्हणजे")
+MISSTATEMENT_ERROR = "misstatement_request"
+SCAM_MESSAGE_ERROR = "unverified_payment_request"
+
+MISSTATEMENT_REPLY = {
+    "en": (
+        "I can't put anything on the application that differs from the facts you've told me, or leave "
+        "out a fact that matters. An application must be truthful: a false or missing detail can get it "
+        "rejected, and a benefit paid on false information can be recovered. Tell me the actual details "
+        "and I'll check which schemes fit them."
+    ),
+    "hi": (
+        "मैं आवेदन में ऐसी कोई जानकारी नहीं लिख सकता जो आपके बताए तथ्यों से अलग हो, और न ही कोई ज़रूरी "
+        "तथ्य छोड़ सकता हूँ। आवेदन सच्चा होना चाहिए: गलत या छुपाई गई जानकारी से आवेदन रद्द हो सकता है, "
+        "और गलत जानकारी पर मिला लाभ वापस लिया जा सकता है। असली जानकारी बताइए, मैं देखूँगा कि कौन सी "
+        "योजनाएँ उसके अनुसार हैं।"
+    ),
+    "mr": (
+        "तुम्ही सांगितलेल्या तथ्यांपेक्षा वेगळी माहिती मी अर्जात लिहू शकत नाही, किंवा महत्त्वाची माहिती "
+        "वगळू शकत नाही. अर्ज खरा असला पाहिजे: चुकीची किंवा लपवलेली माहिती दिल्यास अर्ज नाकारला जाऊ "
+        "शकतो, आणि चुकीच्या माहितीवर मिळालेला लाभ परत घेतला जाऊ शकतो. खरी माहिती सांगा, मग कोणत्या "
+        "योजना त्यानुसार बसतात ते मी तपासतो."
+    ),
+}
+SCAM_MESSAGE_REPLY = {
+    "en": (
+        "This looks like a scam. Government schemes do not collect application fees through a personal "
+        "UPI ID, and I can't verify this payment request. Don't pay it. Apply only through the official "
+        "scheme website or your nearest Common Service Centre (CSC)."
+    ),
+    "hi": (
+        "यह धोखाधड़ी लगती है। सरकारी योजनाएँ किसी निजी UPI आईडी से आवेदन शुल्क नहीं लेतीं, और मैं इस "
+        "भुगतान अनुरोध की पुष्टि नहीं कर सकता। भुगतान न करें। केवल आधिकारिक योजना वेबसाइट या नज़दीकी "
+        "कॉमन सर्विस सेंटर (CSC) से आवेदन करें।"
+    ),
+    "mr": (
+        "हा फसवणुकीचा प्रकार वाटतो. सरकारी योजना खासगी UPI आयडीवरून अर्ज शुल्क घेत नाहीत, आणि या पेमेंट "
+        "विनंतीची मी खात्री करू शकत नाही. पैसे देऊ नका. फक्त अधिकृत योजना वेबसाइट किंवा जवळच्या कॉमन "
+        "सर्विस सेंटरमधून (CSC) अर्ज करा."
+    ),
+}
+
+
+def _misstatement_request(text: str) -> bool:
+    """True when the text asks for a fact to be recorded differently from how it is stated, or left out."""
+    if _CONCEAL_EN.search(text) or _CONCEAL_DEVANAGARI.search(text):
+        return True
+    if _RECORD_EN.search(text) and _CONTRAST_OR_PURPOSE_EN.search(text):
+        return True
+    return bool(
+        _RECORD_DEVANAGARI.search(text)
+        and _CONTRAST_OR_PURPOSE_DEVANAGARI.search(text)
+        and re.search(r"\d", text)
+    )
+
+
+def _reply_language(language: str, text: str) -> str:
+    """The classified language, else a guess from the script, so a refusal reads in the person's language."""
+    if re.search(r"[\u0900-\u097F]", text) and language != "en":
+        # The keyword router labels all Devanagari as Hindi, so Marathi words decide.
+        return "mr" if language == "mr" or _MARATHI_MARKERS.search(text) else "hi"
+    return language if language in ("en", "hi", "mr") else "en"
+
+
 class RouterHTTPError(Exception):
     """OpenRouter answered the router call with a status other than 200."""
 
@@ -517,6 +614,24 @@ class InputValidator:
 
         if language == "unknown" and not is_reply:
             warnings.append("Language could not be detected with confidence")
+
+        # Demo 2: refuse and explain a request to misstate or hide a fact, and flag a message
+        # that asks for a fee to an unverified payment destination. Both run on replies too.
+        refusal = None
+        if _misstatement_request(request):
+            refusal, reason = MISSTATEMENT_REPLY, MISSTATEMENT_ERROR
+        elif _unverified_payment_destination(request):
+            refusal, reason = SCAM_MESSAGE_REPLY, SCAM_MESSAGE_ERROR
+        if refusal is not None:
+            reply_language = _reply_language(language, request)
+            logger.warning("Request refused before any model: %s.", reason)
+            return ValidationResult(
+                passed=False,
+                errors=[refusal[reply_language]],
+                warnings=warnings,
+                language=reply_language,
+                intent=intent,
+            )
 
         # 5. Rate limiting (if actor_id provided)
         if actor_id and not self.rate_limiter.is_allowed(actor_id):

@@ -162,6 +162,8 @@ def _defence_patches() -> dict[str, list[Callable[[], Any]]]:
         "rate_limit": [lambda: patch.object(supervisor.RateLimitTracker, "is_allowed", lambda *a, **k: True)],
         "input_limits": [lambda: patch.object(supervisor.InputValidator, "validate_request", _input_always_passes)],
         "scam_page": [lambda: patch.object(supervisor, "_unverified_payment_destination", lambda text: False)],
+        "scam_message": [lambda: patch.object(supervisor, "_unverified_payment_destination", lambda text: False)],
+        "misstatement": [lambda: patch.object(supervisor, "_misstatement_request", lambda text: False)],
         "rule_source": [lambda: patch.object(rule_scheme, "official_source", lambda url: True)],
         "write_capability": [lambda: patch.object(portal, "consume_write_capability", lambda *a, **k: None)],
         "approval_hash": [
