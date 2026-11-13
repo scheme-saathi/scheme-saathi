@@ -81,7 +81,7 @@ flowchart TB
 
 Offline (not part of a conversation): ingestion builds the index from approved scheme pages and PDFs; a rule extractor drafts rules that a person must review; an evaluation harness runs the experiments.
 
-## 3. Numbered walkthrough: one request
+## Numbered walkthrough: one request
 
 Example: "My mother is 62, a widow, lives in Pune, income Rs 2,50,000 a year. What can she get? Help me apply."
 
@@ -102,36 +102,6 @@ Example: "My mother is 62, a widow, lives in Pune, income Rs 2,50,000 a year. Wh
 15. **Trace and metrics.** Each run and tool call is traced, counted and timed. Prometheus rules alert on error rates, latency and lost traces; Grafana shows the dashboard.
 
 Failure paths: a rejected or mismatched approval submits nothing; a tool error or exhausted budget returns a structured error, not a guess; an unanswerable scheme question returns "not found in the reviewed documents".
-
-## 4. Brief requirements: status
-
-| Brief requirement | Built on `develop` | Evidence and gap |
-| --- | --- | --- |
-| Input guardrails (mask IDs, check injection) | Yes | Red team: 16 sensitive-input cases, blocked with defences on. |
-| Supervisor and planner | Yes | Plan is model-proposed, code-checked. Code routing table in `agents/supervisor.py` is not called by the live graph. |
-| Intake agent with typed profile | Yes | Question choice is code. Evaluated in the gold set. |
-| Eligibility analyst with rule engine | Yes | 49 of 49 rule sets reviewed. Verdicts fail closed. E4: rule engine 100% vs direct LLM 90.9% (held-out, 95 verdicts). |
-| Document checker | Yes | Compares fields; no authenticity claims. |
-| Application agent and approval gate | Yes | Approval bound to hash; edit invalidates. Portal drafts still in memory (restart loses them). |
-| Output guardrails (clause citations) | Yes | Ungrounded eligibility claims are blocked by code. |
-| Memory with consent, expiry, delete | Yes | Household-scoped; forget removes data. Memory evaluation is development-only (742 to 624 questions, no verdict changes). |
-| Retrieval: multilingual embeddings, BM25, reranker, query rewrite, citations | Yes | Recall@5 0.917 to 1.000 on a 12-query set; one additional query. Not independently labelled. |
-| MCP servers (schemes-kb, rule-engine, doc-check, mock-portal) with read or write marks | Yes | Read or write marks in `graph/tools.py`; only the application agent and the baseline may write. Servers run in-process, not as separate services. |
-| LangGraph with typed state, conditional edges, self-correction loop, checkpointer | Yes | SQLite checkpointer; resume after stop is tested. |
-| Planning with replan | Partial | Plan object exists; replan on contradicting tool results is limited to the reroute path. |
-| Multi-agent team with single-agent baseline (E1) | Yes | C0, C1, C2 built. Held-out: C0 100%, C1 100%, C2 54.0%. Team did not justify its cost on this task. |
-| Reflexion loop with frozen playbook (E3) | Yes | 12 lessons frozen before held-out. Held-out F1 0.880 to 0.868: lessons did not help. One rejected lesson with reason is documented. |
-| Golden set 60+ with dev and held-out splits | Yes | 71 cases (21 development, 50 held-out). One labeller only. |
-| Judge from a different model family, 20+ human labels, kappa | Partial | Preliminary: 20 of 20 agreement, kappa 1.0, but labels were revised after seeing judge output. Not independent. |
-| Human control: interrupt, approve, edit, reject, pre- and post-tool hooks | Yes | Pre-tool permission and budget; post-tool audit logs. |
-| Red-team suite of 30+ attacks, defences off and on (E2) | Yes | 96 attacks, 29 legitimate cases. Defences on: 5.2% attack success (5 misstatement attacks remain), 0% legitimate work blocked. Scam-page, injection and memory-isolation attacks included. Written by the same team that built the guards, except 19 added on 11 Nov. |
-| Threat model, memory policy, tool list | Yes | `docs/threat-model.md`, `docs/memory-policy.md`, `docs/tool-list.md`. |
-| FastAPI service with streaming | Yes | Streaming responses in `app/api.py`. |
-| Docker Compose: app, MCP servers, vector store, Prometheus, Grafana | Partial | Compose starts the app, Prometheus and Grafana. MCP servers and the vector store run inside the app container, not as separate services. |
-| Prompts and model IDs in one versioned config | Partial | Model IDs come from environment variables. Prompts are in code, not in a versioned config file. |
-| CI runs tests and evaluation, fails below a threshold | Partial | CI runs unit tests and builds and pushes the image. No evaluation threshold gate in CI. |
-| Grafana dashboard and one working alert | Yes | Dashboard JSON and Prometheus alert rules (run errors, latency, model and tool errors, lost traces). |
-| Deliverables: README, diagram, walkthrough, evaluation report, experiment log, contribution log, slides, demo recording | Partial | Report, experiment log, contribution log and this walkthrough exist. Slides and the demo recording are not in the repository. |
 
 ## Supporting layers and boundaries
 
