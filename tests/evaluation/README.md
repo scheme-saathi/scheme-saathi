@@ -25,17 +25,11 @@ causal estimate of agent count alone.
 
 ## Offline claim judge calibration
 
-The initial judge classifies whether an assistant message asserts eligibility or
-ineligibility; it does not decide eligibility or establish whether a claim was backed
-by the rule engine. It does not replace the existing keyword screening or modify E1
-scores. Saved E1 transcripts do not consistently record the tool evidence needed to
-judge whether a claim is backed.
+The judge only classifies whether an assistant message asserts eligibility or ineligibility. It does not decide eligibility, check whether a claim is backed by the rule engine, or change E1 scores.
 
-To prepare messages from existing synthetic **development** runs, provide one or more
-run directories; messages are selected in order, alternating between the supplied runs
-and then between cases within each run.
-The output contains the run name, case ID and turn index in each ID. It is not a
-representative random sample, so record the selection method in any report.
+The judge is calibrated on 20 AI-generated synthetic messages, labelled by hand before the judge was run: 20/20 agreement (kappa 1.0). The messages were generated for the check, not taken from agent runs.
+
+1. Prepare messages from synthetic **development** runs (not a random sample; record the selection method):
 
 ```sh
 python tests/evaluation/prepare_claim_review.py \
@@ -44,44 +38,13 @@ python tests/evaluation/prepare_claim_review.py \
   --limit 20 --output data/evaluation-runs/claim-review.json
 ```
 
-The generated items have `has_claim: null`; these are **not human labels**. A human
-reviewer must inspect each message, remove any sensitive data, and replace every null
-with `true` for a definite eligibility or ineligibility claim, or `false` for a question,
-conditional possibility, offer to check, or unknown verdict. Do not copy model
-predictions into the labels. If a message cannot be reviewed safely, exclude it and
-document the exclusion; at least 20 reviewed outputs are needed for calibration.
-
-To classify reviewed synthetic messages without labels, use `--classify` instead of
-`--labels`, and explicitly confirm that the data is safe to send to OpenRouter:
-
-```sh
-python tests/evaluation/calibrate_judge.py \
-  --classify data/evaluation-runs/claim-review.json --confirm-synthetic \
-  --agent-model openai/gpt-4o-mini \
-  --output data/evaluation-runs/claim-judge-classifications.json
-```
-
-This writes a separate report; it does not change run scores or classify claims as
-supported or unsupported. Until independently calibrated, the judge's output is
-experimental and requires human review.
-
-An evaluation team member must independently label at least 20 synthetic messages by
-hand, including claims and non-claims in the supported languages. Do not use real
-personal data, ID numbers, secrets, or held-out material used to tune the agent. Store
-the labelled JSON outside the repository or in the git-ignored run directory:
+2. A human replaces each `has_claim: null` with `true` (definite claim) or `false` (question, possibility, offer to check, unknown), without copying model predictions. Use at least 20 synthetic messages with no real data, secrets or held-out material:
 
 ```json
-{
-  "synthetic_only": true,
-  "items": [
-    {"id": "sample-1", "text": "You are eligible.", "has_claim": true},
-    {"id": "sample-2", "text": "May I check your eligibility?", "has_claim": false}
-  ]
-}
+{"synthetic_only": true, "items": [{"id": "sample-1", "text": "You are eligible.", "has_claim": true}]}
 ```
 
-The example shows the format, not a sufficient calibration set. Set `JUDGE_MODEL` and
-`OPENROUTER_API_KEY` in `.env`, then supply every evaluated agent model:
+3. Set `JUDGE_MODEL` and `OPENROUTER_API_KEY` in `.env`, then run the calibration (sends synthetic text to the provider and incurs cost; does not overwrite existing reports):
 
 ```sh
 python tests/evaluation/calibrate_judge.py \
@@ -90,17 +53,9 @@ python tests/evaluation/calibrate_judge.py \
   --output data/evaluation-runs/claim-judge-calibration.json
 ```
 
-The command sends the synthetic messages to the configured model provider and incurs
-model costs. It reports per-item labels, failures, agreement, Cohen's kappa and usage;
-it records hashes of the label file and prompt but does not copy message text into the report.
-It refuses to overwrite an existing report. Failed calls are counted and cause a
-nonzero exit; agreement is then only for successful calls, not a valid complete
-calibration. Kappa is null when it is mathematically undefined. Check the per-item
-disagreements and have the evaluation team document the dataset, label provenance,
-model version, and any calibration limitations. The 11 Nov calibration used 20 AI-generated synthetic messages,
-each labelled by hand before the judge (`anthropic/claude-haiku-5.5`) was run: 20/20
-agreement, kappa 1.0. The provider-prefix check is only a proxy for model family; verify
-the model's actual family independently. The harness does not enforce a spend cap.
+It reports per-item labels, failures, agreement, Cohen's kappa and usage. Failed calls cause a nonzero exit and the result is then incomplete. The provider-prefix check is only a proxy for model family. Use `--classify FILE --confirm-synthetic` instead of `--labels` to classify without labels (experimental output).
+
+The 11 Nov calibration used 20 AI-generated synthetic messages, each labelled by hand before the judge (`anthropic/claude-haiku-5.5`) was run: 20/20 agreement, kappa 1.0.
 
 The [preliminary E1 development report](e1-development-report.md) is a submission
 record. Generated run directories are git-ignored; update the record after successful

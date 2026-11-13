@@ -46,11 +46,11 @@ The app opens on <http://localhost:8501> and starts its API on `127.0.0.1:8766`.
 
 ## How one request flows through the system
 
-*[Placeholder: the redrawn architecture diagram, with boxes numbered 1–7 to match the steps below.]*
+The full diagram and a 15-step walkthrough are in [System architecture](docs/architecture.md); the short version:
 
 A son writes in Hindi: "My mother is 62, a widow, lives in Pune district, and has a BPL card. What can she get? Help me apply."
 
-1. **Input guardrails** block a message containing anything that looks like an Aadhaar, bank account or phone number, so it never reaches a model or a trace, and check the message for injection.
+1. **Input guardrails** block a message containing anything that looks like an Aadhaar, bank account or phone number, so it never reaches a model or a trace, and enforce length and rate limits.
 2. **The supervisor** routes the request and shows the citizen a plan: build the profile, find schemes, check the rules, list documents, draft the application.
 3. **The intake agent** reads the facts into a typed profile and asks only the question that settles the most open verdicts. The citizen confirms the facts before any final verdict.
 4. **The eligibility analyst** shortlists schemes, and the **rule engine** (an MCP server) returns eligible, not eligible or can't tell for each, with the deciding clause and any missing facts. The plan is revised from these results.
@@ -101,7 +101,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 
 | Document | Where |
 | --- | --- |
-| Architecture diagram and numbered walkthrough | *[Placeholder: to be added]*; walkthrough above |
+| Architecture diagram and numbered walkthrough | [docs/architecture.md](docs/architecture.md); short walkthrough above |
 | Threat model | [docs/threat-model.md](docs/threat-model.md) |
 | Memory policy | [docs/memory-policy.md](docs/memory-policy.md), with [document retention](docs/document-retention.md) |
 | Evaluation report | [docs/evaluation-report.md](docs/evaluation-report.md) |
@@ -173,7 +173,7 @@ All settings are environment variables in `.env`; [.env.example](.env.example) l
 | Sharika (`SharikaN`) | Eligibility analyst and reviewed rules; gold data and evaluation; Reflexion rule extraction; red-team additions and reporting |
 | Snehal (`snehal-pryxo`) | Intake, rule-engine support and retrieval; memory evaluation; the observability dashboard |
 | Digvijay (`DigvijaySingh939`) | Document checker and household personas; chat UI, Docker and CI/CD |
-| `koilBhupat` | Supervisor agent, long-term memory and observability |
+| Satyadharma Trivikram (`koilBhupat`) | Supervisor agent, long-term memory and observability |
 
 The [contribution log](docs/contribution-log.md) links each area to the pull requests behind it.
 
