@@ -6,105 +6,132 @@ conditional or supporting connections. Not every request visits every box.
 The numbered walkthrough below follows the same numbers.
 
 ```mermaid
-flowchart TD
-    Citizen["1 · Citizen or CSC operator<br/>Streamlit interface"]
-    API["2 · FastAPI and input checks<br/>Auth0 on protected routes"]
-    Supervisor["3 · LangGraph supervisor<br/>Route request and maintain plan"]
-    Intake["4 · Intake<br/>Shortlist, ask and confirm facts"]
-    Engine["5 · Eligibility<br/>Reviewed rules and deterministic verdict"]
-    Explain["6 · Eligibility explanation<br/>Verdicts and uncertainty"]
-    Docs["7 · Document checker<br/>Requirements and structured comparisons"]
-    Draft["8 · Application agent<br/>Prepare form and mock portal draft"]
-    Approval{"9 · Human review<br/>Approve, edit or reject"}
-    Submit["10 · Verify exact form and submit<br/>Mock portal only"]
-    UserResult["Result or next step<br/>returned to the person"]
-
-    subgraph Services["Supporting services and data"]
-        Tools["MCP tool boundary<br/>Allow-list, actor permissions, budget, audit"]
-        KB["Schemes knowledge base<br/>Scheme records and evidence retrieval"]
-        Rules["Reviewed rule records<br/>Conditions and source clauses"]
-        DocTool["Document comparison tool<br/>Structured fields only"]
-        Portal[("Mock portal<br/>Draft and submission status")]
-        Memory[("Optional memory<br/>Consent, expiry and forget")]
-        Models["Configured model provider<br/>Routing and specialist tasks"]
-    end
-
-    Citizen --> API --> Supervisor --> Intake --> Engine --> Explain
-    Explain -->|eligibility answer| UserResult
-    Explain -->|selected eligible scheme and application path| Docs --> Draft --> Approval
-    Approval -->|matching approval| Submit --> UserResult
-    Approval -->|edit, reject or invalid approval| UserResult
-    Intake -.->|questions and fact confirmation| Citizen
-    Approval -.->|exact form for review| Citizen
-    Supervisor -.-> Models
-    Intake -.-> Models
-    Intake -.->|consented, scoped prefill or save| Memory
-    Submit -.->|consented application reference| Memory
-    Supervisor -.->|scheme questions| Tools
-    Engine -.-> Tools
-    Docs -.-> Tools
-    Draft -.-> Tools
-    Submit -.-> Tools
-    Tools -.-> KB
-    Tools -.-> Rules
-    Tools -.-> DocTool
-    Tools -.-> Portal
-
-    classDef control fill:#fff0eb,stroke:#b54831,color:#222
-    classDef data fill:#eaf3fb,stroke:#36729e,color:#222
-    class API,Approval,Tools control
-    class KB,Rules,DocTool,Portal,Memory,Models data
+flowchart TB
+ subgraph U["Users"]
+        CIT["Citizen"]
+        OPS["CSC operator"]
+  end
+ subgraph ENTRY["Entry points"]
+        UI["Streamlit web app (port 8501)"]
+        API["FastAPI chat API (port 8766)"]
+        AUTH["Auth0 sign-in and token check: household ID from token"]
+  end
+ subgraph ORCH["Orchestration: LangGraph workflow"]
+        GUARD["Input checks: length, sensitive IDs, rate limit"]
+        SUP["Supervisor Agent: language, intent, plan"]
+        INT["Intake Agent: facts, questions, scheme answers"]
+        ELIG["Eligibility Agent: rule engine verdicts"]
+        CONF["Person confirms facts"]
+        DOC["Document checker Agent"]
+        APP["Application Agent: draft form"]
+        APPR["Approval: person approves exact form"]
+        SUB["Submit: one-use capability"]
+        OUT["Finish and reply, with output checks"]
+  end
+ subgraph TOOLS["Tool servers (MCP via FastMCP, in-process)"]
+        RE["rule-engine: read rules, evaluate"]
+        KB["schemes-kb: search, details, documents, evidence"]
+        DCS["doc-check: compare documents"]
+        MP["mock-portal: create draft, submit, status"]
+  end
+ subgraph DATA["Data and state"]
+        SCH["58 scheme records (data/schemes)"]
+        RULES["49 rule sets, all reviewed by a person (data/rules)"]
+        IDX[("ChromaDB index: bge-m3 vectors, BM25 terms, approved pages and PDFs")]
+        MEM[("ChromaDB memory: consent, expiry, forget")]
+        CKPT[("SQLite checkpoints: resume after a crash")]
+        PSTORE[("Portal drafts: in memory")]
+        NONCE[("Nonce store: SQLite, optional")]
+  end
+ subgraph MODELS["Models via OpenRouter (IDs from environment variables)"]
+        MR["Router model: language and intent"]
+        MS["Supervisor and specialist models"]
+        MRR["Reranker model: passage scores 0 to 10"]
+  end
+ subgraph OBS["Observability and checks"]
+        PROM["Prometheus: metrics and alerts"]
+        GRAF["Grafana dashboard"]
+        TRACE["Run and tool traces"]
+        CI["CI: unit tests, Docker build, image push"]
+  end
+    CIT --> UI
+    OPS --> UI
+    UI --> AUTH
+    API --> AUTH
+    AUTH --> GUARD
+    GUARD --> SUP
+    SUP --> INT & MR & MS & MEM
+    INT --> MS & ELIG & MEM
+    ELIG --> CONF & DOC & RE
+    CONF --> ELIG
+    DOC --> APP & KB & DCS
+    APP --> APPR & RE & MP
+    APPR -- approve --> SUB
+    SUB --> OUT & MP
+    APPR -- reject or edit --> OUT
+    INT -- scheme question --> KB
+    KB --> IDX & MRR
+    RE --> RULES
+    MP --> PSTORE & NONCE
+    ORCH --> CKPT & TRACE
+    TRACE --> PROM
+    PROM --> GRAF
+    CI -. tests and image build .- ORCH
 ```
 
-## Numbered walkthrough: one application journey
+Offline (not part of a conversation): ingestion builds the index from approved scheme pages and PDFs; a rule extractor drafts rules that a person must review; an evaluation harness runs the experiments.
 
-Example: a family member asks for help finding a scheme and applying for it.
-The facts below are illustrative, not a real person's data.
+## 3. Numbered walkthrough: one request
 
-1. **Start in the interface.** A citizen or CSC operator sends a request in the
-   Streamlit interface. The demo supports English, Hindi and Marathi, but
-   language quality and consistency are not guaranteed.
-2. **Check the request.** FastAPI receives the request. Protected routes use
-   Auth0 identity and household scope; input checks reject recognized sensitive
-   identifier patterns. The checks are heuristic, not a guarantee that every
-   sensitive value or injection attempt is detected.
-3. **Route and plan.** The supervisor and LangGraph workflow classify the
-   request, maintain journey state and choose the next step. A general scheme
-   question can instead go to evidence retrieval and a response; it does not
-   automatically start an application.
-4. **Collect and confirm facts.** Intake extracts typed candidate facts and
-   shortlists schemes. While verdicts remain open, code selects a question
-   intended to settle the most open verdicts; the interaction can stop at its
-   question limit. If optional memory is enabled and consent permits it, it can
-   prefill facts. The person reviews the facts at an `interrupt()`; final
-   decisions use confirmed facts.
-5. **Evaluate reviewed rules.** The graph calls the rule engine through the MCP
-   boundary. Code—not the model—evaluates reviewed rules and returns `eligible`,
-   `not_eligible` or `cant_tell`, with reasons, missing information and source
-   clauses. A definite failed condition takes precedence over missing information.
-   The workflow may evaluate earlier, unconfirmed facts to select questions;
-   those interim results are not final advice.
-6. **Explain the result.** The eligibility agent formats the rule-engine result;
-   the supervisor checks specialist output when the workflow finishes. A scheme's
-   recorded closed status can be included as a notice. A `cant_tell` or `not_eligible` result does not
-   become permission to draft an application. Source pages and tool results are
-   data, not instructions; their claims and availability may need rechecking.
-7. **Check documents when applicable.** For the application path, the document
-   checker compares the requirements and supplied document information.
-   Structured comparisons can flag differences; they do not prove document
-   authenticity or inspect the contents of uploaded files.
-8. **Prepare the application.** For a selected scheme with an `eligible`
-   rule-engine result, the application agent builds a form from confirmed facts.
-   An incomplete form returns for more information. A complete form creates a
-   **mock portal draft before** the approval pause; it is not yet a submission.
-9. **Pause for a person.** The graph uses `interrupt()` to show the exact form
-   and its payload hash. The person can approve, edit or reject it. Editing
-   invalidates the approval; an invalid or rejected decision does not submit.
-10. **Submit only the approved form.** The submit step checks that the current
-    form, approved hash and portal draft match, then uses a bound capability to
-    submit to the **mock portal**, not a government system. It returns a mock
-    reference. With appropriate consent, an application reference may be saved
-    for a later status request.
+Example: "My mother is 62, a widow, lives in Pune, income Rs 2,50,000 a year. What can she get? Help me apply."
+
+1. **Sign-in.** The user signs in through Auth0 in the web app. Every API call carries a token; the household ID comes from the token, never from the request body.
+2. **Input checks (code).** The message is checked for length and for Aadhaar, bank or other ID numbers. Sensitive values are rejected or masked before any model sees them. The rate limit is 10 messages a minute.
+3. **Language and intent (router model).** The router labels the language (Hindi here) and the intent (`eligibility` or `application`). If the model fails, a keyword fallback is used.
+4. **Plan (supervisor model, then code).** The supervisor proposes the next desk. Code checks the reply's schema, and if a personal eligibility question was routed to scheme Q&A, it sends it to intake instead.
+5. **Scheme shortlist and facts (intake).** Intake asks a model to pick up to five relevant schemes from the 49 reviewed ones. It reads the message into typed facts: age 62, widow, district Pune. Code validates each fact, converts amounts to the rule's period, and marks every fact as unconfirmed.
+6. **Verdicts (rule engine, code).** For each shortlisted scheme the rule engine returns `eligible`, `not_eligible` or `cant_tell`, with the clause that decided it and any missing fields. No model is involved in the decision.
+7. **One question at a time (intake).** If a verdict is still open, code picks the field that would settle the most open verdicts; the model only words the question, in the person's language. Intake stops after 12 questions or when the person declines.
+8. **Confirmation.** The facts the verdicts rest on are shown to the person, who confirms, edits or rejects them. Edits re-run the rule engine.
+9. **Documents (document checker).** For eligible schemes, the required-document list comes from the scheme record. The checker compares any uploaded document details with the profile. Missing items are computed by code; the model may add clarifying questions only.
+10. **Draft (application).** The application agent builds the form from confirmed facts and creates a draft on the mock portal. The model writes a review summary; if that fails, a plain summary is used.
+11. **Approval (human control).** The graph pauses. The person sees the exact form and its hash, then approves, edits or rejects. An edit or any change to the form invalidates an earlier approval.
+12. **Submit (the only write).** Only after approval whose hash matches the form, the submit step gets a one-use capability (signed, 60-second expiry, bound to the household and the form) and calls the portal. Replays are refused by the nonce store.
+13. **Reply and output checks.** The reply states each eligibility claim with its clause, says plainly what is unknown, and is written in the person's language. Claims without a rule-engine result are blocked.
+14. **Memory (only with consent).** Confirmed facts and the application reference are saved with an expiry. A later "what happened to my application?" reads only this household's saved references. "Forget my data" deletes the household's stored values and documents.
+15. **Trace and metrics.** Each run and tool call is traced, counted and timed. Prometheus rules alert on error rates, latency and lost traces; Grafana shows the dashboard.
+
+Failure paths: a rejected or mismatched approval submits nothing; a tool error or exhausted budget returns a structured error, not a guess; an unanswerable scheme question returns "not found in the reviewed documents".
+
+## 4. Brief requirements: status
+
+| Brief requirement | Built on `develop` | Evidence and gap |
+| --- | --- | --- |
+| Input guardrails (mask IDs, check injection) | Yes | Red team: 16 sensitive-input cases, blocked with defences on. |
+| Supervisor and planner | Yes | Plan is model-proposed, code-checked. Code routing table in `agents/supervisor.py` is not called by the live graph. |
+| Intake agent with typed profile | Yes | Question choice is code. Evaluated in the gold set. |
+| Eligibility analyst with rule engine | Yes | 49 of 49 rule sets reviewed. Verdicts fail closed. E4: rule engine 100% vs direct LLM 90.9% (held-out, 95 verdicts). |
+| Document checker | Yes | Compares fields; no authenticity claims. |
+| Application agent and approval gate | Yes | Approval bound to hash; edit invalidates. Portal drafts still in memory (restart loses them). |
+| Output guardrails (clause citations) | Yes | Ungrounded eligibility claims are blocked by code. |
+| Memory with consent, expiry, delete | Yes | Household-scoped; forget removes data. Memory evaluation is development-only (742 to 624 questions, no verdict changes). |
+| Retrieval: multilingual embeddings, BM25, reranker, query rewrite, citations | Yes | Recall@5 0.917 to 1.000 on a 12-query set; one additional query. Not independently labelled. |
+| MCP servers (schemes-kb, rule-engine, doc-check, mock-portal) with read or write marks | Yes | Read or write marks in `graph/tools.py`; only the application agent and the baseline may write. Servers run in-process, not as separate services. |
+| LangGraph with typed state, conditional edges, self-correction loop, checkpointer | Yes | SQLite checkpointer; resume after stop is tested. |
+| Planning with replan | Partial | Plan object exists; replan on contradicting tool results is limited to the reroute path. |
+| Multi-agent team with single-agent baseline (E1) | Yes | C0, C1, C2 built. Held-out: C0 100%, C1 100%, C2 54.0%. Team did not justify its cost on this task. |
+| Reflexion loop with frozen playbook (E3) | Yes | 12 lessons frozen before held-out. Held-out F1 0.880 to 0.868: lessons did not help. One rejected lesson with reason is documented. |
+| Golden set 60+ with dev and held-out splits | Yes | 71 cases (21 development, 50 held-out). One labeller only. |
+| Judge from a different model family, 20+ human labels, kappa | Partial | Preliminary: 20 of 20 agreement, kappa 1.0, but labels were revised after seeing judge output. Not independent. |
+| Human control: interrupt, approve, edit, reject, pre- and post-tool hooks | Yes | Pre-tool permission and budget; post-tool audit logs. |
+| Red-team suite of 30+ attacks, defences off and on (E2) | Yes | 96 attacks, 29 legitimate cases. Defences on: 5.2% attack success (5 misstatement attacks remain), 0% legitimate work blocked. Scam-page, injection and memory-isolation attacks included. Written by the same team that built the guards, except 19 added on 11 Nov. |
+| Threat model, memory policy, tool list | Yes | `docs/threat-model.md`, `docs/memory-policy.md`, `docs/tool-list.md`. |
+| FastAPI service with streaming | Yes | Streaming responses in `app/api.py`. |
+| Docker Compose: app, MCP servers, vector store, Prometheus, Grafana | Partial | Compose starts the app, Prometheus and Grafana. MCP servers and the vector store run inside the app container, not as separate services. |
+| Prompts and model IDs in one versioned config | Partial | Model IDs come from environment variables. Prompts are in code, not in a versioned config file. |
+| CI runs tests and evaluation, fails below a threshold | Partial | CI runs unit tests and builds and pushes the image. No evaluation threshold gate in CI. |
+| Grafana dashboard and one working alert | Yes | Dashboard JSON and Prometheus alert rules (run errors, latency, model and tool errors, lost traces). |
+| Deliverables: README, diagram, walkthrough, evaluation report, experiment log, contribution log, slides, demo recording | Partial | Report, experiment log, contribution log and this walkthrough exist. Slides and the demo recording are not in the repository. |
 
 ## Supporting layers and boundaries
 
