@@ -27,20 +27,18 @@ The public Docker Hub repositories are `singhd4/scheme-saathi` and `singhd4/sche
    OPENROUTER_API_KEY=<your-provider-api-key>
    MOCK_PORTAL_AUTH_SECRET=<a-unique-random-secret>   
    GRAFANA_ADMIN_PASSWORD=<a-strong-grafana-password> 
-```
+   ```
 
 4. Since these Docker Hub repositories are public, you do not need to sign in to Docker Hub. If you want to pull the images manually, run:
- 
-   The following images will currently be pulled during deployment:
-   ```
-    Scheme Saathi:
-    singhd4/scheme-saathi:sha-819791b72b002769938b1b4ad615813af2e6360c
-    
-    Grafana:
-    singhd4/scheme-saathi-grafana:sha-819791b72b002769938b1b4ad615813af2e6360c    
-    
-   ```
+
+   ```powershell
+   docker pull singhd4/scheme-saathi:sha-<commit>
+   docker pull singhd4/scheme-saathi-grafana:sha-<commit> 
+   
+   ```     
+   
    Manual image pulls are optional. The startup command in the next step automatically pulls the required images, including Prometheus.
+
 
 5. From the `scheme-saathi-deploy` folder, pull and start the services:
 
