@@ -144,7 +144,7 @@ The exact commands behind every reported number are in section 10 of the [evalua
 ## Demos
 
 1. **Widow pension in Hindi.** Sign in, start a new chat and type the request above in Hindi. Answer the questions, confirm the details, choose an eligible scheme, upload the requested documents and approve the draft.
-2. **Refusing to misstate facts and flagging a scam page.** *[Pending: the payment-destination check blocks the scam-page cases in the red-team suite; the misstatement refusal is still being built.]*
+2. **Refusing to misstate facts and flagging a scam page.** 
 3. **"Forget my data".** Open **Saved details**, choose **Forget my data**, and check that the remembered facts are gone.
 
 Also shown: stopping and resuming a conversation, and an edit that invalidates an earlier approval. The screen-by-screen guide is in [Setup, scheme data and running the app](docs/setup-and-data.md).
