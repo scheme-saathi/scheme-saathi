@@ -44,9 +44,19 @@ scheme-saathi-deploy/
 - **macOS:** open Terminal, type `cd ` (with a space), drag the folder into the window and press Enter.
 - **Linux:** open a terminal and `cd` into the folder.
 
+## Step 3: Set permissions
+
+On **macOS and Linux**, make the folder writable and the script executable before running it, so the installer can write `.env` and `prometheus/metrics_token`:
+
+```bash
+chmod -R u+w . && chmod +x install.sh
+```
+
+On **Windows**, nothing is needed: the `-ExecutionPolicy Bypass` flag in the next step lets the script run.
+
 ---
 
-## Step 3: Run ONE command
+## Step 4: Run ONE command
 
 | OS | Command |
 |----|---------|
@@ -63,14 +73,14 @@ The script will:
 
 ---
 
-## Step 4: Open the apps
+## Step 5: Open the apps
 
 | App | URL | Login |
 |-----|-----|-------|
 | **Streamlit app** | http://localhost:8501 | Auth0 login |
-| **Grafana dashboard** | http://localhost:3000 | user `admin` and the password printed at the end of setup |
+| **Grafana dashboard** | http://localhost:3000 | user `admin`, password `Snehal@123` |
 
-The Grafana password is also saved in the `.env` file as `GRAFANA_ADMIN_PASSWORD`.
+The Grafana password is also saved in the `.env` file as `GRAFANA_ADMIN_PASSWORD`. Grafana keeps the password it was first started with: if you ran an older version on this machine, remove its data volume with `docker compose down -v` before installing again.
 
 ---
 

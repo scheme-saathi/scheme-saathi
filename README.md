@@ -8,22 +8,32 @@ The model never decides eligibility: reviewed rules in code do.
 
 ### Run with Docker (one command)
 
-Follow the step-by-step instructions in [scheme-saathi-deploy.md](docs/scheme-saathi-deploy.md) to run the app with one command.
+You need **Docker** installed and running (Docker Desktop on Windows and macOS, Docker Engine with Compose v2 on Linux) and an **OpenRouter API key**. The full step-by-step guide is [scheme-saathi-deploy.md](docs/scheme-saathi-deploy.md).
 
-| OS | Command |
-|----|---------|
-| **Windows** (PowerShell or CMD) | `powershell -ExecutionPolicy Bypass -File .\install.ps1` |
-| **macOS / Linux** | `bash install.sh` |
+1. **Extract** `scheme-saathi-deploy-installer.zip` and open a terminal in the `scheme-saathi-deploy` folder.
+2. **Set permissions** so the script can write its settings file (macOS / Linux; on Windows, skip this step):
 
-The script will:
+   ```bash
+   chmod -R u+w . && chmod +x install.sh
+   ```
 
-1. Check that Docker is installed and running.
-2. Ask for your **`OPENROUTER_API_KEY`**. Typing is hidden, so paste the key and press Enter.
-3. Create a readable `.env` file with all settings.
-4. Pull the images from Docker Hub and start the containers.
-5. Print the URLs once everything is up.
+3. **Run the installer:**
 
----
+   | OS | Command |
+   |----|---------|
+   | **Windows** (PowerShell or CMD) | `powershell -ExecutionPolicy Bypass -File .\install.ps1` |
+   | **macOS / Linux** | `bash install.sh` |
+
+   It checks Docker, asks for your `OPENROUTER_API_KEY` (typing is hidden: paste and press Enter), writes `.env`, pulls the images and starts the containers.
+
+4. **Open the apps:**
+
+   | App | URL | Login |
+   |-----|-----|-------|
+   | Streamlit app | <http://localhost:8501> | Auth0 sign-in |
+   | Grafana dashboard | <http://localhost:3000> | `admin` / `Snehal@123` |
+
+   Both are reachable only from this machine. Stop with `docker compose down`; see logs with `docker compose logs -f`.
 
 ### Run from source
 
