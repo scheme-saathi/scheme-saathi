@@ -8,13 +8,32 @@ The model never decides eligibility: reviewed rules in code do.
 
 ### Run with Docker (one command)
 
-The published images need only Docker (Docker Desktop on Windows, or Docker Engine with Compose v2 on Linux). In the `scheme-saathi-deploy` folder, copy `.env-example` to `.env` and set `OPENROUTER_API_KEY`, `MOCK_PORTAL_AUTH_SECRET` (any long random string) and `GRAFANA_ADMIN_PASSWORD`. Then, from that folder, start everything:
+You need **Docker** installed and running (Docker Desktop on Windows and macOS, Docker Engine with Compose v2 on Linux) and an **OpenRouter API key**. The full step-by-step guide is [scheme-saathi-deploy.md](docs/scheme-saathi-deploy.md).
 
-```powershell
-docker compose --env-file .\.env up -d --pull always
-```
+1. **Extract** `scheme-saathi-deploy-installer.zip` and open a terminal in the `scheme-saathi-deploy` folder.
+2. **Set permissions** so the script can write its settings file (macOS / Linux; on Windows, skip this step):
 
-This pulls the app, Grafana and Prometheus images and starts them. The app opens on <http://localhost:8501> and Grafana on <http://localhost:3000> (user `admin`, the password from `.env`); both are reachable only from the local machine. On Linux or macOS, write the env file as `./.env`. Details are in the [deployment guide](docs/scheme-saathi-deploy-guide.md).
+   ```bash
+   chmod -R u+w . && chmod +x install.sh
+   ```
+
+3. **Run the installer:**
+
+   | OS | Command |
+   |----|---------|
+   | **Windows** (PowerShell or CMD) | `powershell -ExecutionPolicy Bypass -File .\install.ps1` |
+   | **macOS / Linux** | `bash install.sh` |
+
+   It checks Docker, asks for your `OPENROUTER_API_KEY` (typing is hidden: paste and press Enter), writes `.env`, pulls the images and starts the containers.
+
+4. **Open the apps:**
+
+   | App | URL | Login |
+   |-----|-----|-------|
+   | Streamlit app | <http://localhost:8501> | Auth0 sign-in |
+   | Grafana dashboard | <http://localhost:3000> | `admin` / `Snehal@123` |
+
+   Both are reachable only from this machine. Stop with `docker compose down`; see logs with `docker compose logs -f`.
 
 ### Run from source
 
@@ -72,7 +91,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 | `evaluation/` | Experiment code (rule extraction, E4, memory evaluation) |
 | `observability/` | Metrics, tracing, Prometheus and Grafana |
 | `tests/` | Unit and integration tests, the evaluation harness (`tests/evaluation/`) and the red-team suite (`tests/redteam/`) |
-| `scheme-saathi-deploy/` | Docker Compose file, `.env-example` and Prometheus settings for the one-command start |
+| [`scheme-saathi-deploy/`](docs/scheme-saathi-deploy-guide.md) | Docker Compose file, `.env-example` and Prometheus settings for the one-command start |
 | `docs/` | The documents listed below |
 
 ## Key design choices
