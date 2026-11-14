@@ -104,7 +104,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 | E4: LLM directly vs the rule engine | 91% vs 100% on 95 held-out verdicts; no boundary errors either way; planned question order 138 vs 163 questions with every scheme open | [Report §5](docs/evaluation-report.md) |
 | Retrieval (Recall@5) | BM25 0.625 → hybrid 1.000 on development; held-out 0.917 → 1.000 with the query rewrite (3 runs) | [Retrieval evaluation](docs/retrieval-evaluation.md) |
 | Memory on vs off | 15.9% fewer questions on a return visit; no verdict changed | [Report §7](docs/evaluation-report.md) |
-| LLM judge | A Claude judge, from a different family than the GPT agents, agreed with hand labels on 20/20 synthetic messages (Cohen's kappa 1.0) | [Report §8](docs/evaluation-report.md), [harness](tests/evaluation/README.md) |
+| LLM judge | The Claude judge agreed with human labels on 19/20 synthetic development-run messages (Cohen's kappa 0.9); one label needs review. The earlier 20/20 trial could not be verified locally. | [Report §8](docs/evaluation-report.md), [harness](tests/evaluation/README.md) |
 
 ## Submission documents
 
