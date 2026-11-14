@@ -27,7 +27,7 @@ causal estimate of agent count alone.
 
 The judge only classifies whether an assistant message asserts eligibility or ineligibility. It does not decide eligibility, check whether a claim is backed by the rule engine, or change E1 scores.
 
-The judge is calibrated on 20 AI-generated synthetic messages, labelled by hand before the judge was run: 20/20 agreement (kappa 1.0). The messages were generated for the check, not taken from agent runs.
+An earlier trial reported 20/20 agreement (kappa 1.0) on AI-generated messages, but its labels and report were not found locally. A 13 Nov check on 20 human-labelled synthetic development-run messages produced 19/20 agreement (kappa 0.9), with no failed calls. One label needs review; the sample was selected in order, not randomly.
 
 1. Prepare messages from synthetic **development** runs (not a random sample; record the selection method):
 
@@ -55,7 +55,7 @@ python tests/evaluation/calibrate_judge.py \
 
 It reports per-item labels, failures, agreement, Cohen's kappa and usage. Failed calls cause a nonzero exit and the result is then incomplete. The provider-prefix check is only a proxy for model family. Use `--classify FILE --confirm-synthetic` instead of `--labels` to classify without labels (experimental output).
 
-The 11 Nov calibration used 20 AI-generated synthetic messages, each labelled by hand before the judge (`anthropic/claude-haiku-5.5`) was run: 20/20 agreement, kappa 1.0.
+See the [evaluation report](../../docs/evaluation-report.md) for the results and limitations.
 
 The [preliminary E1 development report](e1-development-report.md) is a submission
 record. Generated run directories are git-ignored; update the record after successful
