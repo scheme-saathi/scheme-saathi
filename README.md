@@ -8,13 +8,22 @@ The model never decides eligibility: reviewed rules in code do.
 
 ### Run with Docker (one command)
 
-The published images need only Docker (Docker Desktop on Windows, or Docker Engine with Compose v2 on Linux). In the `scheme-saathi-deploy` folder, copy `.env-example` to `.env` and set `OPENROUTER_API_KEY`, `MOCK_PORTAL_AUTH_SECRET` (any long random string) and `GRAFANA_ADMIN_PASSWORD`. Then, from that folder, start everything:
+Follow the step-by-step instructions in [scheme-saathi-deploy.md](docs/scheme-saathi-deploy.md) to run the app with one command.
 
-```powershell
-docker compose --env-file .\.env up -d --pull always
-```
+| OS | Command |
+|----|---------|
+| **Windows** (PowerShell or CMD) | `powershell -ExecutionPolicy Bypass -File .\install.ps1` |
+| **macOS / Linux** | `bash install.sh` |
 
-This pulls the app, Grafana and Prometheus images and starts them. The app opens on <http://localhost:8501> and Grafana on <http://localhost:3000> (user `admin`, the password from `.env`); both are reachable only from the local machine. On Linux or macOS, write the env file as `./.env`. Details are in the [deployment guide](docs/scheme-saathi-deploy-guide.md).
+The script will:
+
+1. Check that Docker is installed and running.
+2. Ask for your **`OPENROUTER_API_KEY`**. Typing is hidden, so paste the key and press Enter.
+3. Create a readable `.env` file with all settings.
+4. Pull the images from Docker Hub and start the containers.
+5. Print the URLs once everything is up.
+
+---
 
 ### Run from source
 
@@ -72,7 +81,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 | `evaluation/` | Experiment code (rule extraction, E4, memory evaluation) |
 | `observability/` | Metrics, tracing, Prometheus and Grafana |
 | `tests/` | Unit and integration tests, the evaluation harness (`tests/evaluation/`) and the red-team suite (`tests/redteam/`) |
-| `scheme-saathi-deploy/` | Docker Compose file, `.env-example` and Prometheus settings for the one-command start |
+| [`scheme-saathi-deploy/`](docs/scheme-saathi-deploy-guide.md) | Docker Compose file, `.env-example` and Prometheus settings for the one-command start |
 | `docs/` | The documents listed below |
 
 ## Key design choices
