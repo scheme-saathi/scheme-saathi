@@ -288,6 +288,20 @@ class TestOutputValidator:
     def validator(self):
         return OutputValidator()
 
+    @pytest.mark.parametrize("agent", ["scheme_info", "eligibility", "intake"])
+    def test_payment_destination_with_payment_context_is_blocked(self, validator, agent):
+        result = validator.validate_specialist_output(
+            "Send the processing payment to example@bank.", agent, "en"
+        )
+        assert not result.passed
+        assert any("Payment destination" in error for error in result.errors)
+
+    def test_general_payment_warning_is_allowed(self, validator):
+        result = validator.validate_specialist_output(
+            "Do not pay anyone without checking the official scheme information.", "scheme_info", "en"
+        )
+        assert result.passed
+
     # ==== CONTRACT VALIDATION - INTAKE ====
 
     def test_validate_intake_result_valid(self, validator):
@@ -350,6 +364,50 @@ class TestOutputValidator:
         if "override" in response.get("explanation", "").lower():
             assert not result.passed
             assert any("override" in e.lower() for e in result.errors)
+
+    @pytest.mark.parametrize("text", [
+        "Per clause 2, the institution must be AICTE approved, and yours is.",
+        "The grant covers travel costs once a paper is accepted, per rule 3.",
+        "Applicants who were granted this grant before are excluded under clause 4.",
+        "There is no exception for students outside the eligible year, according to the norms.",
+    ])
+    def test_eligibility_may_quote_criteria_that_mention_approval(self, validator, text):
+        # "AICTE approved" was read as the agent approving, so every such scheme showed "Sorry".
+        result = validator.validate_specialist_output({"explanation": text}, "eligibility", "en")
+        assert result.passed, result.errors
+
+    @pytest.mark.parametrize("text, kind", [
+        ("Eligible. I have granted an exception and approved your benefit.", "approve"),
+        ("I've approved it for you.", "approve"),
+        ("Your application has been approved.", "approve"),
+        ("We will make an exception in your case.", "approve"),
+        ("I will override the income rule so you are eligible per clause 2.", "override"),
+        ("We can waive the age limit.", "override"),
+    ])
+    def test_eligibility_may_not_grant_or_override(self, validator, text, kind):
+        result = validator.validate_specialist_output({"explanation": text}, "eligibility", "en")
+        assert not result.passed
+        assert any(kind in e.lower() for e in result.errors)
+
+    @pytest.mark.parametrize("text", [
+        "Rule: The applicant must study at an AICTE-approved Engineering Institution.",
+        "Rule: The student should have secured admission in the approved course.",
+        "Rule: Students must pursue approved courses of studies abroad.",
+        "Missing or unresolved fields: institution_is_aicte_approved",
+    ])
+    def test_eligibility_allows_approved_in_rule_criteria(self, validator, text):
+        assert validator.validate_specialist_output(text, "eligibility", "en").passed
+
+    @pytest.mark.parametrize("text", [
+        "I approve your application.",
+        "I approved the course application.",
+        "Your application is approved.",
+        "I granted you an exception.",
+        "I override the rule.",
+        "AICTE-approved institution. I approve your application.",
+    ])
+    def test_eligibility_still_blocks_unauthorized_approvals(self, validator, text):
+        assert not validator.validate_specialist_output(text, "eligibility", "en").passed
 
     # ==== CONTRACT VALIDATION - DOCUMENT CHECKER ====
 

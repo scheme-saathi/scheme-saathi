@@ -25,7 +25,7 @@ from app import api
 from graph import tools
 from graph.agent_workflow import AgentSet, build_agent_graph
 from servers.rule_engine import server as rule_server
-from servers.rule_engine.server import get_field_specs
+from servers.rule_engine.server import evaluate_profile, get_field_specs
 
 PENSION = "SYNTH-PENSION-001"
 ROOT = Path(__file__).resolve().parents[1]
@@ -86,7 +86,7 @@ def test_field_specs_for_live_scheme():
 
 def test_field_specs_list_known_string_values():
     spec = get_field_specs(["M18"], include_draft=True)["data"]["social_category"]
-    assert spec == {"type": "str", "known_values": ["VJ-A", "NT-B", "NT-C", "NT-D", "OBC", "SBC"]}
+    assert spec["type"] == "str" and {"VJ-A", "NT-B", "NT-C", "NT-D", "OBC", "SBC"} <= set(spec["known_values"])
 
 
 def test_field_specs_unknown_scheme_is_an_error():
@@ -106,6 +106,9 @@ def test_draft_fields_are_hidden_outside_preview(tmp_path, monkeypatch):
 
 
 def verdicts(facts, schemes=(PENSION,), include_draft=False):
+    if include_draft:
+        with tools.acting_as("rule_reviewer"):
+            return {s: tools.evaluate_scheme(facts, s, include_draft) for s in schemes}
     return {s: tools.evaluate_scheme(facts, s, include_draft) for s in schemes}
 
 
@@ -446,6 +449,22 @@ def test_new_request_while_a_question_is_pending_reaches_the_supervisor():
     assert len(intake.ask_calls) == 1
 
 
+def test_unread_reply_reaches_the_supervisor_with_its_question_and_is_asked_again():
+    """ "Own name" to a two-option question was judged without the question and ended the chat."""
+    intake = ScriptedIntake(IntakeExtraction(facts={"age": 67}), IntakeExtraction())
+    later = SupervisorPlan(next_agent="intake", reason="A reply to the question.")
+    _, supervisor, send = intake_graph(intake, later_plan=later)
+    seen = []
+    invoke = supervisor.invoke
+    supervisor.invoke = lambda value: (seen.append(value.pending_question), invoke(value))[1]
+
+    send("My mother is 67")
+    result = send("Own name")
+    assert seen == [None, "Q:income"]
+    assert (result["status"], result["response"]) == ("needs_information", "Q:income")
+    assert result["pending_field"] == "income"
+
+
 def test_a_fresh_intake_resets_the_question_count(monkeypatch):
     monkeypatch.setattr("graph.agent_workflow.MAX_QUESTIONS", 1)
     intake = ScriptedIntake(
@@ -573,6 +592,7 @@ def test_api_reports_the_confirm_step_and_accepts_the_decision():
 
     done = service.submit_decision("t", "a1", "approve", confirmation["payload_hash"], {})
     assert done["status"] == "eligibility_checked"
+    assert done["answered"] == "confirm_facts"  # tells the metrics these verdicts are the settled ones
 
 
 def ui_confirmation_journey():
@@ -621,7 +641,7 @@ def test_ui_confirm_details_resumes_real_api_and_graph(monkeypatch, correct_firs
     monkeypatch.setattr(app_new, "_api_base_url", lambda: "http://testserver")
     monkeypatch.setattr(app_new, "urlopen", lambda *args, **kwargs: HealthResponse())
     monkeypatch.setattr(app_new, "_api_request", request)
-    monkeypatch.setattr(app_new, "_scheme_names", lambda base: {PENSION: "Synthetic pension"})
+    monkeypatch.setattr(app_new, "_schemes", lambda base: [{"scheme_id": PENSION, "name": "Synthetic pension"}])
 
     ui = AppTest.from_function(ui_confirmation_journey).run()
     ui.chat_input[0].set_value("My mother is 67, a widow, and earns 1 lakh a year").run()
@@ -690,3 +710,47 @@ def test_a_plain_no_overrides_the_models_reading(pension_specs):
         pension_specs,
     )
     assert result.facts["is_widow"] is False and not result.dont_know
+
+
+def test_ambiguous_tax_questions_carry_their_exact_meaning():
+    seen = []
+    model = FakeModel()
+    model.with_structured_output = lambda schema: RunnableLambda(
+        lambda prompt: seen.append(prompt.to_string()) or {"question": "q?"})
+    agent = IntakeAgent(model)
+    agent.ask({"field": "is_or_was_income_tax_payer", "field_type": "bool", "request": "pension"})
+    agent.ask({"field": "is_income_tax_payer", "field_type": "bool", "request": "pension"})
+    assert "ever paid income tax" in seen[0] and "pay income tax now" in seen[1]
+
+
+@pytest.mark.parametrize("known, implied", [
+    ({"is_or_was_income_tax_payer": False},                                    # never paid: not now, not last year
+     {"is_income_tax_payer": False, "paid_income_tax_in_last_assessment_year": False}),
+    ({"is_income_tax_payer": True},                                           # paying now: has paid, family has a payer
+     {"is_or_was_income_tax_payer": True, "family_has_income_tax_payer": True}),
+    ({"is_or_was_income_tax_payer": True}, {}),                               # paid once: may not pay now
+    ({"is_income_tax_payer": False}, {}),                                     # not now: may have paid before
+    ({"has_passed_class_10": True}, {"has_passed_class_7": True}),             # passed 10: passed 7
+    ({"has_passed_class_7": False}, {"has_passed_class_10": False,             # not 7: not 10, not 12th
+                                      "has_passed_12th_iti_diploma_or_higher": False}),
+    ({"has_passed_class_10": False}, {"has_passed_12th_iti_diploma_or_higher": False}),  # may have passed 7
+    ({"has_passed_12th_iti_diploma_or_higher": True},                         # chains through class 10 to 7
+     {"has_passed_class_10": True, "has_passed_class_7": True}),
+    ({"has_passed_class_10": True, "has_passed_class_7": False}, {}),  # stated answers win
+])
+def test_one_answer_settles_another_only_when_it_follows(known, implied):
+    from servers.rule_engine.implied import derive_implied_facts
+    assert derive_implied_facts(known) == {**known, **implied}
+
+
+def test_every_implied_field_is_a_rule_field():
+    from pathlib import Path
+    from servers.rule_engine.implied import IMPLIES
+    text = "".join(p.read_text() for p in Path("data/rules").glob("*.json"))
+    assert all(f'"{f}"' in text for row in IMPLIES for f in (row[0], row[2]))
+
+
+def test_never_paid_tax_is_not_asked_again_as_paying_now():
+    profile = {"age": 30, "monthly_income": 12000, "is_unorganized_worker": True, "is_or_was_income_tax_payer": False}
+    verdicts = {s: evaluate_profile(profile, s)["data"] for s in ("C04", "C05")}
+    assert all("is_income_tax_payer" not in v["unresolved_fields"] for v in verdicts.values())

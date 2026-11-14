@@ -1,0 +1,13 @@
+apiVersion: 1
+
+# The dashboards in ../dashboards use this uid. See docs/observability.md.
+datasources:
+  - name: Prometheus
+    uid: scheme-saathi-prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: 15s

@@ -10,6 +10,7 @@ from servers.schemes_kb.import_schemes import COLLECTION_NAME, DB_PATH, MODEL_NA
 
 from servers.schemes_kb.keyword_search import bm25_rank, reciprocal_rank_fusion, visible_text
 from servers.schemes_kb.rerank import llm_rerank
+from servers.schemes_kb.rewrite import rewrite_query
 
 PDF_COLLECTION_NAME = "scheme_pdf_review_v1"
 
@@ -27,7 +28,8 @@ def get_client():
 
 
 def search_schemes(question, top_k=5, scheme_id=None, availability=None, include_review_pdfs=False,
-                   method="vector", candidate_k=20, rerank=False, rerank_model=None):
+                   method="vector", candidate_k=20, rerank=False, rerank_model=None,
+                   rewrite=False, rewrite_model=None):
     if not isinstance(question, str) or not question.strip() or len(question) > 2000:
         raise ValueError("Provide a nonempty question of at most 2000 characters.")
     if not isinstance(top_k, int) or not 1 <= top_k <= 20:
@@ -78,42 +80,58 @@ def search_schemes(question, top_k=5, scheme_id=None, availability=None, include
     if include_review_pdfs:
         warnings.append("Review mode may include draft PDF extractions; their applicability is not certified.")
 
-    vectors = []
-    keywords = []
-    if records and method in ("vector", "hybrid"):
-        vector = get_model().encode(question.strip(), normalize_embeddings=True).tolist()
-        for collection, where, count in targets:
-            found = collection.query(query_embeddings=[vector], n_results=count, where=where,
-                                     include=["distances"])
-            vectors.extend(((collection.name, key), float(distance))
-                           for key, distance in zip(found["ids"][0], found["distances"][0]))
-        vectors = sorted(vectors, key=lambda pair: (pair[1], pair[0]))[:limit]
-        for rank, (key, distance) in enumerate(vectors, start=1):
-            records[key].update(cosine_distance=distance, similarity=1-distance, vector_rank=rank)
-    if method in ("bm25", "hybrid"):
-        keywords = bm25_rank(question, records, limit=limit)
-        for rank, (key, score) in enumerate(keywords, start=1):
-            records[key].update(bm25_score=score, bm25_rank=rank)
+    queries = [question.strip()]
+    if rewrite and records:
+        try:
+            rewritten = rewrite_query(queries[0], rewrite_model)
+            if rewritten.casefold() != queries[0].casefold():
+                queries.append(rewritten)
+        except Exception as error:
+            warnings.append(f"Query rewrite failed; searching the original question only: {type(error).__name__}")
 
-    if method == "hybrid":
-        ranking = reciprocal_rank_fusion(vectors, keywords)
-    elif method == "bm25":
-        ranking = keywords
-    else:
-        ranking = [(key, 1-distance) for key, distance in vectors]
-    score_type = method
+    # Multi-query: rank for the original and the rewrite, then fuse every list with RRF.
+    rankings = []
+    for query_index, query in enumerate(queries):
+        vectors = []
+        keywords = []
+        if records and method in ("vector", "hybrid"):
+            vector = get_model().encode(query, normalize_embeddings=True).tolist()
+            for collection, where, count in targets:
+                found = collection.query(query_embeddings=[vector], n_results=count, where=where,
+                                         include=["distances"])
+                vectors.extend(((collection.name, key), float(distance))
+                               for key, distance in zip(found["ids"][0], found["distances"][0]))
+            vectors = sorted(vectors, key=lambda pair: (pair[1], pair[0]))[:limit]
+            if query_index == 0:
+                for rank, (key, distance) in enumerate(vectors, start=1):
+                    records[key].update(cosine_distance=distance, similarity=1-distance, vector_rank=rank)
+        if method in ("bm25", "hybrid"):
+            keywords = bm25_rank(query, records, limit=limit)
+            if query_index == 0:
+                for rank, (key, score) in enumerate(keywords, start=1):
+                    records[key].update(bm25_score=score, bm25_rank=rank)
+        if method == "hybrid":
+            rankings += [vectors, keywords]
+        elif method == "bm25":
+            rankings.append(keywords)
+        else:
+            rankings.append([(key, 1-distance) for key, distance in vectors])
+
+    ranking = rankings[0] if len(rankings) == 1 else reciprocal_rank_fusion(*rankings)
+    score_type = method + ("+rewrite" if len(queries) > 1 else "")
     if rerank and ranking:
         try:
             ranking = llm_rerank(question.strip(), [(key, visible_text(records[key]["text"]) if records[key]["kind"] == "table"
                                                        else records[key]["text"]) for key, _ in ranking[:limit]],
                                  rerank_model)
-            score_type = f"{method}+llm_rerank"
+            score_type = f"{score_type}+llm_rerank"
         except Exception as error:
             warnings.append(f"LLM rerank failed; returning {method} order: {type(error).__name__}")
     results = [{**records[key], "rank_score": score, "score_type": score_type}
                for key, score in ranking[:top_k]]
-    return {"question": question.strip(), "results": results, "warnings": warnings,
-            "ranking": score_type, "settings": {"candidate_k": limit, "rerank": rerank, "bm25_k1": 1.2, "bm25_b": 0.75,
+    return {"question": question.strip(), "queries": queries, "results": results, "warnings": warnings,
+            "ranking": score_type, "settings": {"candidate_k": limit, "rerank": rerank, "rewrite": rewrite,
+                                               "bm25_k1": 1.2, "bm25_b": 0.75,
                                                "rrf_constant": 60},
             "notice": "Results are evidence, not eligibility verdicts. Scores from different methods are not comparable."}
 
@@ -127,11 +145,13 @@ def main():
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--include-review-pdfs", action="store_true")
     parser.add_argument("--rerank", action="store_true", help="Reorder candidates with the specialist LLM.")
+    parser.add_argument("--rewrite", action="store_true",
+                        help="Also search an English, scheme-wording rewrite of the question (multi-query, RRF).")
     args = parser.parse_args()
     try:
         response = search_schemes(args.question, args.top_k, args.scheme_id,
                                   args.availability, args.include_review_pdfs, method=args.method,
-                                  rerank=args.rerank)
+                                  rerank=args.rerank, rewrite=args.rewrite)
     except ValueError as error:
         parser.error(str(error))
     for warning in response["warnings"]:

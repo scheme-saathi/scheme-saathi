@@ -18,7 +18,7 @@ from agents.contracts import (
     SupervisorPlan,
 )
 from agents.eligibility import EligibilityAgent
-from graph.agent_workflow import AgentSet, build_agent_graph
+from graph.agent_workflow import AgentSet, _eligibility_node, _finish_node, _guard_output, build_agent_graph
 from agents.supervisor import InputValidator, OutputValidator, UnifiedRouter
 from graph.persona import HOUSEHOLD_TEST_CASES, profile_facts_to_rule_fields
 from graph.workflow import application_hash
@@ -127,10 +127,28 @@ def test_intake_question_pauses_before_other_specialists():
     assert agents.document_checker.calls == agents.application.calls == []
 
 
+@pytest.mark.parametrize("language", ["en", "hi", "mr"])
+def test_unverified_payment_in_scheme_answer_gets_a_safe_warning(language):
+    agents = build_agents()
+    result = _guard_output(
+        agents, {"language": language},
+        {"status": "responded", "response": "Pay the fee to example@bank."},
+        "scheme_info", {"en": "Check eligibility instead"},
+    )
+    assert result["status"] == "output_blocked"
+    assert "example@bank" not in result["response"]
+    assert result["response"] != "Check eligibility instead"
+
+
 def test_intake_only_asks_about_the_shortlisted_schemes():
+    selected = ["C13", "C01", "C02", "C04", "C05"]
+
     class ChoosingIntake(StubIntake):
         def choose_schemes(self, value):
-            return ["C13", "not-a-scheme"][:1]
+            atal_pension = next(scheme for scheme in value.schemes if scheme.scheme_id == "C04")
+            assert "Eligibility:" in atal_pension.description
+            assert "40 years" in atal_pension.description
+            return [*selected, "not-a-scheme"]
 
     agents = build_agents(
         intake=ChoosingIntake(),
@@ -139,8 +157,8 @@ def test_intake_only_asks_about_the_shortlisted_schemes():
 
     result = build_agent_graph(agents).invoke({"request": "I am a farmer, which schemes fit me?"})
 
-    assert result["shortlist"] == ["C13"]
-    assert list(result["verdicts"]) == ["C13"]
+    assert result["shortlist"] == selected
+    assert list(result["verdicts"]) == selected
 
 
 def test_an_answer_refreshes_the_shortlist_with_the_facts_so_far():
@@ -317,6 +335,120 @@ def test_real_rule_engine_evaluation_is_used_for_eligibility_workflow():
     assert result["eligibility"]["reason"] == "All required reviewed conditions are satisfied."
     assert result["eligibility"]["conditions"]
     assert result["eligibility"]["citations"]
+
+
+def test_rule_result_revises_application_plan_and_skips_drafting():
+    from langgraph.checkpoint.memory import MemorySaver
+
+    agents = build_agents(
+        plan=StubSupervisor(SupervisorPlan(next_agent="application", reason="Prepare draft."))
+    )
+    graph = build_agent_graph(agents, checkpointer=MemorySaver())
+    config = {"configurable": {"thread_id": "l10-replan"}}
+    facts = {"age": 40, "is_widow": True, "income": 1000}
+    result = graph.invoke(
+        {
+            "request": "Please prepare my pension application.",
+            "selected_scheme_id": "SYNTH-PENSION-001",
+            "confirmed_facts": facts,
+            "known_facts": facts,
+        },
+        config,
+    )
+
+    assert result["verdicts"]["SYNTH-PENSION-001"]["verdict"] == "not_eligible"
+    plan = result["journey_plan"]
+    assert plan["steps"] == ["profile", "schemes", "rules", "documents", "draft"]
+    assert plan["disposition"] == "not_eligible"
+    assert plan["revisions"] == [{
+        "previous": "conditional",
+        "current": "not_eligible",
+        "reason": "rule_engine_not_eligible",
+    }]
+    assert graph.get_state(config).values["journey_plan"] == plan
+    assert agents.document_checker.calls == []
+    assert agents.application.calls == []
+
+
+def test_revised_plan_is_returned_by_chat_service():
+    from langgraph.checkpoint.memory import MemorySaver
+    from app.api import AgentWorkflowService
+
+    agents = build_agents(
+        plan=StubSupervisor(SupervisorPlan(next_agent="application", reason="Prepare draft."))
+    )
+    service = AgentWorkflowService()
+    service._agent_graph = build_agent_graph(agents, checkpointer=MemorySaver())
+    facts = {"age": 40, "is_widow": True, "income": 1000}
+    result = service.execute_workflow(
+        "Please prepare my pension application.",
+        "actor-l10",
+        selected_scheme_id="SYNTH-PENSION-001",
+        known_facts=facts,
+        confirmed_facts=facts,
+    )
+
+    plan = result["data"]["journey_plan"]
+    assert plan["disposition"] == "not_eligible"
+    assert plan["revisions"][-1]["reason"] == "rule_engine_not_eligible"
+
+
+@pytest.mark.parametrize(
+    ("disposition", "verdict", "expected"),
+    [
+        ("ready", "eligible", "document_checker"),
+        ("conditional", "eligible", "finish"),
+        ("not_eligible", "eligible", "finish"),
+        ("cant_tell", "eligible", "finish"),
+        ("ready", "not_eligible", "finish"),
+        (None, "eligible", "document_checker"),
+    ],
+)
+def test_application_route_respects_revised_plan_and_rule_verdict(disposition, verdict, expected):
+    from graph.agent_workflow import _route_after_eligibility
+    from graph.journey_plan import new_journey_plan
+
+    journey_plan = new_journey_plan() if disposition is not None else None
+    if journey_plan is not None:
+        journey_plan["disposition"] = disposition
+    state = {
+        "plan": {"next_agent": "application"},
+        "journey_plan": journey_plan,
+        "verdicts": {},
+        "eligibility": {"verdict": verdict},
+    }
+    assert _route_after_eligibility(state) == expected
+
+
+def test_journey_plan_returns_to_conditional_when_facts_change():
+    from graph.journey_plan import defer_journey_plan, new_journey_plan, revise_journey_plan
+
+    ready = revise_journey_plan(new_journey_plan(), "eligible")
+    pending = defer_journey_plan(ready)
+    assert pending["disposition"] == "conditional"
+    assert pending["revisions"][-1] == {
+        "previous": "ready", "current": "conditional", "reason": "facts_pending",
+    }
+    assert defer_journey_plan(pending) == pending
+    changed = revise_journey_plan(pending, "not_eligible")
+    assert changed["disposition"] == "not_eligible"
+    assert len(changed["revisions"]) == 3
+    with pytest.raises(ValueError):
+        revise_journey_plan(changed, "invalid")
+
+
+def test_plan_for_unconfirmed_facts_does_not_claim_a_final_outcome():
+    agents = build_agents(
+        plan=StubSupervisor(SupervisorPlan(next_agent="application", reason="Prepare draft."))
+    )
+    result = build_agent_graph(agents).invoke({
+        "request": "Please prepare my pension application.",
+        "selected_scheme_id": "SYNTH-PENSION-001",
+        "known_facts": {"age": 40},
+    })
+    assert result["journey_plan"]["disposition"] == "conditional"
+    assert result["journey_plan"]["revisions"] == []
+    assert agents.application.calls == []
 
 
 def test_eligibility_agent_explains_deterministic_result_without_model_call():
@@ -873,12 +1005,10 @@ def test_submit_draft_rejects_unknown_and_already_submitted_drafts():
 def test_sensitive_input_is_rejected_before_routing_or_specialists():
     agents = build_agents()
 
-    result = build_agent_graph(agents).invoke(
-        {"request": "My Aadhar is 1234 5678 9012, am I eligible?", "selected_scheme_id": "C01"}
-    )
-
-    assert result["status"] == "validation_error"
-    assert "1234 5678 9012" not in result["response"]
+    with pytest.raises(ValueError, match="Sensitive information detected"):
+        build_agent_graph(agents).invoke(
+            {"request": "My Aadhar is 1234 5678 9012, am I eligible?", "selected_scheme_id": "C01"}
+        )
     assert agents.supervisor.calls == []
     assert agents.intake.asked == []
     assert agents.eligibility.calls == []
@@ -922,3 +1052,20 @@ def test_unsafe_specialist_output_is_blocked_by_supervisor():
 
     assert result["status"] == "output_blocked"
     assert "override" not in result["response"]
+
+
+def test_confirmed_multi_scheme_results_allow_rules_and_show_closed_notice():
+    from graph import tools
+
+    agents = build_agents(eligibility=object.__new__(EligibilityAgent))
+    state = {
+        "shortlist": ["C36", "C04", "M14", "C16", "C19"],
+        "confirmed_facts": {}, "known_facts": {}, "language": "en",
+    }
+    tools.scheme_is_closed.cache_clear()
+    result = tools.run_as("eligibility", _eligibility_node, agents, state)
+    finished = _finish_node(agents, {**state, **result})
+
+    assert finished["status"] == "eligibility_checked"
+    assert "AICTE-approved" in finished["response"]
+    assert tools.CLOSED_NOTE in result["explanations"]["M14"]

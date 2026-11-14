@@ -44,6 +44,87 @@ def chat_screen():
     app_new._render_chat_page()
 
 
+def journey_plan_screen():
+    import streamlit as st
+    from app import app_new
+
+    app_new._render_journey_plan({
+        "steps": ["profile", "schemes", "rules", "documents", "draft"],
+        "disposition": "not_eligible",
+        "revisions": [],
+    }, st.session_state.get("test_current_step", 1))
+
+
+def test_journey_plan_is_visible_and_explains_rule_based_replan():
+    app = AppTest.from_function(journey_plan_screen).run()
+    assert not app.exception
+    assert any(item.label == "Your plan" for item in app.expander)
+    assert any(item.value == (
+        "1. **Collect and confirm details — Current stage**\n"
+        "2. Find candidate schemes\n"
+        "3. Check reviewed eligibility rules\n"
+        "4. Check documents if you choose an eligible scheme\n"
+        "5. Prepare a draft for your review if you choose to apply"
+    ) for item in app.markdown)
+    assert any("Documents and drafting are paused" in item.value for item in app.caption)
+
+
+@pytest.mark.parametrize(("stage", "expected"), [
+    (1, "1. **Collect and confirm details — Current stage**"),
+    (2, "3. **Check reviewed eligibility rules — Current stage**"),
+    (3, "4. **Check documents if you choose an eligible scheme — Current stage**"),
+    (4, "5. **Prepare a draft for your review if you choose to apply — Current stage**"),
+    (5, None),
+])
+def test_journey_plan_highlights_current_screen_without_claiming_a_completed_action(stage, expected):
+    app = AppTest.from_function(journey_plan_screen)
+    app.session_state["test_current_step"] = stage
+    app.run()
+    assert not app.exception
+    plan = next(item.value for item in app.markdown if "Collect and confirm details" in item.value)
+    if expected is None:
+        assert "Current stage" not in plan
+    else:
+        assert expected in plan
+        assert plan.count("Current stage") == 1
+
+
+@pytest.mark.parametrize(("language", "label"), [
+    ("hi", "वर्तमान चरण"),
+    ("mr", "सध्याचा टप्पा"),
+])
+def test_journey_plan_current_stage_is_localized(language, label):
+    app = AppTest.from_function(journey_plan_screen)
+    app.session_state["portal_language"] = language
+    app.session_state["test_current_step"] = 1
+    app.run()
+    assert not app.exception
+    assert any(label in item.value for item in app.markdown)
+
+
+def test_chat_result_keeps_journey_plan(monkeypatch):
+    session = {}
+    monkeypatch.setattr(app_new.st, "session_state", session)
+    plan = {"steps": ["profile"], "disposition": "conditional", "revisions": []}
+    app_new._record_chat_result({"status": "needs_information", "data": {"journey_plan": plan}})
+    assert session["chat_journey_plan"] == plan
+
+
+def sensitive_attachment_screen():
+    from types import SimpleNamespace
+
+    import streamlit as st
+    from app import app_new
+
+    app_new._initialize_portal_state()
+    st.session_state["chat_messages"] = [{"role": "assistant", "content": "Previous question"}]
+    submission = SimpleNamespace(
+        text="My details are 1234 5678 9012",
+        files=[SimpleNamespace(name="document.pdf")],
+    )
+    app_new._handle_chat_submission("http://api", submission, st.container())
+
+
 def header_screen():
     import streamlit as st
     from app import app_new
@@ -171,11 +252,37 @@ def results_screen():
         "verdicts": {
             "B": {"verdict": "not_eligible"},
             "C": {"verdict": "cant_tell", "missing_fields": ["household_below_bpl"]},
-            "A": {"verdict": "eligible", "citations": [{"clause_id": "1", "text": "Reviewed rule"}]},
+            "A": {"verdict": "eligible", "citations": [{"clause_id": "1", "text": "Reviewed rule"}],
+                  "conditions": [{"field": "is_widow", "outcome": "true"}]},
         },
         "scheme_names": {"A": "Scheme A", "B": "Scheme B", "C": "Scheme C"},
+        "scheme_benefits": {"A": ["Rs. 300 per month"]},
     }
     app_new._render_eligibility_screen(result, "http://api")
+
+
+def any_of_verdict_card():
+    from app import app_new
+
+    app_new._render_conditions({
+        "verdict": "eligible",
+        "missing_fields": ["ration_card_type", "ration_card_type", "is_journalist"],
+        "conditions": [
+            {"field": "ration_card_type", "outcome": "unknown"},
+            {"field": "ration_card_type", "outcome": "unknown"},
+            {"field": "has_maharashtra_domicile_certificate", "outcome": "true"},
+            {"field": "is_journalist", "outcome": "unknown"},
+        ],
+    })
+
+
+def test_eligible_any_of_scheme_shows_only_the_qualifying_condition():
+    app = AppTest.from_function(any_of_verdict_card).run()
+    assert not app.exception
+    assert not any("Still needed" in item.value for item in app.caption)
+    chips = [item.value for item in app.markdown]
+    assert chips == [":green-background[✅ Has maharashtra domicile certificate]"]
+    assert any("Any one of this scheme's conditions qualifies" in item.value for item in app.caption)
 
 
 def test_edit_form_submits_changed_fields(monkeypatch):
@@ -214,6 +321,9 @@ def test_results_show_readable_facts_and_prioritize_eligible_schemes():
     assert headings == ["**Scheme A**", "**Scheme C**", "**Scheme B**"]
     assert any("Still needed: Household below poverty line (BPL)" in item.value for item in app.caption)
     assert any(item.label == "View reviewed source clauses" for item in app.expander)
+    assert any(item.label == "Benefits" for item in app.expander)
+    assert any(item.value == "- Rs. 300 per month" for item in app.markdown)
+    assert any(item.value == ":green-background[✅ Widow]" for item in app.markdown)
     assert app.selectbox[0].options == ["Scheme A (A)"]
 
 
@@ -362,6 +472,21 @@ def test_application_cannot_start_without_confirmed_eligibility(status, verdict)
         app_new._start_application("http://api", result, "A")
 
 
+@pytest.mark.parametrize(("response", "message"), [
+    ({"needs_human": True}, "needs human review"),
+    ({"verdicts": {"A": {"verdict": "cant_tell"}}}, "eligibility recheck"),
+    ({"verdicts": {"A": {"verdict": "eligible"}}, "application": {}}, "draft is unavailable"),
+])
+def test_application_failure_is_shown_instead_of_silent_transition(monkeypatch, response, message):
+    monkeypatch.setattr(app_new, "_send_workflow", lambda *args: response)
+    app = AppTest.from_function(selection_screen).run()
+    app.selectbox[0].select("A").run()
+    app.button(key="prepare-selected-application").click().run()
+    assert not app.exception
+    assert any(message in error.value for error in app.error)
+    assert not app.session_state.get("application_result")
+
+
 @pytest.mark.parametrize("action,button", [("approve", "Confirm details"), ("reject", "Change details in chat")])
 def test_confirmation_buttons_resume_exact_fact_payload(monkeypatch, action, button):
     calls = []
@@ -437,6 +562,42 @@ def test_chat_confirmation_leads_to_scheme_selection(monkeypatch):
     app.selectbox[0].select("A").run()
     next(b for b in app.button if b.label == "Prepare selected application").click().run()
     assert calls == ["A"]
+
+
+def test_sensitive_chat_is_not_rendered_stored_or_sent(monkeypatch):
+    class HealthResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return b'{"status":"ok"}'
+
+    calls = []
+    monkeypatch.setattr(app_new, "_api_base_url", lambda: "http://api")
+    monkeypatch.setattr(app_new, "urlopen", lambda *args, **kwargs: HealthResponse())
+    monkeypatch.setattr(app_new, "_send_chat", lambda *args: calls.append(args))
+    app = AppTest.from_function(chat_screen).run()
+    secret = "1234 5678 9012"
+    app.chat_input[0].set_value(f"My Aadhaar is {secret}").run()
+    assert not app.exception
+    assert not calls
+    assert secret not in json.dumps(app.session_state["chat_messages"])
+    assert not any(secret in item.value for item in app.markdown)
+    assert any("Sensitive information detected" in item.value for item in app.warning)
+
+
+def test_sensitive_chat_with_attachment_rejects_the_whole_submission(monkeypatch):
+    calls = []
+    monkeypatch.setattr(app_new, "_send_chat", lambda *args: calls.append(args))
+    monkeypatch.setattr(app_new, "_upload_document", lambda *args: calls.append(args))
+    app = AppTest.from_function(sensitive_attachment_screen).run()
+    assert not app.exception
+    assert not calls
+    assert app.session_state["chat_messages"] == [{"role": "assistant", "content": "Previous question"}]
+    assert any("attachments were not uploaded" in item.value for item in app.warning)
 
 
 def test_partial_results_remain_available_without_allowing_application(monkeypatch):

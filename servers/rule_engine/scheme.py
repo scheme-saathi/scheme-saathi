@@ -1,8 +1,24 @@
 """Validated, clause-linked rule records used by the eligibility evaluator."""
 
+import json
+import logging
+import re
+from pathlib import Path
 from typing import Any, Literal
+from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+logger = logging.getLogger(__name__)
+
+# Text fields shared across schemes have one list of values (decision F2), so rules agree on spelling.
+SHARED_VALUES: dict[str, list[str]] = {
+    field: values
+    for field, values in json.loads(
+        (Path(__file__).resolve().parents[2] / "data" / "field_values.json").read_text(encoding="utf-8")
+    ).items()
+    if not field.startswith("_")
+}
 
 
 class Record(BaseModel):
@@ -83,6 +99,8 @@ class SchemeRecord(Record):
     # Flat rule lists are combined using one connective. Mixed/nested expressions
     # can be added when a reviewed scheme actually requires them.
     rule_logic: Literal["all", "any"] = "all"
+    # Decision F1: schemes for organisations are left out of the citizen scheme list.
+    applicant_type: Literal["individual", "institution", "mixed"] = "individual"
 
     @model_validator(mode="after")
     def validate_clause_references(self) -> "SchemeRecord":
@@ -94,6 +112,10 @@ class SchemeRecord(Record):
             for condition in rule.conditions():
                 if condition.clause_id not in known_clauses:
                     raise ValueError(f"rule references unknown clause_id: {condition.clause_id}")
+                allowed = SHARED_VALUES.get(condition.field)
+                values = condition.value if isinstance(condition.value, list) else [condition.value]
+                if allowed is not None and not set(values) <= set(allowed):
+                    raise ValueError(f"{condition.field} values must come from data/field_values.json: {values}")
         return self
 
 
@@ -106,13 +128,34 @@ class RuleSet(Record):
     ready: bool = False
 
 
+def official_source(url: str) -> bool:
+    """Only HTTPS URLs under Indian government domain boundaries can back live rules."""
+    if any(character.isspace() or ord(character) < 32 for character in url):
+        return False
+    try:
+        parsed = urlsplit(url)
+        hostname = parsed.hostname
+        port = parsed.port
+    except ValueError:
+        return False
+    if parsed.scheme != "https" or not hostname or parsed.username or parsed.password or port not in (None, 443):
+        return False
+    labels = hostname.split(".")
+    if any(not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label) for label in labels):
+        return False
+    return any(hostname == domain or hostname.endswith("." + domain) for domain in ("gov.in", "nic.in"))
+
+
 def live_conditions(scheme: SchemeRecord) -> RuleSet:
     """Return a rule set only when the entire declared set has been reviewed.
 
     An incomplete set must not produce an apparently definitive verdict: an
     unreviewed condition could change the result.
     """
-    ready = bool(scheme.rules) and all(rule.status == "reviewed" for rule in scheme.rules)
+    trusted = official_source(scheme.source.url)
+    if not trusted:
+        logger.warning("Live rules for scheme %s have an untrusted source.", scheme.scheme_id)
+    ready = trusted and bool(scheme.rules) and all(rule.status == "reviewed" for rule in scheme.rules)
     return RuleSet(
         rules=scheme.rules if ready else [],
         logic=scheme.rule_logic,

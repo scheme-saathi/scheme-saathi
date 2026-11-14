@@ -331,10 +331,20 @@ def own_start_screen():
     app_new._start_application("http://api", result, "A")
 
 
+def application_start_response():
+    return {
+        "thread_id": "t",
+        "verdicts": {"A": {"verdict": "eligible"}},
+        "application": {"scheme_id": "A", "applicant": {"age": 30}},
+        "approval": {"payload_hash": "test-hash"},
+    }
+
+
 def test_an_application_for_someone_else_carries_the_relation(monkeypatch):
     sent = []
     monkeypatch.setattr(
-        app_new, "_send_workflow", lambda api, path, payload, progress: sent.append((path, payload)) or {"thread_id": "t"}
+        app_new, "_send_workflow",
+        lambda api, path, payload, progress: sent.append((path, payload)) or application_start_response(),
     )
     app = AppTest.from_function(start_screen).run()
     assert not app.exception
@@ -350,7 +360,8 @@ def test_an_application_for_someone_else_carries_the_relation(monkeypatch):
 def test_an_application_for_the_person_themselves_sends_nothing_extra(monkeypatch):
     sent = []
     monkeypatch.setattr(
-        app_new, "_send_workflow", lambda api, path, payload, progress: sent.append((path, payload)) or {"thread_id": "t"}
+        app_new, "_send_workflow",
+        lambda api, path, payload, progress: sent.append((path, payload)) or application_start_response(),
     )
     app = AppTest.from_function(own_start_screen).run()
     assert not app.exception

@@ -202,6 +202,20 @@ div.stDownloadButton > button:disabled {
     object-fit: contain;
 }
 
+.st-key-header-main .st-key-page-brand {
+    width: 100%;
+    max-width: 313px;
+}
+
+.st-key-header-main .st-key-page-brand img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    object-fit: contain;
+    margin-top: 25PX;
+}
+
 .st-key-auth-shell h1 {
     margin: 0.2rem 0 -0.3rem;
     font-size: 2.2rem;
@@ -276,6 +290,20 @@ div.stDownloadButton > button:disabled {
     letter-spacing: 0.1em;
 }
 
+.st-key-consent-header .st-key-page-brand {
+    width: 100%;
+    max-width: 313px;
+}
+
+.st-key-consent-header .st-key-page-brand img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    object-fit: contain;
+    margin-top: 15px;
+}
+
 .st-key-consent-shell {
     border-color: var(--ss-line);
     border-radius: 18px;
@@ -337,11 +365,34 @@ div.stDownloadButton > button:disabled {
     min-height: 3rem;
 }
 
-.st-key-consent-shell [data-testid="stButton"] button {
+.st-key-consent-shell [data-testid="stButton"] button,
+.st-key-consent-shell [data-testid="stButton"] button * {
     color: var(--ss-muted) !important;
     -webkit-text-fill-color: var(--ss-muted) !important;
     background: transparent !important;
     border-color: transparent !important;
+}
+
+.st-key-consent-shell .st-key-decline-consent button {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background: var(--ss-blue) !important;
+    border-color: var(--ss-blue) !important;
+}
+
+.st-key-consent-shell .st-key-decline-consent button:hover {
+    background: var(--ss-blue-hover) !important;
+    border-color: var(--ss-blue-hover) !important;
+}
+
+.st-key-consent-shell .st-key-decline-consent button:focus-visible {
+    outline: 3px solid #8cc4a5 !important;
+    outline-offset: 2px;
+}
+
+.st-key-consent-shell .st-key-decline-consent button * {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
 }
 
 .st-key-welcome-page {
@@ -441,7 +492,7 @@ div.stDownloadButton > button:disabled {
 }
 
 .st-key-workflow-wizard {
-    margin: 0.25rem 0 0.85rem;
+    margin: 0 0 0.85rem;
     border: 1px solid var(--ss-line);
     border-radius: 14px;
     background: rgba(255, 255, 255, 0.94);
@@ -520,7 +571,7 @@ div.stDownloadButton > button:disabled {
 
 .st-key-chat-header {
     padding: 0.8rem 1rem;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0;
     border: 1px solid var(--ss-line);
     border-radius: 16px;
     background: var(--ss-surface);

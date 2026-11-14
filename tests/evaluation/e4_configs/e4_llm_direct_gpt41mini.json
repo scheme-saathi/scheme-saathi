@@ -1,0 +1,6 @@
+{
+  "name": "e4_llm_direct_gpt41mini",
+  "description": "E4 signature ablation: openai/gpt-4.1-mini decides each case's eligibility for each candidate scheme directly from the scheme's eligibility and exclusion text and the case's facts, with no rule engine. Scored against the human labels beside the rule engine's verdicts on the same facts; boundary verdicts counted separately.",
+  "system": "llm_direct",
+  "model": "openai/gpt-4.1-mini"
+}

@@ -3,6 +3,7 @@
 import json
 import logging
 from dataclasses import dataclass
+from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Any, TypedDict
@@ -33,8 +34,10 @@ from agents.intake import IntakeAgent, income_period
 from agents.family import family_relation, relation_in_text
 from agents.memory import MemoryService, clean_relation
 from agents.model_factory import create_chat_model
-from agents.supervisor import SupervisorAgent, asks_about_own_eligibility
+from agents.scheme_react import ReactEvent, SchemeReactError, scheme_react_enabled
+from agents.supervisor import PAYMENT_DESTINATION_ERROR, SupervisorAgent, asks_about_own_eligibility
 from graph import tools
+from graph.journey_plan import JourneyPlan, defer_journey_plan, new_journey_plan, revise_journey_plan
 from graph.memory_nodes import (
     load_remembered,
     memory_context,
@@ -42,6 +45,7 @@ from graph.memory_nodes import (
     save_confirmed,
 )
 from graph.workflow import application_hash
+from observability.hooks import record_memory_operation
 from servers.rule_engine.rules import Evaluation
 
 logger = logging.getLogger(__name__)
@@ -88,6 +92,8 @@ class AgentWorkflowState(TypedDict, total=False):
     application_required_fields: list[str]
     application_field_mapping: dict[str, str]
     plan: dict[str, str]
+    journey_plan: JourneyPlan | None
+    specialist_react_trace: list[ReactEvent]
     language: Language
     pending_field: str | None  # the field intake's last question asked for
     pending_question: str | None  # that question's wording
@@ -126,7 +132,7 @@ class AgentSet:
         supervisor_model = create_chat_model("supervisor")
         specialist_model = create_chat_model("specialist")
         return cls(
-            intake=IntakeAgent(specialist_model),
+            intake=IntakeAgent(specialist_model, scheme_react=scheme_react_enabled()),
             supervisor=SupervisorAgent(supervisor_model),
             eligibility=EligibilityAgent(specialist_model),
             document_checker=DocumentCheckerAgent(specialist_model),
@@ -153,9 +159,10 @@ def _supervisor_node(
                 "language": validation.language,
                 "intent": validation.intent,
                 "validation_errors": validation.errors,
+                "specialist_react_trace": [],
                 "plan": {"next_agent": "respond", "reason": "The request did not pass input validation."},
             }
-        update = {"validation_errors": []}
+        update = {"validation_errors": [], "specialist_react_trace": []}
     if is_reply:
         # A reply to intake's question ("yes", "1 lakh") means nothing without that question,
         # so the plan from the earlier turn stands and the model is not asked to re-route it.
@@ -164,8 +171,12 @@ def _supervisor_node(
         SupervisorInput(
             request=state["request"],
             selected_scheme_id=state.get("selected_scheme_id"),
+            # Only on the reroute pass: a reply intake could not read is judged against its question.
+            pending_question=None if validate else state.get("pending_question"),
         )
     )
+    if not validate:
+        update["pending_question"] = None
     if plan.next_agent == "respond" and asks_about_own_eligibility(state["request"]):
         # Code, not the model, keeps personal eligibility questions on the rule-engine path.
         logger.info("Rerouted a personal eligibility question from respond to intake.")
@@ -175,6 +186,10 @@ def _supervisor_node(
             "reason": f"{plan.reason} (Rerouted: the user asks about their own eligibility.)",
         })
     update["plan"] = plan.model_dump(mode="json")
+    if plan.next_agent in PROFILE_GOALS:
+        update["journey_plan"] = state.get("journey_plan") or new_journey_plan()
+    else:
+        update["journey_plan"] = None
     if plan.language != "unknown":
         update["language"] = plan.language
     elif validation is not None:
@@ -187,10 +202,10 @@ def _supervisor_node(
 def _guard_output(
     agents: AgentSet,
     state: AgentWorkflowState,
-    update: dict[str, str],
+    update: dict[str, Any],
     agent_name: str,
     blocked_message: dict[str, str] | None = None,
-) -> dict[str, str]:
+) -> dict[str, Any]:
     """Supervisor output check: nothing leaves the graph unless it passes.
 
     `blocked_message`, by language, replaces the generic error when a block has a known,
@@ -201,7 +216,7 @@ def _guard_output(
     if result.passed:
         return update
     logger.warning("Output from %s blocked: %s", agent_name, "; ".join(result.errors))
-    if blocked_message:
+    if blocked_message and PAYMENT_DESTINATION_ERROR not in result.errors:
         return {"status": "output_blocked", "response": blocked_message.get(language, blocked_message["en"])}
     blocked = agents.supervisor.handle_validation_error(result, language)
     return {"status": "output_blocked", "response": blocked["user_message"]}
@@ -234,8 +249,15 @@ def _scheme_catalogue() -> tuple[tuple[str, str, str], ...]:
         scheme_id = record.get("scheme_id")
         if scheme_id not in reviewed:
             continue
-        items = ((record.get("sections") or {}).get("details") or {}).get("items") or []
-        found[scheme_id] = (scheme_id, record.get("name", scheme_id), str((items[:1] or [{}])[0].get("text", ""))[:200])
+        sections = record.get("sections") or {}
+        details = (sections.get("details") or {}).get("items") or []
+        eligibility = (sections.get("eligibility") or {}).get("items") or []
+        overview = str((details[:1] or [{}])[0].get("text", "")).strip()
+        criteria = " ".join(
+            str(item.get("text", "")).strip() for item in eligibility if item.get("text")
+        )
+        description = f"{overview[:160]} Eligibility: {criteria[:300]}"
+        found[scheme_id] = (scheme_id, record.get("name", scheme_id), description)
     return tuple(found.values())
 
 
@@ -291,6 +313,7 @@ def _fresh_assessment(request: str) -> dict[str, Any]:
         "question_attempts": {},
         "questions_asked": 0,
         "intake_stopped": None,
+        "journey_plan": new_journey_plan(),
     }
 
 
@@ -342,12 +365,14 @@ def _intake_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
         # An answer is new information, so re-pick; keep the old list if the re-pick fails or is empty.
         facts = {**_facts_so_far(state), **result.facts}
         shortlist = _shortlist_schemes(agents, state.get("intake_request", state["request"]), facts) or shortlist
+    unanswered = pending is not None and not result.facts and not result.dont_know
     update: dict[str, Any] = {
         "known_facts": result.facts,
         "shortlist": shortlist,
         "pending_field": None,
-        "pending_question": None,
-        "reply_unanswered": pending is not None and not result.facts and not result.dont_know,
+        # Kept for the reroute pass, which clears it, so the Supervisor sees what was asked.
+        "pending_question": state.get("pending_question") if unanswered else None,
+        "reply_unanswered": unanswered,
     }
     if pending is None:  # a fresh intake: earlier "don't know"s and counts no longer apply
         update |= {
@@ -428,7 +453,7 @@ def _intake_question_node(agents: AgentSet, state: AgentWorkflowState) -> dict[s
             field=field,
             field_type=spec["type"],
             known_values=spec["known_values"],
-            period=income_period(field),
+            period=income_period(field) if spec["type"] == "number" else None,
             language=state.get("language", "unknown"),
             request=state.get("intake_request", state["request"]),
         )
@@ -479,7 +504,28 @@ def _eligibility_node(
                 s, agents.eligibility.invoke(EligibilityInput(scheme_id=s, evaluation=v)).explanation)
             for s, v in verdicts.items()
         }
-    return {"verdicts": verdicts, "explanations": explanations, **_selected_scheme_eligibility(agents, state)}
+    result = {"verdicts": verdicts, "explanations": explanations, **_selected_scheme_eligibility(agents, state)}
+    plan = state.get("journey_plan")
+    evaluated = {**state, **result}
+    if plan and verdicts:
+        open_questions = (
+            _open_fields(evaluated)
+            and not _at_question_cap(evaluated)
+            and tools.next_question(verdicts, _skipped_fields(evaluated))
+        )
+        if _unconfirmed(state) or open_questions:
+            result["journey_plan"] = defer_journey_plan(plan)
+        else:
+            values = (
+                [result["eligibility"]["verdict"]] if state.get("selected_scheme_id")
+                else [value["verdict"] for value in verdicts.values()]
+            )
+            disposition = (
+                "eligible" if "eligible" in values else
+                "cant_tell" if "cant_tell" in values else "not_eligible"
+            )
+            result["journey_plan"] = revise_journey_plan(plan, disposition)
+    return result
 
 
 def _selected_scheme_eligibility(
@@ -554,7 +600,9 @@ def _route_after_eligibility(state: AgentWorkflowState) -> str:
         return "confirm"
     is_application = state["plan"]["next_agent"] == "application"
     eligible = state["eligibility"]["verdict"] == "eligible"
-    return "document_checker" if is_application and eligible else "finish"
+    journey_plan = state.get("journey_plan")
+    plan_allows_documents = journey_plan is None or journey_plan["disposition"] == "ready"
+    return "document_checker" if is_application and eligible and plan_allows_documents else "finish"
 
 
 def _fits(kind: str, value: Any) -> bool:
@@ -563,6 +611,11 @@ def _fits(kind: str, value: Any) -> bool:
         return isinstance(value, bool)
     if kind == "number":
         return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if kind == "date":  # the rule engine reads only YYYY-MM-DD; the UI converts DD/MM/YYYY
+        try:
+            date.fromisoformat(value)
+        except (TypeError, ValueError):
+            return False
     return isinstance(value, str)
 
 
@@ -638,7 +691,9 @@ def _memory_load_node(
         remembered = load_remembered(ctx, specs, _facts_so_far(state))
     except Exception:
         logger.warning("Memory could not be read; continuing without it.")
+        record_memory_operation("load", "error")
         return {}
+    record_memory_operation("load", "hit" if remembered else "miss")
     return {
         "memory_loaded": True,
         "subject": "self",
@@ -662,7 +717,9 @@ def _memory_save_node(
         )
     except Exception:
         logger.warning("Memory could not be updated; continuing without it.")
+        record_memory_operation("save", "error")
         return {}
+    record_memory_operation("save", "saved" if saved else "skipped")
     return {"memory_saved": saved, "remembered_facts": held}
 
 
@@ -920,7 +977,9 @@ def _remember_application(
         )
     except Exception:
         logger.warning("The submitted application could not be remembered.")
-        saved = False
+        record_memory_operation("reference", "error")
+        return {"reference_saved": False}
+    record_memory_operation("reference", "saved" if saved else "skipped")
     return {"reference_saved": saved}
 
 
@@ -981,8 +1040,14 @@ NOT_FOUND = {
     "en": "I couldn't find this in the reviewed scheme documents.",
 }
 
+ANSWER_ERROR = {
+    "hi": "योजना की जानकारी जाँचते समय समस्या हुई। कृपया फिर से प्रयास करें।",
+    "mr": "योजनेची माहिती तपासताना समस्या आली. कृपया पुन्हा प्रयत्न करा.",
+    "en": "There was a problem checking the scheme information. Please try again.",
+}
 
-def _scheme_answer(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]:
+
+def _scheme_answer(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
     """Intake drafts a cited answer from schemes-kb evidence; nothing relevant gives NOT_FOUND."""
     language = state.get("language", "unknown")
     not_found = {"status": "answer_not_found", "response": NOT_FOUND.get(language, NOT_FOUND["en"])}
@@ -991,26 +1056,37 @@ def _scheme_answer(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str
             passages = tools.search_evidence(state["request"], state.get("selected_scheme_id"))
         if not passages:
             return not_found
-        result = agents.intake.answer(
+        result, trace = agents.intake.answer_with_trace(
             IntakeAnswerInput(
                 question=state["request"],
                 language=language,
                 passages=[EvidencePassage(id=p["id"], scheme_id=p["scheme_id"], text=p["text"]) for p in passages],
             )
         )
+    except SchemeReactError as exc:
+        logger.error("The scheme-question specialist tool loop failed: %s", exc)
+        return {
+            "status": "answer_error",
+            "response": ANSWER_ERROR.get(language, ANSWER_ERROR["en"]),
+            "specialist_react_trace": exc.trace,
+        }
     except Exception:
         logger.exception("A scheme question could not be answered from evidence.")
         return not_found
     if not result.found:
-        return not_found
+        return {**not_found, "specialist_react_trace": trace}
     sources = sorted({
         f"{p['scheme_id']}: {c['source_url']}" + (f" (page {c['page']})" if c.get("page") else "")
         for p in passages if p["id"] in result.cited_passage_ids for c in p["citations"]
     })
-    return {"status": "answered", "response": result.answer + "\n\nSources:\n" + "\n".join(f"- {s}" for s in sources)}
+    return {
+        "status": "answered",
+        "response": result.answer + "\n\nSources:\n" + "\n".join(f"- {s}" for s in sources),
+        "specialist_react_trace": trace,
+    }
 
 
-def _respond_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, str]:
+def _respond_node(agents: AgentSet, state: AgentWorkflowState) -> dict[str, Any]:
     if state.get("validation_errors"):
         return {"status": "validation_error", "response": " ".join(state["validation_errors"])}
     if state["plan"].get("scheme_question"):
@@ -1239,4 +1315,8 @@ def build_agent_graph(
     # Finish → END
     builder.add_edge("finish", END)
     
-    return tools.budget_graph(builder.compile(checkpointer=checkpointer))
+    from agents.persona_validator import reject_sensitive_graph_input
+
+    return tools.budget_graph(
+        builder.compile(checkpointer=checkpointer), input_guard=reject_sensitive_graph_input
+    )

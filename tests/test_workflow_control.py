@@ -63,6 +63,26 @@ def test_edit_that_breaks_eligibility_never_reaches_approval_again():
     assert final["verdicts"]["SYNTH-PENSION-001"]["verdict"] == "not_eligible"
 
 
+def test_edit_with_an_unknown_field_is_rejected():
+    graph, config, _ = start("edit-unknown")
+    final = graph.invoke(
+        Command(resume={"action": "edit", "changes": {"is_admin": True}}),
+        config,
+    )
+    assert final["approval_status"] == "invalid"
+    assert final.get("submission") is None
+
+
+def test_edit_with_a_wrong_field_type_is_rejected():
+    graph, config, _ = start("edit-type")
+    final = graph.invoke(
+        Command(resume={"action": "edit", "changes": {"age": "99"}}),
+        config,
+    )
+    assert final["approval_status"] == "invalid"
+    assert final.get("submission") is None
+
+
 def test_submit_refuses_a_form_that_changed_after_approval():
     approved = {"scheme_id": "SYNTH-PENSION-001", "applicant": CITIZEN}
     changed = {"scheme_id": "SYNTH-PENSION-001", "applicant": {**CITIZEN, "age": 99}}
@@ -111,3 +131,52 @@ def test_checker_flags_wrong_scheme_and_missing_fields():
     assert any("OTHER" in p for p in problems)
     state["application"] = {"scheme_id": "SYNTH-PENSION-001", "applicant": {"age": 62}}
     assert any("is_widow" in p for p in workflow.check_application(state))
+
+
+def test_confirmed_alternative_rule_profile_reaches_exact_draft_approval():
+    profile = {"ration_card_type": "white", "age": 18}
+    graph = build_graph()
+    result = graph.invoke(
+        {"confirmed_profile": profile, "simulated_citizen": profile, "scheme_ids": ["M20"]},
+        {"configurable": {"thread_id": "confirmed-alternative"}},
+    )
+    assert result["verdicts"]["M20"]["verdict"] == "eligible"
+    assert result["profile"] == profile
+    assert result["application"]["applicant"] == profile
+    assert not result.get("needs_human")
+    pending = result["__interrupt__"][0].value
+    assert pending["payload_hash"] == application_hash(pending["form"])
+    assert not result.get("submission")
+
+
+@pytest.mark.parametrize("profile", [{}, {"ration_card_type": "none"}])
+def test_confirmed_profile_without_a_passing_rule_never_reaches_approval(profile):
+    graph = build_graph()
+    result = graph.invoke(
+        {"confirmed_profile": profile, "simulated_citizen": profile, "scheme_ids": ["M20"]},
+        {"configurable": {"thread_id": f"not-eligible-{len(profile)}"}},
+    )
+    assert result["verdicts"]["M20"]["verdict"] != "eligible"
+    assert not result.get("application")
+    assert not result.get("__interrupt__")
+
+
+def test_checker_rejects_applicant_facts_absent_from_confirmed_profile():
+    state = {"verdicts": {"M20": {"verdict": "eligible"}},
+             "profile": {"ration_card_type": "white"},
+             "application": {"scheme_id": "M20", "applicant": {
+                 "ration_card_type": "white", "age": 18,
+             }}}
+    assert any("age" in error for error in workflow.check_application(state))
+
+
+@pytest.mark.parametrize("typed, kept", [("05/03/1962", "1962-01-01"), (None, "1962-01-01"),
+                                         ("1962-03-05", "1962-03-05")])
+def test_an_edit_keeps_the_stored_date_unless_the_new_one_is_iso(typed, kept):
+    graph, config, _ = start(f"edit-date-{typed}")
+    graph.update_state(config, {"profile": {**graph.get_state(config).values["profile"],
+                                            "date_of_birth": "1962-01-01"}})
+    state = graph.invoke(Command(resume={"action": "edit",
+                                         "changes": {"date_of_birth": typed, "income": 200000}}), config)
+    assert state["profile"]["date_of_birth"] == kept
+    assert state["profile"]["income"] == 200000  # the other change still applies

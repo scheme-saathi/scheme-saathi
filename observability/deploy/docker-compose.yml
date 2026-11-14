@@ -1,0 +1,76 @@
+# Prometheus and Grafana for Scheme Saathi. Run from this folder:
+#   docker compose up -d
+# Needs ./.env (copy .env.example) and ./secrets/metrics_token. See docs/observability.md.
+name: scheme-saathi-observability
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --config.expand-environment-variables
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-15d}
+    environment:
+      PROMETHEUS_APP_TARGET: ${PROMETHEUS_APP_TARGET:-app:8766}
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules.yml:/etc/prometheus/rules.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - ./secrets/metrics_token:/etc/prometheus/secrets/metrics_token:ro
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+
+  app:
+    profiles:
+      - app
+    image: ${APP_IMAGE:-scheme-saathi:local}
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      OBSERVABILITY_ENABLED: "true"
+      SCHEME_SAATHI_CHAT_API_HOST: 0.0.0.0
+      SCHEME_SAATHI_CHAT_API_PORT: "8766"
+      SCHEME_SAATHI_CHECKPOINT_DB: /app/data/checkpoints/workflows.sqlite
+      SCHEME_SAATHI_DOCUMENT_STORE_DIR: /app/data/private_documents
+      SCHEME_SAATHI_MEMORY_DIR: /app/data/memory
+    ports:
+      - "127.0.0.1:8501:8501"
+    volumes:
+      - scheme-saathi-documents:/app/data/private_documents
+      - scheme-saathi-memory:/app/data/memory
+      - scheme-saathi-checkpoints:/app/data/checkpoints
+    restart: unless-stopped
+
+  grafana:
+    image: ${GRAFANA_IMAGE:-scheme-saathi-grafana:local}
+    build:
+      context: ./grafana
+      dockerfile: Dockerfile
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in observability/deploy/.env}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  scheme-saathi-documents:
+  scheme-saathi-memory:
+  scheme-saathi-checkpoints:

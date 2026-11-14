@@ -133,6 +133,14 @@ def test_agent_read_access_is_restricted_before_the_server_call(monkeypatch):
         with pytest.raises(tools.ToolCallError, match="may not use this read tool"):
             tools.call_tool(tools.RULE_ENGINE, "list_rule_schemes")
 
+    with tools.acting_as("intake"):
+        with pytest.raises(tools.ToolCallError, match="may not use this read tool"):
+            tools.call_tool(tools.SCHEMES_KB, "get_scheme_details", scheme_id="C11")
+
+    with tools.acting_as("eligibility"):
+        with pytest.raises(tools.ToolCallError, match="may not use this read tool"):
+            tools.call_tool(tools.SCHEMES_KB, "get_scheme_details", scheme_id="C11")
+
     with tools.acting_as("application"):
         with pytest.raises(tools.ToolCallError, match="may not use this read tool"):
             tools.call_tool(

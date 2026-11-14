@@ -17,6 +17,8 @@ from typing import Any
 
 from fastmcp import Client
 
+from servers.rule_engine.ages import DOB_DERIVED
+from observability.hooks import record_approval, record_tool_call
 from servers.mock_portal.authorization import (
     CapabilityError,
     application_payload_hash,
@@ -40,7 +42,9 @@ _SERVERS = {
     DOC_CHECK: document_check_server,
 }
 DEFAULT_TOOL_CALL_BUDGET = 150  # one turn can evaluate every live scheme (50) twice, plus lookups
-_KNOWN_ACTORS = {"application", "baseline", "document_checker", "eligibility", "intake", "supervisor"}
+_KNOWN_ACTORS = {
+    "application", "baseline", "document_checker", "eligibility", "intake", "rule_reviewer", "supervisor"
+}
 
 # Pre-tool hook: only these agents may call a write tool. "baseline" is the single-agent
 # comparison run, which is deliberately given every tool.
@@ -49,8 +53,10 @@ READ_TOOLS = {
     (RULE_ENGINE, "get_rule_fields"),
     (RULE_ENGINE, "get_field_specs"),
     (RULE_ENGINE, "evaluate_profile"),
+    (RULE_ENGINE, "preview_profile"),
     (SCHEMES_KB, "search_schemes"),
     (SCHEMES_KB, "get_scheme_details"),
+    (SCHEMES_KB, "get_scheme_availability"),
     (SCHEMES_KB, "get_required_documents"),
     (SCHEMES_KB, "search_scheme_evidence"),
     (MOCK_PORTAL, "get_application_status"),
@@ -69,6 +75,7 @@ READ_ACCESS = {
     "eligibility": {
         (RULE_ENGINE, "list_rule_schemes"),
         (RULE_ENGINE, "evaluate_profile"),
+        (SCHEMES_KB, "get_scheme_availability"),
     },
     "document_checker": {
         (SCHEMES_KB, "get_required_documents"),
@@ -78,6 +85,12 @@ READ_ACCESS = {
         (RULE_ENGINE, "list_rule_schemes"),
         (RULE_ENGINE, "get_rule_fields"),
         (RULE_ENGINE, "get_field_specs"),
+    },
+    "rule_reviewer": {
+        (RULE_ENGINE, "list_rule_schemes"),
+        (RULE_ENGINE, "get_rule_fields"),
+        (RULE_ENGINE, "get_field_specs"),
+        (RULE_ENGINE, "preview_profile"),
     },
 }
 _actor: ContextVar[str | None] = ContextVar("tool_actor", default=None)
@@ -123,22 +136,37 @@ def tool_call_budget(limit: int | None = None) -> Iterator[_ToolCallBudget]:
 class BudgetedGraph:
     """Apply a fresh MCP-call budget to each compiled graph execution."""
 
-    def __init__(self, graph: Any, limit: int | None = None) -> None:
+    def __init__(self, graph: Any, limit: int | None = None,
+                 input_guard: Callable[[Any], None] | None = None) -> None:
         self._graph = graph
         self._limit = limit
+        self._input_guard = input_guard
+
+    def _guard(self, args: tuple[Any, ...], kwargs: dict[str, Any], batch: bool = False) -> None:
+        if self._input_guard is None:
+            return
+        value = args[0] if args else kwargs.get("input" if not batch else "inputs")
+        if batch:
+            for item in value:
+                self._input_guard(item)
+        else:
+            self._input_guard(value)
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self._graph, name)
 
     def invoke(self, *args: Any, **kwargs: Any) -> Any:
+        self._guard(args, kwargs)
         with tool_call_budget(self._limit):
             return self._graph.invoke(*args, **kwargs)
 
     async def ainvoke(self, *args: Any, **kwargs: Any) -> Any:
+        self._guard(args, kwargs)
         with tool_call_budget(self._limit):
             return await self._graph.ainvoke(*args, **kwargs)
 
     def stream(self, *args: Any, **kwargs: Any) -> Iterator[Any]:
+        self._guard(args, kwargs)
         limit = self._limit or DEFAULT_TOOL_CALL_BUDGET
         budget = _tool_budget.get() or _ToolCallBudget(limit)
         iterator = iter(self._graph.stream(*args, **kwargs))
@@ -153,6 +181,7 @@ class BudgetedGraph:
             yield item
 
     async def astream(self, *args: Any, **kwargs: Any) -> AsyncIterator[Any]:
+        self._guard(args, kwargs)
         limit = self._limit or DEFAULT_TOOL_CALL_BUDGET
         budget = _tool_budget.get() or _ToolCallBudget(limit)
         iterator = self._graph.astream(*args, **kwargs).__aiter__()
@@ -167,17 +196,21 @@ class BudgetedGraph:
             yield item
 
     def batch(self, *args: Any, **kwargs: Any) -> Any:
+        self._guard(args, kwargs, batch=True)
         with tool_call_budget(self._limit):
             return self._graph.batch(*args, **kwargs)
 
     async def abatch(self, *args: Any, **kwargs: Any) -> Any:
+        self._guard(args, kwargs, batch=True)
         with tool_call_budget(self._limit):
             return await self._graph.abatch(*args, **kwargs)
 
 
-def budget_graph(graph: Any, limit: int | None = None) -> BudgetedGraph:
+def budget_graph(
+    graph: Any, limit: int | None = None, input_guard: Callable[[Any], None] | None = None
+) -> BudgetedGraph:
     """Wrap a compiled graph so each execution gets an independent tool budget."""
-    return BudgetedGraph(graph, limit)
+    return BudgetedGraph(graph, limit, input_guard)
 
 
 @contextmanager
@@ -201,6 +234,8 @@ def _authorize(server: str, tool: str) -> None:
     if (server, tool) not in ALLOWED_TOOLS:
         raise ToolCallError(server, tool, "forbidden", f"'{server}.{tool}' is not an allow-listed tool.")
     actor = _actor.get()
+    if (server, tool) == (RULE_ENGINE, "preview_profile") and actor != "rule_reviewer":
+        raise ToolCallError(server, tool, "forbidden", "Only the rule reviewer may preview draft rules.")
     if actor is None:
         if (server, tool) in WRITE_TOOLS:
             raise ToolCallError(
@@ -227,9 +262,11 @@ def _audit_tool_call(server: str, tool: str, outcome: str, started_at: float, er
         "duration_ms": round((time.perf_counter() - started_at) * 1000),
     }
     logger.info("mcp_tool_call %s", json.dumps(event, sort_keys=True))
+    record_tool_call(event["server"], event["tool"], outcome, time.perf_counter() - started_at, error_code)
 
 
 def audit_approval_event(action: str, outcome: str, authenticated: bool) -> None:
+    record_approval(action, outcome)
     event = {
         "action": action,
         "outcome": outcome,
@@ -314,7 +351,7 @@ def scheme_is_closed(scheme_id: str) -> bool:
     if scheme_id in _closed_schemes:
         return _closed_schemes[scheme_id]
     try:
-        details = call_tool(SCHEMES_KB, "get_scheme_details", scheme_id=scheme_id)
+        details = call_tool(SCHEMES_KB, "get_scheme_availability", scheme_id=scheme_id)
     except ToolCallError as error:
         if error.code == "scheme_not_found":
             _closed_schemes[scheme_id] = False
@@ -347,8 +384,9 @@ def required_fields(scheme_ids: list[str] | None = None, include_draft: bool = F
 
 
 def evaluate_scheme(profile: dict, scheme_id: str, include_draft: bool = False) -> dict:
-    return call_tool(RULE_ENGINE, "evaluate_profile", profile=profile, scheme_id=scheme_id,
-                     include_draft=include_draft)
+    tool = "preview_profile" if include_draft else "evaluate_profile"
+    arguments = {"profile": profile, "scheme_id": scheme_id}
+    return call_tool(RULE_ENGINE, tool, **arguments)
 
 
 def field_specs(scheme_ids: list[str], include_draft: bool = False) -> dict[str, dict]:
@@ -361,11 +399,16 @@ def next_question(verdicts: dict[str, dict], declined: Collection[str] = ()) -> 
     ``verdicts`` maps scheme IDs to rule-engine evaluations, as the eligibility step writes them.
     Only cant_tell verdicts count: a decided scheme can't be changed by another answer.
     Ties go to the alphabetically first field, as the rule engine sorts unresolved fields.
+    Ages that need more than whole years (``DOB_DERIVED``) are asked as ``date_of_birth``;
+    if that was declined (many people don't know it), the age field itself is asked.
     """
+    ask_dob = "date_of_birth" not in declined
     counts: dict[str, int] = {}
     for evaluation in verdicts.values():
         if evaluation["verdict"] == "cant_tell":
-            for field in evaluation["unresolved_fields"]:
+            for field in dict.fromkeys(
+                "date_of_birth" if ask_dob and f in DOB_DERIVED else f for f in evaluation["unresolved_fields"]
+            ):
                 if field not in declined:
                     counts[field] = counts.get(field, 0) + 1
     return max(counts, key=counts.get, default=None)

@@ -36,6 +36,18 @@ class SchemeLoadingChecks(unittest.TestCase):
             with self.assertRaises(ValidationError):
                 list(load_schemes(directory))
 
+    def test_synthetic_rule_fixture_requires_a_recognized_source(self):
+        fixture = json.loads((PROJECT_ROOT / 'tests/fixtures/SYNTH-PENSION-001.json').read_text())
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'fixture.json'
+            fixture['source']['url'] = 'synthetic://test-data'
+            path.write_text(json.dumps(fixture))
+            self.assertEqual(list(load_schemes(path.parent)), [])
+            fixture['source']['url'] = 'https://www.myscheme.gov.in/schemes/other'
+            path.write_text(json.dumps(fixture))
+            with self.assertRaises(ValidationError):
+                list(load_schemes(path.parent))
+
 
 class BulkPdfChecks(unittest.TestCase):
     def test_pdf_approval_hash_and_scheme_gate(self):

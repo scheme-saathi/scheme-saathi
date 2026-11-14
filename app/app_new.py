@@ -11,7 +11,7 @@ import time
 from collections.abc import Iterator
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
@@ -29,6 +29,8 @@ else:
     from app import memory_text, ui_auth
     from app.api import create_api
 
+from agents.persona_validator import SensitiveInputError, reject_sensitive_input
+
 CSS_PATH = Path(__file__).with_name("style.css")
 BRAND_IMAGE_PATH = Path(__file__).with_name("images") / "main_image.png"
 JOURNEY_STEPS = (
@@ -40,7 +42,7 @@ JOURNEY_STEPS = (
 )
 
 
-def _render_brand_image(width: int = 313) -> None:
+def _render_brand_image(width: int | Literal["stretch"] = 313) -> None:
     """Render the official Scheme Saathi image at a consistent header size."""
     with st.container(key="page-brand"):
         st.image(
@@ -53,10 +55,12 @@ def _render_brand_image(width: int = 313) -> None:
 @st.cache_resource
 def _start_local_api(port: int) -> uvicorn.Server:
     """Start one local FastAPI server and share it across Streamlit reruns."""
+    # Loopback unless a deployment asks otherwise, e.g. so Prometheus in another container can scrape /metrics.
+    host = os.environ.get("SCHEME_SAATHI_CHAT_API_HOST", "").strip() or "127.0.0.1"
     server = uvicorn.Server(
         uvicorn.Config(
             create_api(),
-            host="127.0.0.1",
+            host=host,
             port=port,
             log_level="warning",
         )
@@ -289,14 +293,19 @@ def _upload_document(
     )
 
 
-def _scheme_names(api_base: str) -> dict[str, str]:
-    """Map scheme IDs to display names; names are optional, so failures return {}."""
+def _schemes(api_base: str) -> list[dict[str, Any]]:
+    """Scheme list from the API; it is display-only, so failures return []."""
     try:
         with urlopen(f"{api_base}/api/schemes", timeout=10) as response:
             schemes = json.loads(response.read().decode("utf-8")).get("schemes", [])
-        return {item["scheme_id"]: item["name"] for item in schemes}
-    except (HTTPError, URLError, OSError, ValueError, KeyError, TypeError, AttributeError):
-        return {}
+        return [item for item in schemes if isinstance(item, dict) and "scheme_id" in item]
+    except (HTTPError, URLError, OSError, ValueError, TypeError, AttributeError):
+        return []
+
+
+def _scheme_names(api_base: str) -> dict[str, str]:
+    """Map scheme IDs to display names; names are optional, so failures return {}."""
+    return {item["scheme_id"]: item.get("name", item["scheme_id"]) for item in _schemes(api_base)}
 
 
 def _send_chat(
@@ -339,11 +348,13 @@ def _chat_response(
     result = {"status": response.get("next_step"), "data": data}
     if data.get("verdicts"):
         progress.write("Checking reviewed scheme rules")
+        schemes = _schemes(api_base)
         result.update(
             verdicts=data["verdicts"],
             explanations=data.get("explanations", {}),
             profile=data.get("known_facts", {}),
-            scheme_names=_scheme_names(api_base),
+            scheme_names={s["scheme_id"]: s.get("name", s["scheme_id"]) for s in schemes},
+            scheme_benefits={s["scheme_id"]: s.get("benefits", []) for s in schemes},
         )
     return thread_id, assistant_reply, result
 
@@ -411,6 +422,25 @@ def _subject_line(prefix: str, source: dict[str, Any]) -> str:
     return _t(f"{prefix}_other", relation=relation) if relation else _t(f"{prefix}_someone")
 
 
+# Stored as YYYY-MM-DD for the rule engine; shown and typed in the Indian order, DD/MM/YYYY.
+DATE_FIELDS = {"date_of_birth"}
+
+
+def _indian_date(value: Any) -> str:
+    try:
+        return datetime.strptime(str(value), "%Y-%m-%d").strftime("%d/%m/%Y")
+    except ValueError:
+        return str(value)
+
+
+def _iso_date(text: str) -> str | None:
+    """DD/MM/YYYY as typed, in the stored YYYY-MM-DD form; None when it isn't a real date."""
+    try:
+        return datetime.strptime(text.strip(), "%d/%m/%Y").date().isoformat()
+    except ValueError:
+        return None
+
+
 def _short_date(value: Any) -> str:
     try:
         return datetime.fromisoformat(str(value)).strftime("%d %b %Y")
@@ -452,6 +482,39 @@ def _memory_policy() -> dict[str, Any]:
     return {"fields": fields, "reference_days": allowlist.application_reference_expiry_days}
 
 
+CONDITION_COLORS = {"true": "green", "false": "red", "unknown": "gray"}
+
+
+def _render_conditions(verdict: dict[str, Any]) -> None:
+    """Still-needed facts and one chip per checked fact: green met, red not met, grey unknown.
+
+    A decided verdict needs no more facts, so "Still needed" shows only for can't tell. An eligible
+    verdict with unmet conditions can only come from alternative (any-of) rules, so it shows just
+    the conditions that qualified.
+    """
+    status = verdict.get("verdict")
+    missing = list(dict.fromkeys(verdict.get("missing_fields") or []))
+    if status == "cant_tell" and missing:
+        st.caption("Still needed: " + ", ".join(_field_label(f) for f in missing))
+    rank = {"true": 0, "false": 1, "unknown": 2}
+    best: dict[str, str] = {}  # one chip per field, keeping its strongest outcome
+    for condition in verdict.get("conditions", []):
+        field, outcome = str(condition.get("field", "")), condition.get("outcome", "unknown")
+        if field not in best or rank.get(outcome, 2) < rank.get(best[field], 2):
+            best[field] = outcome
+    alternatives = status == "eligible" and any(o != "true" for o in best.values())
+    if alternatives:
+        best = {field: outcome for field, outcome in best.items() if outcome == "true"}
+    if best:
+        st.markdown(" ".join(
+            f":{CONDITION_COLORS.get(outcome, 'gray')}-background["
+            f"{CONDITION_MARKS.get(outcome, '❔')} {_field_label(field)}]"
+            for field, outcome in best.items()
+        ))
+    if alternatives:
+        st.caption("Any one of this scheme's conditions qualifies; the others do not need to be checked.")
+
+
 def _render_eligibility(result: dict[str, Any]) -> None:
     """Present each reviewed-rule verdict, what was checked, and its source clauses."""
     names = result.get("scheme_names", {})
@@ -476,18 +539,7 @@ def _render_eligibility(result: dict[str, Any]) -> None:
                 f"**{names.get(scheme_id, scheme_id)}**  {badge}  \n`{scheme_id}`"
             )
             st.write(verdict.get("reason", "No explanation was returned."))
-            if verdict.get("missing_fields"):
-                st.caption(
-                    "Still needed: " + ", ".join(_field_label(f) for f in verdict["missing_fields"])
-                )
-            conditions = verdict.get("conditions", [])
-            if conditions:
-                st.caption(
-                    "  ·  ".join(
-                        f"{CONDITION_MARKS.get(c.get('outcome'), '❔')} {_field_label(str(c.get('field', '')))}"
-                        for c in conditions
-                    )
-                )
+            _render_conditions(verdict)
             citations = verdict.get("citations", [])
             if citations:
                 with st.expander("View reviewed source clauses"):
@@ -581,6 +633,7 @@ def _clear_chat_state() -> None:
     """Forget the chat and application held in this browser session, without calling the API."""
     st.session_state["chat_session_id"] = None
     st.session_state["chat_messages"] = []
+    st.session_state["chat_journey_plan"] = None
     st.session_state["chat_known_facts"] = {}
     st.session_state["chat_eligibility_result"] = None
     st.session_state["chat_partial_result"] = None
@@ -622,6 +675,23 @@ def _start_application(
             payload["relation"] = relation
     with st.status("Preparing the application workflow...", expanded=True) as progress:
         application_result = _send_workflow(api_base, "/api/analyze", payload, progress)
+    if application_result.get("needs_human"):
+        raise RuntimeError(
+            "The application draft could not be validated and needs human review. Nothing was submitted."
+        )
+    if application_result.get("verdicts", {}).get(scheme_id, {}).get("verdict") != "eligible":
+        raise RuntimeError(
+            "The eligibility recheck did not confirm this scheme. Review the details before trying again."
+        )
+    application = application_result.get("application")
+    approval = application_result.get("approval")
+    if (
+        not isinstance(application, dict)
+        or application.get("scheme_id") != scheme_id
+        or not isinstance(approval, dict)
+        or not approval.get("payload_hash")
+    ):
+        raise RuntimeError("The application draft is unavailable. Nothing was submitted; please try again.")
     st.session_state["application_result"] = application_result
     st.session_state["application_subject"] = {"subject": subject, "relation": relation}
     st.session_state["application_uploads"] = {}
@@ -760,6 +830,7 @@ def _render_workflow_fields(fields: dict[str, Any]) -> None:
                         else "Yes" if value is True
                         else "No" if value is False
                         else "Not provided" if value is None
+                        else _indian_date(value) if field in DATE_FIELDS
                         else str(value)
                     ),
                 }
@@ -844,6 +915,7 @@ def _render_review_step(
         edit_revision = st.session_state["application_edit_revision"]
         with st.form("edit-application-profile"):
             changes: dict[str, Any] = {}
+            bad_dates: list[str] = []
             edit_columns = st.columns(2, gap="small")
             for index, (field, value) in enumerate(profile.items()):
                 with edit_columns[index % len(edit_columns)]:
@@ -866,6 +938,18 @@ def _render_review_step(
                             value=value,
                             key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
                         )
+                    elif field in DATE_FIELDS:
+                        typed = st.text_input(
+                            f"{_field_label(field)} (DD/MM/YYYY)",
+                            value=_indian_date(value) if value else "",
+                            placeholder="DD/MM/YYYY",
+                            key=f"edit-field-{approval_hash}-{edit_revision}-{field}",
+                        )
+                        updated = _iso_date(typed)
+                        if updated is None:
+                            if typed.strip():
+                                bad_dates.append(_field_label(field))
+                            continue
                     elif isinstance(value, str):
                         updated = st.text_input(
                             _field_label(field),
@@ -878,6 +962,9 @@ def _render_review_step(
                         changes[field] = updated
             edit_submitted = st.form_submit_button("Save changes and recheck eligibility")
         if edit_submitted:
+            if bad_dates:
+                st.error(f"Enter {', '.join(bad_dates)} as DD/MM/YYYY, for example 05/03/1962.")
+                return
             if not changes:
                 st.info("Change a detail before saving.")
                 return
@@ -978,17 +1065,6 @@ def _render_eligibility_screen(
                 "These results use details that have not yet been confirmed. "
                 "Return to chat to provide missing or corrected details before preparing an application."
             )
-        assistant_explanation = next(
-            (
-                message["content"]
-                for message in reversed(st.session_state["chat_messages"])
-                if message.get("result")
-            ),
-            None,
-        )
-        if assistant_explanation:
-            with st.container(border=True):
-                st.markdown(assistant_explanation)
         profile_column, results_column = st.columns([0.85, 1.5], gap="medium")
         with profile_column:
             with st.container(border=True):
@@ -1017,11 +1093,12 @@ def _render_eligibility_screen(
                     else:
                         st.info("Could not determine", icon=":material/help:")
                     st.write(verdict.get("reason", "No explanation was returned."))
-                    if verdict.get("missing_fields"):
-                        st.caption(
-                            "Still needed: "
-                            + ", ".join(_field_label(field) for field in verdict["missing_fields"])
-                        )
+                    _render_conditions(verdict)
+                    benefits = eligibility_result.get("scheme_benefits", {}).get(scheme_id, [])
+                    if benefits:
+                        with st.expander("Benefits", expanded=status == "eligible"):
+                            for benefit in benefits:
+                                st.markdown(f"- {benefit}")
                     citations = verdict.get("citations", [])
                     if citations:
                         with st.expander("View reviewed source clauses"):
@@ -1040,6 +1117,8 @@ def _render_eligibility_screen(
 
 def _record_chat_result(result: dict[str, Any]) -> None:
     data = result["data"]
+    if "journey_plan" in data:
+        st.session_state["chat_journey_plan"] = data["journey_plan"]
     confirmation = data.get("confirmation") if result.get("status") == "awaiting_confirmation" else None
     if result.get("status") == "awaiting_confirmation" and (
         not isinstance(confirmation, dict)
@@ -1057,6 +1136,72 @@ def _record_chat_result(result: dict[str, Any]) -> None:
     st.session_state["chat_show_partial"] = False
     if result.get("status") == "eligibility_checked" and result.get("verdicts"):
         st.session_state["chat_eligibility_result"] = result
+
+
+JOURNEY_PLAN_TEXT = {
+    "en": {
+        "title": "Your plan",
+        "profile": "Collect and confirm details",
+        "schemes": "Find candidate schemes",
+        "rules": "Check reviewed eligibility rules",
+        "documents": "Check documents if you choose an eligible scheme",
+        "draft": "Prepare a draft for your review if you choose to apply",
+        "conditional": "Documents and drafting depend on the result and your choice.",
+        "ready": "A scheme is eligible; documents and drafting remain your choice.",
+        "not_eligible": "The reviewed rules found no eligible scheme in this check. Documents and drafting are paused.",
+        "cant_tell": "The result is uncertain. Documents and drafting are paused until eligibility can be confirmed.",
+        "updated": "The plan was updated after the check or a change to the details.",
+        "current": "Current stage",
+    },
+    "hi": {
+        "title": "आपकी योजना",
+        "profile": "जानकारी लें और पुष्टि करें",
+        "schemes": "संभावित योजनाएँ खोजें",
+        "rules": "समीक्षित पात्रता नियम जाँचें",
+        "documents": "पात्र योजना चुनने पर दस्तावेज़ जाँचें",
+        "draft": "आवेदन करने पर समीक्षा के लिए मसौदा तैयार करें",
+        "conditional": "दस्तावेज़ और मसौदा परिणाम और आपकी पसंद पर निर्भर हैं।",
+        "ready": "एक योजना में पात्रता मिली है; दस्तावेज़ और मसौदा आपकी पसंद हैं।",
+        "not_eligible": "इस जाँच में कोई पात्र योजना नहीं मिली। दस्तावेज़ और मसौदा अभी रुके हैं।",
+        "cant_tell": "परिणाम अनिश्चित है। पात्रता की पुष्टि तक दस्तावेज़ और मसौदा रुके हैं।",
+        "updated": "जाँच या जानकारी में बदलाव के बाद योजना अपडेट की गई।",
+        "current": "वर्तमान चरण",
+    },
+    "mr": {
+        "title": "तुमची योजना",
+        "profile": "माहिती घ्या आणि पुष्टी करा",
+        "schemes": "संभाव्य योजना शोधा",
+        "rules": "तपासलेले पात्रता नियम तपासा",
+        "documents": "पात्र योजना निवडल्यास कागदपत्रे तपासा",
+        "draft": "अर्ज करायचे ठरवल्यास पुनरावलोकनासाठी मसुदा तयार करा",
+        "conditional": "कागदपत्रे आणि मसुदा निकाल आणि तुमच्या निवडीवर अवलंबून आहेत.",
+        "ready": "एका योजनेसाठी पात्रता मिळाली आहे; पुढील पायऱ्या तुमच्या निवडीवर आहेत.",
+        "not_eligible": "या तपासणीत कोणतीही पात्र योजना मिळाली नाही. कागदपत्रे आणि मसुदा सध्या थांबले आहेत.",
+        "cant_tell": "निकाल अनिश्चित आहे. पात्रतेची पुष्टी होईपर्यंत कागदपत्रे आणि मसुदा थांबले आहेत.",
+        "updated": "तपासणीनंतर किंवा माहितीत बदल झाल्याने योजना अद्ययावत केली.",
+        "current": "सध्याचा टप्पा",
+    },
+}
+
+
+def _render_journey_plan(plan: Any, current_step: int) -> None:
+    if not isinstance(plan, dict) or not isinstance(plan.get("steps"), list):
+        return
+    text = JOURNEY_PLAN_TEXT.get(st.session_state.get("portal_language", "en"), JOURNEY_PLAN_TEXT["en"])
+    with st.expander(text["title"], expanded=True):
+        steps = [step for step in plan["steps"] if step in ("profile", "schemes", "rules", "documents", "draft")]
+        current = {1: "profile", 2: "rules", 3: "documents", 4: "draft"}.get(current_step)
+        if steps:
+            st.markdown("\n".join(
+                f"{index}. **{text[step]} — {text['current']}**" if step == current
+                else f"{index}. {text[step]}"
+                for index, step in enumerate(steps, 1)
+            ))
+        disposition = plan.get("disposition")
+        if plan.get("revisions"):
+            st.caption(text["updated"])
+        if disposition in ("conditional", "ready", "not_eligible", "cant_tell"):
+            st.caption(text[disposition])
 
 
 def _render_fact_confirmation(api_base: str) -> None:
@@ -1363,11 +1508,20 @@ def _render_application_workflow(api_base: str, current_step: int) -> None:
 
 def _handle_chat_submission(
     api_base: str, submission: Any, response_slot: Any
-) -> None:
+) -> bool:
     """Render a submitted turn and its streaming response above the chat composer."""
     text = submission if isinstance(submission, str) else submission.text
     files = [] if isinstance(submission, str) else submission.files
     user_text = text.strip()
+    try:
+        reject_sensitive_input([user_text, *[upload.name for upload in files]])
+    except SensitiveInputError as error:
+        with response_slot:
+            message = str(error)
+            if files:
+                message += " The attachments were not uploaded."
+            st.warning(message)
+        return False
     display_text = "\n".join(
         [
             *([user_text] if user_text else []),
@@ -1509,6 +1663,7 @@ def _handle_chat_submission(
                     "result": assistant_result if _shows_verdicts(assistant_result) else None,
                 }
             )
+    return True
 
 
 def _initialize_portal_state() -> None:
@@ -1746,7 +1901,7 @@ def _render_consent_page() -> None:
                 [1.5, 1.1, 1.1], vertical_alignment="center"
             )
             with image_col:
-                _render_brand_image()
+                _render_brand_image(width="stretch")
             tagline_col.caption("PUBLIC SUPPORT, MADE SIMPLE")
             with step_col:
                 st.markdown("**BEFORE YOU BEGIN**")
@@ -1755,7 +1910,7 @@ def _render_consent_page() -> None:
         with st.container(border=True, key="consent-shell"):
             _render_signed_in_account()
             st.markdown(":material/verified_user: PRIVACY & CONSENT")
-            st.title("Your information. Your choice.")
+            st.subheader("Your information. Your choice.")
             st.write(
                 "Please review how information is used before continuing to "
                 "your scheme search."
@@ -1795,6 +1950,7 @@ def _render_consent_page() -> None:
                 "I do not agree — return to sign in",
                 key="decline-consent",
                 on_click=_decline_consent,
+                type="primary",
                 width="stretch",
             )
 
@@ -1893,7 +2049,7 @@ def _render_chat_header() -> None:
                 [1.4, 1.6, 1.4], gap="medium", vertical_alignment="center"
             )
             with image_col:
-                _render_brand_image()
+                _render_brand_image(width="stretch")
             with title_col:
                 st.markdown("#### Scheme Saathi")
                 st.caption("Your guide to government schemes")
@@ -2195,6 +2351,7 @@ def _render_chat_page() -> None:
     current_step, _ = _journey_step()
     _render_wizard(current_step)
     with st.container(key="workflow-screen"):
+        _render_journey_plan(st.session_state.get("chat_journey_plan"), current_step)
         if current_step == 1:
             _render_welcome()
             if st.session_state["chat_messages"]:
@@ -2255,8 +2412,8 @@ def _render_chat_page() -> None:
         )
 
     if prompt:       
-        _handle_chat_submission(api_base, prompt, response_slot)
-        st.rerun()
+        if _handle_chat_submission(api_base, prompt, response_slot):
+            st.rerun()
 
 
 def _render_citizen_portal() -> None:

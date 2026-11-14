@@ -19,12 +19,14 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from agents.base import StructuredGPTAgent
 from agents.contracts import IntakeResult
 from agents.model_factory import create_chat_model
+from agents.persona_validator import reject_sensitive_input
 from app.document_storage import DocumentStorageError, LocalDocumentStore
 from app.forget import household_threads
 from app.thread_registry import ThreadRegistry, TouchResult
 from graph import tools
 from graph.tools import ToolCallError
 from graph.workflow import build_graph
+from observability.hooks import note_run_error, record_thread_expired
 
 logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -129,6 +131,7 @@ class DemoService:
         actor_id: str | None = None,
     ) -> Iterator[tuple[str, dict[str, Any]]]:
         """Gather rule facts conversationally, then stream a deterministic rule check."""
+        reject_sensitive_input(user_input)
         yield "progress", {"label": "Reading your message"}
         try:
             chat_id, session = self._get_or_create_chat_session(session_id, actor_id)
@@ -214,6 +217,7 @@ class DemoService:
             ValueError,
             ValidationError,
         ) as error:
+            note_run_error(error)
             if isinstance(error, ThreadAccessError):
                 yield "error", {"detail": "The chat session was not found."}
             elif isinstance(error, ToolCallError):
@@ -233,6 +237,7 @@ class DemoService:
                 session = self._chat_sessions.get(session_id)
                 if session is not None and self._chat_session_expired(session):
                     del self._chat_sessions[session_id]  # expired: never revived by use
+                    record_thread_expired("chat_session", "on_use")
                     session = None
             if session is None:
                 raise SessionNotFoundError("The chat session was not found.")
@@ -358,6 +363,7 @@ class DemoService:
         """Return schemes with reviewed rules and their intake/document requirements."""
         scheme_ids = tools.search_schemes({})
         names = {scheme_id: scheme_id for scheme_id in scheme_ids}
+        benefits: dict[str, list[str]] = {}
         for directory in (
             PROJECT_ROOT / "data" / "schemes",
             PROJECT_ROOT / "data" / "rules",
@@ -367,11 +373,15 @@ class DemoService:
                 scheme_id = record.get("scheme_id")
                 if scheme_id in names:
                     names[scheme_id] = record.get("name", scheme_id)
+                    items = (record.get("sections") or {}).get("benefits", {}).get("items", [])
+                    if items and scheme_id not in benefits:
+                        benefits[scheme_id] = [item["text"] for item in items if item.get("text")]
 
         return [
             {
                 "scheme_id": scheme_id,
                 "name": names[scheme_id],
+                "benefits": benefits.get(scheme_id, []),
                 "required_fields": tools.required_fields([scheme_id]),
                 "required_documents": tools.list_documents(scheme_id),
             }
@@ -391,6 +401,7 @@ class DemoService:
         `subject` and `relation` say whose application this is, so a saved reference can
         later be listed as the person's own or as someone else's.
         """
+        reject_sensitive_input([citizen, scheme_ids, relation])
         tools.search_schemes({}, scheme_ids)
         thread_id = str(uuid4())
         if actor_id is not None:
@@ -400,7 +411,7 @@ class DemoService:
             self.registry.set_subject(thread_id, actor_id, subject, relation)  # kept with the thread, so a restart keeps it
         self._thread_subjects[thread_id] = (subject, relation)
         config = {"configurable": {"thread_id": thread_id}}
-        run_input: dict[str, Any] = {"simulated_citizen": citizen}
+        run_input: dict[str, Any] = {"simulated_citizen": citizen, "confirmed_profile": citizen}
         if actor_id is not None:
             run_input["actor_id"] = actor_id
         if scheme_ids:
@@ -429,6 +440,7 @@ class DemoService:
         actor_id: str | None = None,
     ) -> Iterator[tuple[str, dict[str, Any]]]:
         """Validate an application decision and resume the matching workflow."""
+        reject_sensitive_input(changes)
         self._check_thread_owner(thread_id, actor_id)
         self._touch(thread_id, actor_id)
         snapshot = self._get_snapshot(thread_id)
@@ -473,6 +485,7 @@ class DemoService:
         actor_id: str | None = None,
     ) -> dict[str, Any]:
         """Validate and retain a required document in local storage."""
+        reject_sensitive_input([scheme_id, document_type, filename])
         self._check_thread_owner(thread_id, actor_id)
         self._touch(thread_id, actor_id)
         if not sensitive_ids_masked:
@@ -535,6 +548,7 @@ class DemoService:
         if actor_id is None:
             return
         if self.registry.is_expired(thread_id):
+            record_thread_expired("application", "on_use")
             self._delete_expired({thread_id})  # delete it now, and report it as unknown
             raise SessionNotFoundError("The application session was not found.")
         with self._thread_owners_lock:
@@ -555,6 +569,7 @@ class DemoService:
             return
         outcome = self.registry.touch(thread_id, actor_id)
         if outcome is TouchResult.EXPIRED:
+            record_thread_expired("application", "on_use")
             self._delete_expired({thread_id})
             raise SessionNotFoundError("The application session was not found.")
         if outcome is TouchResult.NOT_OWNER:
@@ -680,10 +695,12 @@ class DemoService:
         threads = set(self.registry.expired())
         if threads:
             self._delete_expired(threads)
+            record_thread_expired("application", "cleanup", len(threads))
         with self._chat_sessions_lock:
             stale = [key for key, session in self._chat_sessions.items() if self._chat_session_expired(session)]
             for key in stale:
                 del self._chat_sessions[key]
+        record_thread_expired("chat_session", "cleanup", len(stale))
         return len(threads) + len(stale)
 
     def _list_uploaded_documents(
@@ -736,6 +753,7 @@ class DemoService:
                 thread_id, self.workflow.get_state(config)
             )
         except ToolCallError as error:
+            note_run_error(error)
             logger.warning("A Scheme Saathi workflow tool failed.")
             if isinstance(run_input, Command) and self.workflow.get_state(config).next == ("submit",):
                 yield "error", {

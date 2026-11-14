@@ -51,9 +51,10 @@ class IntakeExtraction(Contract):
 
 class IntakeAskInput(Contract):
     field: str = Field(min_length=1)
-    field_type: Literal["number", "bool", "str"]
+    field_type: Literal["number", "bool", "str", "date"]
     known_values: list[str] = Field(default_factory=list)
     period: Literal["month", "year"] | None = None  # for income fields: ask per this period
+    meaning: str | None = None  # what exactly to ask, for a field whose name alone is ambiguous
     language: Language = "unknown"
     request: str = Field(min_length=1)  # the message that started intake, so "she" stays "she"
 
@@ -120,6 +121,7 @@ class SupervisorInput(Contract):
     intake: IntakeResult | None = None  # Optional: None on first call, populated after Intake runs
     selected_scheme_id: str | None = None
     document_check: DocumentCheckResult | None = None
+    pending_question: str | None = None  # intake's question the request may be answering
 
 
 class SupervisorPlan(Contract):

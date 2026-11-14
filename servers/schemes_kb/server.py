@@ -65,6 +65,29 @@ def get_scheme_details(scheme_id: str) -> dict[str, Any]:
 
 
 @mcp.tool()
+def get_scheme_availability(scheme_id: str) -> dict[str, Any]:
+    """Return only the recorded application availability of a scheme."""
+    record = _load_scheme_records().get(scheme_id)
+    if record is None:
+        return {
+            "ok": False,
+            "access": "read",
+            "error": {
+                "code": "scheme_not_found",
+                "message": f"No scheme metadata found for '{scheme_id}'.",
+            },
+        }
+    status = record.get("availability_status", "unverified")
+    if status not in ("open", "closed", "unverified"):
+        return {
+            "ok": False,
+            "access": "read",
+            "error": {"code": "invalid_availability", "message": "Invalid scheme availability status."},
+        }
+    return {"ok": True, "access": "read", "data": {"availability_status": status}}
+
+
+@mcp.tool()
 def get_required_documents(scheme_id: str) -> dict[str, Any]:
     """Read-only retrieval of the required document checklist for a scheme.
 
@@ -101,7 +124,8 @@ def get_required_documents(scheme_id: str) -> dict[str, Any]:
 
 @mcp.tool()
 def search_scheme_evidence(question: str, top_k: int = 5, scheme_id: str | None = None) -> dict[str, Any]:
-    """Read-only evidence search over approved scheme pages and PDFs (hybrid BM25 + vectors, LLM reranked).
+    """Read-only evidence search over approved scheme pages and PDFs (hybrid BM25 + vectors, the question
+    plus an English scheme-wording rewrite fused with RRF, LLM reranked).
 
     Args:
         question: The user's question, at most 2000 characters.
@@ -116,7 +140,8 @@ def search_scheme_evidence(question: str, top_k: int = 5, scheme_id: str | None 
     from servers.schemes_kb.search import search_schemes as search_index
 
     try:
-        response = search_index(question, top_k=top_k, scheme_id=scheme_id, method="hybrid", rerank=True)
+        response = search_index(question, top_k=top_k, scheme_id=scheme_id, method="hybrid", rerank=True,
+                                rewrite=True)
     except ValueError as error:
         return {"ok": False, "access": "read", "error": {"code": "invalid_search", "message": str(error)}}
     # Without a rerank (it failed), scores are not 0-10, so the caller's answer step decides relevance.

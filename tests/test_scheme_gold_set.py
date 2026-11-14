@@ -46,9 +46,13 @@ def test_ai_drafted_rules_are_not_live_until_reviewed():
         assert set(tools.search_schemes({}, sorted(AI_DRAFTED_IDS), include_draft=True)) == AI_DRAFTED_IDS
 
 
+# Schemes for organisations (decision F1): evaluable by id, but not in the citizen scheme list.
+INSTITUTION_IDS = {"C07", "C21", "C22", "C30"}
+
+
 def test_every_reviewed_scheme_is_live_by_default():
     assert set(tools.search_schemes({}, sorted(EXPECTED_IDS))) == EXPECTED_IDS
-    assert set(tools.search_schemes({})) == EXPECTED_IDS | {"SYNTH-PENSION-001"}
+    assert set(tools.search_schemes({})) == (EXPECTED_IDS - INSTITUTION_IDS) | {"SYNTH-PENSION-001"}
 
 
 def test_each_reviewed_record_evaluates_live_when_its_rules_are_satisfied():
@@ -81,10 +85,11 @@ def test_c05_exclusions_reject_members_and_tax_payers():
           "has_savings_or_jandhan_account_with_ifsc": True, "is_income_tax_payer": False,
           "is_organized_sector_worker": False, "is_epfo_member": False, "is_nps_member": False,
           "is_esic_member": False, "is_nps_traders_member": False}
-    verdict = lambda **c: tools.evaluate_scheme({**ok, **c}, "C05", include_draft=True)["verdict"]
+    def verdict(**changes):
+        with tools.acting_as("rule_reviewer"):
+            return tools.evaluate_scheme({**ok, **changes}, "C05", include_draft=True)["verdict"]
     assert verdict() == "eligible"
     assert verdict(is_nps_traders_member=True) == "not_eligible"
     assert verdict(is_epfo_member=True) == "not_eligible"
     assert verdict(monthly_income=15001) == "not_eligible"
     assert verdict(age=41) == "not_eligible"
-
