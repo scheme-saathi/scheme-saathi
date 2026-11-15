@@ -100,8 +100,9 @@ demo, not a production security certification.
 
 ## Red-team evidence
 
-`tests/redteam/` holds 77 attacks and 24 legitimate cases, run with the defences off and on
-(`python tests/redteam/run_redteam.py`). After the recorded fixes, 80.5% of attacks get through
-with defences off and 0% with them on; no legitimate case is blocked with defences on.
-`tests/redteam/known_gaps.json` is empty for this suite. See `tests/redteam/README.md` for the
-method and limits; the suite still needs independent review by role 5.
+`tests/redteam/` holds 96 attacks and 29 legitimate cases, run with the defences off and on
+(`python tests/redteam/run_redteam.py`). In the 12 Nov run, 79.2% of attacks get through with
+defences off and 5.2% with them on; no legitimate case is blocked with defences on. The five
+attacks that still get through are requests to misstate or hide facts, listed in
+`tests/redteam/known_gaps.json`: refusing and explaining them is not built. See
+[redteam-report.md](redteam-report.md) and `tests/redteam/README.md` for the method and limits.

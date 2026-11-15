@@ -1,9 +1,16 @@
 # Scheme Saathi: system architecture
 
 This diagram is an original, implementation-oriented view of the Scheme Saathi
-demo. Solid arrows show the example application journey; dotted arrows show
-conditional or supporting connections. Not every request visits every box.
-The numbered walkthrough below follows the same numbers.
+demo. Its numbers 1–15 match the walkthrough below; the band at the bottom is
+the offline build-and-measure work (ingestion, rule extraction, Reflexion,
+evaluation harness, LLM judge, red team). Not every request visits every box.
+
+![Scheme Saathi architecture, steps 1–15](architecture-numbered.png)
+
+The LangGraph graph itself, generated from the code, is in [workflow-graph.md](workflow-graph.md).
+
+<details>
+<summary>The same architecture as a Mermaid diagram</summary>
 
 ```mermaid
 flowchart TB
@@ -79,20 +86,24 @@ flowchart TB
     CI -. tests and image build .- ORCH
 ```
 
+</details>
+
 Offline (not part of a conversation): ingestion builds the index from approved scheme pages and PDFs; a rule extractor drafts rules that a person must review; an evaluation harness runs the experiments.
 
 ## Numbered walkthrough: one request
 
-Example: "My mother is 62, a widow, lives in Pune, income Rs 2,50,000 a year. What can she get? Help me apply."
+Example (the demo request, asked in Hindi): "My mother is 62 years old and a widow; she has not remarried. She resides in Pune district, holds a BPL card, and has no disabilities. What benefits might she be eligible for? Please help with the application process."
 
 1. **Sign-in.** The user signs in through Auth0 in the web app. Every API call carries a token; the household ID comes from the token, never from the request body.
-2. **Input checks (code).** The message is checked for length and for Aadhaar, bank or other ID numbers. Sensitive values are rejected or masked before any model sees them. The rate limit is 10 messages a minute.
+2. **Input checks (code).** The message is checked for length and for Aadhaar, bank or other ID numbers. A message containing one is rejected before any model sees it. The rate limit is 10 messages a minute.
 3. **Language and intent (router model).** The router labels the language (Hindi here) and the intent (`eligibility` or `application`). If the model fails, a keyword fallback is used.
-4. **Plan (supervisor model, then code).** The supervisor proposes the next desk. Code checks the reply's schema, and if a personal eligibility question was routed to scheme Q&A, it sends it to intake instead.
+4. **Plan (supervisor model, then code).** The supervisor proposes the next desk. Code checks the reply's schema, and if a personal eligibility question was routed to scheme Q&A, it sends it to intake instead. The citizen sees a plan (profile, schemes, rules, documents, draft) that the rule engine's verdicts revise; documents and drafting wait until a scheme is eligible and the person chooses it.
 5. **Scheme shortlist and facts (intake).** Intake asks a model to pick up to five relevant schemes from the 49 reviewed ones. It reads the message into typed facts: age 62, widow, district Pune. Code validates each fact, converts amounts to the rule's period, and marks every fact as unconfirmed.
 6. **Verdicts (rule engine, code).** For each shortlisted scheme the rule engine returns `eligible`, `not_eligible` or `cant_tell`, with the clause that decided it and any missing fields. No model is involved in the decision.
 7. **One question at a time (intake).** If a verdict is still open, code picks the field that would settle the most open verdicts; the model only words the question, in the person's language. Intake stops after 12 questions or when the person declines.
 8. **Confirmation.** The facts the verdicts rest on are shown to the person, who confirms, edits or rejects them. Edits re-run the rule engine.
+In the app, "Prepare application" runs steps 9–12 as a code-driven workflow with no model (`graph/workflow.py`): it rechecks the verdict, lists the documents, takes uploads (checked for file type, size and required document; contents are not read), drafts the form and pauses at the approval gate.
+
 9. **Documents (document checker).** For eligible schemes, the required-document list comes from the scheme record. The checker compares any uploaded document details with the profile. Missing items are computed by code; the model may add clarifying questions only.
 10. **Draft (application).** The application agent builds the form from confirmed facts and creates a draft on the mock portal. The model writes a review summary; if that fails, a plain summary is used.
 11. **Approval (human control).** The graph pauses. The person sees the exact form and its hash, then approves, edits or rejects. An edit or any change to the form invalidates an earlier approval.

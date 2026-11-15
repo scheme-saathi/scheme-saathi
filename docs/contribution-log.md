@@ -1,10 +1,9 @@
 # Scheme Saathi: contribution log
 
-**Status: draft for team verification, 12 November 2026.** This log records
+**Final, 15 November 2026.** This log records
 representative contributions evidenced by merged pull requests. The named person
 is the PR author; that does not establish sole authorship or capture all work by
-reviewers and collaborators. Each team member should check their row, add missing
-work and confirm their contribution before submission. No percentage split or
+reviewers and collaborators. No percentage split or
 effort estimate is inferred from commit counts.
 
 ## Team contributions
@@ -17,9 +16,20 @@ effort estimate is inferred from commit counts.
 | **Digvijay** (`DigvijaySingh939`) | Document checker and persona-related work; chat UI, Docker and CI/CD. | [#41: document checker](https://github.com/scheme-saathi/scheme-saathi/pull/41); [#58: household persona check](https://github.com/scheme-saathi/scheme-saathi/pull/58); [#36: chat UI](https://github.com/scheme-saathi/scheme-saathi/pull/36); [#68: Docker](https://github.com/scheme-saathi/scheme-saathi/pull/68); [#87: CI/CD](https://github.com/scheme-saathi/scheme-saathi/pull/87). |
 | **Satyadharma Trivikram** (`koilBhupat`) | Supervisor agent, long-term memory and observability work. | [#38: supervisor agent](https://github.com/scheme-saathi/scheme-saathi/pull/38); [#46: supervisor integration](https://github.com/scheme-saathi/scheme-saathi/pull/46); [#62: long-term memory](https://github.com/scheme-saathi/scheme-saathi/pull/62); [#73: observability](https://github.com/scheme-saathi/scheme-saathi/pull/73).  |
 
-These are examples, not an exhaustive list. The [team role sheet](../teamProjectWorkspace/scheme-saathi%20project.xlsx)
-records planned responsibilities and early tasks, but leaves the role-owner
-column blank; assignments should not be mistaken for completed contributions.
+These are examples, not an exhaustive list.
+
+## Roles from the build guide
+
+The guide defines six roles; the team had five members, so the domain and product lead's work (problem framing, scheme data, demo script) was shared. Contributions above go beyond each role's strict definition.
+
+| Role | Member |
+| --- | --- |
+| 1. Domain and product lead | Shared by the team |
+| 2. Knowledge and memory engineer (L4–L6, L9) | Snehal |
+| 3. Agents and orchestration engineer (L8, L10–L12) | Satyadharma Trivikram |
+| 4. Tools, control and security engineer (L7, L14, L15) | Saurabh |
+| 5. Evaluation and red-team engineer (L13, L15) | Sharika |
+| 6. Deployment and operations engineer (L13, L16) | Digvijay |
 
 
 The [evaluation report](evaluation-report.md) and [experiment log](experiment-log.md)
