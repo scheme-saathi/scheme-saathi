@@ -72,7 +72,7 @@ A son writes in Hindi: "My mother is 62, a widow, lives in Pune district, and ha
 1. **Input guardrails** block a message containing anything that looks like an Aadhaar, bank account or phone number, so it never reaches a model or a trace, and enforce length and rate limits.
 2. **The supervisor** routes the request and shows the citizen a plan: build the profile, find schemes, check the rules, list documents, draft the application.
 3. **The intake agent** reads the facts into a typed profile and asks only the question that settles the most open verdicts. The citizen confirms the facts before any final verdict.
-4. **The eligibility analyst** shortlists schemes, and the **rule engine** (an MCP server) returns eligible, not eligible or can't tell for each, with the deciding clause and any missing facts. The plan is revised from these results.
+4. **The intake agent** shortlists up to five schemes, and the **rule engine** (an MCP server) returns eligible, not eligible or can't tell for each, with the deciding clause and any missing facts. The plan is revised from these results.
 5. **The document checker** lists the documents each eligible scheme needs and flags mismatches.
 6. **The application agent** drafts the form on the mock portal. The graph pauses with `interrupt()`; the person approves, edits or rejects. Approval is tied to a hash of that exact form, so any edit needs a new approval.
 7. **Output guardrails** check that every eligibility claim came from the rule engine and cites a clause, and that unknowns are stated plainly.
@@ -91,7 +91,7 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 | `evaluation/` | Experiment code (rule extraction, E4, memory evaluation) |
 | `observability/` | Metrics, tracing, Prometheus and Grafana |
 | `tests/` | Unit and integration tests, the evaluation harness (`tests/evaluation/`) and the red-team suite (`tests/redteam/`) |
-| [`scheme-saathi-deploy/`](docs/scheme-saathi-deploy-guide.md) | Docker Compose file, `.env-example` and Prometheus settings for the one-command start |
+| [`scheme-saathi-deploy-installer.zip`](docs/scheme-saathi-deploy.md) | The one-command installer: `install.sh`, `install.ps1`, Docker Compose file, `.env-example` and Prometheus settings |
 | `docs/` | The documents listed below |
 
 ## Key design choices
@@ -120,13 +120,13 @@ Details: [Agents and workflows](docs/agents.md), [Tool inventory](docs/tool-list
 
 | Document | Where |
 | --- | --- |
-| Architecture diagram and numbered walkthrough | [docs/architecture.md](docs/architecture.md); short walkthrough above |
+| Architecture diagram and numbered walkthrough | [docs/architecture.md](docs/architecture.md), with the [diagram image](docs/architecture-numbered.png); short walkthrough above |
 | Threat model | [docs/threat-model.md](docs/threat-model.md) |
 | Memory policy | [docs/memory-policy.md](docs/memory-policy.md), with [document retention](docs/document-retention.md) |
 | Evaluation report | [docs/evaluation-report.md](docs/evaluation-report.md) |
 | Experiment log | [docs/experiment-log.md](docs/experiment-log.md) |
 | Contribution log | [docs/contribution-log.md](docs/contribution-log.md) |
-| Slides | *[Placeholder: to be added]* |
+| Slides | [Scheme Saathi final review.pdf](<Scheme Saathi final review.pdf>) |
 | Backup demo recording | *[Placeholder: to be added]* |
 
 Supporting documents:
@@ -138,7 +138,8 @@ Supporting documents:
 - [Setup, scheme data and running the app](docs/setup-and-data.md)
 - [Evaluation harness](tests/evaluation/README.md): E1, the claim judge, rule extraction and Reflexion, the single-agent baseline
 - [Observability](docs/observability.md), its [architecture](docs/observability-architecture.md) and the [Docker Compose and Grafana quick start](docs/docker-compose-grafana-quickstart.md)
-- [Deployment guide: one-command start with Docker](docs/scheme-saathi-deploy-guide.md)
+- [How to run with the installer](docs/scheme-saathi-deploy.md)
+- [Workflow graph](docs/workflow-graph.md), generated from the LangGraph code
 - [Docker and AWS deployment guide](docs/docker-deployment-guide.md): building the images and CI/CD
 
 ## Tests and evaluations
@@ -163,7 +164,7 @@ The exact commands behind every reported number are in section 10 of the [evalua
 ## Demos
 
 1. **Widow pension in Hindi.** Sign in, start a new chat and type the request above in Hindi. Answer the questions, confirm the details, choose an eligible scheme, upload the requested documents and approve the draft.
-2. **Refusing to misstate facts and flagging a scam page.** 
+2. **Refusing to misstate facts and flagging a scam page.** Not built: the five misstatement attacks still get through, and no scam page is planted for retrieval. The red-team suite shows these as known gaps; a reply that relays a UPI fee request is blocked.
 3. **"Forget my data".** Open **Saved details**, choose **Forget my data**, and check that the remembered facts are gone.
 
 Also shown: stopping and resuming a conversation, and an edit that invalidates an earlier approval. The screen-by-screen guide is in [Setup, scheme data and running the app](docs/setup-and-data.md).

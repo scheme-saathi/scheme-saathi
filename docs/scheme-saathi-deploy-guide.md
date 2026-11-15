@@ -1,5 +1,7 @@
 # Docker Deployment Guide
 
+> **Superseded.** The one-command installer replaced this manual setup; see [scheme-saathi-deploy.md](scheme-saathi-deploy.md). This page is kept for reference: the `scheme-saathi-deploy` folder it describes now ships inside `scheme-saathi-deploy-installer.zip`.
+
 This guide explains how to build the Scheme Saathi application from a Dockerfile and run it locally.
 
 The Grafana image is built using [`observability/deploy/grafana/Dockerfile`](../observability/deploy/grafana/Dockerfile). Its provisioning files are included in the image. The Grafana image's registry name is formed by appending `-grafana` to the configured `DOCKERHUB_REPOSITORY` value. For example: `your-dockerhub-user/scheme-saathi-grafana`.
